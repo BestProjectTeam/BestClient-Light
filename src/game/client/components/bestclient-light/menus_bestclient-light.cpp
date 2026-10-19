@@ -923,19 +923,19 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 			return 0;
 
 		pContext->m_pLabels->emplace_back(pName);
-		pContext->m_pPaths->emplace_back(std::string("bestclient-light/backgrounds/") + pName);
+		pContext->m_pPaths->emplace_back(std::string("bestclient/backgrounds/") + pName);
 		return 0;
 	};
 
-	Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
-	Storage()->CreateFolder("bestclient-light/backgrounds", IStorage::TYPE_SAVE);
+	Storage()->CreateFolder("bestclient", IStorage::TYPE_SAVE);
+	Storage()->CreateFolder("bestclient/backgrounds", IStorage::TYPE_SAVE);
 
 	static std::vector<std::string> s_vMenuMediaFileLabels;
 	static std::vector<std::string> s_vMenuMediaFilePaths;
 	s_vMenuMediaFileLabels.clear();
 	s_vMenuMediaFilePaths.clear();
 	SMenuMediaFileListContext MenuMediaContext{&s_vMenuMediaFileLabels, &s_vMenuMediaFilePaths};
-	Storage()->ListDirectory(IStorage::TYPE_SAVE, "bestclient-light/backgrounds", MenuMediaFileListScan, &MenuMediaContext);
+	Storage()->ListDirectory(IStorage::TYPE_SAVE, "bestclient/backgrounds", MenuMediaFileListScan, &MenuMediaContext);
 
 	std::vector<int> vSortedIndices(s_vMenuMediaFileLabels.size());
 	for(size_t i = 0; i < vSortedIndices.size(); ++i)
@@ -999,10 +999,10 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	static CButtonContainer s_MenuMediaFolderButton;
 	if(Ui()->DoButton_FontIcon(&s_MenuMediaFolderButton, FontIcon::FOLDER, 0, &MediaFolderButton, BUTTONFLAG_LEFT))
 	{
-		Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
-		Storage()->CreateFolder("bestclient-light/backgrounds", IStorage::TYPE_SAVE);
+		Storage()->CreateFolder("bestclient", IStorage::TYPE_SAVE);
+		Storage()->CreateFolder("bestclient/backgrounds", IStorage::TYPE_SAVE);
 		char aBuf[IO_MAX_PATH_LENGTH];
-		Storage()->GetCompletePath(IStorage::TYPE_SAVE, "bestclient-light/backgrounds", aBuf, sizeof(aBuf));
+		Storage()->GetCompletePath(IStorage::TYPE_SAVE, "bestclient/backgrounds", aBuf, sizeof(aBuf));
 		Client()->ViewFile(aBuf);
 	}
 
@@ -1121,16 +1121,16 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 					return 0;
 				auto *pContext = static_cast<SCursorTrailFileListContext *>(pUser);
 				pContext->m_pLabels->emplace_back(pName);
-				pContext->m_pPaths->emplace_back(std::string("bestclient-light/CTrails/") + pName);
+				pContext->m_pPaths->emplace_back(std::string("bestclient/CTrails/") + pName);
 				return 0;
 			};
-			Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
-			Storage()->CreateFolder("bestclient-light/CTrails", IStorage::TYPE_SAVE);
+			Storage()->CreateFolder("bestclient", IStorage::TYPE_SAVE);
+			Storage()->CreateFolder("bestclient/CTrails", IStorage::TYPE_SAVE);
 			static std::vector<std::string> s_vCursorTrailFileLabels, s_vCursorTrailFilePaths;
 			s_vCursorTrailFileLabels.clear();
 			s_vCursorTrailFilePaths.clear();
 			SCursorTrailFileListContext CursorTrailFileContext{&s_vCursorTrailFileLabels, &s_vCursorTrailFilePaths};
-			Storage()->ListDirectory(IStorage::TYPE_SAVE, "bestclient-light/CTrails", CursorTrailFileListScan, &CursorTrailFileContext);
+			Storage()->ListDirectory(IStorage::TYPE_SAVE, "bestclient/CTrails", CursorTrailFileListScan, &CursorTrailFileContext);
 			std::vector<int> vSortedCursorTrailIndices(s_vCursorTrailFileLabels.size());
 			for(size_t i = 0; i < vSortedCursorTrailIndices.size(); ++i)
 				vSortedCursorTrailIndices[i] = (int)i;
@@ -1184,10 +1184,10 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 				GameClient()->m_CursorTrail.Reload();
 			if(Ui()->DoButton_FontIcon(&s_CursorTrailFolderButton, FontIcon::FOLDER, 0, &CursorTrailFolderButton, BUTTONFLAG_LEFT))
 			{
-				Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
-				Storage()->CreateFolder("bestclient-light/CTrails", IStorage::TYPE_SAVE);
+				Storage()->CreateFolder("bestclient", IStorage::TYPE_SAVE);
+				Storage()->CreateFolder("bestclient/CTrails", IStorage::TYPE_SAVE);
 				char aBuf[IO_MAX_PATH_LENGTH];
-				Storage()->GetCompletePath(IStorage::TYPE_SAVE, "bestclient-light/CTrails", aBuf, sizeof(aBuf));
+				Storage()->GetCompletePath(IStorage::TYPE_SAVE, "bestclient/CTrails", aBuf, sizeof(aBuf));
 				Client()->ViewFile(aBuf);
 			}
 		}

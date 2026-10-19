@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <utility>
 
-static constexpr const char *CONFIGS_DIR = "bestclient-light/configs";
+static constexpr const char *CONFIGS_DIR = "bestclient/configs";
 
 bool CBcConfigPresets::NameOk(const char *pName)
 {
@@ -102,7 +102,7 @@ bool CBcConfigPresets::WriteFile(const char *pName)
 	char aPath[IO_MAX_PATH_LENGTH];
 	if(!MakePath(aPath, sizeof(aPath), pName))
 		return false;
-	Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
+	Storage()->CreateFolder("bestclient", IStorage::TYPE_SAVE);
 	Storage()->CreateFolder(CONFIGS_DIR, IStorage::TYPE_SAVE);
 
 	char aTmpPath[IO_MAX_PATH_LENGTH];
@@ -129,7 +129,7 @@ bool CBcConfigPresets::WriteFile(const char *pName)
 
 void CBcConfigPresets::OnConsoleInit()
 {
-	Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
+	Storage()->CreateFolder("bestclient", IStorage::TYPE_SAVE);
 	Storage()->CreateFolder(CONFIGS_DIR, IStorage::TYPE_SAVE);
 	Refresh();
 }
@@ -197,7 +197,7 @@ int CBcConfigPresets::CountChanged() const
 void CBcConfigPresets::OpenFolder() const
 {
 	CBcConfigPresets *pSelf = const_cast<CBcConfigPresets *>(this);
-	pSelf->Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
+	pSelf->Storage()->CreateFolder("bestclient", IStorage::TYPE_SAVE);
 	pSelf->Storage()->CreateFolder(CONFIGS_DIR, IStorage::TYPE_SAVE);
 	char aPath[IO_MAX_PATH_LENGTH];
 	pSelf->Storage()->GetCompletePath(IStorage::TYPE_SAVE, CONFIGS_DIR, aPath, sizeof(aPath));

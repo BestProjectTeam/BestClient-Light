@@ -285,7 +285,7 @@ namespace
 
 void CHudEditor::OnConsoleInit()
 {
-	Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
+	Storage()->CreateFolder("bestclient", IStorage::TYPE_SAVE);
 	HudLayout::OnConsoleInit(Console(), ConfigManager());
 }
 
