@@ -249,10 +249,7 @@ void ApplyLeaf(CMenus *pMenus, int Leaf)
 	if(Target.m_SettingsPage == CMenus::SETTINGS_TCLIENT)
 		pMenus->SetTClientSettingsTab(Target.m_TClientTab);
 	if(Target.m_SettingsPage == CMenus::SETTINGS_BESTCLIENT_LIGHT)
-	{
 		pMenus->SetBestClientLightSettingsTab(Target.m_BestClientLightTab);
-		pMenus->CloseBestClientLightFun();
-	}
 }
 
 BCUiAnimations::STabSwitch AnimateVerticalLeafSwitch(int SelectedLeaf, float DeltaTime)

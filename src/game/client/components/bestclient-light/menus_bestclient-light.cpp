@@ -53,7 +53,6 @@ enum
 };
 
 static int s_CurBestClientLightTab = BESTCLIENT_LIGHT_TAB_VISUALS;
-static bool s_ShowBestClientLightFun = false;
 
 void CMenus::SetBestClientLightSettingsTab(int Tab)
 {
@@ -65,17 +64,6 @@ void CMenus::SetBestClientLightSettingsTab(int Tab)
 int CMenus::GetBestClientLightSettingsTab() const
 {
 	return s_CurBestClientLightTab;
-}
-
-void CMenus::OpenBestClientLightFun()
-{
-	s_CurBestClientLightTab = BESTCLIENT_LIGHT_TAB_INFO;
-	s_ShowBestClientLightFun = true;
-}
-
-void CMenus::CloseBestClientLightFun()
-{
-	s_ShowBestClientLightFun = false;
 }
 
 void CMenus::FinishWelcomeToStylePicker()
@@ -459,10 +447,7 @@ void CMenus::RenderSettingsBestClientLight(CUIRect MainView)
 			TabBar.VSplitLeft(TabWidth, &TabButton, &TabBar);
 			const int Corners = i == 0 ? IGraphics::CORNER_L : (i == VisibleCount - 1 ? IGraphics::CORNER_R : IGraphics::CORNER_NONE);
 			if(DoButton_MenuTab(apVisibleButtons[i], apVisibleNames[i], s_CurBestClientLightTab == aVisibleValues[i], &TabButton, Corners, nullptr, nullptr, nullptr, nullptr, 4.0f))
-			{
 				s_CurBestClientLightTab = aVisibleValues[i];
-				s_ShowBestClientLightFun = false;
-			}
 			if(aVisibleValues[i] == s_CurBestClientLightTab)
 				SelectedVisibleIndex = i;
 		}
@@ -477,12 +462,6 @@ void CMenus::RenderSettingsBestClientLight(CUIRect MainView)
 		}
 	}
 	// bestclient-light
-
-	if(s_ShowBestClientLightFun)
-	{
-		RenderSettingsBestClientLightFun(MainView);
-		return;
-	}
 
 	auto RenderTabContent = [&](int Tab, CUIRect Content) {
 		if(Tab == BESTCLIENT_LIGHT_TAB_VISUALS)
@@ -3550,13 +3529,6 @@ void CMenus::RenderSettingsBestClientLightInfo(CUIRect MainView)
 	const float HeadlineHeight = HeadlineFontSize;
 
 	CUIRect LeftView, RightView, Button, Label, LowerLeftView;
-	CUIRect GamesButton;
-	MainView.HSplitTop(24.0f, &GamesButton, &MainView);
-	static CButtonContainer s_GamesButton;
-	if(DoButton_MenuTab(&s_GamesButton, BcLocalize("Mini games"), 0, &GamesButton, IGraphics::CORNER_ALL, nullptr, nullptr, nullptr, nullptr, 4.0f))
-		OpenBestClientLightFun();
-	MainView.HSplitTop(10.0f, nullptr, &MainView);
-	MainView.HSplitTop(20.0f, nullptr, &MainView);
 
 	MainView.VSplitMid(&LeftView, &RightView, MarginBetweenViews);
 	LeftView.VSplitLeft(MarginSmall, nullptr, &LeftView);

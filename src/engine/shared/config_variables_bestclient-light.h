@@ -32,10 +32,6 @@ MACRO_CONFIG_INT(BclTranslateOutgoingStripPunctuation, bcl_translate_outgoing_st
 MACRO_CONFIG_INT(BclTranslateShiftClickTarget, bcl_translate_shift_click_target, 2, 0, 2, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Shift+click translate icon toggles: 0 others, 1 yours, 2 both")
 MACRO_CONFIG_INT(BclTranslateMessageButton, bcl_translate_message_button, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show a translate button to the right of other players' chat messages")
 
-// Casino
-MACRO_CONFIG_INT(BclCasinoBalance, bcl_casino_balance, 500, 0, 9999999, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Casino game balance in dollars")
-MACRO_CONFIG_INT(BclCasinoLastClaim, bcl_casino_last_claim, 0, 0, 2147483647, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Unix timestamp of last casino free claim")
-
 // Auto update
 MACRO_CONFIG_INT(BclAutoUpdate, bcl_auto_update, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Automatically download and apply updates on startup")
 

@@ -14,7 +14,7 @@
 BestClient is a customized DDNet client built around native BestClient systems instead of a thin reskin.
 The project adds its own rendering stack, input tools, social systems, editors, and UI modules while staying compatible with DDNet servers.
 
-The client currently ships with more than **300** `bc_*` config variables, five BestClient settings tabs, integrated voice chat, a live HUD editor, clans, collaborative multimapping, Fast Practice, and native mini-games opened from the Info tab.
+The client currently ships with more than **300** `bc_*` config variables, five BestClient settings tabs, integrated voice chat, a live HUD editor, clans, collaborative multimapping, and Fast Practice.
 
 ## Links
 
@@ -48,10 +48,9 @@ The client currently ships with more than **300** `bc_*` config variables, five 
   <img src="docs/screenshots/others_2.jpg" width="32%" alt="Others 2" />
 </p>
 
-#### Games · Info
+#### Info
 
 <p align="center">
-  <img src="docs/screenshots/fun.jpg" width="49%" alt="Fun" />
   <img src="docs/screenshots/info.jpg" width="49%" alt="Info" />
 </p>
 
@@ -146,18 +145,6 @@ Demo playback only (Demo Player): **Camera Drift**, **Dynamic FOV**.
 - **Multimapping** — collaborative map editing with room codes, live cursors, full editor sync, map transfer for late join
 - **Fast Practice** — local practice world with dummy ghost, practice chat commands, `fast_practice_toggle`
 - **Assets Editor** — mix assets, prepare exports, jump into the name plate workflow from a fullscreen editor
-
-### Games
-
-The mini-games are opened with the **Games** button in the **Info** tab.
-
-- Casino
-- Snake
-- Minesweeper
-- Chess
-- Memory
-- Pong
-- Brick Breaker
 
 ## Build
 

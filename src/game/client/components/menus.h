@@ -1010,15 +1010,10 @@ private:
 	void RenderSettingsBestClientLightGameplay(CUIRect MainView);
 	void RenderSettingsBestClientLightOthers(CUIRect MainView);
 	// bestclient-light
-	void RenderSettingsBestClientLightFun(CUIRect MainView);
-	// bestclient-light
 	void RenderSettingsBestClientLightInfo(CUIRect MainView); // bestclient-light
 	void RenderSettingsBestClientLightConfigPresets(CUIRect MainView); // bestclient-light
 	void RenderPopupStylePicker(CUIRect Box); // bestclient-light
 	void FinishWelcomeToStylePicker(); // bestclient-light
-	// bestclient-light
-	void OpenBestClientLightFun();
-	// bestclient-light
 	float m_MenuTabAlpha = 1.0f;
 	enum
 	{
@@ -1143,7 +1138,6 @@ private:
 	static CUi::EPopupMenuFunctionResult AssetsEditorPopupColorEditor(void *pContext, CUIRect View, bool Active);
 	// bestclient-light
 public:
-	void CloseBestClientLightFun();
 	void SetBestClientLightSettingsTab(int Tab);
 	int GetBestClientLightSettingsTab() const;
 	void SetTClientSettingsTab(int Tab);
