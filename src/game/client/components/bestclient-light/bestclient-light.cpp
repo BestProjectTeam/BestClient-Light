@@ -19,10 +19,8 @@
 #include <generated/client_data.h>
 #include <generated/protocol.h>
 
-#include <game/client/components/bestclient-light/fx/own_tee.h>
 #include <game/client/components/bestclient-light/ui_theme/style.h>
 #include <game/client/components/mapimages.h>
-#include <game/client/components/sounds.h>
 #include <game/client/components/menus.h>
 #include <game/client/components/skins.h>
 #include <game/client/gameclient.h>
@@ -109,29 +107,6 @@ bool BestClientLightShouldMuteOthersHammerWorldSound(int SoundId, bool MuteEnabl
 bool BestClientLightShouldMuteOthersAirJumpSound(bool MuteEnabled, bool IsOtherPlayer)
 {
 	return MuteEnabled && IsOtherPlayer;
-}
-
-void BestClientLightPlayAirJump(CGameClient *pGameClient, int ClientId, vec2 Pos, float Alpha, float Volume)
-{
-	const bool OtherPlayer = !BcIsOwnTee(pGameClient, ClientId);
-	if(g_Config.m_BclAirJump && g_Config.m_BclAirJumpHideParticles && !OtherPlayer)
-	{
-		if(g_Config.m_SndGame && !BestClientLightShouldMuteOthersAirJumpSound(g_Config.m_BclMuteOthersAirJump, OtherPlayer))
-			pGameClient->m_Sounds.PlayAt(CSounds::CHN_WORLD, SOUND_PLAYER_AIRJUMP, Volume, Pos);
-		return;
-	}
-	pGameClient->m_Effects.AirJump(Pos, Alpha, Volume, OtherPlayer);
-}
-
-void BestClientLightPlayHammerHit(CGameClient *pGameClient, vec2 Pos, float Alpha, float Volume, int ClientId)
-{
-	if(g_Config.m_BclHammerSlash && g_Config.m_BclHammerHideParticles && BcIsOwnTee(pGameClient, ClientId))
-	{
-		if(g_Config.m_SndGame)
-			pGameClient->m_Sounds.PlayAt(CSounds::CHN_WORLD, SOUND_HAMMER_HIT, Volume, Pos);
-		return;
-	}
-	pGameClient->m_Effects.HammerHit(Pos, Alpha, Volume, !BcIsOwnTee(pGameClient, ClientId));
 }
 
 bool BestClientLightIsLocalHammerHitEvent(vec2 HitPos, bool LocalJustFired, vec2 LocalPos, float Radius)

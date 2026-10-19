@@ -2314,7 +2314,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 
 	RightColumn.HSplitTop(MarginBetweenViews, nullptr, &RightColumn);
 
-	RenderSettingsBestClientLightFx(RightColumn, true);
+	RenderSettingsBestClientLightFx(RightColumn);
 
 	const bool MotionBlurExpanded = g_Config.m_BclMotionBlur != 0;
 	const float MotionBlurExpandedTargetHeight = MarginSmall + LineSize;

@@ -269,19 +269,6 @@ public:
 	// bestclient-light
 	CWeaponVfx m_WeaponVfx;
 	CFgfWeather m_FgfWeather;
-	CLightning m_Lightning;
-	CHookWind m_HookWind;
-	CHookBlackHole m_HookBlackHole;
-	CHookMagic m_HookMagic;
-	CHookRainbow m_HookRainbow;
-	CHookLightning m_HookLightning;
-	CHookTentacle m_HookTentacle;
-	CHookFire m_HookFire;
-	CHookTroll m_HookTroll;
-	CHookRope m_HookRope;
-	CFgfActions m_FgfActions;
-	CFgfKi m_FgfKi;
-	CFgfIceWard m_FgfIceWard;
 	// bestclient-light
 	CHudEditor m_HudEditor; // bestclient-light
 	CChatBubbles m_ChatBubbles; // bestclient-light

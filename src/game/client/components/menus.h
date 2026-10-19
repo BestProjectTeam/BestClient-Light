@@ -648,7 +648,7 @@ protected:
 	// bestclient-light
 	void DoRocketPreview(const CUIRect *pRect);
 	void RenderSettingsBestClientLightWeaponGlow(CUIRect &Column);
-	void RenderSettingsBestClientLightFx(CUIRect &Column, bool HookColumn);
+	void RenderSettingsBestClientLightFx(CUIRect &Column);
 	// bestclient-light
 
 	// found in menus_settings_controls.cpp

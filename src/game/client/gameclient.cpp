@@ -4,6 +4,7 @@
 #include "gameclient.h"
 
 #include "components/background.h"
+#include "components/bestclient-light/fx/own_tee.h" // bestclient-light
 #include "components/bestclient-light/inputs.h" // bestclient-light
 #include "components/binds.h"
 #include "components/broadcast.h"
@@ -167,19 +168,6 @@ void CGameClient::OnConsoleInit()
 					      &m_Pet, // TClient
 					      // bestclient-light
 					      &m_FgfWeather,
-					      &m_Lightning,
-					      &m_HookWind,
-					      &m_HookBlackHole,
-					      &m_HookMagic,
-					      &m_HookRainbow,
-					      &m_HookLightning,
-					      &m_HookTentacle,
-					      &m_HookFire,
-					      &m_HookTroll,
-					      &m_HookRope,
-					      &m_FgfActions,
-					      &m_FgfKi,
-					      &m_FgfIceWard,
 					      &m_WeaponVfx,
 					      // bestclient-light
 					      &m_Particles.m_RenderExplosions,
@@ -1771,7 +1759,7 @@ void CGameClient::ProcessEvents()
 			if(!m_PredictedWorld.CheckPredictedEventHandled(CGameWorld::CPredictedEvent(Item.m_Type, HammerHitPos, -1, Client()->GameTick(g_Config.m_ClDummy))))
 			{
 				// bestclient-light
-				BestClientLightPlayHammerHit(this, HammerHitPos, Alpha, Volume, IsLocalHammerHit(HammerHitPos) ? m_Snap.m_LocalClientId : -1);
+				m_Effects.HammerHit(HammerHitPos, Alpha, Volume, !BcIsOwnTee(this, IsLocalHammerHit(HammerHitPos) ? m_Snap.m_LocalClientId : -1));
 				// bestclient-light
 			}
 		}
@@ -2804,7 +2792,7 @@ void CGameClient::OnNewSnapshot(bool DummySwapped)
 				if(!Grounded)
 				{
 					// bestclient-light
-					BestClientLightPlayAirJump(this, i, Pos, Alpha, Volume);
+					m_Effects.AirJump(Pos, Alpha, Volume, !BcIsOwnTee(this, i));
 					// bestclient-light
 				}
 			}
@@ -3274,7 +3262,7 @@ void CGameClient::OnPredict()
 				if(Events & COREEVENT_AIR_JUMP)
 				{
 					// bestclient-light
-					BestClientLightPlayAirJump(this, m_Snap.m_LocalClientId, Pos, 1.0f, 1.0f);
+					m_Effects.AirJump(Pos, 1.0f, 1.0f, !BcIsOwnTee(this, m_Snap.m_LocalClientId));
 					// bestclient-light
 				}
 			if(g_Config.m_SndGame && !m_SuppressEvents)
@@ -3302,7 +3290,7 @@ void CGameClient::OnPredict()
 				if(Events & COREEVENT_AIR_JUMP)
 				{
 					// bestclient-light
-					BestClientLightPlayAirJump(this, pDummyChar->GetCid(), Pos, 1.0f, 1.0f);
+					m_Effects.AirJump(Pos, 1.0f, 1.0f, !BcIsOwnTee(this, pDummyChar->GetCid()));
 					// bestclient-light
 				}
 		}
@@ -4882,7 +4870,7 @@ void CGameClient::HandlePredictedEvents(const int Tick)
 			else if(EventsIterator->m_EventId == NETEVENTTYPE_HAMMERHIT)
 			{
 				// bestclient-light
-				BestClientLightPlayHammerHit(this, EventsIterator->m_Pos, Alpha, Volume, EventsIterator->m_Id);
+				m_Effects.HammerHit(EventsIterator->m_Pos, Alpha, Volume, !BcIsOwnTee(this, EventsIterator->m_Id));
 				// bestclient-light
 			}
 			else if(EventsIterator->m_EventId == NETEVENTTYPE_DAMAGEIND)
@@ -6018,32 +6006,6 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "Pet";
 	if(pComp == &m_FgfWeather)
 		return "FgfWeather";
-	if(pComp == &m_Lightning)
-		return "Lightning";
-	if(pComp == &m_HookWind)
-		return "HookWind";
-	if(pComp == &m_HookBlackHole)
-		return "HookBlackHole";
-	if(pComp == &m_HookMagic)
-		return "HookMagic";
-	if(pComp == &m_HookRainbow)
-		return "HookRainbow";
-	if(pComp == &m_HookLightning)
-		return "HookLightning";
-	if(pComp == &m_HookTentacle)
-		return "HookTentacle";
-	if(pComp == &m_HookFire)
-		return "HookFire";
-	if(pComp == &m_HookTroll)
-		return "HookTroll";
-	if(pComp == &m_HookRope)
-		return "HookRope";
-	if(pComp == &m_FgfActions)
-		return "FgfActions";
-	if(pComp == &m_FgfKi)
-		return "FgfKi";
-	if(pComp == &m_FgfIceWard)
-		return "FgfIceWard";
 	if(pComp == &m_WeaponVfx)
 		return "WeaponVfx";
 	if(pComp == &m_Particles.m_RenderExplosions)

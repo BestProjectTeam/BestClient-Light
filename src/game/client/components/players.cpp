@@ -596,14 +596,6 @@ void CPlayers::RenderHook(
 		return;
 	// bestclient-light
 
-	// bestclient-light
-	if(GameClient()->m_HookRope.RenderRope(ClientId, Pos, HookPos, Player.m_HookState, Alpha))
-	{
-		RenderHand(&RenderInfo, Position, normalize(HookPos - Pos), -pi / 2, vec2(20, 0) * (RenderInfo.m_Size / 64.0f), Alpha); // bestclient-light
-		return;
-	}
-	// bestclient-light
-
 	float d = distance(Pos, HookPos);
 	vec2 Dir = normalize(Pos - HookPos);
 
@@ -640,10 +632,6 @@ void CPlayers::RenderHook(
 
 	if(g_Config.m_TcRainbowHook && !DontOthers)
 		Graphics()->SetColor(GameClient()->m_Rainbow.m_RainbowColor.WithAlpha(Alpha));
-
-	// bestclient-light
-	GameClient()->m_HookRope.RenderOverlay(ClientId, Pos, HookPos, Player.m_HookState, Alpha);
-	// bestclient-light
 
 	RenderHand(&RenderInfo, Position, normalize(HookPos - Pos), -pi / 2, vec2(20, 0) * (RenderInfo.m_Size / 64.0f), Alpha); // bestclient-light
 }

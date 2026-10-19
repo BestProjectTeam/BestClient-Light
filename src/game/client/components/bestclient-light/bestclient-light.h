@@ -27,10 +27,6 @@ bool BestClientLightShouldMuteOthersHammerWorldSound(int SoundId, bool MuteEnabl
 bool BestClientLightShouldMuteOthersAirJumpSound(bool MuteEnabled, bool IsOtherPlayer);
 bool BestClientLightIsLocalHammerHitEvent(vec2 HitPos, bool LocalJustFired, vec2 LocalPos, float Radius = BESTCLIENT_LIGHT_LOCAL_HAMMER_HIT_RADIUS);
 
-class CGameClient;
-void BestClientLightPlayAirJump(CGameClient *pGameClient, int ClientId, vec2 Pos, float Alpha, float Volume);
-void BestClientLightPlayHammerHit(CGameClient *pGameClient, vec2 Pos, float Alpha, float Volume, int ClientId);
-
 class CBestClientLight : public CComponent
 {
 	CMenuMediaBackground m_MenuMediaBackground;

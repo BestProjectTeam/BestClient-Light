@@ -10,6 +10,7 @@
 
 #include <game/client/animstate.h>
 #include <game/client/components/bestclient-light/bestclient-light.h>
+#include <game/client/components/bestclient-light/fx/own_tee.h>
 #include <game/client/components/bestclient-light/inputs.h>
 #include <game/client/components/items.h>
 #include <game/client/gameclient.h>
@@ -1203,7 +1204,7 @@ void CFastPractice::MaybePlayHammerHitEffect(CCharacter *pChar)
 		if(length(pTarget->m_Pos - ProjStartPos) > 0.0f)
 			HitPos = pTarget->m_Pos - normalize(pTarget->m_Pos - ProjStartPos) * pChar->GetProximityRadius() * 0.5f;
 
-		BestClientLightPlayHammerHit(GameClient(), HitPos, 1.0f, 1.0f, pChar->GetCid());
+		GameClient()->m_Effects.HammerHit(HitPos, 1.0f, 1.0f, !BcIsOwnTee(GameClient(), pChar->GetCid()));
 		break;
 	}
 }
@@ -1519,7 +1520,7 @@ void CFastPractice::PlayCoreEvents(CCharacter *pChar, int Tick)
 	const vec2 Pos = pChar->Core()->m_Pos;
 	const int Events = pChar->Core()->m_TriggeredEvents;
 	if(!GameClient()->m_SuppressEvents && (Events & COREEVENT_AIR_JUMP))
-		BestClientLightPlayAirJump(GameClient(), ClientId, Pos, 1.0f, 1.0f);
+		GameClient()->m_Effects.AirJump(Pos, 1.0f, 1.0f, !BcIsOwnTee(GameClient(), ClientId));
 	if(g_Config.m_SndGame && !GameClient()->m_SuppressEvents)
 	{
 		if(Events & COREEVENT_GROUND_JUMP)

@@ -91,6 +91,11 @@ elseif(BESTCLIENT_LIGHT_VERSION_LINE MATCHES "([0-9]+)\\.([0-9]+)")
   set(BESTCLIENT_LIGHT_VERSION_MINOR ${CMAKE_MATCH_2})
   set(BESTCLIENT_LIGHT_VERSION_PATCH "0")
   set(BESTCLIENT_LIGHT_PACKAGE_VERSION "${BESTCLIENT_LIGHT_VERSION_MAJOR}.${BESTCLIENT_LIGHT_VERSION_MINOR}")
+elseif(BESTCLIENT_LIGHT_VERSION_LINE MATCHES "([0-9]+)")
+  set(BESTCLIENT_LIGHT_VERSION_MAJOR ${CMAKE_MATCH_1})
+  set(BESTCLIENT_LIGHT_VERSION_MINOR "0")
+  set(BESTCLIENT_LIGHT_VERSION_PATCH "0")
+  set(BESTCLIENT_LIGHT_PACKAGE_VERSION "${BESTCLIENT_LIGHT_VERSION_MAJOR}")
 else()
   message(FATAL_ERROR "Couldn't parse BestClient Light version from src/game/client/components/bestclient-light/version.h")
 endif()
@@ -1492,7 +1497,6 @@ set(EXPECTED_DATA
   bestclient-light/gui_logo.png
   bestclient-light/languages/russian.txt
   bestclient-light/languages/simplified_chinese.txt
-  bestclient-light/trollface.png
   blob.png
   censorlist.txt
   communityicons/none.png
@@ -2985,36 +2989,8 @@ if(CLIENT)
     components/bestclient-light/fx/own_tee.h
     components/bestclient-light/fx/fgf_glow.cpp
     components/bestclient-light/fx/fgf_glow.h
-    components/bestclient-light/fx/fgf_actions.cpp
-    components/bestclient-light/fx/fgf_actions.h
-    components/bestclient-light/fx/fgf_iceward.cpp
-    components/bestclient-light/fx/fgf_iceward.h
-    components/bestclient-light/fx/fgf_ki.cpp
-    components/bestclient-light/fx/fgf_ki.h
     components/bestclient-light/fx/fgf_weather.cpp
     components/bestclient-light/fx/fgf_weather.h
-    components/bestclient-light/fx/lightning.cpp
-    components/bestclient-light/fx/lightning.h
-    components/bestclient-light/fx/hookgrip.cpp
-    components/bestclient-light/fx/hookgrip.h
-    components/bestclient-light/fx/hookrope.cpp
-    components/bestclient-light/fx/hookrope.h
-    components/bestclient-light/fx/hookwind.cpp
-    components/bestclient-light/fx/hookwind.h
-    components/bestclient-light/fx/hookblackhole.cpp
-    components/bestclient-light/fx/hookblackhole.h
-    components/bestclient-light/fx/hookmagic.cpp
-    components/bestclient-light/fx/hookmagic.h
-    components/bestclient-light/fx/hookfire.cpp
-    components/bestclient-light/fx/hookfire.h
-    components/bestclient-light/fx/hookrainbow.cpp
-    components/bestclient-light/fx/hookrainbow.h
-    components/bestclient-light/fx/hooklightning.cpp
-    components/bestclient-light/fx/hooklightning.h
-    components/bestclient-light/fx/hooktentacle.cpp
-    components/bestclient-light/fx/hooktentacle.h
-    components/bestclient-light/fx/hooktroll.cpp
-    components/bestclient-light/fx/hooktroll.h
     components/bestclient-light/show_points.cpp
     components/bestclient-light/show_points.h
     components/bestclient-light/clientindicator/browser_cache.cpp
