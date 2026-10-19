@@ -357,7 +357,6 @@ void CMenus::RenderSettingsNavNewStyle(CUIRect &TabBar)
 		s_PhasesInit = true;
 	}
 
-	const bool ExploreLock = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
 	const float Dt = Client()->RenderFrameTime();
 	const float GroupH = 26.0f;
 	const float LeafH = 22.0f;
@@ -432,7 +431,7 @@ void CMenus::RenderSettingsNavNewStyle(CUIRect &TabBar)
 		const ColorRGBA *pGroupInactive = NavOnLeft ? &GroupInactive : nullptr;
 		const ColorRGBA *pGroupActive = NavOnLeft ? &GroupActive : nullptr;
 		const ColorRGBA *pGroupHover = NavOnLeft ? &GroupHover : nullptr;
-		if(DoButton_MenuTab(&s_aGroupButtons[Group], apGroupNames[Group], Expanded || CurGroup == Group, &GroupButton, NavCorners, nullptr, pGroupInactive, pGroupActive, pGroupHover, 10.0f, nullptr, true, IGraphics::CORNER_NONE, -1.0f, ExploreLock ? 0.35f : 1.0f) && !ExploreLock)
+		if(DoButton_MenuTab(&s_aGroupButtons[Group], apGroupNames[Group], Expanded || CurGroup == Group, &GroupButton, NavCorners, nullptr, pGroupInactive, pGroupActive, pGroupHover, 10.0f))
 		{
 			s_aExpandedGroup[Group] = !s_aExpandedGroup[Group];
 			if(s_aExpandedGroup[Group])
@@ -483,14 +482,13 @@ void CMenus::RenderSettingsNavNewStyle(CUIRect &TabBar)
 				LeafButton.VSplitLeft(LeafRightInset, nullptr, &LeafButton);
 			else
 				LeafButton.VSplitRight(LeafRightInset, &LeafButton, nullptr);
-			const bool AssetsLeaf = Leaf == SETTINGS_NAV_LEAF_ASSETS;
 			const ColorRGBA LeafInactive = SettingsNavLeafInactiveColor();
 			const ColorRGBA LeafActive = SettingsNavLeafActiveColor();
 			const ColorRGBA LeafHover = SettingsNavLeafHoverColor();
 			const ColorRGBA *pLeafInactive = NavOnLeft ? &LeafInactive : nullptr;
 			const ColorRGBA *pLeafActive = NavOnLeft ? &LeafActive : nullptr;
 			const ColorRGBA *pLeafHover = NavOnLeft ? &LeafHover : nullptr;
-			if(DoButton_MenuTab(&s_aLeafButtons[Leaf], LeafName(Leaf), CurLeaf == Leaf, &LeafButton, NavCorners, nullptr, pLeafInactive, pLeafActive, pLeafHover, 10.0f, nullptr, true, IGraphics::CORNER_NONE, -1.0f, ExploreLock && !AssetsLeaf ? 0.35f : 1.0f) && (!ExploreLock || AssetsLeaf))
+			if(DoButton_MenuTab(&s_aLeafButtons[Leaf], LeafName(Leaf), CurLeaf == Leaf, &LeafButton, NavCorners, nullptr, pLeafInactive, pLeafActive, pLeafHover, 10.0f))
 			{
 				s_aExpandedGroup[Group] = true;
 				SaveSettingsNavExpanded(s_aExpandedGroup);

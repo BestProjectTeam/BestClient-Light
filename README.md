@@ -144,7 +144,6 @@ Demo playback only (Demo Player): **Camera Drift**, **Dynamic FOV**.
 - **Clans** — register/login, create or join clans, roles, applications, announcements, online status, in-game clan tag sync
 - **Multimapping** — collaborative map editing with room codes, live cursors, full editor sync, map transfer for late join
 - **Fast Practice** — local practice world with dummy ghost, practice chat commands, `fast_practice_toggle`
-- **Assets Editor** — mix assets, prepare exports, jump into the name plate workflow from a fullscreen editor
 
 ## Build
 

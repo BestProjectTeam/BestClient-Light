@@ -10,7 +10,6 @@
 #include <engine/shared/config.h>
 // bestclient-light
 #include <engine/updater.h>
-#include <SDL.h>
 // bestclient-light
 
 #include <game/client/components/menu_background.h>
@@ -83,18 +82,6 @@ CUi::EPopupMenuFunctionResult CMenus::PopupSettingsCountrySelection(void *pConte
 
 void CMenus::RenderSettings(CUIRect MainView)
 {
-	// bestclient-light
-	if(m_AssetsEditorState.m_Open)
-		SDL_ShowCursor(SDL_ENABLE);
-	if(m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0 && !Ui()->IsPopupOpen() && Ui()->ConsumeHotkey(CUi::HOTKEY_ESCAPE))
-		m_AssetsEditorState.m_ExploreSide = -1;
-	if(m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide < 0 && g_Config.m_UiSettingsPage == SETTINGS_ASSETS)
-	{
-		RenderAssetsEditorScreen(*Ui()->Screen());
-		return;
-	}
-	// bestclient-light
-
 	// render background
 	CUIRect Button, TabBar, RestartBar;
 	// bestclient-light
@@ -121,12 +108,8 @@ void CMenus::RenderSettings(CUIRect MainView)
 	TabBar.HSplitTop(50.0f, &Button, &TabBar);
 	// bestclient-light
 	Button.Draw(ms_ColorTabbarActive, NavOnLeft ? IGraphics::CORNER_BL : IGraphics::CORNER_BR, 10.0f);
-	const bool ExploreLockCorner = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
-	if(!ExploreLockCorner)
-	{
-		BestClientLightSettingsSearch::Update(Client()->RenderFrameTime());
-		BestClientLightSettingsSearch::RenderCornerButton(this, Ui(), GameClient(), Input(), Button);
-	}
+	BestClientLightSettingsSearch::Update(Client()->RenderFrameTime());
+	BestClientLightSettingsSearch::RenderCornerButton(this, Ui(), GameClient(), Input(), Button);
 	// bestclient-light
 
 	// bestclient-light
@@ -162,11 +145,7 @@ void CMenus::RenderSettings(CUIRect MainView)
 				continue; // bestclient-light
 			TabBar.HSplitTop(10.0f, nullptr, &TabBar);
 			TabBar.HSplitTop(26.0f, &Button, &TabBar);
-			// bestclient-light
-			const bool ExploreLock = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
-			const bool AssetsTab = i == SETTINGS_ASSETS;
-			if(DoButton_MenuTab(&s_aTabButtons[i], apTabs[i], g_Config.m_UiSettingsPage == i, &Button, TabCorners, &m_aAnimatorsSettingsTab[i], nullptr, nullptr, nullptr, 10.0f, nullptr, true, IGraphics::CORNER_NONE, -1.0f, ExploreLock && !AssetsTab ? 0.35f : 1.0f) && (!ExploreLock || AssetsTab))
-			// bestclient-light
+			if(DoButton_MenuTab(&s_aTabButtons[i], apTabs[i], g_Config.m_UiSettingsPage == i, &Button, TabCorners, &m_aAnimatorsSettingsTab[i], nullptr, nullptr, nullptr, 10.0f))
 				g_Config.m_UiSettingsPage = i;
 		}
 		// bestclient-light
@@ -174,8 +153,6 @@ void CMenus::RenderSettings(CUIRect MainView)
 	// bestclient-light
 
 	// bestclient-light
-	if(m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0 && g_Config.m_UiSettingsPage != SETTINGS_ASSETS)
-		m_AssetsEditorState.m_ExploreSide = -1;
 	if(BestClientLightUiTheme::IsNewTabOption())
 		RenderSettingsContentNewStyle(MainView);
 	else

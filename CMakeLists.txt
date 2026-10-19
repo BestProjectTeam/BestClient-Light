@@ -2903,7 +2903,6 @@ if(CLIENT)
     components/bestclient-light/menu_media_background.h
     components/bestclient-light/server_map_preview.cpp
     components/bestclient-light/server_map_preview.h
-    components/bestclient-light/menus_assets_editor.cpp
     components/bestclient-light/menus_bestclient-light.cpp
     components/bestclient-light/motion_blur.h
     components/bestclient-light/motion_blur_opengl.h

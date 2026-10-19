@@ -1067,13 +1067,7 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 	};
 
 	MainView.HSplitTop(20.0f, &TabBar, &MainView);
-	// bestclient-light
-	const bool EditorExplore = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
-	const int VisibleAssetTabs = EditorExplore ? ASSETS_TAB_AUDIO : NUMBER_OF_ASSETS_TABS;
-	if(EditorExplore && s_CurCustomTab >= VisibleAssetTabs)
-		s_CurCustomTab = ASSETS_TAB_ENTITIES;
-	const float TabWidth = TabBar.w / (float)VisibleAssetTabs;
-	// bestclient-light
+	const float TabWidth = TabBar.w / (float)NUMBER_OF_ASSETS_TABS;
 	static CButtonContainer s_aPageTabs[NUMBER_OF_ASSETS_TABS] = {};
 	const char *apTabNames[NUMBER_OF_ASSETS_TABS] = {
 		Localize("Entities"),
@@ -1086,18 +1080,16 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 		Localize("Arrow"),
 		Localize("Audio")};
 
-	// bestclient-light
-	for(int Tab = ASSETS_TAB_ENTITIES; Tab < VisibleAssetTabs; ++Tab)
+	for(int Tab = ASSETS_TAB_ENTITIES; Tab < NUMBER_OF_ASSETS_TABS; ++Tab)
 	{
 		CUIRect Button;
 		TabBar.VSplitLeft(TabWidth, &Button, &TabBar);
-		const int Corners = Tab == ASSETS_TAB_ENTITIES ? IGraphics::CORNER_L : (Tab == VisibleAssetTabs - 1 ? IGraphics::CORNER_R : IGraphics::CORNER_NONE);
+		const int Corners = Tab == ASSETS_TAB_ENTITIES ? IGraphics::CORNER_L : (Tab == NUMBER_OF_ASSETS_TABS - 1 ? IGraphics::CORNER_R : IGraphics::CORNER_NONE);
 		if(DoButton_MenuTab(&s_aPageTabs[Tab], apTabNames[Tab], s_CurCustomTab == Tab, &Button, Corners, nullptr, nullptr, nullptr, nullptr, 4.0f))
 		{
 			s_CurCustomTab = Tab;
 		}
 	}
-	// bestclient-light
 
 	auto LoadStartTime = time_get_nanoseconds();
 	SMenuAssetScanUser User;
@@ -1521,8 +1513,6 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 
 	const int NewSelected = s_ListBox.DoEnd();
 	// bestclient-light
-	const bool EditorPick = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
-	const bool EditorPickClicked = EditorPick && s_ListBox.WasItemSelected() && NewSelected >= 0 && !SkipSelectionBecauseDelete;
 	auto ApplyAssetConfig = [this](const SCustomItem *pSelectedItem) {
 		if(pSelectedItem == nullptr || pSelectedItem->m_aName[0] == '\0')
 			return;
@@ -1573,21 +1563,11 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 		}
 	};
 	// bestclient-light
-	if((!EditorPick && OldSelected != NewSelected && NewSelected >= 0 && !SkipSelectionBecauseDelete) || EditorPickClicked)
+	if(OldSelected != NewSelected && NewSelected >= 0 && !SkipSelectionBecauseDelete)
 	{
 		const SCustomItem *pSelectedItem = GetCustomItem(s_CurCustomTab, NewSelected);
 		if(pSelectedItem != nullptr && pSelectedItem->m_aName[0] != '\0')
-		{
-			// bestclient-light
-			if(m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0)
-			{
-				if(s_CurCustomTab != ASSETS_TAB_AUDIO)
-					AssetsEditorAssignPickedAsset(m_AssetsEditorState.m_ExploreSide, s_CurCustomTab, pSelectedItem->m_aName);
-			}
-			else
-				ApplyAssetConfig(pSelectedItem);
-			// bestclient-light
-		}
+			ApplyAssetConfig(pSelectedItem);
 	}
 
 	// Quick search
@@ -1613,43 +1593,30 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 			g_Config.m_BclBetterPreview ^= 1;
 		GameClient()->m_Tooltips.DoToolTip(&s_BetterPreviewToggleId, &ToggleRect, Localize("Toggle between composed preview and raw texture"));
 	}
-	if(!EditorExplore)
+	CUIRect RandomAssetButton;
+	DirectoryButton.VSplitLeft(5.0f, nullptr, &DirectoryButton);
+	DirectoryButton.VSplitLeft(25.0f, &RandomAssetButton, &DirectoryButton);
+	static CButtonContainer s_RandomAssetButton;
+	static const char *s_apDice[] = {FontIcon::DICE_ONE, FontIcon::DICE_TWO, FontIcon::DICE_THREE, FontIcon::DICE_FOUR, FontIcon::DICE_FIVE, FontIcon::DICE_SIX};
+	static int s_CurrentDie = rand() % std::size(s_apDice);
+	if(DoButton_Menu(&s_RandomAssetButton, s_apDice[s_CurrentDie], 0, &RandomAssetButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 5.0f, -0.2f))
 	{
-		CUIRect RandomAssetButton;
-		DirectoryButton.VSplitLeft(5.0f, nullptr, &DirectoryButton);
-		DirectoryButton.VSplitLeft(25.0f, &RandomAssetButton, &DirectoryButton);
-		static CButtonContainer s_RandomAssetButton;
-		static const char *s_apDice[] = {FontIcon::DICE_ONE, FontIcon::DICE_TWO, FontIcon::DICE_THREE, FontIcon::DICE_FOUR, FontIcon::DICE_FIVE, FontIcon::DICE_SIX};
-		static int s_CurrentDie = rand() % std::size(s_apDice);
-		if(DoButton_Menu(&s_RandomAssetButton, s_apDice[s_CurrentDie], 0, &RandomAssetButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 5.0f, -0.2f))
+		if(SearchListSize > 0)
 		{
-			if(SearchListSize > 0)
-			{
-				ApplyAssetConfig(GetCustomItem(s_CurCustomTab, rand() % SearchListSize));
-				s_CurrentDie = rand() % std::size(s_apDice);
-			}
+			ApplyAssetConfig(GetCustomItem(s_CurCustomTab, rand() % SearchListSize));
+			s_CurrentDie = rand() % std::size(s_apDice);
 		}
-		GameClient()->m_Tooltips.DoToolTip(&s_RandomAssetButton, &RandomAssetButton, Localize("Select a random asset"));
 	}
+	GameClient()->m_Tooltips.DoToolTip(&s_RandomAssetButton, &RandomAssetButton, Localize("Select a random asset"));
 	{
-		CUIRect RightCluster, AssetsEditorButton;
-		constexpr float EditorW = 25.0f;
+		CUIRect RightCluster;
 		constexpr float DirectoryW = 175.0f;
 		constexpr float ReloadW = 25.0f;
 		constexpr float Gap = 10.0f;
-		DirectoryButton.VSplitRight(EditorW + Gap + DirectoryW + Gap + ReloadW, nullptr, &RightCluster);
+		DirectoryButton.VSplitRight(DirectoryW + Gap + ReloadW, nullptr, &RightCluster);
 		RightCluster.VSplitRight(ReloadW, &RightCluster, &ReloadButton);
 		RightCluster.VSplitRight(Gap, &RightCluster, nullptr);
-		RightCluster.VSplitRight(DirectoryW, &RightCluster, &DirectoryButton);
-		RightCluster.VSplitRight(Gap, &RightCluster, nullptr);
-		AssetsEditorButton = RightCluster;
-		static CButtonContainer s_AssetsEditorButton;
-		if(DoButton_Menu(&s_AssetsEditorButton, FontIcon::PEN_TO_SQUARE, 0, &AssetsEditorButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 5.0f, -0.2f))
-		{
-			m_AssetsEditorState.m_Open = true;
-			m_AssetsEditorState.m_ExploreSide = -1;
-		}
-		GameClient()->m_Tooltips.DoToolTip(&s_AssetsEditorButton, &AssetsEditorButton, Localize("Assets editor"));
+		DirectoryButton = RightCluster;
 	}
 	TextRender()->SetRenderFlags(0);
 	TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);

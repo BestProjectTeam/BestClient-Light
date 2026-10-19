@@ -206,7 +206,7 @@ int CMenus::DoButton_MenuEx(CButtonContainer *pButtonContainer, const char *pTex
 	return Ui()->DoButtonLogic(pButtonContainer, Checked, pRect, Flags);
 }
 
-int CMenus::DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pText, int Checked, const CUIRect *pRect, int Corners, SUIAnimator *pAnimator, const ColorRGBA *pDefaultColor, const ColorRGBA *pActiveColor, const ColorRGBA *pHoverColor, float EdgeRounding, const CCommunityIcon *pCommunityIcon, bool AnimateChecked, int HoverCorners, float HoverRounding, float AlphaMul)
+int CMenus::DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pText, int Checked, const CUIRect *pRect, int Corners, SUIAnimator *pAnimator, const ColorRGBA *pDefaultColor, const ColorRGBA *pActiveColor, const ColorRGBA *pHoverColor, float EdgeRounding, const CCommunityIcon *pCommunityIcon, bool AnimateChecked, int HoverCorners, float HoverRounding)
 {
 	const bool MouseInside = Ui()->HotItem() == pButtonContainer;
 	CUIRect Rect = *pRect;
@@ -240,19 +240,13 @@ int CMenus::DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pTe
 	const int DrawCorners = Corners | (HoverShapeActive ? HoverCorners : IGraphics::CORNER_NONE);
 	const float DrawRounding = HoverShapeActive && HoverRounding >= 0.0f ? HoverRounding : EdgeRounding;
 
-	// bestclient-light
-	const float ShownAlpha = AlphaMul * m_MenuTabAlpha;
-	auto FadeTab = [&](ColorRGBA Color) {
-		Color.a *= ShownAlpha;
-		return Color;
-	};
 	if(Checked)
 	{
 		ColorRGBA ColorMenuTab = ms_ColorTabbarActive;
 		if(pActiveColor)
 			ColorMenuTab = *pActiveColor;
 
-		Rect.Draw(FadeTab(ColorMenuTab), DrawCorners, DrawRounding);
+		Rect.Draw(ColorMenuTab, DrawCorners, DrawRounding);
 	}
 	else
 	{
@@ -262,7 +256,7 @@ int CMenus::DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pTe
 			if(pHoverColor)
 				HoverColorMenuTab = *pHoverColor;
 
-			Rect.Draw(FadeTab(HoverColorMenuTab), DrawCorners, DrawRounding);
+			Rect.Draw(HoverColorMenuTab, DrawCorners, DrawRounding);
 		}
 		else
 		{
@@ -270,10 +264,9 @@ int CMenus::DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pTe
 			if(pDefaultColor)
 				ColorMenuTab = *pDefaultColor;
 
-			Rect.Draw(FadeTab(ColorMenuTab), DrawCorners, DrawRounding);
+			Rect.Draw(ColorMenuTab, DrawCorners, DrawRounding);
 		}
 	}
-	// bestclient-light
 
 	if(pAnimator != nullptr)
 	{
@@ -294,25 +287,15 @@ int CMenus::DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pTe
 	{
 		CUIRect CommunityIcon;
 		Rect.Margin(2.0f, &CommunityIcon);
-		m_CommunityIcons.Render(pCommunityIcon, CommunityIcon, ShownAlpha >= 1.0f); // bestclient-light
+		m_CommunityIcons.Render(pCommunityIcon, CommunityIcon, true);
 	}
 	else
 	{
 		CUIRect Label;
 		Rect.HMargin(2.0f, &Label);
-		// bestclient-light
-		if(ShownAlpha < 1.0f)
-			TextRender()->TextColor(ColorRGBA(1.0f, 1.0f, 1.0f, ShownAlpha));
 		Ui()->DoLabel(&Label, pText, Label.h * CUi::ms_FontmodHeight, TEXTALIGN_MC);
-		if(ShownAlpha < 1.0f)
-			TextRender()->TextColor(TextRender()->DefaultTextColor());
-		// bestclient-light
 	}
 
-	// bestclient-light
-	if(ShownAlpha < 1.0f)
-		return 0;
-	// bestclient-light
 	return Ui()->DoButtonLogic(pButtonContainer, Checked, pRect, BUTTONFLAG_LEFT);
 }
 // bestclient-light
@@ -537,10 +520,6 @@ int CMenus::DoButton_CheckBox_Number(const void *pId, const char *pText, int Che
 
 void CMenus::RenderMenubar(CUIRect Box, IClient::EClientState ClientState)
 {
-	// bestclient-light
-	const bool ExploreLock = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
-	m_MenuTabAlpha = ExploreLock ? 0.35f : 1.0f;
-	// bestclient-light
 	CUIRect Button;
 
 	int NewPage = -1;
@@ -677,7 +656,6 @@ void CMenus::RenderMenubar(CUIRect Box, IClient::EClientState ClientState)
 
 		const int MaxPage = PAGE_FAVORITES + ServerBrowser()->FavoriteCommunities().size();
 		if(
-			!ExploreLock && // bestclient-light
 			!Ui()->IsPopupOpen() &&
 			CLineInput::GetActiveInput() == nullptr &&
 			(g_Config.m_UiPage >= PAGE_INTERNET && g_Config.m_UiPage <= MaxPage) &&
@@ -790,10 +768,7 @@ void CMenus::RenderMenubar(CUIRect Box, IClient::EClientState ClientState)
 		}
 	}
 
-	// bestclient-light
-	m_MenuTabAlpha = 1.0f;
-	if(NewPage != -1 && !ExploreLock)
-	// bestclient-light
+	if(NewPage != -1)
 	{
 		if(ClientState == IClient::STATE_OFFLINE)
 			SetMenuPage(NewPage);
@@ -1236,13 +1211,7 @@ void CMenus::Render()
 				dbg_assert_failed("Invalid m_MenuPage: %d", m_MenuPage);
 			}
 
-			// bestclient-light
-			const bool AssetsEditorConfirmOpen = m_AssetsEditorState.m_Open &&
-				m_AssetsEditorState.m_ExploreSide < 0 && m_AssetsEditorState.m_ShowExitConfirm &&
-				g_Config.m_UiSettingsPage == SETTINGS_ASSETS;
-			if(!AssetsEditorConfirmOpen)
-			// bestclient-light
-				RenderMenubar(TabBar, ClientState);
+			RenderMenubar(TabBar, ClientState);
 		}
 		break;
 
@@ -1294,13 +1263,7 @@ void CMenus::Render()
 				dbg_assert_failed("Invalid m_GamePage: %d", m_GamePage);
 			}
 
-			// bestclient-light
-			const bool AssetsEditorConfirmOpen = m_AssetsEditorState.m_Open &&
-				m_AssetsEditorState.m_ExploreSide < 0 && m_AssetsEditorState.m_ShowExitConfirm &&
-				g_Config.m_UiSettingsPage == SETTINGS_ASSETS;
-			if(!AssetsEditorConfirmOpen)
-			// bestclient-light
-				RenderMenubar(TabBar, ClientState);
+			RenderMenubar(TabBar, ClientState);
 		}
 		break;
 
