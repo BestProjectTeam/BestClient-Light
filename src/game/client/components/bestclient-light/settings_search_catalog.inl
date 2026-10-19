@@ -60,7 +60,6 @@
 	{"Rounding", SETTINGS_NAV_LEAF_BC_VISUALS, "Music Player", &g_Config.m_BclMusicPlayerVisualizerRounding, &g_Config.m_BclMusicPlayer},
 
 	{"Keystrokes", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclKeystrokesKeyboard, nullptr},
-	{"Enable mouse", SETTINGS_NAV_LEAF_BC_VISUALS, "Keystrokes", &g_Config.m_BclKeystrokesMouse, nullptr},
 
 	{"Aspect Ratio", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclCustomAspectRatioMode, nullptr},
 
@@ -75,7 +74,6 @@
 	{"Size", SETTINGS_NAV_LEAF_BC_VISUALS, "Weather", &g_Config.m_BclWeatherDustSize, &g_Config.m_BclAtmosphere},
 	{"Speed", SETTINGS_NAV_LEAF_BC_VISUALS, "Weather", &g_Config.m_BclWeatherDustSpeed, &g_Config.m_BclAtmosphere},
 
-	{"Map preview in server list", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclServerMapPreview, nullptr},
 	{"Show real hitbox", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowRealHitbox, nullptr},
 	{"Real hitbox dot color", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowRealHitboxColor, &g_Config.m_BclShowRealHitbox},
 	{"Show player below indicator", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowhudDummyCoordIndicator, nullptr},
@@ -153,7 +151,6 @@
 	{"Browser Utils", SETTINGS_NAV_LEAF_BC_TOOLS, "Tools", &g_Config.m_BclAutoServerListRefresh, nullptr},
 	{"Short EGO/KoG server name", SETTINGS_NAV_LEAF_BC_TOOLS, "Browser Utils", &g_Config.m_BclUseShortKogServerName, nullptr},
 	{"Show finished map on EGO", SETTINGS_NAV_LEAF_BC_TOOLS, "Browser Utils", &g_Config.m_BclShowFinishedMapOnEgo, nullptr},
-	{"Use BestClient Light MasterServer", SETTINGS_NAV_LEAF_BC_TOOLS, "Browser Utils", &g_Config.m_BclMastersrv, nullptr},
 
 	{"Show ping colored circle in nameplates", SETTINGS_NAV_LEAF_TC_SETTINGS, "Visual", &g_Config.m_TcNameplatePingCircle, nullptr},
 	{"Show country flags in nameplates", SETTINGS_NAV_LEAF_TC_SETTINGS, "Visual", &g_Config.m_TcNameplateCountry, nullptr},

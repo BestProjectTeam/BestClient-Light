@@ -65,7 +65,6 @@ public:
 	float m_FpsFogHalfW = 0.0f;
 	float m_FpsFogHalfH = 0.0f;
 	bool m_DisableMapQuads = false;
-	bool m_MapPreview = false;
 	// bestclient-light
 };
 

@@ -16,9 +16,6 @@
 #include <engine/textrender.h>
 
 #include <game/client/component.h>
-// bestclient-light
-#include <game/client/components/bestclient-light/server_map_preview.h>
-// bestclient-light
 #include <game/client/components/community_icons.h>
 #include <game/client/components/mapimages.h>
 #include <game/client/components/menus_ingame_touch_controls.h>
@@ -963,9 +960,6 @@ public:
 
 private:
 	CCommunityIcons m_CommunityIcons;
-	// bestclient-light
-	CServerMapPreview m_ServerMapPreview;
-	// bestclient-light
 	CMenusIngameTouchControls m_MenusIngameTouchControls;
 	friend CMenusIngameTouchControls;
 	CMenusSettingsControls m_MenusSettingsControls;

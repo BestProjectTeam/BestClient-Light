@@ -896,9 +896,6 @@ void CMenus::OnInterfacesInit(CGameClient *pClient)
 	m_MenusSettingsControls.OnInterfacesInit(pClient);
 	m_MenusStart.OnInterfacesInit(pClient);
 	m_CommunityIcons.OnInterfacesInit(pClient);
-	// bestclient-light
-	m_ServerMapPreview.OnInterfacesInit(pClient);
-	// bestclient-light
 }
 
 void CMenus::OnInit()
@@ -1077,11 +1074,6 @@ void CMenus::Render()
 {
 	Ui()->MapScreen();
 	Ui()->SetMouseSlow(false);
-	// bestclient-light
-	const bool ServerBrowserPage = m_MenuPage >= PAGE_INTERNET && m_MenuPage <= PAGE_FAVORITE_COMMUNITY_5;
-	if(!ServerBrowserPage || g_Config.m_BclServerMapPreview == 0)
-		m_ServerMapPreview.Clear();
-	// bestclient-light
 
 	static int s_Frame = 0;
 	if(s_Frame == 0)
@@ -2469,9 +2461,6 @@ void CMenus::SetActive(bool Active)
 void CMenus::OnShutdown()
 {
 	m_CommunityIcons.Shutdown();
-	// bestclient-light
-	m_ServerMapPreview.Clear();
-	// bestclient-light
 }
 
 bool CMenus::OnCursorMove(float x, float y, IInput::ECursorType CursorType)
@@ -2585,11 +2574,8 @@ void CMenus::OnRender()
 		else if(Client()->State() != IClient::STATE_DEMOPLAYBACK && !ShowAspectConfirmOverlay)
 		{
 			Ui()->ClearHotkeys();
-			m_ServerMapPreview.Clear();
 			return;
 		}
-		else if(Client()->State() != IClient::STATE_DEMOPLAYBACK)
-			m_ServerMapPreview.Clear();
 		// bestclient-light
 	}
 

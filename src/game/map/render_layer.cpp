@@ -228,13 +228,6 @@ CRenderLayerGroup::CRenderLayerGroup(int GroupId, CMapItemGroup *pGroup) :
 
 bool CRenderLayerGroup::DoRender(const CRenderLayerParams &Params)
 {
-	// bestclient-light
-	if(Params.m_MapPreview)
-	{
-		Graphics()->ClipDisable();
-		return true;
-	}
-	// bestclient-light
 	if(!g_Config.m_GfxNoclip || Params.m_RenderType == ERenderType::RENDERTYPE_FULL_DESIGN)
 	{
 		Graphics()->ClipDisable();

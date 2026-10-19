@@ -39,10 +39,6 @@ Info
 == Инфо
 
 [BestClient Light]
-high fps intake
-== Высокий FPS
-
-[BestClient Light]
 HUD editor
 == HUD-редактор
 
@@ -57,10 +53,6 @@ Join a game first
 [BestClient Light]
 Visuals QoL
 == Удобства визуала
-
-[BestClient Light]
-Map preview in server list
-== Превью карты в списке серверов
 
 [BestClient Light]
 Show real hitbox
@@ -547,28 +539,12 @@ Keystrokes
 == Кейстроки
 
 [BestClient Light]
-Classic
-== Классика
-
-[BestClient Light]
-Minecraft
-== Майнкрафт
-
-[BestClient Light]
 Enable keyboard
 == Включить клавиатуру
 
 [BestClient Light]
 Full
 == Фулл
-
-[BestClient Light]
-Minimal
-== Минимал
-
-[BestClient Light]
-Micro
-== Микро
 
 [BestClient Light]
 Only A/D
@@ -589,22 +565,6 @@ Enable RMB
 [BestClient Light]
 Enable Space
 == Включить Space
-
-[BestClient Light]
-Enable mouse
-== Включить мышь
-
-[BestClient Light]
-Arrow
-== Стрелка
-
-[BestClient Light]
-Dot Dot
-== Дот дот
-
-[BestClient Light]
-Nothing
-== Ничего
 
 [BestClient Light]
 Aspect Ratio
@@ -1041,10 +1001,6 @@ Show finished map on EGO
 [BestClient Light]
 Show finished map on Legit Network
 == Показывать пройденную карту на Legit Network
-
-[BestClient Light]
-Use BestClient Light MasterServer
-== Использовать мастерсервер BestClient Light
 
 [BestClient Light]
 Rollback Demo

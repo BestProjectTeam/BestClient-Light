@@ -138,9 +138,6 @@ public:
 	bool m_HasBestClientLightPlayers = false;
 	int m_NumBestClientLightDeveloperPlayers = 0;
 	bool m_HasBestClientLightDeveloperPlayers = false;
-	bool m_HasMapSha256 = false;
-	SHA256_DIGEST m_MapSha256{};
-	char m_aMapUrl[512]{};
 	// bestclient-light
 
 	static int EstimateLatency(int Loc1, int Loc2);

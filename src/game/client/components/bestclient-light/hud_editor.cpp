@@ -525,10 +525,6 @@ CHudEditor::SModuleVisual CHudEditor::GetModuleVisual(HudLayout::EModule Module)
 		Visual.m_Rect = GameClient()->m_Keystrokes.GetKeyboardHudEditorRect();
 		Visual.m_Rounding = 4.0f;
 		break;
-	case HudLayout::MODULE_KEYSTROKES_MOUSE:
-		Visual.m_Rect = GameClient()->m_Keystrokes.GetMouseHudEditorRect();
-		Visual.m_Rounding = 4.0f;
-		break;
 	default:
 		Visual.m_Rect = GetFallbackModuleRect(Module);
 		Visual.m_Rounding = 4.0f;
@@ -572,8 +568,6 @@ void CHudEditor::CollectModuleVisuals(SModuleVisual *pOut, int &Count) const
 	AddModule(HudLayout::MODULE_EDGE_INFO);
 	AddModule(HudLayout::MODULE_FINISH_PREDICTION);
 	AddModule(HudLayout::MODULE_KEYSTROKES_KEYBOARD);
-	if(g_Config.m_BclKeystrokesStyle != 1)
-		AddModule(HudLayout::MODULE_KEYSTROKES_MOUSE);
 }
 
 HudLayout::EModule CHudEditor::HitTestModule(vec2 MousePos) const
@@ -1170,7 +1164,6 @@ void CHudEditor::RenderOverlay(vec2 MousePos)
 	GameClient()->m_EdgeHelper.RenderPreview();
 	GameClient()->m_FinishPrediction.RenderPreview();
 	GameClient()->m_Keystrokes.RenderKeyboardPreview();
-	GameClient()->m_Keystrokes.RenderMousePreview();
 
 	Graphics()->MapScreenToSize(Width, Height);
 

@@ -39,10 +39,6 @@ Info
 == 信息
 
 [BestClient Light]
-high fps intake
-== 高 FPS
-
-[BestClient Light]
 HUD editor
 == HUD 编辑器
 
@@ -57,10 +53,6 @@ Join a game first
 [BestClient Light]
 Visuals QoL
 == 视觉便利
-
-[BestClient Light]
-Map preview in server list
-== 服务器列表中的地图预览
 
 [BestClient Light]
 Show real hitbox
@@ -547,28 +539,12 @@ Keystrokes
 == 按键显示
 
 [BestClient Light]
-Classic
-== 经典
-
-[BestClient Light]
-Minecraft
-== 我的世界
-
-[BestClient Light]
 Enable keyboard
 == 启用键盘
 
 [BestClient Light]
 Full
 == 完整
-
-[BestClient Light]
-Minimal
-== 精简
-
-[BestClient Light]
-Micro
-== 微型
 
 [BestClient Light]
 Only A/D
@@ -589,22 +565,6 @@ Enable RMB
 [BestClient Light]
 Enable Space
 == 启用空格
-
-[BestClient Light]
-Enable mouse
-== 启用鼠标
-
-[BestClient Light]
-Arrow
-== 箭头
-
-[BestClient Light]
-Dot Dot
-== 点点
-
-[BestClient Light]
-Nothing
-== 无
 
 [BestClient Light]
 Aspect Ratio
@@ -1037,10 +997,6 @@ Show finished map on EGO
 [BestClient Light]
 Show finished map on Legit Network
 == 在 Legit Network 上显示已完成地图
-
-[BestClient Light]
-Use BestClient Light MasterServer
-== 使用 BestClient Light 主服务器
 
 [BestClient Light]
 Rollback Demo

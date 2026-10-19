@@ -537,11 +537,6 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	const float HeadlineFontSize = 20.0f;
 	const float MarginBetweenViews = 30.0f;
 	const float BlockPadding = MarginBetweenViews * 0.6666f;
-	const auto DoHighFpsIntakeTooltip = [&](const void *pId, const CUIRect &Row) {
-		GameClient()->m_Tooltips.DoToolTip(pId, &Row, BcLocalize("high fps intake"));
-		GameClient()->m_Tooltips.SetFadeTime(pId, 0.0f);
-		GameClient()->m_Tooltips.SetTextColor(pId, ColorRGBA(1.0f, 0.55f, 0.16f, 1.0f));
-	};
 
 	{
 		CUIRect HudButtonRow;
@@ -582,7 +577,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	const float RealHitboxColorHeight = g_Config.m_BclShowRealHitbox ? RealHitboxColorLineSize + RealHitboxColorLineSpacing : 0.0f;
 	const float VisualsQoLBlockHeight =
 		LineSize + MarginSmall +
-		9.0f * LineSize +
+		8.0f * LineSize +
 		RealHitboxColorHeight +
 		3.0f * LineSize;
 	CUIRect VisualsQoLBlock;
@@ -594,17 +589,12 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	VisualsQoLBlockBg.x -= BlockPadding * 0.5f;
 	VisualsQoLBlockBg.y -= BlockPadding * 0.5f;
 	BestClientLightUiTheme::DrawUiBlock(&VisualsQoLBlockBg, IGraphics::CORNER_ALL, 10.0f);
-	BestClientLightSettingsSearch::DrawBlockHighlight(&g_Config.m_BclServerMapPreview, &VisualsQoLBlockBg);
+	BestClientLightSettingsSearch::DrawBlockHighlight(&g_Config.m_BclShowRealHitbox, &VisualsQoLBlockBg);
 
 	VisualsQoLBlock.HSplitTop(LineSize, &Label, &VisualsQoLBlock);
 	Ui()->DoLabel(&Label, BcLocalize("Visuals QoL"), HeadlineFontSize, TEXTALIGN_ML);
 	VisualsQoLBlock.HSplitTop(MarginSmall, nullptr, &VisualsQoLBlock);
 
-	{
-		CUIRect MapPreviewRow;
-		VisualsQoLBlock.HSplitTop(LineSize, &MapPreviewRow, &VisualsQoLBlock);
-		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclServerMapPreview, BcLocalize("Map preview in server list"), &g_Config.m_BclServerMapPreview, &MapPreviewRow, LineSize);
-	}
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowRealHitbox, BcLocalize("Show real hitbox"), &g_Config.m_BclShowRealHitbox, &VisualsQoLBlock, LineSize);
 	if(g_Config.m_BclShowRealHitbox)
 	{
@@ -1206,17 +1196,11 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 
 	Column.HSplitTop(MarginBetweenViews, nullptr, &Column);
 
-	const bool KeystrokesIsMinecraft = g_Config.m_BclKeystrokesStyle == 1;
 	const bool KeystrokesKeyboardExpanded = g_Config.m_BclKeystrokesKeyboard != 0;
-	const bool KeystrokesMouseExpanded = !KeystrokesIsMinecraft && g_Config.m_BclKeystrokesMouse != 0;
 	const float KeystrokesMcOptionsRows = 2.0f + (g_Config.m_BclKeystrokesMcLayout == 1 ? 3.0f : 0.0f);
-	const float KeystrokesClassicPresetHeight = BC_MODULE_REVEAL(!KeystrokesIsMinecraft && KeystrokesKeyboardExpanded, MarginSmall + LineSize, Client()->RenderFrameTime());
-	const float KeystrokesMouseExpandedHeight = BC_MODULE_REVEAL(KeystrokesMouseExpanded, MarginSmall + LineSize, Client()->RenderFrameTime());
-	const float KeystrokesMinecraftExpandedHeight = BC_MODULE_REVEAL(KeystrokesIsMinecraft && KeystrokesKeyboardExpanded, (MarginSmall + LineSize) * KeystrokesMcOptionsRows, Client()->RenderFrameTime());
-	const float KeystrokesClassicBodyHeight = LineSize + KeystrokesClassicPresetHeight + MarginSmall + LineSize + KeystrokesMouseExpandedHeight;
-	const float KeystrokesMinecraftBodyHeight = LineSize + KeystrokesMinecraftExpandedHeight;
-	const float KeystrokesBodyHeight = KeystrokesIsMinecraft ? KeystrokesMinecraftBodyHeight : KeystrokesClassicBodyHeight;
-	const float KeystrokesBlockHeight = LineSize + MarginSmall + LineSize + MarginSmall + KeystrokesBodyHeight;
+	const float KeystrokesMinecraftExpandedHeight = BC_MODULE_REVEAL(KeystrokesKeyboardExpanded, (MarginSmall + LineSize) * KeystrokesMcOptionsRows, Client()->RenderFrameTime());
+	const float KeystrokesBodyHeight = LineSize + KeystrokesMinecraftExpandedHeight;
+	const float KeystrokesBlockHeight = LineSize + MarginSmall + KeystrokesBodyHeight;
 
 	CUIRect KeystrokesBlock;
 	Column.HSplitTop(KeystrokesBlockHeight, &KeystrokesBlock, &Column);
@@ -1239,9 +1223,6 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	static CButtonContainer s_KeystrokesResetButton;
 	if(Ui()->DoButton_FontIcon(&s_KeystrokesResetButton, FontIcon::ARROW_ROTATE_LEFT, 0, &KeystrokesResetButton, BUTTONFLAG_LEFT))
 	{
-		g_Config.m_BclKeystrokesStyle = DefaultConfig::BclKeystrokesStyle;
-		g_Config.m_BclKeystrokesKeyboardPreset = DefaultConfig::BclKeystrokesKeyboardPreset;
-		g_Config.m_BclKeystrokesMousePreset = DefaultConfig::BclKeystrokesMousePreset;
 		g_Config.m_BclKeystrokesMcLayout = DefaultConfig::BclKeystrokesMcLayout;
 		g_Config.m_BclKeystrokesMcShowLmb = DefaultConfig::BclKeystrokesMcShowLmb;
 		g_Config.m_BclKeystrokesMcShowRmb = DefaultConfig::BclKeystrokesMcShowRmb;
@@ -1262,69 +1243,12 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	Ui()->DoLabel(&KeystrokesTitleLabel, BcLocalize("Keystrokes"), HeadlineFontSize, TEXTALIGN_ML);
 	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
 
-	MainView.HSplitTop(LineSize, &Button, &MainView);
-	static CButtonContainer s_KeystrokesStyleClassic;
-	static CButtonContainer s_KeystrokesStyleMinecraft;
-	CUIRect ClassicStyleButton, MinecraftStyleButton;
-	Button.VSplitMid(&ClassicStyleButton, &MinecraftStyleButton, 2.0f);
-	ClassicStyleButton.HMargin(2.0f, &ClassicStyleButton);
-	MinecraftStyleButton.HMargin(2.0f, &MinecraftStyleButton);
-	if(DoButton_Menu(&s_KeystrokesStyleClassic, BcLocalize("Classic"), g_Config.m_BclKeystrokesStyle == 0, &ClassicStyleButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_L))
-		g_Config.m_BclKeystrokesStyle = 0;
-	if(DoButton_Menu(&s_KeystrokesStyleMinecraft, BcLocalize("Minecraft"), g_Config.m_BclKeystrokesStyle == 1, &MinecraftStyleButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_R))
-		g_Config.m_BclKeystrokesStyle = 1;
-	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-
 	MainView.HSplitTop(LineSize, &Content, &MainView);
-	const CUIRect KeystrokesKeyboardEnableRow = Content;
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclKeystrokesKeyboard, BcLocalize("Enable keyboard"), &g_Config.m_BclKeystrokesKeyboard, &Content, LineSize);
-	DoHighFpsIntakeTooltip(&g_Config.m_BclKeystrokesKeyboard, KeystrokesKeyboardEnableRow);
 	if(g_Config.m_BclKeystrokesKeyboard && !HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_KEYBOARD))
 		HudLayout::SetEnabled(HudLayout::MODULE_KEYSTROKES_KEYBOARD, true);
 
-	if(!KeystrokesIsMinecraft && KeystrokesClassicPresetHeight > 0.5f)
-	{
-		CUIRect Visible = MainView;
-		Visible.h = KeystrokesClassicPresetHeight;
-		Ui()->ClipEnable(&Visible);
-
-		MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-		MainView.HSplitTop(LineSize, &Button, &MainView);
-
-		static CButtonContainer s_KeyboardPresetFull;
-		static CButtonContainer s_KeyboardPresetMinimal;
-		static CButtonContainer s_KeyboardPresetMicro;
-		CUIRect FullButton, Rest, MinimalButton, MicroButton;
-		const float KeyboardPresetSpacing = 2.0f;
-		const float KeyboardPresetButtonWidth = (Button.w - KeyboardPresetSpacing * 2.0f) / 3.0f;
-		Button.VSplitLeft(KeyboardPresetButtonWidth, &FullButton, &Rest);
-		Rest.VSplitLeft(KeyboardPresetSpacing, nullptr, &Rest);
-		Rest.VSplitLeft(KeyboardPresetButtonWidth, &MinimalButton, &Rest);
-		Rest.VSplitLeft(KeyboardPresetSpacing, nullptr, &Rest);
-		MicroButton = Rest;
-		FullButton.HMargin(2.0f, &FullButton);
-		MinimalButton.HMargin(2.0f, &MinimalButton);
-		MicroButton.HMargin(2.0f, &MicroButton);
-		if(DoButton_Menu(&s_KeyboardPresetFull, BcLocalize("Full"), g_Config.m_BclKeystrokesKeyboardPreset == 1, &FullButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_L))
-		{
-			g_Config.m_BclKeystrokesKeyboardPreset = 1;
-			HudLayout::ResetPosition(HudLayout::MODULE_KEYSTROKES_MOUSE);
-		}
-		if(DoButton_Menu(&s_KeyboardPresetMinimal, BcLocalize("Minimal"), g_Config.m_BclKeystrokesKeyboardPreset == 0, &MinimalButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_NONE))
-		{
-			g_Config.m_BclKeystrokesKeyboardPreset = 0;
-			HudLayout::ResetPosition(HudLayout::MODULE_KEYSTROKES_MOUSE);
-		}
-		if(DoButton_Menu(&s_KeyboardPresetMicro, BcLocalize("Micro"), g_Config.m_BclKeystrokesKeyboardPreset == 2, &MicroButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_R))
-		{
-			g_Config.m_BclKeystrokesKeyboardPreset = 2;
-			HudLayout::ResetPosition(HudLayout::MODULE_KEYSTROKES_MOUSE);
-		}
-
-		Ui()->ClipDisable();
-	}
-
-	if(KeystrokesIsMinecraft && KeystrokesMinecraftExpandedHeight > 0.5f)
+	if(KeystrokesMinecraftExpandedHeight > 0.5f)
 	{
 		CUIRect Visible = MainView;
 		Visible.h = KeystrokesMinecraftExpandedHeight;
@@ -1364,51 +1288,6 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 
 		Ui()->ClipDisable();
 	}
-
-	if(!KeystrokesIsMinecraft)
-	{
-		MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-		MainView.HSplitTop(LineSize, &Content, &MainView);
-		const CUIRect KeystrokesMouseEnableRow = Content;
-		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclKeystrokesMouse, BcLocalize("Enable mouse"), &g_Config.m_BclKeystrokesMouse, &Content, LineSize);
-		DoHighFpsIntakeTooltip(&g_Config.m_BclKeystrokesMouse, KeystrokesMouseEnableRow);
-		if(g_Config.m_BclKeystrokesMouse && !HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_MOUSE))
-			HudLayout::SetEnabled(HudLayout::MODULE_KEYSTROKES_MOUSE, true);
-
-		if(KeystrokesMouseExpandedHeight > 0.5f)
-		{
-			CUIRect Visible = MainView;
-			Visible.h = KeystrokesMouseExpandedHeight;
-			Ui()->ClipEnable(&Visible);
-
-			MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-			MainView.HSplitTop(LineSize, &Button, &MainView);
-
-			static CButtonContainer s_MousePresetArrow;
-			static CButtonContainer s_MousePresetDotDot;
-			static CButtonContainer s_MousePresetNothing;
-			CUIRect ArrowButton, Rest, DotDotButton, NothingButton;
-			const float MousePresetSpacing = 2.0f;
-			const float MousePresetButtonWidth = (Button.w - MousePresetSpacing * 2.0f) / 3.0f;
-			Button.VSplitLeft(MousePresetButtonWidth, &ArrowButton, &Rest);
-			Rest.VSplitLeft(MousePresetSpacing, nullptr, &Rest);
-			Rest.VSplitLeft(MousePresetButtonWidth, &DotDotButton, &Rest);
-			Rest.VSplitLeft(MousePresetSpacing, nullptr, &Rest);
-			NothingButton = Rest;
-			ArrowButton.HMargin(2.0f, &ArrowButton);
-			DotDotButton.HMargin(2.0f, &DotDotButton);
-			NothingButton.HMargin(2.0f, &NothingButton);
-			if(DoButton_Menu(&s_MousePresetArrow, BcLocalize("Arrow"), g_Config.m_BclKeystrokesMousePreset == 1, &ArrowButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_L))
-				g_Config.m_BclKeystrokesMousePreset = 1;
-			if(DoButton_Menu(&s_MousePresetDotDot, BcLocalize("Dot Dot"), g_Config.m_BclKeystrokesMousePreset == 2, &DotDotButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_NONE))
-				g_Config.m_BclKeystrokesMousePreset = 2;
-			if(DoButton_Menu(&s_MousePresetNothing, BcLocalize("Nothing"), g_Config.m_BclKeystrokesMousePreset == 3, &NothingButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_R))
-				g_Config.m_BclKeystrokesMousePreset = 3;
-
-			Ui()->ClipDisable();
-		}
-	}
-
 
 	Column.HSplitTop(MarginBetweenViews, nullptr, &Column);
 
@@ -1771,9 +1650,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 
 	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
 	MainView.HSplitTop(LineSize, &Content, &MainView);
-	const CUIRect MusicPlayerEnableRow = Content;
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclMusicPlayer, BcLocalize("Enable music player"), &g_Config.m_BclMusicPlayer, &Content, LineSize);
-	DoHighFpsIntakeTooltip(&g_Config.m_BclMusicPlayer, MusicPlayerEnableRow);
 
 	if(MusicPlayerExpandedHeight > 0.5f)
 	{
@@ -3054,7 +2931,7 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 
 	LeftColumn.HSplitTop(MarginBetweenViews, nullptr, &LeftColumn);
 
-	const float BrowserUtilsBlockHeight = 7.0f * LineSize + 6.0f * MarginSmall;
+	const float BrowserUtilsBlockHeight = 6.0f * LineSize + 5.0f * MarginSmall;
 
 	CUIRect BrowserUtilsBlock;
 	LeftColumn.HSplitTop(BrowserUtilsBlockHeight, &BrowserUtilsBlock, &LeftColumn);
@@ -3090,10 +2967,6 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 	BrowserUtilsBlock.HSplitTop(LineSize, &Content, &BrowserUtilsBlock);
 	BcMenuBadges::DrawNew(Graphics(), Ui(), TextRender(), &Content, MarginSmall);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowFinishedMapOnLegit, BcLocalize("Show finished map on Legit Network"), &g_Config.m_BclShowFinishedMapOnLegit, &Content, LineSize);
-
-	BrowserUtilsBlock.HSplitTop(MarginSmall, nullptr, &BrowserUtilsBlock);
-	BrowserUtilsBlock.HSplitTop(LineSize, &Content, &BrowserUtilsBlock);
-	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclMastersrv, BcLocalize("Use BestClient Light MasterServer"), &g_Config.m_BclMastersrv, &Content, LineSize);
 
 	LeftColumn.HSplitTop(MarginBetweenViews, nullptr, &LeftColumn);
 

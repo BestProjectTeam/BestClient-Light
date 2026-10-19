@@ -2901,8 +2901,7 @@ if(CLIENT)
     components/bestclient-light/console_scroll.h
     components/bestclient-light/menu_media_background.cpp
     components/bestclient-light/menu_media_background.h
-    components/bestclient-light/server_map_preview.cpp
-    components/bestclient-light/server_map_preview.h
+
     components/bestclient-light/menus_bestclient-light.cpp
     components/bestclient-light/motion_blur.h
     components/bestclient-light/motion_blur_opengl.h

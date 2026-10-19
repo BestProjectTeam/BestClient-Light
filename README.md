@@ -110,7 +110,7 @@ The client currently ships with more than **300** `bc_*` config variables, five 
 - **Motion Blur** — previous-frame blending (BETA)
 - **Animations** — UI reveal, chat/killfeed/main menu animations
 - **Music Player** — HUD player with visualizer and cover colors
-- **Keystrokes** — Classic / Minecraft keyboard and mouse HUD
+- **Keystrokes** — Minecraft keyboard HUD
 - **Custom Aspect Ratio** — presets and arbitrary num:den input
 - **Chat Bubbles** — bubbles above players (from Entity-Client)
 
@@ -305,20 +305,15 @@ bc_hud_votes_x
 bc_hud_votes_y
 bc_inputs
 bc_keystrokes_keyboard
-bc_keystrokes_keyboard_preset
 bc_keystrokes_mc_layout
 bc_keystrokes_mc_show_lmb
 bc_keystrokes_mc_show_rmb
 bc_keystrokes_mc_show_space
 bc_keystrokes_mc_show_ws
-bc_keystrokes_mouse
-bc_keystrokes_mouse_preset
-bc_keystrokes_style
 bc_killfeed_animation
 bc_killfeed_animation_ms
 bc_main_menu_animation
 bc_main_menu_animation_speed
-bc_mastersrv
 bc_menu_media_background
 bc_menu_media_background_path
 bc_module_ui_reveal_animation

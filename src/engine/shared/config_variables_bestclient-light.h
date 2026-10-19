@@ -173,8 +173,6 @@ MACRO_CONFIG_INT(BclAutoServerListRefreshSeconds, bcl_auto_server_list_refresh_s
 MACRO_CONFIG_INT(BclUseShortKogServerName, bcl_use_short_kog_server_name, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Use short names for E-Gores and KoG servers in browser list")
 MACRO_CONFIG_INT(BclShowFinishedMapOnEgo, bcl_show_finished_map_on_ego, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show completed EGO maps in the server browser")
 MACRO_CONFIG_INT(BclShowFinishedMapOnLegit, bcl_show_finished_map_on_legit, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show completed Legit Network maps in the server browser")
-MACRO_CONFIG_INT(BclMastersrv, bcl_mastersrv, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Use the BestClient Light master server mirror for the server browser")
-MACRO_CONFIG_INT(BclServerMapPreview, bcl_server_map_preview, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show a live map preview under the selected server")
 MACRO_CONFIG_INT(BrFilterBestclientLight, br_filter_bestclient_light, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Filter out servers with no BestClient Light users")
 
 // Client Indicator
@@ -268,11 +266,7 @@ MACRO_CONFIG_INT(BclHudVotesY, bcl_hud_votes_y, 60, -1000, 1000, CFGFLAG_CLIENT,
 MACRO_CONFIG_INT(BclHudVotesScale, bcl_hud_votes_scale, 100, 25, 300, CFGFLAG_CLIENT, "Legacy votes HUD scale")
 
 // Keystrokes
-MACRO_CONFIG_INT(BclKeystrokesStyle, bcl_keystrokes_style, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Keystrokes style (0 = Classic, 1 = Minecraft)")
 MACRO_CONFIG_INT(BclKeystrokesKeyboard, bcl_keystrokes_keyboard, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show keyboard keystrokes HUD")
-MACRO_CONFIG_INT(BclKeystrokesKeyboardPreset, bcl_keystrokes_keyboard_preset, 0, 0, 2, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Keyboard keystrokes preset (0 = wasd-minimal, 1 = wasd-full, 2 = micro)")
-MACRO_CONFIG_INT(BclKeystrokesMouse, bcl_keystrokes_mouse, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show mouse keystrokes HUD")
-MACRO_CONFIG_INT(BclKeystrokesMousePreset, bcl_keystrokes_mouse_preset, 1, 1, 3, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Mouse keystrokes preset (1 = mouse-arrow, 2 = mouse-dot-dot, 3 = mouse-nothing)")
 MACRO_CONFIG_INT(BclKeystrokesMcLayout, bcl_keystrokes_mc_layout, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Minecraft keystrokes layout (0 = Full, 1 = Only A/D)")
 MACRO_CONFIG_INT(BclKeystrokesMcShowLmb, bcl_keystrokes_mc_show_lmb, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show LMB in Minecraft keystrokes")
 MACRO_CONFIG_INT(BclKeystrokesMcShowRmb, bcl_keystrokes_mc_show_rmb, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show RMB in Minecraft keystrokes")

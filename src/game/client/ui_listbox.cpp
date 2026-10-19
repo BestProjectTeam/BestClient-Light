@@ -25,9 +25,6 @@ void CListBox::Reset()
 	m_ScrollbarMargin = 5.0f;
 	m_HasHeader = false;
 	m_Active = true;
-	// bestclient-light
-	m_SuppressSelectionHighlight = false;
-	// bestclient-light
 }
 
 void CListBox::DoHeader(const CUIRect *pRect, const char *pTitle, float HeaderHeight, float Spacing)
@@ -82,9 +79,6 @@ void CListBox::DoStart(float RowHeight, int NumItems, int ItemsPerRow, int RowsP
 	m_ListBoxItemsPerRow = ItemsPerRow;
 	m_ListBoxItemActivated = false;
 	m_ListBoxItemSelected = false;
-	// bestclient-light
-	m_SuppressSelectionHighlight = false;
-	// bestclient-light
 
 	// handle input
 	if(m_Active && !Input()->ModifierIsPressed() && !Input()->ShiftIsPressed() && !Input()->AltIsPressed())
@@ -172,35 +166,15 @@ CListboxItem CListBox::DoNextItem(const void *pId, bool Selected, float CornerRa
 			}
 		}
 
-		// bestclient-light
-		if(!m_SuppressSelectionHighlight)
-			Item.m_Rect.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, m_Active ? 0.5f : 0.33f), IGraphics::CORNER_ALL, CornerRadius);
-		// bestclient-light
+		Item.m_Rect.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, m_Active ? 0.5f : 0.33f), IGraphics::CORNER_ALL, CornerRadius);
 	}
-	// bestclient-light
-	const bool SuppressHighlight = m_SuppressSelectionHighlight;
-	m_SuppressSelectionHighlight = false;
-	// bestclient-light
 	if(Ui()->HotItem() == pId && !m_ScrollRegion.Animating())
 	{
-		// bestclient-light
-		if(!SuppressHighlight)
-			Item.m_Rect.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, 0.33f), IGraphics::CORNER_ALL, CornerRadius);
-		// bestclient-light
+		Item.m_Rect.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, 0.33f), IGraphics::CORNER_ALL, CornerRadius);
 	}
 
 	return Item;
 }
-
-// bestclient-light
-CUIRect CListBox::DoExtraRow(float Height, bool ScrollHere)
-{
-	CUIRect Row;
-	m_ListBoxView.HSplitTop(Height, &Row, &m_ListBoxView);
-	m_ScrollRegion.AddRect(Row, ScrollHere);
-	return Row;
-}
-// bestclient-light
 
 CListboxItem CListBox::DoSubheader()
 {

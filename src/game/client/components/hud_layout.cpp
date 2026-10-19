@@ -10,10 +10,6 @@
 #include <engine/console.h>
 #include <engine/shared/config.h>
 
-// bestclient-light
-float GetKeystrokesKeyboardPresetWidthHudPx(int Preset);
-// bestclient-light
-
 #include <algorithm>
 #include <cstdlib>
 
@@ -42,7 +38,6 @@ static const SModuleLayout gs_aModuleLayouts[MODULE_COUNT] = {
 	{490.0f, 5.0f, 100, 0, true, false, 0x66000000U, 100},
 	{0.0f, 129.0f, 100, 0, true, true, 0x66000000U, 100},
 	{0.0f, 152.0f, 100, 0, true, false, 0x66000000U, 100},
-	{84.5f, 152.0f, 100, 0, true, false, 0x66000000U, 100},
 	{484.0f, 172.0f, 100, 0, true, true, 0x66000000U, 100},
 	{250.0f, 258.0f, 100, 0, true, true, 0x66000000U, 100},
 	{200.0f, 168.0f, 100, 0, true, true, 0xE6000033U, 100},
@@ -67,7 +62,6 @@ static const char *gs_apModuleIds[MODULE_COUNT] = {
 	"killfeed",
 	"finish_prediction",
 	"keystrokes_keyboard",
-	"keystrokes_mouse",
 	"dummy_actions",
 	"swap_timer",
 	"edge_info",
@@ -92,7 +86,6 @@ static const char *gs_apModuleNames[MODULE_COUNT] = {
 	"Killfeed",
 	"Finish Prediction",
 	"Keyboard",
-	"Mouse",
 	"Dummy Actions",
 	"Swap timer",
 	"Edge Info",
@@ -147,7 +140,6 @@ bool HasDynamicDefault(EModule Module)
 	case MODULE_GAME_TIMER:
 	case MODULE_HOOK_COMBO:
 	case MODULE_LOCAL_TIME:
-	case MODULE_KEYSTROKES_MOUSE:
 	case MODULE_DUMMY_ACTIONS:
 	case MODULE_SWAP_TIMER:
 	case MODULE_MUSIC_PLAYER:
@@ -193,13 +185,6 @@ SModuleLayout DynamicDefaultLayout(EModule Module, float HudWidth, float HudHeig
 	case MODULE_LOCAL_TIME:
 		Layout.m_X = HudWidth / 7.0f * 3.0f;
 		Layout.m_Y = 0.0f;
-		break;
-	case MODULE_KEYSTROKES_MOUSE:
-		// bestclient-light
-		if(!HasRuntimeOverrideInternal(MODULE_KEYSTROKES_KEYBOARD))
-			Layout.m_X = GetKeystrokesKeyboardPresetWidthHudPx(g_Config.m_BclKeystrokesKeyboardPreset) + 5.0f;
-		// bestclient-light
-		Layout.m_Y = 152.0f;
 		break;
 	case MODULE_DUMMY_ACTIONS:
 		Layout.m_X = (float)round_to_int(HudWidth - 16.0f);
@@ -472,7 +457,6 @@ bool IsEditorModule(EModule Module)
 	// bestclient-light
 	case MODULE_FINISH_PREDICTION:
 	case MODULE_KEYSTROKES_KEYBOARD:
-	case MODULE_KEYSTROKES_MOUSE:
 	// bestclient-light
 		return true;
 	default:

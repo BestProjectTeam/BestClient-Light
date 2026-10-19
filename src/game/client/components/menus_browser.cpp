@@ -327,9 +327,6 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 	s_ListBox.SetActive(!Ui()->IsPopupOpen());
 	s_ListBox.DoStart(ms_ListheaderHeight, NumServers, 1, 3, -1, &View, false);
 
-	// bestclient-light
-	bool RevealServerPreview = m_ServerBrowserShouldRevealSelection;
-	// bestclient-light
 	if(m_ServerBrowserShouldRevealSelection)
 	{
 		s_ListBox.ScrollToSelected();
@@ -354,14 +351,6 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 	if(vpServerBrowserUiElements.size() < (size_t)NumServers)
 		vpServerBrowserUiElements.resize(NumServers, nullptr);
 
-	// bestclient-light
-	bool PreviewShown = false;
-	if(g_Config.m_BclServerMapPreview != 0)
-		m_ServerMapPreview.Tick();
-	if(m_ServerMapPreview.TakeReveal())
-		RevealServerPreview = true;
-	const float PreviewHeight = m_ServerMapPreview.RowHeight();
-	// bestclient-light
 	for(int i = 0; i < NumServers; i++)
 	{
 		const CServerInfo *pItem = ServerBrowser()->SortedGet(i);
@@ -373,36 +362,9 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		}
 		CUIElement *pUiElement = vpServerBrowserUiElements[i];
 
-		// bestclient-light
-		const bool AddressSelected = str_comp(pItem->m_aAddress, g_Config.m_UiServerAddress) == 0;
-		const bool PreviewRow = g_Config.m_BclServerMapPreview != 0 && m_ServerMapPreview.ShowsAddress(pItem->m_aAddress);
-		if(PreviewRow)
-		{
-			if(m_ServerMapPreview.HasMap(pItem) || m_ServerMapPreview.ReadyToLoad())
-				m_ServerMapPreview.SetServer(pItem);
-			else
-				m_ServerMapPreview.MarkUnavailable(pItem);
-		}
-		const bool ShowPreview = PreviewRow && PreviewHeight > 0.5f;
-		if(ShowPreview && AddressSelected)
-			s_ListBox.SuppressNextSelectionHighlight();
-		// bestclient-light
-		const CListboxItem ListItem = s_ListBox.DoNextItem(pItem, AddressSelected);
+		const CListboxItem ListItem = s_ListBox.DoNextItem(pItem, str_comp(pItem->m_aAddress, g_Config.m_UiServerAddress) == 0);
 		if(ListItem.m_Selected)
 			m_SelectedIndex = i;
-
-		// bestclient-light
-		CUIRect PreviewRect;
-		const ColorRGBA PreviewFrame(1.0f, 1.0f, 1.0f, s_ListBox.Active() ? 0.5f : 0.33f);
-		if(ShowPreview)
-		{
-			PreviewRect = s_ListBox.DoExtraRow(PreviewHeight, RevealServerPreview);
-			CUIRect Block = ListItem.m_Rect;
-			Block.h = PreviewRect.y + PreviewRect.h - ListItem.m_Rect.y;
-			Block.Draw(PreviewFrame, IGraphics::CORNER_ALL, 12.0f);
-			PreviewShown = true;
-		}
-		// bestclient-light
 
 		if(!ListItem.m_Visible)
 		{
@@ -411,10 +373,6 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 				Ui()->SetActiveItem(nullptr);
 
 			// don't render invisible items
-			// bestclient-light
-			if(ShowPreview)
-				m_ServerMapPreview.Render(PreviewRect, PreviewFrame);
-			// bestclient-light
 			continue;
 		}
 
@@ -605,16 +563,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 				TextRender()->TextColor(TextRender()->DefaultTextColor());
 			}
 		}
-		// bestclient-light
-		if(ShowPreview)
-			m_ServerMapPreview.Render(PreviewRect, PreviewFrame);
-		// bestclient-light
 	}
-
-	// bestclient-light
-	if(g_Config.m_BclServerMapPreview != 0 && !PreviewShown && !m_ServerMapPreview.Expanded() && !m_ServerMapPreview.OpenPending())
-		m_ServerMapPreview.Clear();
-	// bestclient-light
 
 	const int NewSelected = s_ListBox.DoEnd();
 	if(NewSelected != m_SelectedIndex)
@@ -628,24 +577,9 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 			{
 				str_copy(g_Config.m_UiServerAddress, pItem->m_aAddress);
 				m_ServerBrowserShouldRevealSelection = true;
-				// bestclient-light
-				if(g_Config.m_BclServerMapPreview != 0)
-					m_ServerMapPreview.SwitchTo(pItem->m_aAddress);
-				// bestclient-light
 			}
 		}
 	}
-	// bestclient-light
-	else if(g_Config.m_BclServerMapPreview != 0 && NewSelected >= 0 && (s_ListBox.WasItemSelected() || s_ListBox.WasItemActivated()))
-	{
-		if(s_ListBox.WasItemActivated())
-			m_ServerMapPreview.CancelScheduledOpen();
-		else if(m_ServerMapPreview.Expanded() || m_ServerMapPreview.OpenPending())
-			m_ServerMapPreview.Collapse();
-		else
-			m_ServerMapPreview.SwitchTo(g_Config.m_UiServerAddress);
-	}
-	// bestclient-light
 
 	WasListboxItemActivated = s_ListBox.WasItemActivated();
 }
