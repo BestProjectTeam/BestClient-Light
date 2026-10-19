@@ -9,7 +9,6 @@
 #include <engine/shared/config.h>
 
 #include <game/client/components/bestclient-light/settings_search.h> // bestclient-light
-#include <game/client/components/bestclient-light/ui_theme/style.h> // bestclient-light
 
 CScrollRegion::CScrollRegion()
 {
@@ -250,9 +249,7 @@ void CScrollRegion::DrawBackground(const CUIRect &ScrollbarBg)
 		if(m_Params.m_RailBgColor.a > 0.0f)
 		{
 			float Rounding = m_Params.m_ScrollHorizontal ? m_RailRect.h / 2.0f : m_RailRect.w / 2.0f;
-			// bestclient-light
-			BestClientLightUiTheme::DrawUiScrollbar(&m_RailRect, m_Params.m_RailBgColor, false, IGraphics::CORNER_ALL, Rounding, !m_Params.m_ScrollHorizontal);
-			// bestclient-light
+			m_RailRect.Draw(m_Params.m_RailBgColor, IGraphics::CORNER_ALL, Rounding);
 		}
 	}
 	if(m_Params.m_ClipBgColor.a > 0.0f)
@@ -389,8 +386,5 @@ void CScrollRegion::DoSlider()
 	m_ContentScrollOffset = -m_ScrollPos;
 
 	const float Rounding = m_Params.m_ScrollHorizontal ? Slider.h / 2.0f : Slider.w / 2.0f;
-	// bestclient-light
-	const bool ScrollAccent = Ui()->CheckActiveItem(pId) || Ui()->HotItem() == pId;
-	BestClientLightUiTheme::DrawUiScrollbar(&Slider, m_Params.SliderColor(Ui()->CheckActiveItem(pId), Ui()->HotItem() == pId), ScrollAccent, IGraphics::CORNER_ALL, Rounding, !m_Params.m_ScrollHorizontal);
-	// bestclient-light
+	Slider.Draw(m_Params.SliderColor(Ui()->CheckActiveItem(pId), Ui()->HotItem() == pId), IGraphics::CORNER_ALL, Rounding);
 }

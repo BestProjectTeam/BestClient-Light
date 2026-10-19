@@ -138,10 +138,7 @@ int CMenus::DoButton_Menu(CButtonContainer *pButtonContainer, const char *pText,
 	else // TClient, why was this not here? ig they never use "checked" anywhere important
 		Color.a *= Ui()->ButtonColorMul(pButtonContainer);
 
-	// bestclient-light
-	const bool ButtonAccent = Checked || Ui()->CheckActiveItem(pButtonContainer) || Ui()->HotItem() == pButtonContainer;
-	BestClientLightUiTheme::DrawUiButton(pRect, Color, ButtonAccent, Corners, Rounding);
-	// bestclient-light
+	pRect->Draw(Color, Corners, Rounding);
 
 	if(pImageName)
 	{
@@ -181,10 +178,7 @@ int CMenus::DoButton_MenuEx(CButtonContainer *pButtonContainer, const char *pTex
 	else
 		Color.a *= Ui()->ButtonColorMul(pButtonContainer);
 
-	// bestclient-light
-	const bool ButtonAccent = Checked || Ui()->CheckActiveItem(pButtonContainer) || Ui()->HotItem() == pButtonContainer;
-	BestClientLightUiTheme::DrawUiButton(pRect, Color, ButtonAccent, Corners, Rounding);
-	// bestclient-light
+	pRect->Draw(Color, Corners, Rounding);
 
 	if(pImageName)
 	{
@@ -258,9 +252,7 @@ int CMenus::DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pTe
 		if(pActiveColor)
 			ColorMenuTab = *pActiveColor;
 
-		// bestclient-light
-		BestClientLightUiTheme::DrawUiNavTab(&Rect, FadeTab(ColorMenuTab), true, DrawCorners, DrawRounding);
-		// bestclient-light
+		Rect.Draw(FadeTab(ColorMenuTab), DrawCorners, DrawRounding);
 	}
 	else
 	{
@@ -270,9 +262,7 @@ int CMenus::DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pTe
 			if(pHoverColor)
 				HoverColorMenuTab = *pHoverColor;
 
-			// bestclient-light
-			BestClientLightUiTheme::DrawUiNavTab(&Rect, FadeTab(HoverColorMenuTab), true, DrawCorners, DrawRounding);
-			// bestclient-light
+			Rect.Draw(FadeTab(HoverColorMenuTab), DrawCorners, DrawRounding);
 		}
 		else
 		{
@@ -280,9 +270,7 @@ int CMenus::DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pTe
 			if(pDefaultColor)
 				ColorMenuTab = *pDefaultColor;
 
-			// bestclient-light
-			BestClientLightUiTheme::DrawUiNavTab(&Rect, FadeTab(ColorMenuTab), false, DrawCorners, DrawRounding);
-			// bestclient-light
+			Rect.Draw(FadeTab(ColorMenuTab), DrawCorners, DrawRounding);
 		}
 	}
 	// bestclient-light
@@ -368,9 +356,7 @@ int CMenus::DoButton_CheckBox_Common(const void *pId, const char *pText, const c
 
 	Box.Margin(2.0f, &Box);
 	const float ColorMul = Ui()->ButtonColorMul(pId);
-	// bestclient-light
-	BestClientLightUiTheme::DrawUiCheckbox(&Box, ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f * ColorMul), false, IGraphics::CORNER_ALL, 3.0f);
-	// bestclient-light
+	Box.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f * ColorMul), IGraphics::CORNER_ALL, 3.0f);
 
 	const bool Checkable = *pBoxText == 'X';
 	if(Checkable)
@@ -480,7 +466,7 @@ ColorHSLA CMenus::DoLine_ColorPicker(CButtonContainer *pResetId, const float Lin
 	if(ShowLineReset)
 	{
 		ResetButton.HMargin(2.0f, &ResetButton);
-		if(DoButton_Menu(pResetId, Localize("Reset"), 0, &ResetButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 4.0f, 0.1f, BestClientLightUiTheme::UiButton(0.25f)))
+		if(DoButton_Menu(pResetId, Localize("Reset"), 0, &ResetButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 4.0f, 0.1f, ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f)))
 		{
 			*pColorValue = color_cast<ColorHSLA>(DefaultColor).Pack(Alpha);
 		}
@@ -494,9 +480,7 @@ ColorHSLA CMenus::DoButton_ColorPicker(const CUIRect *pRect, unsigned int *pHsla
 {
 	ColorHSLA HslaColor = ColorHSLA(*pHslaColor, Alpha);
 
-	// bestclient-light
-	ColorRGBA Outline = BestClientLightUiTheme::UiButton(0.25f);
-	// bestclient-light
+	ColorRGBA Outline = ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f);
 	Outline.a *= Ui()->ButtonColorMul(pHslaColor);
 
 	CUIRect Rect;
@@ -2651,33 +2635,29 @@ void CMenus::OnRender()
 
 	// bestclient-light
 	AspectRatio.ApplyMenuUiAspect(IsActive());
-
-	{
-		const BestClientLightUiTheme::CMenuThemeScope MenuThemeScope(IsActive() || Client()->State() == IClient::STATE_DEMOPLAYBACK);
-
-		Ui()->Update();
-
-		if(ShowAspectConfirmOverlay && IsActive())
-			Ui()->SetActiveItem(nullptr);
-
-		if(IsActive())
-			Ui()->DoBackButton();
-
-		if(IsActive() || Client()->State() == IClient::STATE_DEMOPLAYBACK)
-			Render();
-
-		if(ShowAspectConfirmOverlay && IsActive())
-		{
-			Ui()->SetActiveItem(nullptr);
-			Ui()->SetHotItem(nullptr);
-		}
-
-		if(IsActive())
-		{
-			Ui()->RenderBackButton();
-		}
-	}
 	// bestclient-light
+
+	Ui()->Update();
+
+	if(ShowAspectConfirmOverlay && IsActive())
+		Ui()->SetActiveItem(nullptr);
+
+	if(IsActive())
+		Ui()->DoBackButton();
+
+	if(IsActive() || Client()->State() == IClient::STATE_DEMOPLAYBACK)
+		Render();
+
+	if(ShowAspectConfirmOverlay && IsActive())
+	{
+		Ui()->SetActiveItem(nullptr);
+		Ui()->SetHotItem(nullptr);
+	}
+
+	if(IsActive())
+	{
+		Ui()->RenderBackButton();
+	}
 
 	// render debug information
 	if(g_Config.m_Debug)

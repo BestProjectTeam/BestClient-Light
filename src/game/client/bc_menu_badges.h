@@ -7,7 +7,6 @@
 #include <engine/graphics.h>
 #include <engine/textrender.h>
 
-#include <game/client/components/bestclient-light/ui_theme/style.h>
 #include <game/client/ui.h>
 #include <game/client/ui_rect.h>
 #include <game/localization.h>
@@ -48,17 +47,10 @@ inline constexpr SBadge Author{
 inline void DrawAt(IGraphics *pGraphics, CUi *pUi, ITextRender *pTextRender, const CUIRect &Badge, const SBadge &Style, const char *pText = nullptr)
 {
 	const char *pLabel = pText != nullptr ? pText : Style.m_pText;
-	if(BestClientLightUiTheme::IsCustomUiBadge())
-	{
-		BestClientLightUiTheme::DrawUiBadge(&Badge, Style.m_Left.a, Style.m_Right.a, Style.m_Rounding, false);
-	}
-	else
-	{
-		pGraphics->DrawRect4(
-			Badge.x, Badge.y, Badge.w, Badge.h,
-			Style.m_Left, Style.m_Right, Style.m_Left, Style.m_Right,
-			IGraphics::CORNER_ALL, Style.m_Rounding);
-	}
+	pGraphics->DrawRect4(
+		Badge.x, Badge.y, Badge.w, Badge.h,
+		Style.m_Left, Style.m_Right, Style.m_Left, Style.m_Right,
+		IGraphics::CORNER_ALL, Style.m_Rounding);
 	pUi->DoLabel(&Badge, pLabel, Style.m_FontSize, TEXTALIGN_MC);
 }
 

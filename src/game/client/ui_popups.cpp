@@ -448,8 +448,8 @@ int CUi::DoDropDown(CUIRect *pRect, int CurSelection, const char **pStrs, int Nu
 	if(DoButton_Menu(State.m_UiElement, &State.m_ButtonContainer, LabelFunc, pRect, Props))
 	{
 		State.m_SelectionPopupContext.Reset();
-		State.m_SelectionPopupContext.m_Props.m_BorderColor = BestClientLightUiTheme::UiDropdown(ColorRGBA(0.7f, 0.7f, 0.7f, 0.9f));
-		State.m_SelectionPopupContext.m_Props.m_BackgroundColor = BestClientLightUiTheme::IsCustomUiDropdown() ? BestClientLightUiTheme::UiDropdown(0.25f) : ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f);
+		State.m_SelectionPopupContext.m_Props.m_BorderColor = ColorRGBA(0.7f, 0.7f, 0.7f, 0.9f);
+		State.m_SelectionPopupContext.m_Props.m_BackgroundColor = ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f);
 		for(int i = 0; i < Num; ++i)
 			State.m_SelectionPopupContext.m_vEntries.emplace_back(pStrs[i]);
 		State.m_SelectionPopupContext.m_EntryHeight = pRect->h;

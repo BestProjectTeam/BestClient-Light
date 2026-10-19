@@ -6,7 +6,8 @@
 
 #include <base/color.h>
 
-#include <game/client/components/bestclient-light/ui_theme/style.h>
+#include <engine/shared/config.h>
+
 #include <game/client/ui_rect.h>
 
 class CUi;
@@ -16,7 +17,7 @@ namespace BestClientLightUiTheme
 
 inline ColorRGBA SliderValueColor()
 {
-	return UiText(ColorRGBA(1.0f, 1.0f, 1.0f, 0.95f));
+	return ColorRGBA(1.0f, 1.0f, 1.0f, 0.95f);
 }
 
 inline float SliderRounding(float Height)
@@ -31,8 +32,6 @@ inline float CheckBoxRounding(float Size)
 
 inline ColorRGBA SettingsNavFromUi(float RgbScale, float Alpha)
 {
-	if(IsCustomUiNavTab())
-		return ColorRGBA(RgbScale, RgbScale, RgbScale, Alpha);
 	const ColorRGBA Gui = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_UiColor, true));
 	return ColorRGBA(Gui.r * RgbScale, Gui.g * RgbScale, Gui.b * RgbScale, Alpha);
 }

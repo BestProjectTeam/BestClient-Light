@@ -104,7 +104,7 @@ void CMenus::RenderSettings(CUIRect MainView)
 		MainView.VSplitLeft(TabBarWidth, &TabBar, &MainView);
 	else
 		MainView.VSplitRight(TabBarWidth, &MainView, &TabBar);
-	BestClientLightUiTheme::DrawUiMainPanel(&MainView, ms_ColorTabbarActive, false, IGraphics::CORNER_B, 10.0f);
+	MainView.Draw(ms_ColorTabbarActive, IGraphics::CORNER_B, 10.0f);
 	// bestclient-light
 	MainView.Margin(20.0f, &MainView);
 
@@ -120,7 +120,7 @@ void CMenus::RenderSettings(CUIRect MainView)
 
 	TabBar.HSplitTop(50.0f, &Button, &TabBar);
 	// bestclient-light
-	BestClientLightUiTheme::DrawUiMainPanel(&Button, ms_ColorTabbarActive, false, NavOnLeft ? IGraphics::CORNER_BL : IGraphics::CORNER_BR, 10.0f);
+	Button.Draw(ms_ColorTabbarActive, NavOnLeft ? IGraphics::CORNER_BL : IGraphics::CORNER_BR, 10.0f);
 	const bool ExploreLockCorner = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
 	if(!ExploreLockCorner)
 	{
