@@ -2879,10 +2879,6 @@ if(CLIENT)
     components/bestclient-light/admin_panel.h
     components/bestclient-light/aspect_ratio.cpp
     components/bestclient-light/aspect_ratio.h
-    components/bestclient-light/flying_name_plates.cpp
-    components/bestclient-light/flying_name_plates.h
-    components/bestclient-light/3d_particles.cpp
-    components/bestclient-light/3d_particles.h
     components/bestclient-light/fast_actions.cpp
     components/bestclient-light/fast_actions.h
     components/bestclient-light/optimizer.cpp

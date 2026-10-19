@@ -231,56 +231,8 @@ Custom
 == 自定义
 
 [BestClient Light]
-Flying Name Plates
-== 飘动名牌
-
-[BestClient Light]
-Enable flying name plates
-== 启用飘动名牌
-
-[BestClient Light]
-Hide line
-== 隐藏连线
-
-[BestClient Light]
-Lift above player
-== 抬到玩家上方
-
-[BestClient Light]
-Movement drag
-== 移动拖尾
-
-[BestClient Light]
-Follow speed
-== 跟随速度
-
-[BestClient Light]
-3D Particles
-== 3D 粒子
-
-[BestClient Light]
-Enable 3D Particles
-== 启用 3D 粒子
-
-[BestClient Light]
-Density
-== 密度
-
-[BestClient Light]
-Particle type
-== 粒子类型
-
-[BestClient Light]
 Cube
 == 方块
-
-[BestClient Light]
-Heart
-== 爱心
-
-[BestClient Light]
-Mixed
-== 混合
 
 [BestClient Light]
 Size
@@ -289,10 +241,6 @@ Size
 [BestClient Light]
 Color mode
 == 颜色模式
-
-[BestClient Light]
-Glow
-== 发光
 
 [BestClient Light]
 Media Background

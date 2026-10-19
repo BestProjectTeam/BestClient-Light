@@ -1192,11 +1192,6 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 		Data.m_ShowClan = true;
 	Data.m_Local = pPlayerInfo->m_Local;
 
-	// bestclient-light
-	GameClient()->m_FlyingNamePlates.Update(pPlayerInfo->m_ClientId, Position);
-	const vec2 RenderPos = GameClient()->m_FlyingNamePlates.GetRenderPos(pPlayerInfo->m_ClientId, Position);
-	if(!GameClient()->OptimizerAllowRenderPos(RenderPos))
-		return;
 	// Check if the nameplate is actually on screen
 	const int ClientId = pPlayerInfo->m_ClientId;
 	CNamePlate &NamePlate = m_pData->m_aNamePlates[ClientId];
@@ -1218,8 +1213,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 		m_pData->m_aLastAlpha[ClientId] = Alpha;
 		NamePlate.Update(*GameClient(), Data);
 	}
-	NamePlate.Render(*GameClient(), RenderPos);
-	// bestclient-light
+	NamePlate.Render(*GameClient(), Position);
 }
 
 void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
@@ -1321,21 +1315,9 @@ void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
 	const float InteractionDistance = 20.0f;
 	const vec2 TeeDirection = Distance < InteractionDistance ? normalize(vec2(DeltaPosition.x, std::max(DeltaPosition.y, 0.5f))) : normalize(DeltaPosition);
 	const int TeeEmote = Distance < InteractionDistance ? EMOTE_HAPPY : (Dummy ? g_Config.m_ClDummyDefaultEyes : g_Config.m_ClPlayerDefaultEyes);
-	const vec2 TeePos = Position;
 	RenderTools()->RenderTee(CAnimState::GetIdle(), &TeeRenderInfo, TeeEmote, TeeDirection, Position);
 	Position.y -= (float)g_Config.m_ClNamePlatesOffset;
-	// bestclient-light
-	if(g_Config.m_BclFlyingNamePlates)
-	{
-		const vec2 FlyingPos = GameClient()->m_FlyingNamePlates.PreviewPos(Position, TeeDirection);
-		GameClient()->m_FlyingNamePlates.RenderPreviewRope(TeePos, FlyingPos, Data.m_Color);
-		NamePlate.Render(*GameClient(), FlyingPos);
-	}
-	else
-	{
-		NamePlate.Render(*GameClient(), Position);
-	}
-	// bestclient-light
+	NamePlate.Render(*GameClient(), Position);
 	NamePlate.Reset(*GameClient());
 }
 
@@ -1344,9 +1326,6 @@ void CNamePlates::ResetNamePlates()
 	for(CNamePlate &NamePlate : m_pData->m_aNamePlates)
 		NamePlate.Reset(*GameClient());
 	m_pData->ResetState();
-	// bestclient-light
-	GameClient()->m_FlyingNamePlates.OnReset();
-	// bestclient-light
 }
 
 // bestclient-light

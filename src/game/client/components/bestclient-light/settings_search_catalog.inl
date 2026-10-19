@@ -24,19 +24,6 @@
 	{"Corner rounding", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Bubbles", &g_Config.m_BclChatBubbleRounding, &g_Config.m_BclChatBubbles},
 	{"Custom colors", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Bubbles", &g_Config.m_BclChatBubbleCustomColors, &g_Config.m_BclChatBubbles},
 
-	{"Flying Name Plates", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclFlyingNamePlates, nullptr},
-	{"Hide line", SETTINGS_NAV_LEAF_BC_VISUALS, "Flying Name Plates", &g_Config.m_BclFlyingNamePlatesHideLine, &g_Config.m_BclFlyingNamePlates},
-	{"Lift above player", SETTINGS_NAV_LEAF_BC_VISUALS, "Flying Name Plates", &g_Config.m_BclFlyingNamePlatesLift, &g_Config.m_BclFlyingNamePlates},
-	{"Movement drag", SETTINGS_NAV_LEAF_BC_VISUALS, "Flying Name Plates", &g_Config.m_BclFlyingNamePlatesDrag, &g_Config.m_BclFlyingNamePlates},
-	{"Follow speed", SETTINGS_NAV_LEAF_BC_VISUALS, "Flying Name Plates", &g_Config.m_BclFlyingNamePlatesFollow, &g_Config.m_BclFlyingNamePlates},
-
-	{"3D Particles", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_Bcl3dParticles, nullptr},
-	{"Density", SETTINGS_NAV_LEAF_BC_VISUALS, "3D Particles", &g_Config.m_Bcl3dParticlesDensity, &g_Config.m_Bcl3dParticles},
-	{"Particle type", SETTINGS_NAV_LEAF_BC_VISUALS, "3D Particles", &g_Config.m_Bcl3dParticlesType, &g_Config.m_Bcl3dParticles},
-	{"Size", SETTINGS_NAV_LEAF_BC_VISUALS, "3D Particles", &g_Config.m_Bcl3dParticlesSizeMax, &g_Config.m_Bcl3dParticles},
-	{"Color mode", SETTINGS_NAV_LEAF_BC_VISUALS, "3D Particles", &g_Config.m_Bcl3dParticlesColorMode, &g_Config.m_Bcl3dParticles},
-	{"Glow", SETTINGS_NAV_LEAF_BC_VISUALS, "3D Particles", &g_Config.m_Bcl3dParticlesGlow, &g_Config.m_Bcl3dParticles},
-
 	{"Media Background", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclMenuMediaBackground, nullptr},
 	{"Enable to game background", SETTINGS_NAV_LEAF_BC_VISUALS, "Media Background", &g_Config.m_BclGameMediaBackground, nullptr},
 	{"Map offset", SETTINGS_NAV_LEAF_BC_VISUALS, "Media Background", &g_Config.m_BclGameMediaBackgroundOffset, &g_Config.m_BclGameMediaBackground},

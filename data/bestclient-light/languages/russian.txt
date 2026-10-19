@@ -231,56 +231,8 @@ Custom
 == Свой
 
 [BestClient Light]
-Flying Name Plates
-== Летающие неймплейты
-
-[BestClient Light]
-Enable flying name plates
-== Включить летающие неймплейты
-
-[BestClient Light]
-Hide line
-== Скрыть линию
-
-[BestClient Light]
-Lift above player
-== Поднять над игроком
-
-[BestClient Light]
-Movement drag
-== Драг движения
-
-[BestClient Light]
-Follow speed
-== Скорость следования
-
-[BestClient Light]
-3D Particles
-== 3D частицы
-
-[BestClient Light]
-Enable 3D Particles
-== Включить 3D частицы
-
-[BestClient Light]
-Density
-== Плотность
-
-[BestClient Light]
-Particle type
-== Тип частиц
-
-[BestClient Light]
 Cube
 == Куб
-
-[BestClient Light]
-Heart
-== Сердце
-
-[BestClient Light]
-Mixed
-== Микс
 
 [BestClient Light]
 Size
@@ -289,10 +241,6 @@ Size
 [BestClient Light]
 Color mode
 == Режим цвета
-
-[BestClient Light]
-Glow
-== Свечение
 
 [BestClient Light]
 Media Background

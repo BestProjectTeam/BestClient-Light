@@ -194,8 +194,6 @@ void CChatBubbles::RenderCurInput(float Y)
 		return;
 
 	vec2 Position = GameClient()->m_aClients[LocalId].m_RenderPos;
-	if(g_Config.m_BclFlyingNamePlates)
-		Position.x = GameClient()->m_FlyingNamePlates.GetRenderPos(LocalId, Position).x;
 	CTextCursor Cursor;
 	STextContainerIndex TextContainerIndex;
 
@@ -277,17 +275,7 @@ void CChatBubbles::RenderChatBubbles(int ClientId)
 		return;
 
 	vec2 Position = TeePos;
-	float BaseY;
-	if(g_Config.m_BclFlyingNamePlates)
-	{
-		const vec2 PlatePos = GameClient()->m_FlyingNamePlates.GetRenderPos(ClientId, TeePos);
-		Position.x = PlatePos.x;
-		BaseY = PlatePos.y - GetOffset(ClientId) - BcChatBubbleNameplateOffset;
-	}
-	else
-	{
-		BaseY = Position.y - GetOffset(ClientId) - BcChatBubbleNameplateOffset;
-	}
+	const float BaseY = Position.y - GetOffset(ClientId) - BcChatBubbleNameplateOffset;
 
 	if(ClientId == GameClient()->m_Snap.m_LocalClientId)
 		RenderCurInput(BaseY);

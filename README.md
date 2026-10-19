@@ -106,10 +106,8 @@ The client currently ships with more than **300** `bc_*` config variables, five 
 
 - **Chat Media** — inline photo/GIF previews, domain filter, above-head gif bubble
 - **Hook Combo** — combo popups and sounds (hook / hammer / both)
-- **3D Particles** — cubes/hearts/mixed, glow, player push
 - **Media Background** — video/image in menus and ingame background
 - **Sweat Weapon (Crystal Laser)** — crystal laser and shotgun effects
-- **Flying Name Plates** — kite-style trailing name plates
 - **Motion Blur** — previous-frame blending (BETA)
 - **Animations** — UI reveal, chat/killfeed/main menu animations
 - **Music Player** — HUD player with visualizer and cover colors
@@ -204,25 +202,6 @@ Source: `src/engine/shared/config_variables_bestclient.h` (more than 300 variabl
 <summary>Expand full list</summary>
 
 ```cfg
-bc_3d_particles
-bc_3d_particles_alpha
-bc_3d_particles_collide
-bc_3d_particles_color
-bc_3d_particles_color_mode
-bc_3d_particles_count
-bc_3d_particles_depth
-bc_3d_particles_fade_in_ms
-bc_3d_particles_fade_out_ms
-bc_3d_particles_glow
-bc_3d_particles_glow_alpha
-bc_3d_particles_glow_offset
-bc_3d_particles_push_radius
-bc_3d_particles_push_strength
-bc_3d_particles_size_max
-bc_3d_particles_size_min
-bc_3d_particles_speed
-bc_3d_particles_type
-bc_3d_particles_view_margin
 bc_animations
 bc_auto_margin
 bc_auto_server_list_refresh
@@ -317,10 +296,6 @@ bc_finish_prediction_show_millis
 bc_finish_prediction_show_percentage
 bc_finish_prediction_show_time
 bc_finish_prediction_time_mode
-bc_flying_name_plates
-bc_flying_name_plates_drag
-bc_flying_name_plates_follow
-bc_flying_name_plates_lift
 bc_game_media_background
 bc_game_media_background_offset
 bc_gif_bubble_above_head

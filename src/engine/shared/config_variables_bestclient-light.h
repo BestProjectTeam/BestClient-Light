@@ -143,29 +143,6 @@ MACRO_CONFIG_INT(BclFastActions, bcl_fast_actions, 1, 0, 1, CFGFLAG_CLIENT | CFG
 MACRO_CONFIG_INT(BclSnapTap, bcl_snap_tap, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Enable Snap Tap for opposite left/right inputs")
 MACRO_CONFIG_INT(BclSnapTapDelay, bcl_snap_tap_delay, 0, 0, 200, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Snap Tap direction switch delay in milliseconds (0 = off)")
 
-// Flying name plates
-MACRO_CONFIG_INT(BclFlyingNamePlates, bcl_flying_name_plates, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Render name plates like flying kites attached to players")
-MACRO_CONFIG_INT(BclFlyingNamePlatesHideLine, bcl_flying_name_plates_hide_line, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Hide the line between players and flying name plates")
-MACRO_CONFIG_INT(BclFlyingNamePlatesLift, bcl_flying_name_plates_lift, 28, 0, 120, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Extra vertical lift for flying name plates")
-MACRO_CONFIG_INT(BclFlyingNamePlatesDrag, bcl_flying_name_plates_drag, 52, 0, 200, CFGFLAG_CLIENT | CFGFLAG_SAVE, "How far flying name plates trail behind movement")
-MACRO_CONFIG_INT(BclFlyingNamePlatesFollow, bcl_flying_name_plates_follow, 40, 1, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "How quickly flying name plates catch up to their target position")
-
-// 3D particles
-MACRO_CONFIG_INT(Bcl3dParticles, bcl_3d_particles, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Toggle 3D particles")
-MACRO_CONFIG_INT(Bcl3dParticlesType, bcl_3d_particles_type, 1, 1, 3, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Type of 3D particles. 1 = Cube, 2 = Heart, 3 = Mixed")
-MACRO_CONFIG_INT(Bcl3dParticlesDensity, bcl_3d_particles_density, 50, 1, 600, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Density of 3D particles on the map")
-MACRO_CONFIG_INT(Bcl3dParticlesSizeMax, bcl_3d_particles_size_max, 8, 2, 200, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Maximum size of 3D particles")
-MACRO_CONFIG_INT(Bcl3dParticlesSpeed, bcl_3d_particles_speed, 18, 1, 500, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Base speed of 3D particles")
-MACRO_CONFIG_INT(Bcl3dParticlesDepth, bcl_3d_particles_depth, 300, 10, 1000, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Depth range for 3D particles")
-MACRO_CONFIG_INT(Bcl3dParticlesAlpha, bcl_3d_particles_alpha, 35, 1, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Alpha of 3D particles (1-100)")
-MACRO_CONFIG_INT(Bcl3dParticlesPushRadius, bcl_3d_particles_push_radius, 120, 0, 1000, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Player push radius for 3D particles")
-MACRO_CONFIG_INT(Bcl3dParticlesPushStrength, bcl_3d_particles_push_strength, 120, 0, 2000, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Player push strength for 3D particles")
-MACRO_CONFIG_INT(Bcl3dParticlesCollide, bcl_3d_particles_collide, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "3D particles collide with each other")
-MACRO_CONFIG_INT(Bcl3dParticlesViewMargin, bcl_3d_particles_view_margin, 200, 0, 1000, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Margin outside view before 3D particles disappear")
-MACRO_CONFIG_INT(Bcl3dParticlesColorMode, bcl_3d_particles_color_mode, 1, 1, 2, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Color mode for 3D particles. 1 = Custom, 2 = Random")
-MACRO_CONFIG_COL(Bcl3dParticlesColor, bcl_3d_particles_color, 4294967295, CFGFLAG_CLIENT | CFGFLAG_SAVE | CFGFLAG_COLALPHA, "Color of 3D particles")
-MACRO_CONFIG_INT(Bcl3dParticlesGlow, bcl_3d_particles_glow, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Enable 3D particles glow")
-
 // Assets (cursor / arrow / audio)
 MACRO_CONFIG_STR(ClAssetCursor, cl_asset_cursor, 50, "default", CFGFLAG_CLIENT | CFGFLAG_SAVE, "The asset for cursor")
 MACRO_CONFIG_STR(ClAssetArrow, cl_asset_arrow, 50, "default", CFGFLAG_CLIENT | CFGFLAG_SAVE, "The asset for arrow")

@@ -104,7 +104,6 @@ void COptimizer::RefreshFrame()
 	if(m_DisableParticles && !m_WasDisableParticles)
 	{
 		GameClient()->m_Particles.OnReset();
-		GameClient()->m_3DParticles.OnReset();
 	}
 	m_WasDisableParticles = m_DisableParticles;
 }

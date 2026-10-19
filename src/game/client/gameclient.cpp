@@ -150,10 +150,8 @@ void CGameClient::OnConsoleInit()
 					      &m_Particles.m_RenderTrailExtra,
 					      &m_Items,
 					      &m_Trails, // TClient
-					      &m_3DParticles, // bestclient-light
 					      &m_Ghost,
 					      &m_TClient, // TClient (Must be before chat and players)
-					      &m_FlyingNamePlates, // bestclient-light
 					      &m_Players,
 					      &m_MovingTilesBackground, // TClient
 					      &m_CloudInput, // bestclient-light
@@ -5967,14 +5965,10 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "Items";
 	if(pComp == &m_Trails)
 		return "Trails";
-	if(pComp == &m_3DParticles)
-		return "3DParticles";
 	if(pComp == &m_Ghost)
 		return "Ghost";
 	if(pComp == &m_TClient)
 		return "TClient";
-	if(pComp == &m_FlyingNamePlates)
-		return "FlyingNamePlates";
 	if(pComp == &m_Players)
 		return "Players";
 	if(pComp == &m_MovingTilesBackground)

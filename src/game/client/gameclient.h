@@ -29,7 +29,6 @@
 
 // components
 #include "components/background.h"
-#include "components/bestclient-light/3d_particles.h" // bestclient-light
 #include "components/bestclient-light/admin_panel.h" // bestclient-light
 #include "components/bestclient-light/aspect_ratio.h" // bestclient-light
 #include "components/bestclient-light/bestclient-light.h" // bestclient-light
@@ -43,7 +42,6 @@
 #include "components/bestclient-light/fast_actions.h" // bestclient-light
 #include "components/bestclient-light/fast_practice.h" // bestclient-light
 #include "components/bestclient-light/finish_prediction.h" // bestclient-light
-#include "components/bestclient-light/flying_name_plates.h" // bestclient-light
 #include "components/bestclient-light/keystrokes.h" // bestclient-light
 #include "components/bestclient-light/music_player.h" // bestclient-light
 #include "components/bestclient-light/optimizer.h" // bestclient-light
@@ -239,8 +237,6 @@ public:
 	CVoiceChat m_VoiceChat; // bestclient-light
 	CAdminPanel m_AdminPanel; // bestclient-light
 	CAspectRatio m_AspectRatio; // bestclient-light
-	C3DParticles m_3DParticles; // bestclient-light
-	CFlyingNamePlates m_FlyingNamePlates; // bestclient-light
 	CQuickBinds m_QuickBinds; // bestclient-light
 	CRollbackDemo m_RollbackDemo; // bestclient-light
 	CFastActions m_FastActions; // bestclient-light
