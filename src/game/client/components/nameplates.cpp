@@ -63,7 +63,6 @@ public:
 	bool m_ShowBClientVersion;
 	float m_FontSizeBClientVersion;
 	char m_aBClientVersion[32];
-	bool m_ShowVoiceTalking;
 	// bestclient-light
 };
 
@@ -735,48 +734,6 @@ public:
 	}
 };
 
-// bestclient-light
-class CNamePlatePartVoiceTalking : public CNamePlatePartText
-{
-	float m_FontSize = -INFINITY;
-
-protected:
-	bool UpdateNeeded(CGameClient &This, const CNamePlateData &Data) override
-	{
-		(void)This;
-		m_Visible = Data.m_ShowVoiceTalking;
-		if(!m_Visible)
-			return false;
-		m_Color = ColorRGBA(0.68f, 1.0f, 0.68f, Data.m_Color.a);
-		return m_FontSize != Data.m_FontSize;
-	}
-
-	void UpdateText(CGameClient &This, const CNamePlateData &Data) override
-	{
-		m_FontSize = Data.m_FontSize;
-		CTextCursor Cursor;
-		This.TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
-		Cursor.m_FontSize = m_FontSize;
-		This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, FontIcon::MICROPHONE);
-		This.TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
-	}
-
-	void Render(CGameClient &This, vec2 Pos) const override
-	{
-		Pos.x += (float)g_Config.m_BclNameplateVoiceOffsetX;
-		Pos.y += (float)g_Config.m_BclNameplateVoiceOffsetY;
-		CNamePlatePartText::Render(This, Pos);
-	}
-
-public:
-	CNamePlatePartVoiceTalking(CGameClient &This) :
-		CNamePlatePartText(This)
-	{
-		m_Padding = vec2(0.0f, 0.0f);
-	}
-};
-// bestclient-light
-
 class CNamePlatePartBClientVersion : public CNamePlatePartText
 {
 private:
@@ -854,7 +811,6 @@ private:
 			AddPart<CNamePlatePartClientId>(This, false);
 			// bestclient-light
 			AddPart<CNamePlatePartBClientIndicator>(This);
-			AddPart<CNamePlatePartVoiceTalking>(This);
 			// bestclient-light
 			AddPart<CNamePlatePartName>(This);
 			AddPart<CNamePlatePartNewLine>(This);
@@ -1151,8 +1107,6 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	Data.m_IsUserBClientIndicator = Data.m_ShowBClientIndicator && GameClient()->m_ClientIndicator.IsPlayerBClient(pPlayerInfo->m_ClientId);
 	Data.m_IsUserDeveloperIndicator = Data.m_ShowBClientIndicator && GameClient()->m_ClientIndicator.IsPlayerDeveloper(pPlayerInfo->m_ClientId);
 	Data.m_IsUserFakeIndicator = Data.m_ShowBClientIndicator && GameClient()->m_ClientIndicator.IsPlayerFakeVersion(pPlayerInfo->m_ClientId);
-	Data.m_ShowVoiceTalking = g_Config.m_BclVoiceChatNameplateIcon != 0 &&
-				  GameClient()->m_VoiceChat.IsClientTalking(pPlayerInfo->m_ClientId);
 	Data.m_ShowBClientVersion = false;
 	Data.m_FontSizeBClientVersion = 0.0f;
 	Data.m_aBClientVersion[0] = '\0';
@@ -1295,7 +1249,6 @@ void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
 	Data.m_IsUserBClientIndicator = Data.m_ShowBClientIndicator;
 	Data.m_IsUserDeveloperIndicator = false;
 	Data.m_IsUserFakeIndicator = false;
-	Data.m_ShowVoiceTalking = g_Config.m_BclVoiceChatNameplateIcon != 0;
 	Data.m_ShowBClientVersion = false;
 	Data.m_FontSizeBClientVersion = std::max(10.0f, FontSize * 0.75f);
 	Data.m_aBClientVersion[0] = '\0';

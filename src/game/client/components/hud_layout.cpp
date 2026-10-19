@@ -36,8 +36,6 @@ static const SModuleLayout gs_aModuleLayouts[MODULE_COUNT] = {
 	{500.0f, 141.0f, 100, 0, true, true, 0x66000000U, 100},
 	{460.0f, 229.0f, 100, 0, true, true, 0x40000000U, 100},
 	{198.0f, 0.0f, 100, 0, true, false, 0x1E59A36BU, 100},
-	{0.0f, 100.0f, 100, 0, true, false, 0x66000000U, 100},
-	{136.0f, 0.0f, 100, 0, true, false, 0x66000000U, 100},
 	{5.0f, 278.0f, 100, 0, true, false, 0x66000000U, 100},
 	{0.0f, 60.0f, 100, 0, true, true, 0x66000000U, 100},
 	{250.0f, 200.0f, 65, 0, true, true, 0x66000000U, 100},
@@ -63,8 +61,6 @@ static const char *gs_apModuleIds[MODULE_COUNT] = {
 	"spectator_count",
 	"score",
 	"music_player",
-	"voice_hud",
-	"voice_mute_icons",
 	"chat",
 	"votes",
 	"lock_cam",
@@ -90,8 +86,6 @@ static const char *gs_apModuleNames[MODULE_COUNT] = {
 	"Spectator Count",
 	"Score",
 	"Music Player",
-	"Voice HUD",
-	"Voice Mute Icons",
 	"Ingame Chat",
 	"Votes",
 	"Lock Cam",
@@ -382,8 +376,6 @@ void MigrateFromLegacyConfigs()
 	};
 
 	MigrateIfDefault(MODULE_MUSIC_PLAYER, (float)g_Config.m_BclHudMusicPlayerX, (float)g_Config.m_BclHudMusicPlayerY, g_Config.m_BclHudMusicPlayerScale);
-	MigrateIfDefault(MODULE_VOICE_TALKERS, (float)g_Config.m_BclHudVoiceHudX, (float)g_Config.m_BclHudVoiceHudY, g_Config.m_BclHudVoiceHudScale);
-	MigrateIfDefault(MODULE_VOICE_STATUS, (float)g_Config.m_BclHudVoiceMuteIconsX, (float)g_Config.m_BclHudVoiceMuteIconsY, g_Config.m_BclHudVoiceMuteIconsScale);
 	MigrateIfDefault(MODULE_CHAT, (float)g_Config.m_BclHudChatX, (float)g_Config.m_BclHudChatY, g_Config.m_BclHudChatScale);
 	MigrateIfDefault(MODULE_VOTES, (float)g_Config.m_BclHudVotesX, (float)g_Config.m_BclHudVotesY, g_Config.m_BclHudVotesScale);
 
@@ -406,12 +398,6 @@ void MigrateFromLegacyConfigs()
 	g_Config.m_BclHudMusicPlayerX = (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_X;
 	g_Config.m_BclHudMusicPlayerY = (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Y;
 	g_Config.m_BclHudMusicPlayerScale = gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Scale;
-	g_Config.m_BclHudVoiceHudX = (int)gs_aModuleLayouts[MODULE_VOICE_TALKERS].m_X;
-	g_Config.m_BclHudVoiceHudY = (int)gs_aModuleLayouts[MODULE_VOICE_TALKERS].m_Y;
-	g_Config.m_BclHudVoiceHudScale = gs_aModuleLayouts[MODULE_VOICE_TALKERS].m_Scale;
-	g_Config.m_BclHudVoiceMuteIconsX = (int)gs_aModuleLayouts[MODULE_VOICE_STATUS].m_X;
-	g_Config.m_BclHudVoiceMuteIconsY = (int)gs_aModuleLayouts[MODULE_VOICE_STATUS].m_Y;
-	g_Config.m_BclHudVoiceMuteIconsScale = gs_aModuleLayouts[MODULE_VOICE_STATUS].m_Scale;
 	g_Config.m_BclHudChatX = (int)gs_aModuleLayouts[MODULE_CHAT].m_X;
 	g_Config.m_BclHudChatY = (int)gs_aModuleLayouts[MODULE_CHAT].m_Y;
 	g_Config.m_BclHudChatScale = gs_aModuleLayouts[MODULE_CHAT].m_Scale;
@@ -482,10 +468,6 @@ bool IsEditorModule(EModule Module)
 	case MODULE_FROZEN_HUD:
 	case MODULE_NOTIFY_LAST:
 	case MODULE_MUSIC_PLAYER:
-	// bestclient-light
-	case MODULE_VOICE_TALKERS:
-	case MODULE_VOICE_STATUS:
-	// bestclient-light
 	case MODULE_EDGE_INFO:
 	// bestclient-light
 	case MODULE_FINISH_PREDICTION:

@@ -725,8 +725,6 @@ float BestClientLightScoreboardPlayerPopupHeight(const CGameClient *pGameClient,
 	int ButtonRows = 7;
 	if(!IsSpectatorRow)
 		ButtonRows++;
-	if(!IsLocal && g_Config.m_BclVoiceChatEnable)
-		ButtonRows += 2;
 	ButtonRows += ExtraButtonRows;
 
 	float Height = OuterPopupPadding + InnerMargin + LabelHeight;

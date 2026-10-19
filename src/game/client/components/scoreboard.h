@@ -65,15 +65,11 @@ class CScoreboard : public CComponent
 		CButtonContainer m_FindHoursButton;
 		CButtonContainer m_ClipNameButton;
 		CButtonContainer m_SwapButton;
-		CButtonContainer m_VoiceMuteButton;
-		CButtonContainer m_VoiceVolumeSlider;
 		CButtonContainer m_TeamExitButton;
 		CButtonContainer m_TeamJoinButton;
 		CButtonContainer m_TeamInviteButton;
 		CButtonContainer m_TeamKickButton;
 		CButtonContainer m_TeamLockButton;
-		int m_VoiceVolumePreview = -1;
-		bool m_VoiceVolumeDirty = false;
 		// bestclient-light
 
 		int m_ClientId;

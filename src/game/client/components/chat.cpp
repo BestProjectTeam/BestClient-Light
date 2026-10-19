@@ -2021,8 +2021,6 @@ void CChat::SendChat(int Team, const char *pLine)
 	// bestclient-light
 	if(GameClient()->m_FastPractice.ConsumePracticeChatCommand(Team, pLine))
 		return;
-	if(GameClient()->m_VoiceChat.TryHandleChatCommand(pLine))
-		return;
 	// bestclient-light
 
 	m_LastChatSend = time();

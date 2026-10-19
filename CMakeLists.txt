@@ -2947,9 +2947,6 @@ if(CLIENT)
     components/bestclient-light/clientindicator/presence_cache.cpp
     components/bestclient-light/clientindicator/presence_cache.h
     components/bestclient-light/clientindicator/protocol.h
-    components/bestclient-light/voice/protocol.h
-    components/bestclient-light/voice/voice.cpp
-    components/bestclient-light/voice/voice.h
     components/bestclient-light/spec_pause_radio.cpp
     components/bestclient-light/spec_pause_radio.h
     components/bestclient-light/chat_bubbles.cpp

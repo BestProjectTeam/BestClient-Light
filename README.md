@@ -14,7 +14,7 @@
 BestClient is a customized DDNet client built around native BestClient systems instead of a thin reskin.
 The project adds its own rendering stack, input tools, social systems, editors, and UI modules while staying compatible with DDNet servers.
 
-The client currently ships with more than **300** `bc_*` config variables, five BestClient settings tabs, integrated voice chat, a live HUD editor, clans, collaborative multimapping, and Fast Practice.
+The client currently ships with more than **300** `bc_*` config variables, five BestClient settings tabs, a live HUD editor, clans, collaborative multimapping, and Fast Practice.
 
 ## Links
 
@@ -83,7 +83,7 @@ The client currently ships with more than **300** `bc_*` config variables, five 
 <p align="center"><img src="docs/screenshots/hud_editor.jpg" width="100%" alt="HUD Editor" /></p>
 <ul>
 <li>Drag, drop, and resize HUD modules in real time</li>
-<li>Chat, votes, music player, keystrokes, voice HUD, and more</li>
+<li>Chat, votes, music player, keystrokes, and more</li>
 <li>Per-module reset and animated Reset All</li>
 </ul>
 </td>
@@ -133,13 +133,11 @@ Demo playback only (Demo Player): **Camera Drift**, **Dynamic FOV**.
 - **Misc** — auto update, silent typing, cinematic camera, better spectate (`+specpause` radio), spec moved notify, extend zoom, UI/wheel/scoreboard scale, and more
 - **Browser Utils** — auto server list refresh, short EGO/KoG server names
 - **Chat Filter** — regex/censor list, player whitelist (from RushieClient)
-- **Voice Binds** — push-to-talk and voice moderation key
-- **Voice Chat** — Opus PTT/VAD, radius/team0, per-player volume/mute, voice mod tab in admin panel
 - **Client Indicator** — BestClient icon in nameplates/scoreboard + browser filter
 
 ### Outside settings menu
 
-- **Admin Panel** — say/broadcast/mute/ban/kick/respawn/pause + voice moderation
+- **Admin Panel** — say/broadcast/mute/ban/kick/respawn/pause
 - **Translate** — incoming/outgoing chat translation (button in chat UI)
 - **Clans** — register/login, create or join clans, roles, applications, announcements, online status, in-game clan tag sync
 - **Multimapping** — collaborative map editing with room codes, live cursors, full editor sync, map transfer for late join
@@ -302,12 +300,6 @@ bc_hud_chat_y
 bc_hud_music_player_scale
 bc_hud_music_player_x
 bc_hud_music_player_y
-bc_hud_voice_hud_scale
-bc_hud_voice_hud_x
-bc_hud_voice_hud_y
-bc_hud_voice_mute_icons_scale
-bc_hud_voice_mute_icons_x
-bc_hud_voice_mute_icons_y
 bc_hud_votes_scale
 bc_hud_votes_x
 bc_hud_votes_y
@@ -356,8 +348,6 @@ bc_mute_others_hammer
 bc_mute_others_hook
 bc_nameplate_client_indicator_offset_x
 bc_nameplate_client_indicator_offset_y
-bc_nameplate_voice_offset_x
-bc_nameplate_voice_offset_y
 bc_optimizer
 bc_optimizer_disable_particles
 bc_optimizer_fps_fog
@@ -401,28 +391,6 @@ bc_translate_outgoing_source
 bc_translate_outgoing_strip_punctuation
 bc_translate_outgoing_target
 bc_use_short_kog_server_name
-bc_voice_chat_activation_mode
-bc_voice_chat_bitrate
-bc_voice_chat_enable
-bc_voice_chat_enable_your_group
-bc_voice_chat_headphones_muted
-bc_voice_chat_ingame_only
-bc_voice_chat_input_device
-bc_voice_chat_mic_check
-bc_voice_chat_mic_gain
-bc_voice_chat_mic_muted
-bc_voice_chat_muted_names
-bc_voice_chat_name_volumes
-bc_voice_chat_nameplate_icon
-bc_voice_chat_output_device
-bc_voice_chat_radius_enabled
-bc_voice_chat_radius_tiles
-bc_voice_chat_server_address
-bc_voice_chat_use_team0
-bc_voice_chat_vad_release_delay_ms
-bc_voice_chat_vad_threshold
-bc_voice_chat_volume
-bc_voice_mod_key
 bc_wheel_scale
 ```
 

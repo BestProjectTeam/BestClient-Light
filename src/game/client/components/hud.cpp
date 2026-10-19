@@ -2444,10 +2444,6 @@ void CHud::OnRender()
 		if(Client()->State() != IClient::STATE_DEMOPLAYBACK)
 			RenderConnectionWarning();
 		RenderTeambalanceWarning();
-		// bestclient-light
-		GameClient()->m_VoiceChat.RenderHudMuteStatusIndicator(m_Width, m_Height);
-		GameClient()->m_VoiceChat.RenderHudTalkingIndicator(m_Width, m_Height);
-		// bestclient-light
 		if(g_Config.m_ClShowRecord)
 			RenderRecord();
 	}

@@ -185,7 +185,6 @@ void CGameClient::OnConsoleInit()
 					      &m_LegitFinishedMaps, // bestclient-light
 					      &m_ShowPoints, // bestclient-light
 					      &m_ClientIndicator, // bestclient-light
-					      &m_VoiceChat, // bestclient-light
 					      &m_Hud,
 					      &m_BestClientLight, // bestclient-light
 					      &m_BcConfigPresets, // bestclient-light
@@ -6029,8 +6028,6 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "ShowPoints";
 	if(pComp == &m_ClientIndicator)
 		return "ClientIndicator";
-	if(pComp == &m_VoiceChat)
-		return "VoiceChat";
 	if(pComp == &m_Hud)
 		return "Hud";
 	if(pComp == &m_BestClientLight)

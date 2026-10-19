@@ -451,8 +451,6 @@ void CScoreboard::RenderSpectators(CUIRect Spectators)
 				m_ScoreboardPopupContext.m_IsSpectating = true;
 
 				// bestclient-light
-				m_ScoreboardPopupContext.m_VoiceVolumePreview = -1;
-				m_ScoreboardPopupContext.m_VoiceVolumeDirty = false;
 				Ui()->DoPopupMenu(&m_ScoreboardPopupContext, Ui()->MouseX(), Ui()->MouseY(), 150.0f,
 					BestClientLightScoreboardPlayerPopupHeight(GameClient(), m_ScoreboardPopupContext.m_IsLocal, true, m_ScoreboardPopupContext.m_ClientId), &m_ScoreboardPopupContext, CScoreboardPopupContext::Render);
 				// bestclient-light
@@ -737,8 +735,6 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 					m_ScoreboardPopupContext.m_IsSpectating = false;
 
 					// bestclient-light
-					m_ScoreboardPopupContext.m_VoiceVolumePreview = -1;
-					m_ScoreboardPopupContext.m_VoiceVolumeDirty = false;
 					Ui()->DoPopupMenu(&m_ScoreboardPopupContext, Ui()->MouseX(), Ui()->MouseY(), 150.0f,
 						BestClientLightScoreboardPlayerPopupHeight(GameClient(), m_ScoreboardPopupContext.m_IsLocal, false, m_ScoreboardPopupContext.m_ClientId), &m_ScoreboardPopupContext, CScoreboardPopupContext::Render);
 					// bestclient-light
@@ -1578,48 +1574,6 @@ CUi::EPopupMenuFunctionResult CScoreboard::CScoreboardPopupContext::Render(void 
 	AddTextButton(&pPopupContext->m_SwapButton, Localize("/Swap"), [&]() {
 		SayNamed("/swap");
 	});
-
-	if(!pPopupContext->m_IsLocal && g_Config.m_BclVoiceChatEnable)
-	{
-		View.HSplitTop(ItemSpacing * 2, nullptr, &View);
-		View.HSplitTop(ButtonSize, &Container, &View);
-		const bool VoiceMuted = pScoreboard->GameClient()->m_VoiceChat.IsNameMuted(Client.m_aName);
-		if(pUi->DoButton_PopupMenu(&pPopupContext->m_VoiceMuteButton, VoiceMuted ? Localize("Voice unmute") : Localize("Voice mute"), &Container, FontSize, TEXTALIGN_MC))
-		{
-			char aCmd[MAX_NAME_LENGTH + 32];
-			str_format(aCmd, sizeof(aCmd), !VoiceMuted ? "!vmute \"%s\"" : "!vunmute \"%s\"", Client.m_aName);
-			pScoreboard->GameClient()->m_VoiceChat.TryHandleChatCommand(aCmd);
-		}
-
-		View.HSplitTop(ItemSpacing * 2, nullptr, &View);
-		View.HSplitTop(ButtonSize, &Container, &View);
-		const int ConfigVoiceVolume = pScoreboard->GameClient()->m_VoiceChat.GetNameVolumePercent(Client.m_aName);
-		if(pPopupContext->m_VoiceVolumePreview < 1 || pPopupContext->m_VoiceVolumePreview > 100)
-			pPopupContext->m_VoiceVolumePreview = ConfigVoiceVolume;
-		if(!pUi->CheckActiveItem(&pPopupContext->m_VoiceVolumeSlider) && !pPopupContext->m_VoiceVolumeDirty)
-			pPopupContext->m_VoiceVolumePreview = ConfigVoiceVolume;
-
-		CUIRect VoiceVolumeLabel, VoiceVolumeSlider;
-		Container.VSplitLeft(36.0f, &VoiceVolumeLabel, &VoiceVolumeSlider);
-		char aVoiceVolume[16];
-		str_format(aVoiceVolume, sizeof(aVoiceVolume), "%d%%", std::clamp(pPopupContext->m_VoiceVolumePreview, 1, 100));
-		pUi->DoLabel(&VoiceVolumeLabel, aVoiceVolume, FontSize, TEXTALIGN_ML);
-		const float CurrentVoiceVolumeRel = std::clamp(pPopupContext->m_VoiceVolumePreview / 100.0f, 0.01f, 1.0f);
-		const float NewVoiceVolumeRel = pUi->DoScrollbarH(&pPopupContext->m_VoiceVolumeSlider, &VoiceVolumeSlider, CurrentVoiceVolumeRel);
-		const int NewVoiceVolume = std::clamp((int)std::lround(NewVoiceVolumeRel * 100.0f), 1, 100);
-		if(NewVoiceVolume != pPopupContext->m_VoiceVolumePreview)
-		{
-			pPopupContext->m_VoiceVolumePreview = NewVoiceVolume;
-			pPopupContext->m_VoiceVolumeDirty = true;
-		}
-		if(pPopupContext->m_VoiceVolumeDirty && !pUi->CheckActiveItem(&pPopupContext->m_VoiceVolumeSlider))
-		{
-			char aCmd[MAX_NAME_LENGTH + 48];
-			str_format(aCmd, sizeof(aCmd), "!volume \"%s\" %d", Client.m_aName, std::clamp(pPopupContext->m_VoiceVolumePreview, 1, 100));
-			pScoreboard->GameClient()->m_VoiceChat.TryHandleChatCommand(aCmd);
-			pPopupContext->m_VoiceVolumeDirty = false;
-		}
-	}
 
 	const int LocalId = pScoreboard->GameClient()->m_aLocalIds[g_Config.m_ClDummy];
 	const int LocalTeam = LocalId >= 0 ? pScoreboard->GameClient()->m_Teams.Team(LocalId) : TEAM_FLOCK;
