@@ -61,7 +61,6 @@ void CChat::CLine::Reset(CChat &This)
 	m_CustomColor = std::nullopt;
 	m_BcCopyAsLoad = false;
 	m_BcSavesChat = false;
-	This.GameClient()->m_ChatMedia.ResetLine(m_Media, This.Graphics());
 	// bestclient-light
 }
 
@@ -503,8 +502,6 @@ void CChat::RenderTranslateSettingsButton(const CUIRect &ButtonRect)
 bool CChat::OnInput(const IInput::CEvent &Event)
 {
 	// bestclient-light
-	if(GameClient()->m_ChatMedia.OnChatInput(*this, Event))
-		return true;
 	if(CChatScroll::OnInput(*this, Event))
 		return true;
 	// bestclient-light
@@ -1206,9 +1203,6 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 	CurrentLine.m_Highlighted = Highlighted;
 
 	str_copy(CurrentLine.m_aText, pLine);
-	// bestclient-light
-	GameClient()->m_ChatMedia.OnChatLineAdded(*this, CurrentLine.m_Media, CurrentLine.m_aText);
-	// bestclient-light
 
 	if(CurrentLine.m_ClientId == SERVER_MSG)
 	{
@@ -1392,8 +1386,6 @@ void CChat::OnPrepareLines(float y)
 		HeightLimit = y - 93.0f * LayoutScale;
 	else if(ShowLargeArea)
 		HeightLimit = y - 223.0f * LayoutScale;
-	else if(GameClient()->m_ChatMedia.ShouldExpandCompactAreaForMedia(*this, IsScoreBoardOpen, ShowLargeArea))
-		HeightLimit = GameClient()->m_ChatMedia.CompactMediaHeightLimit(y);
 	else
 		HeightLimit = y - 73.0f * LayoutScale;
 	// bestclient-light
@@ -1464,11 +1456,6 @@ void CChat::OnPrepareLines(float y)
 				pText = "Team successfully saved by ***. Use '/load *** *** ***' to continue";
 			}
 		}
-		// bestclient-light
-
-		// bestclient-light
-		std::string VisibleTextStorage = GameClient()->m_ChatMedia.BuildVisibleMessageText(Line.m_Media, pText, false);
-		pText = VisibleTextStorage.c_str();
 		// bestclient-light
 
 		const CColoredParts ColoredParts(pText, Line.m_ClientId == CLIENT_MSG);
@@ -1638,10 +1625,6 @@ void CChat::OnRender()
 {
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;
-
-	// bestclient-light
-	GameClient()->m_ChatMedia.Update(*this);
-	// bestclient-light
 
 	// send pending chat messages
 	if(m_PendingChatCounter > 0 && m_LastChatSend + time_freq() < time())
@@ -1814,8 +1797,6 @@ void CChat::OnRender()
 		HeightLimit = y - 93.0f * LayoutScale;
 	else if(ShowLargeArea)
 		HeightLimit = y - 223.0f * LayoutScale;
-	else if(GameClient()->m_ChatMedia.ShouldExpandCompactAreaForMedia(*this, IsScoreBoardOpen, ShowLargeArea))
-		HeightLimit = GameClient()->m_ChatMedia.CompactMediaHeightLimit(y);
 	else
 		HeightLimit = y - 73.0f * LayoutScale;
 
@@ -1952,18 +1933,10 @@ void CChat::OnRender()
 			TextRender()->RenderTextContainer(Line.m_TextContainerIndex, TextColor, TextOutlineColor, 0, (LineRenderY + RealMsgPaddingY / 2.0f) - Line.m_TextYOffset);
 		}
 
-		// bestclient-light
-		{
-			const float PreviewX = x + RealMsgPaddingX / 2.0f;
-			const float PreviewY = LineRenderY + RealMsgPaddingY / 2.0f + Line.m_Media.m_aTextHeight[OffsetType] + FontSize() * 0.4f;
-			GameClient()->m_ChatMedia.RenderLinePreview(Line.m_Media, PreviewX, PreviewY, Blend, FontSize(), OffsetType);
-		}
-		// bestclient-light
 	}
 
 	// bestclient-light
 	CChatScroll::EndActions(*this, ActionFrame, ModuleAlpha);
-	GameClient()->m_ChatMedia.RenderFullscreen(*this, Width, Height);
 
 	// bestclient-light
 	if(m_Mode != MODE_NONE && Ui()->IsPopupOpen(&m_TranslateSettingsPopupId))

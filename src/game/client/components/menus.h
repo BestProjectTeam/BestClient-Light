@@ -1016,7 +1016,6 @@ private:
 	// bestclient-light
 	void RenderSettingsBestClientLightInfo(CUIRect MainView); // bestclient-light
 	void RenderSettingsBestClientLightConfigPresets(CUIRect MainView); // bestclient-light
-	void RenderSettingsBestClientLightChatMediaBlock(CUIRect &Column); // bestclient-light
 	void RenderPopupStylePicker(CUIRect Box); // bestclient-light
 	void FinishWelcomeToStylePicker(); // bestclient-light
 	// bestclient-light

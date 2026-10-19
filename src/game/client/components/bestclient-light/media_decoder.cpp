@@ -15,6 +15,22 @@
 #include <cctype>
 #include <limits>
 
+#if defined(CONF_FAMILY_WINDOWS)
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#define IStorage WicIStorage
+#define IStream WicIStream
+#include <objbase.h>
+#include <wincodec.h>
+#undef IStream
+#undef IStorage
+#undef interface
+#endif
+
 #if defined(CONF_VIDEORECORDER)
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -111,6 +127,90 @@ namespace
 		if(ScaledWidth > 0 && ScaledHeight > 0 && ((size_t)ScaledWidth != Image.m_Width || (size_t)ScaledHeight != Image.m_Height))
 			ResizeImage(Image, ScaledWidth, ScaledHeight);
 	}
+
+#if defined(CONF_FAMILY_WINDOWS)
+	bool DecodeStillImageWithWic(const unsigned char *pData, size_t DataSize, CImageInfo &Image)
+	{
+		Image.Free();
+		if(!pData || DataSize == 0 || DataSize > 0xffffffffu)
+			return false;
+
+		const HRESULT CoInit = CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
+		const bool BalanceCom = CoInit == S_OK || CoInit == S_FALSE;
+
+		bool Success = false;
+		IWICImagingFactory *pFactory = nullptr;
+		IWICStream *pStream = nullptr;
+		IWICBitmapDecoder *pDecoder = nullptr;
+		IWICBitmapFrameDecode *pFrame = nullptr;
+		IWICFormatConverter *pConverter = nullptr;
+		const CLSID FactoryId = {0xcacaf262, 0x9370, 0x4615, {0xa1, 0x3b, 0x9f, 0x55, 0x39, 0xda, 0x4c, 0x0a}};
+		const GUID FormatRgba = {0xf5c7ad2d, 0x6a8d, 0x43dd, {0xa7, 0xa8, 0xa2, 0x99, 0x35, 0x26, 0x1a, 0xe9}};
+
+		do
+		{
+			if(FAILED(CoCreateInstance(FactoryId, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pFactory))))
+				break;
+			if(FAILED(pFactory->CreateStream(&pStream)))
+				break;
+			if(FAILED(pStream->InitializeFromMemory(const_cast<BYTE *>(static_cast<const BYTE *>(pData)), (DWORD)DataSize)))
+				break;
+			if(FAILED(pFactory->CreateDecoderFromStream(pStream, nullptr, WICDecodeMetadataCacheOnDemand, &pDecoder)))
+				break;
+			if(FAILED(pDecoder->GetFrame(0, &pFrame)))
+				break;
+
+			UINT Width = 0;
+			UINT Height = 0;
+			if(FAILED(pFrame->GetSize(&Width, &Height)))
+				break;
+			if(Width == 0 || Height == 0 || Width > (UINT)MEDIA_MAX_DIMENSION || Height > (UINT)MEDIA_MAX_DIMENSION)
+				break;
+			if((size_t)Width > std::numeric_limits<size_t>::max() / ((size_t)Height * 4ull))
+				break;
+			const size_t FrameBytes = (size_t)Width * (size_t)Height * 4ull;
+			if(FrameBytes == 0 || FrameBytes > MEDIA_MAX_ANIMATED_MEMORY_BYTES || FrameBytes > 0xffffffffu)
+				break;
+
+			if(FAILED(pFactory->CreateFormatConverter(&pConverter)))
+				break;
+			if(FAILED(pConverter->Initialize(pFrame, FormatRgba, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom)))
+				break;
+
+			Image.m_Width = Width;
+			Image.m_Height = Height;
+			Image.m_Format = CImageInfo::FORMAT_RGBA;
+			Image.Allocate();
+			if(!Image.m_pData)
+			{
+				Image.Free();
+				break;
+			}
+			if(FAILED(pConverter->CopyPixels(nullptr, Width * 4u, (UINT)Image.DataSize(), Image.m_pData)))
+			{
+				Image.Free();
+				break;
+			}
+			Success = true;
+		} while(false);
+
+		if(!Success)
+			Image.Free();
+		if(pConverter)
+			pConverter->Release();
+		if(pFrame)
+			pFrame->Release();
+		if(pDecoder)
+			pDecoder->Release();
+		if(pStream)
+			pStream->Release();
+		if(pFactory)
+			pFactory->Release();
+		if(BalanceCom)
+			CoUninitialize();
+		return Success;
+	}
+#endif
 }
 
 void SMediaDecodedFrames::Free()
@@ -252,6 +352,11 @@ namespace MediaDecoder
 
 		if(!pData || DataSize == 0)
 			return false;
+
+#if defined(CONF_FAMILY_WINDOWS)
+		if(DecodeStillImageWithWic(pData, DataSize, Image))
+			return true;
+#endif
 
 #if !defined(CONF_VIDEORECORDER)
 		return false;
@@ -829,24 +934,28 @@ namespace MediaDecoder
 			return false;
 
 		CImageInfo Image;
-		
-		
+		bool Loaded = false;
 		if(IsPngSignature(pData, DataSize))
 		{
 			CByteBufferReader Reader(pData, DataSize);
 			int PngliteIncompatible;
-			if(CImageLoader::LoadPng(Reader, pContextName, Image, PngliteIncompatible))
-			{
-				ClampImageSize(Image, MaxDimension);
-				DecodedFrames.m_Width = (int)Image.m_Width;
-				DecodedFrames.m_Height = (int)Image.m_Height;
-				DecodedFrames.m_Animated = false;
-				DecodedFrames.m_AnimationStart = time_get();
-				SMediaRawFrame Frame;
-				Frame.m_Image = std::move(Image);
-				DecodedFrames.m_vFrames.push_back(std::move(Frame));
-				return true;
-			}
+			Loaded = CImageLoader::LoadPng(Reader, pContextName, Image, PngliteIncompatible);
+		}
+#if defined(CONF_FAMILY_WINDOWS)
+		if(!Loaded)
+			Loaded = DecodeStillImageWithWic(pData, DataSize, Image);
+#endif
+		if(Loaded)
+		{
+			ClampImageSize(Image, MaxDimension);
+			DecodedFrames.m_Width = (int)Image.m_Width;
+			DecodedFrames.m_Height = (int)Image.m_Height;
+			DecodedFrames.m_Animated = false;
+			DecodedFrames.m_AnimationStart = time_get();
+			SMediaRawFrame Frame;
+			Frame.m_Image = std::move(Image);
+			DecodedFrames.m_vFrames.push_back(std::move(Frame));
+			return true;
 		}
 
 		SMediaDecodeLimits Limits;

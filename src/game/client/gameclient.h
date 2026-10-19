@@ -59,7 +59,6 @@
 // bestclient-light
 #include "components/bestclient-light/automargin.h" // bestclient-light
 #include "components/bestclient-light/chat_bubbles.h" // bestclient-light
-#include "components/bestclient-light/chat_media.h" // bestclient-light
 #include "components/bestclient-light/clientindicator/client_indicator.h" // bestclient-light
 #include "components/bestclient-light/cloud_input.h" // bestclient-light
 #include "components/bestclient-light/cursor_trail.h" // bestclient-light
@@ -273,7 +272,6 @@ public:
 	CHudEditor m_HudEditor; // bestclient-light
 	CChatBubbles m_ChatBubbles; // bestclient-light
 	CPhysicBalls m_PhysicBalls; // bestclient-light
-	CChatMedia m_ChatMedia; // bestclient-light
 	CCursorTrail m_CursorTrail; // bestclient-light
 	CBcUiAnimations m_BcUiAnimations; // bestclient-light
 	CGifBubbles m_GifBubbles; // bestclient-light

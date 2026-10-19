@@ -371,14 +371,6 @@ MACRO_CONFIG_INT(BclOptimizerFpsFogCullMapTiles, bcl_optimizer_fps_fog_cull_map_
 MACRO_CONFIG_INT(BclHighProcessPriority, bcl_high_process_priority, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Set DDNets process priority to high")
 MACRO_CONFIG_INT(BclDiscordNormalProcessPriority, bcl_discord_normal_process_priority, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Set Discord process priority to normal")
 
-// Chat media
-MACRO_CONFIG_INT(BclChatMediaPreview, bcl_chat_media_preview, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Render media previews from chat links")
-MACRO_CONFIG_INT(BclChatMediaPhotos, bcl_chat_media_photos, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Render photo previews from chat links")
-MACRO_CONFIG_INT(BclChatMediaGifs, bcl_chat_media_gifs, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Render GIF and animated media previews from chat links")
-MACRO_CONFIG_INT(BclChatMediaContentFilter, bcl_chat_media_content_filter, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Allow chat media previews only from configured domains")
-MACRO_CONFIG_STR(BclChatMediaAllowedDomains, bcl_chat_media_allowed_domains, 512, "tenor.com; imgur.com; giphy.com; gifs.teeworlds.xyz", CFGFLAG_CLIENT | CFGFLAG_SAVE, "Semicolon-separated allowlist for chat media domains")
-MACRO_CONFIG_INT(BclChatMediaPreviewMaxWidth, bcl_chat_media_preview_max_width, 220, 120, 400, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Maximum width of chat media previews")
-
 // Chat bubbles (above players)
 MACRO_CONFIG_INT(BclChatBubbles, bcl_chat_bubbles, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show chat bubbles above players")
 MACRO_CONFIG_INT(BclChatBubblesSelf, bcl_chat_bubbles_self, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show chat bubbles above yourself")

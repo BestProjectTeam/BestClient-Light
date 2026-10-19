@@ -12,13 +12,11 @@
 #include <engine/shared/protocol.h>
 #include <engine/textrender.h>
 
-#include <game/client/components/bestclient-light/chat_media.h>
 #include <game/client/components/chat.h>
 #include <game/client/gameclient.h>
 #include <generated/protocol.h>
 
 #include <algorithm>
-#include <string>
 
 CChat *CChatBubbles::Chat() const
 {
@@ -83,7 +81,6 @@ void CChatBubbles::UpdateBubbleOffsets(int ClientId, float InputBubbleHeight)
 	const int FontSize = g_Config.m_BclChatBubbleSize;
 	for(CBcChatBubble &Bubble : m_aChatBubbles[ClientId])
 	{
-		SChatMediaLine *pMedia = GameClient()->m_ChatMedia.FindReadyMediaForMessage(*Chat(), ClientId, Bubble.m_aText);
 		if(!Bubble.m_TextContainerIndex.Valid() || Bubble.m_Cursor.m_FontSize != FontSize)
 		{
 			if(Bubble.m_TextContainerIndex.Valid())
@@ -97,26 +94,16 @@ void CChatBubbles::UpdateBubbleOffsets(int ClientId, float InputBubbleHeight)
 			Cursor.m_FontSize = FontSize;
 			Cursor.m_Flags = TEXTFLAG_RENDER;
 			Cursor.m_LineWidth = 500.0f - FontSize * 2.0f;
-			std::string VisibleText;
-			const char *pBubbleText = Bubble.m_aText;
-			if(pMedia)
-			{
-				VisibleText = GameClient()->m_ChatMedia.BuildVisibleMessageText(*pMedia, Bubble.m_aText, false);
-				pBubbleText = VisibleText.c_str();
-			}
-			if(pBubbleText[0] != '\0')
-				TextRender()->CreateOrAppendTextContainer(Bubble.m_TextContainerIndex, &Cursor, pBubbleText);
+			if(Bubble.m_aText[0] != '\0')
+				TextRender()->CreateOrAppendTextContainer(Bubble.m_TextContainerIndex, &Cursor, Bubble.m_aText);
 			Bubble.m_Cursor.m_FontSize = FontSize;
 		}
 
-		float ExtraMedia = 0.0f;
-		if(pMedia)
-			ExtraMedia = 48.0f + (Bubble.m_TextContainerIndex.Valid() ? FontSize * 0.25f : 0.0f);
 		float TextH = 0.0f;
 		if(Bubble.m_TextContainerIndex.Valid())
 			TextH = TextRender()->GetBoundingBoxTextContainer(Bubble.m_TextContainerIndex).m_H;
 		Bubble.m_TargetOffsetY = Offset;
-		Offset += TextH + ExtraMedia + FontSize + BcChatBubbleMarginBetween;
+		Offset += TextH + FontSize + BcChatBubbleMarginBetween;
 	}
 }
 
@@ -323,7 +310,6 @@ void CChatBubbles::RenderChatBubbles(int ClientId)
 		else
 			Bubble.m_OffsetY = Bubble.m_TargetOffsetY;
 
-		SChatMediaLine *pMedia = GameClient()->m_ChatMedia.FindReadyMediaForMessage(*Chat(), ClientId, Bubble.m_aText);
 		if(!Bubble.m_TextContainerIndex.Valid() || Bubble.m_Cursor.m_FontSize != FontSize)
 		{
 			if(Bubble.m_TextContainerIndex.Valid())
@@ -335,15 +321,8 @@ void CChatBubbles::RenderChatBubbles(int ClientId)
 			Cursor.m_Flags = TEXTFLAG_RENDER;
 			Cursor.m_LineWidth = 500.0f - FontSize * 2.0f;
 
-			std::string VisibleText;
-			const char *pBubbleText = Bubble.m_aText;
-			if(pMedia)
-			{
-				VisibleText = GameClient()->m_ChatMedia.BuildVisibleMessageText(*pMedia, Bubble.m_aText, false);
-				pBubbleText = VisibleText.c_str();
-			}
-			if(pBubbleText[0] != '\0')
-				TextRender()->CreateOrAppendTextContainer(Bubble.m_TextContainerIndex, &Cursor, pBubbleText);
+			if(Bubble.m_aText[0] != '\0')
+				TextRender()->CreateOrAppendTextContainer(Bubble.m_TextContainerIndex, &Cursor, Bubble.m_aText);
 			Bubble.m_Cursor.m_FontSize = FontSize;
 		}
 
@@ -357,38 +336,20 @@ void CChatBubbles::RenderChatBubbles(int ClientId)
 			OutlineColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleOutlineColor, true)).WithMultipliedAlpha(Alpha);
 		}
 
-		IGraphics::CTextureHandle MediaTexture;
-		const bool HasMedia = pMedia && GameClient()->m_ChatMedia.GetCurrentFrameTexture(*pMedia, MediaTexture);
-		const float MediaPreview = HasMedia ? 48.0f : 0.0f;
-
-		if(Bubble.m_TextContainerIndex.Valid() || HasMedia)
+		if(Bubble.m_TextContainerIndex.Valid())
 		{
-			float TextW = 0.0f;
-			float TextH = 0.0f;
-			if(Bubble.m_TextContainerIndex.Valid())
-			{
-				const STextBoundingBox BoundingBox = TextRender()->GetBoundingBoxTextContainer(Bubble.m_TextContainerIndex);
-				TextW = BoundingBox.m_W;
-				TextH = BoundingBox.m_H;
-			}
-			const float ContentW = std::max(TextW, MediaPreview);
-			const float ContentH = TextH + (HasMedia ? (TextH > 0.0f ? FontSize * 0.25f : 0.0f) + MediaPreview : 0.0f);
-			const float X = Position.x - (ContentW / 2.0f + g_Config.m_BclChatBubbleSize / 15.0f);
-			const float Y = BaseY - Bubble.m_OffsetY - ContentH - FontSize;
+			const STextBoundingBox BoundingBox = TextRender()->GetBoundingBoxTextContainer(Bubble.m_TextContainerIndex);
+			const float TextW = BoundingBox.m_W;
+			const float TextH = BoundingBox.m_H;
+			const float X = Position.x - (TextW / 2.0f + g_Config.m_BclChatBubbleSize / 15.0f);
+			const float Y = BaseY - Bubble.m_OffsetY - TextH - FontSize;
 
 			Graphics()->DrawRect(X - FontSize / 2.0f, Y - FontSize / 2.0f,
-				ContentW + FontSize * 1.20f, ContentH + FontSize,
+				TextW + FontSize * 1.20f, TextH + FontSize,
 				BgColor, IGraphics::CORNER_ALL, Rounding);
 
-			if(Bubble.m_TextContainerIndex.Valid() && TextW > 0.0f)
+			if(TextW > 0.0f)
 				TextRender()->RenderTextContainer(Bubble.m_TextContainerIndex, TextColor, OutlineColor, X, Y);
-
-			if(HasMedia)
-			{
-				const float MediaY = Y + (TextH > 0.0f ? TextH + FontSize * 0.25f : 0.0f);
-				const float MediaX = X + (ContentW - MediaPreview) * 0.5f;
-				DrawRoundedMediaPreview(Graphics(), MediaTexture, MediaX, MediaY, MediaPreview, MediaPreview, std::max(2.0f, Rounding * 0.5f), Alpha);
-			}
 		}
 	}
 }

@@ -378,7 +378,6 @@ void CChatQoL::ClearSavesChatOnMapChange(CGameClient *pGameClient)
 		Line.m_CustomColor = std::nullopt;
 		Line.m_BcCopyAsLoad = false;
 		Line.m_TimesRepeated = 0;
-		pGameClient->m_ChatMedia.ResetLine(Line.m_Media, Chat.Graphics());
 	}
 }
 

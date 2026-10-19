@@ -29,12 +29,6 @@
 	{"Corner rounding", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Bubbles", &g_Config.m_BclChatBubbleRounding, &g_Config.m_BclChatBubbles},
 	{"Custom colors", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Bubbles", &g_Config.m_BclChatBubbleCustomColors, &g_Config.m_BclChatBubbles},
 
-	{"Chat Media", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclChatMediaPreview, nullptr},
-	{"Show photos in chat media", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Media", &g_Config.m_BclChatMediaPhotos, &g_Config.m_BclChatMediaPreview},
-	{"Show GIFs in chat media", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Media", &g_Config.m_BclChatMediaGifs, &g_Config.m_BclChatMediaPreview},
-	{"Content filtering", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Media", &g_Config.m_BclChatMediaContentFilter, &g_Config.m_BclChatMediaPreview},
-	{"Media preview width", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Media", &g_Config.m_BclChatMediaPreviewMaxWidth, &g_Config.m_BclChatMediaPreview},
-
 	{"Gradient", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclNameplateGradient, nullptr},
 	{"Gradient clans", SETTINGS_NAV_LEAF_BC_VISUALS, "Gradient", &g_Config.m_BclNameplateGradientClan, nullptr},
 	{"Gradient skin", SETTINGS_NAV_LEAF_BC_VISUALS, "Gradient", &g_Config.m_BclNameplateGradientSkin, nullptr},

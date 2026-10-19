@@ -23,38 +23,6 @@ Choose Better UI
 == 选择改进界面
 
 [BestClient Light]
-Chat Media
-== 聊天媒体
-
-[BestClient Light]
-Render media previews from chat links
-== 显示聊天链接的媒体预览
-
-[BestClient Light]
-Show photos in chat media
-== 在聊天媒体中显示图片
-
-[BestClient Light]
-Show GIFs in chat media
-== 在聊天媒体中显示 GIF
-
-[BestClient Light]
-Content filtering
-== 内容过滤
-
-[BestClient Light]
-Allowed media domains
-== 允许的媒体域名
-
-[BestClient Light]
-Media preview width
-== 媒体预览宽度
-
-[BestClient Light]
-Hide media bind
-== 隐藏媒体按键
-
-[BestClient Light]
 Visuals
 == 视觉
 

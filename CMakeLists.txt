@@ -664,43 +664,6 @@ if(CLIENT AND VIDEORECORDER)
   if(TARGET_OS STREQUAL "windows" AND MINGW)
     message(STATUS "Disabling VIDEORECORDER for MinGW due to incompatible Windows FFmpeg import libraries")
     set(VIDEORECORDER OFF CACHE BOOL "Enable video recording support via FFmpeg" FORCE)
-  elseif(TARGET_OS STREQUAL "windows")
-    # Prefer standalone FFmpeg SDK path, keep legacy BestClient Light path as fallback.
-    set(FFMPEG_CUSTOM_ROOTS
-      "${PROJECT_SOURCE_DIR}/noxy-libs/ffmpeg-msvc"
-      "${PROJECT_SOURCE_DIR}/bestclient-light/noxy-libs/ffmpeg-msvc")
-    foreach(FFMPEG_CUSTOM_ROOT IN LISTS FFMPEG_CUSTOM_ROOTS)
-      if(EXISTS "${FFMPEG_CUSTOM_ROOT}/include/libavcodec/avcodec.h" AND
-         EXISTS "${FFMPEG_CUSTOM_ROOT}/lib/avformat.lib" AND
-         EXISTS "${FFMPEG_CUSTOM_ROOT}/lib/avcodec.lib" AND
-         EXISTS "${FFMPEG_CUSTOM_ROOT}/lib/avutil.lib" AND
-         EXISTS "${FFMPEG_CUSTOM_ROOT}/lib/swscale.lib" AND
-         EXISTS "${FFMPEG_CUSTOM_ROOT}/lib/swresample.lib")
-        set(FFMPEG_INCLUDE_DIRS "${FFMPEG_CUSTOM_ROOT}/include")
-        set(FFMPEG_LIBRARIES
-          "${FFMPEG_CUSTOM_ROOT}/lib/avformat.lib"
-          "${FFMPEG_CUSTOM_ROOT}/lib/avcodec.lib"
-          "${FFMPEG_CUSTOM_ROOT}/lib/avutil.lib"
-          "${FFMPEG_CUSTOM_ROOT}/lib/swscale.lib"
-          "${FFMPEG_CUSTOM_ROOT}/lib/swresample.lib")
-        set(FFMPEG_FOUND TRUE)
-        message(STATUS "Using custom FFmpeg from ${FFMPEG_CUSTOM_ROOT}")
-
-        if(EXISTS "${FFMPEG_CUSTOM_ROOT}/bin/avcodec-61.dll" AND
-           EXISTS "${FFMPEG_CUSTOM_ROOT}/bin/avformat-61.dll" AND
-           EXISTS "${FFMPEG_CUSTOM_ROOT}/bin/avutil-59.dll" AND
-           EXISTS "${FFMPEG_CUSTOM_ROOT}/bin/swresample-5.dll" AND
-           EXISTS "${FFMPEG_CUSTOM_ROOT}/bin/swscale-8.dll")
-          set(FFMPEG_COPY_FILES
-            "${FFMPEG_CUSTOM_ROOT}/bin/avcodec-61.dll"
-            "${FFMPEG_CUSTOM_ROOT}/bin/avformat-61.dll"
-            "${FFMPEG_CUSTOM_ROOT}/bin/avutil-59.dll"
-            "${FFMPEG_CUSTOM_ROOT}/bin/swresample-5.dll"
-            "${FFMPEG_CUSTOM_ROOT}/bin/swscale-8.dll")
-        endif()
-        break()
-      endif()
-    endforeach()
   endif()
 
   if(NOT FFMPEG_FOUND)
@@ -2934,8 +2897,6 @@ if(CLIENT)
     components/bestclient-light/discord_rpc.h
     components/bestclient-light/media_decoder.cpp
     components/bestclient-light/media_decoder.h
-    components/bestclient-light/chat_media.cpp
-    components/bestclient-light/chat_media.h
     components/bestclient-light/better_preview.cpp
     components/bestclient-light/better_preview.h
     components/bestclient-light/scroll_bar.cpp

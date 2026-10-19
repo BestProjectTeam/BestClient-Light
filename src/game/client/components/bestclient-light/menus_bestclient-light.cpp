@@ -513,88 +513,6 @@ void LoadFile(IStorage *pStorage)
 
 } // namespace BestClientLightUiTheme
 
-void CMenus::RenderSettingsBestClientLightChatMediaBlock(CUIRect &Column)
-{
-	const float LineSize = 20.0f;
-	const float MarginSmall = 5.0f;
-	const float HeadlineFontSize = 20.0f;
-	const float MarginBetweenViews = 30.0f;
-	const float BlockPadding = MarginBetweenViews * 0.6666f;
-
-	const bool Expanded = g_Config.m_BclChatMediaPreview != 0;
-	const float DomainsHeight = g_Config.m_BclChatMediaContentFilter ? 2.0f * (MarginSmall + LineSize) : 0.0f;
-	const float ExpandedTargetHeight = 5.0f * (MarginSmall + LineSize) + DomainsHeight;
-	const float ExpandedHeight = BC_MODULE_REVEAL(Expanded, ExpandedTargetHeight, Client()->RenderFrameTime());
-	const float HeaderHeight = LineSize + MarginSmall + LineSize;
-	const float BlockHeight = HeaderHeight + ExpandedHeight;
-
-	CUIRect Block;
-	Column.HSplitTop(BlockHeight, &Block, &Column);
-	CUIRect BlockBg = Block;
-	BlockBg.w += BlockPadding;
-	BlockBg.h += BlockPadding;
-	BlockBg.x -= BlockPadding * 0.5f;
-	BlockBg.y -= BlockPadding * 0.5f;
-	BestClientLightUiTheme::DrawUiBlock(&BlockBg, IGraphics::CORNER_ALL, 10.0f);
-	BestClientLightSettingsSearch::DrawBlockHighlight(&g_Config.m_BclChatMediaPreview, &BlockBg);
-
-	CUIRect Content, Label, Button;
-	Block.HSplitTop(LineSize, &Label, &Block);
-	Ui()->DoLabel(&Label, BcLocalize("Chat Media"), HeadlineFontSize, TEXTALIGN_ML);
-	Block.HSplitTop(MarginSmall, nullptr, &Block);
-
-	CChat &Chat = GameClient()->m_Chat;
-	Block.HSplitTop(LineSize, &Content, &Block);
-	if(DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclChatMediaPreview, BcLocalize("Render media previews from chat links"), &g_Config.m_BclChatMediaPreview, &Content, LineSize))
-		Chat.RebuildChat();
-
-	if(ExpandedHeight <= 0.5f)
-		return;
-
-	CUIRect Visible = Block;
-	Visible.h = ExpandedHeight;
-	Ui()->ClipEnable(&Visible);
-
-	Block.HSplitTop(MarginSmall, nullptr, &Block);
-	Block.HSplitTop(LineSize, &Content, &Block);
-	if(DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclChatMediaPhotos, BcLocalize("Show photos in chat media"), &g_Config.m_BclChatMediaPhotos, &Content, LineSize))
-		Chat.RebuildChat();
-
-	Block.HSplitTop(MarginSmall, nullptr, &Block);
-	Block.HSplitTop(LineSize, &Content, &Block);
-	if(DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclChatMediaGifs, BcLocalize("Show GIFs in chat media"), &g_Config.m_BclChatMediaGifs, &Content, LineSize))
-		Chat.RebuildChat();
-
-	Block.HSplitTop(MarginSmall, nullptr, &Block);
-	Block.HSplitTop(LineSize, &Content, &Block);
-	if(DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclChatMediaContentFilter, BcLocalize("Content filtering"), &g_Config.m_BclChatMediaContentFilter, &Content, LineSize))
-		Chat.RebuildChat();
-
-	if(g_Config.m_BclChatMediaContentFilter)
-	{
-		Block.HSplitTop(MarginSmall, nullptr, &Block);
-		Block.HSplitTop(LineSize, &Label, &Block);
-		Ui()->DoLabel(&Label, BcLocalize("Allowed media domains"), 12.0f, TEXTALIGN_ML);
-		Block.HSplitTop(MarginSmall, nullptr, &Block);
-		Block.HSplitTop(LineSize, &Button, &Block);
-		static CLineInput DomainsInput(g_Config.m_BclChatMediaAllowedDomains, sizeof(g_Config.m_BclChatMediaAllowedDomains));
-		DomainsInput.SetEmptyText("tenor.com; imgur.com; giphy.com; gifs.teeworlds.xyz");
-		if(Ui()->DoClearableEditBox(&DomainsInput, &Button, 14.0f))
-			Chat.RebuildChat();
-	}
-
-	Block.HSplitTop(MarginSmall, nullptr, &Block);
-	Block.HSplitTop(LineSize, &Button, &Block);
-	if(Ui()->DoScrollbarOption(&g_Config.m_BclChatMediaPreviewMaxWidth, &g_Config.m_BclChatMediaPreviewMaxWidth, &Button, BcLocalize("Media preview width"), 120, 400))
-		Chat.RebuildChat();
-
-	Block.HSplitTop(MarginSmall, nullptr, &Block);
-	Block.HSplitTop(LineSize, &Label, &Block);
-	static CButtonContainer HideMediaBindReader, HideMediaBindClear;
-	DoLine_KeyReader(Label, HideMediaBindReader, HideMediaBindClear, BcLocalize("Hide media bind"), "toggle_chat_media_hidden");
-	Ui()->ClipDisable();
-}
-
 static void SetBestClientLightTabFlag(int32_t &Flags, int Tab, bool Hidden)
 {
 	if(Hidden)
@@ -1179,10 +1097,6 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 		Ui()->DoLabel(&HintRow, BcLocalize("Looks like you're on a server where this feature is forbidden"), 14.0f, TEXTALIGN_ML);
 		TextRender()->TextColor(TextRender()->DefaultTextColor());
 	}
-
-	Column.HSplitTop(MarginBetweenViews, nullptr, &Column);
-
-	RenderSettingsBestClientLightChatMediaBlock(Column);
 
 	Column.HSplitTop(MarginBetweenViews, nullptr, &Column);
 

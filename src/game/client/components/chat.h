@@ -13,7 +13,6 @@
 #include <generated/protocol7.h>
 
 #include <game/client/component.h>
-#include <game/client/components/bestclient-light/chat_media.h> // bestclient-light
 #include <game/client/components/hud_layout.h> // bestclient-light
 #include <game/client/lineinput.h>
 #include <game/client/render.h>
@@ -81,9 +80,6 @@ class CChat : public CComponent
 		int m_TimesRepeated;
 
 		std::shared_ptr<CTranslateResponse> m_pTranslateResponse;
-		// bestclient-light
-		SChatMediaLine m_Media;
-		// bestclient-light
 	};
 
 	bool m_PrevScoreBoardShowed;
@@ -230,7 +226,6 @@ class CChat : public CComponent
 	// bestclient-light
 	friend class CChatBubbles;
 	friend class CChatQoL;
-	friend class CChatMedia;
 	friend class CChatScroll;
 	// bestclient-light
 

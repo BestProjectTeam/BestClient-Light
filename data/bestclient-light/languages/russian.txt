@@ -23,38 +23,6 @@ Choose Better UI
 == Выбрать улучшенный UI
 
 [BestClient Light]
-Chat Media
-== Чат-медиа
-
-[BestClient Light]
-Render media previews from chat links
-== Рендерить превью медиа из ссылок в чате
-
-[BestClient Light]
-Show photos in chat media
-== Показывать фото в чат-медиа
-
-[BestClient Light]
-Show GIFs in chat media
-== Показывать GIF в чат-медиа
-
-[BestClient Light]
-Content filtering
-== Фильтр контента
-
-[BestClient Light]
-Allowed media domains
-== Разрешённые домены медиа
-
-[BestClient Light]
-Media preview width
-== Ширина превью медиа
-
-[BestClient Light]
-Hide media bind
-== Бинд скрытия медиа
-
-[BestClient Light]
 Visuals
 == Визуал
 

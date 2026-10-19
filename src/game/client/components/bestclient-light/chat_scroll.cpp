@@ -175,7 +175,6 @@ std::string CChatScroll::BuildPlainTextLine(CChat &Chat, int LineIndex)
 	}
 
 	bool TextHiddenByStreamer = false;
-	std::string VisibleTextStorage;
 	const char *pText = Line.m_aText;
 	if(g_Config.m_ClStreamerMode && Line.m_ClientId == CChat::SERVER_MSG)
 	{
@@ -194,11 +193,6 @@ std::string CChatScroll::BuildPlainTextLine(CChat &Chat, int LineIndex)
 			TextHiddenByStreamer = true;
 			pText = "Team successfully saved by ***. Use '/load *** *** ***' to continue";
 		}
-	}
-	else
-	{
-		VisibleTextStorage = pClient->m_ChatMedia.BuildVisibleMessageText(Line.m_Media, pText, false);
-		pText = VisibleTextStorage.c_str();
 	}
 
 	const CColoredParts ColoredParts(pText, Line.m_ClientId == CChat::CLIENT_MSG);
@@ -288,8 +282,6 @@ void CChatScroll::MeasureHeights(CChat &Chat, float TextBegin, float FontSize, f
 				pText = "Team successfully saved by ***. Use '/load *** *** ***' to continue";
 		}
 
-		std::string VisibleTextStorage = pClient->m_ChatMedia.BuildVisibleMessageText(Line.m_Media, pText, false);
-		pText = VisibleTextStorage.c_str();
 		const CColoredParts ColoredParts(pText, Line.m_ClientId == CChat::CLIENT_MSG);
 		pText = ColoredParts.Text();
 
@@ -348,10 +340,7 @@ void CChatScroll::MeasureHeights(CChat &Chat, float TextBegin, float FontSize, f
 			pTextRender->TextEx(&AppendCursor, pText);
 
 		const float TextHeight = AppendCursor.Height();
-		float TotalHeight = TextHeight + RealMsgPaddingY;
-		const float MaxPreviewHeight = (IsScoreBoardOpen ? 56.0f : 70.0f) * 0.9f;
-		pClient->m_ChatMedia.PrepareLineLayout(Line.m_Media, OffsetType, LineWidth, MaxPreviewHeight, FontSize, TextHeight, TotalHeight);
-		Line.m_aYOffset[OffsetType] = TotalHeight;
+		Line.m_aYOffset[OffsetType] = TextHeight + RealMsgPaddingY;
 	}
 }
 
