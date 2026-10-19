@@ -23,8 +23,60 @@ Choose Better UI
 == Выбрать улучшенный UI
 
 [BestClient Light]
+Attention
+== Внимание
+
+[BestClient Light]
+The light version uses its own config and different config variable names.
+== Лайт использует свой конфиг и другие имена переменных.
+
+[BestClient Light]
+Do you want to copy settings from the original version into light?
+== Хотите ли вы перенести настройки с оригинальной версии в лайт?
+
+[BestClient Light]
+You can transfer settings at any time in Tools - Config.
+== Перенести настройки вы можете в любой момент в Инструменты -> Конфиг.
+
+[BestClient Light]
+Refuse
+== Отказаться
+
+[BestClient Light]
+Transfer
+== Перенести
+
+[BestClient Light]
+Settings transfer
+== Перенос настроек
+
+[BestClient Light]
+Could not find the original config settings_BestClient.cfg.
+== Не найден конфиг оригинала settings_BestClient.cfg.
+
+[BestClient Light]
+Could not save the transferred settings.
+== Не удалось сохранить перенесённые настройки.
+
+[BestClient Light]
+Transfer origin
+== Из оригинала
+
+[BestClient Light]
+Transferred
+== Перенесено
+
+[BestClient Light]
 Visuals
 == Визуал
+
+[BestClient Light]
+Tools
+== Инструменты
+
+[BestClient Light]
+Configs
+== Конфиг
 
 [BestClient Light]
 Gameplay

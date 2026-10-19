@@ -910,6 +910,10 @@ void CMenus::OnInit()
 	{
 		m_Popup = POPUP_STYLE_PICKER;
 	}
+	else if(g_Config.m_BclShowSettingsTransfer)
+	{
+		m_Popup = POPUP_SETTINGS_TRANSFER;
+	}
 	// bestclient-light
 
 	if(g_Config.m_UiPage >= PAGE_FAVORITE_COMMUNITY_1 && g_Config.m_UiPage <= PAGE_FAVORITE_COMMUNITY_5 &&
@@ -1396,11 +1400,16 @@ void CMenus::RenderPopupFullscreen(CUIRect Screen)
 		pTitle = Localize("Choose UI style");
 		TopAlign = true;
 	}
+	else if(m_Popup == POPUP_SETTINGS_TRANSFER)
+	{
+		pTitle = BcLocalize("Attention");
+		TopAlign = true;
+	}
 	// bestclient-light
 
 	CUIRect Box, Part;
 	Box = Screen;
-	if(m_Popup != POPUP_FIRST_LAUNCH && m_Popup != POPUP_STYLE_PICKER) // bestclient-light
+	if(m_Popup != POPUP_FIRST_LAUNCH && m_Popup != POPUP_STYLE_PICKER && m_Popup != POPUP_SETTINGS_TRANSFER) // bestclient-light
 	{
 		Box.Margin(150.0f, &Box);
 	}
@@ -1413,6 +1422,15 @@ void CMenus::RenderPopupFullscreen(CUIRect Screen)
 		Box.w = PopupW;
 		Box.h = PopupH;
 	}
+	else if(m_Popup == POPUP_SETTINGS_TRANSFER) // bestclient-light
+	{
+		const float PopupW = std::min(Screen.w - 40.0f, 760.0f);
+		const float PopupH = 196.0f;
+		Box.x = Screen.x + (Screen.w - PopupW) * 0.5f;
+		Box.y = Screen.y + (Screen.h - PopupH) * 0.5f;
+		Box.w = PopupW;
+		Box.h = PopupH;
+	} // bestclient-light
 
 	// Background
 	Box.Draw(BgColor, IGraphics::CORNER_ALL, 15.0f);
@@ -1433,7 +1451,7 @@ void CMenus::RenderPopupFullscreen(CUIRect Screen)
 	}
 
 	// Extra text (optional)
-	if(m_Popup != POPUP_JOIN_TUTORIAL && m_Popup != POPUP_STYLE_PICKER) // bestclient-light
+	if(m_Popup != POPUP_JOIN_TUTORIAL && m_Popup != POPUP_STYLE_PICKER && m_Popup != POPUP_SETTINGS_TRANSFER) // bestclient-light
 	{
 		CUIRect ExtraText;
 		Box.HSplitTop(24.0f, &ExtraText, &Box);
@@ -2199,6 +2217,10 @@ void CMenus::RenderPopupFullscreen(CUIRect Screen)
 	else if(m_Popup == POPUP_STYLE_PICKER)
 	{
 		RenderPopupStylePicker(Box);
+	}
+	else if(m_Popup == POPUP_SETTINGS_TRANSFER)
+	{
+		RenderPopupSettingsTransfer(Box);
 	}
 	// bestclient-light
 	else

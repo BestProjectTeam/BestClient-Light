@@ -67,7 +67,15 @@ int CMenus::GetBestClientLightSettingsTab() const
 
 void CMenus::FinishWelcomeToStylePicker()
 {
-	m_Popup = g_Config.m_BclShowStylePicker ? POPUP_STYLE_PICKER : POPUP_NONE;
+	if(g_Config.m_BclShowStylePicker)
+		m_Popup = POPUP_STYLE_PICKER;
+	else
+		FinishStylePicker();
+}
+
+void CMenus::FinishStylePicker()
+{
+	m_Popup = g_Config.m_BclShowSettingsTransfer ? POPUP_SETTINGS_TRANSFER : POPUP_NONE;
 }
 
 void CMenus::RenderPopupStylePicker(CUIRect Box)
@@ -220,7 +228,7 @@ void CMenus::RenderPopupStylePicker(CUIRect Box)
 		g_Config.m_BclShowStylePicker = 0;
 		Ui()->ClosePopupMenus();
 		BestClientLightRefreshMenuFont(GameClient());
-		m_Popup = POPUP_NONE;
+		FinishStylePicker();
 	}
 	if(DoButton_Menu(&s_NewButton, BcLocalize("Choose Better UI"), 0, &NewBtn))
 	{
@@ -234,7 +242,48 @@ void CMenus::RenderPopupStylePicker(CUIRect Box)
 		g_Config.m_BclShowStylePicker = 0;
 		Ui()->ClosePopupMenus();
 		BestClientLightRefreshMenuFont(GameClient());
+		FinishStylePicker();
+	}
+}
+
+void CMenus::RenderPopupSettingsTransfer(CUIRect Box)
+{
+	CUIRect Buttons, Refuse, Transfer, Line;
+	Box.HSplitBottom(12.0f, &Box, nullptr);
+	Box.HSplitBottom(24.0f, &Box, &Buttons);
+	Box.HSplitBottom(8.0f, &Box, nullptr);
+	Box.VMargin(16.0f, &Box);
+	Buttons.VMargin(40.0f, &Buttons);
+	Buttons.VSplitMid(&Refuse, &Transfer, 20.0f);
+
+	const float FontSize = 15.0f;
+	const float LineH = 20.0f;
+	const float BlockH = LineH * 3.0f;
+	Box.y += std::max(0.0f, (Box.h - BlockH) * 0.5f);
+	Box.h = BlockH;
+	Box.HSplitTop(LineH, &Line, &Box);
+	Ui()->DoLabel(&Line, BcLocalize("The light version uses its own config and different config variable names."), FontSize, TEXTALIGN_MC);
+	Box.HSplitTop(LineH, &Line, &Box);
+	Ui()->DoLabel(&Line, BcLocalize("Do you want to copy settings from the original version into light?"), FontSize, TEXTALIGN_MC);
+	Ui()->DoLabel(&Box, BcLocalize("You can transfer settings at any time in Tools - Config."), FontSize, TEXTALIGN_MC);
+
+	static CButtonContainer s_RefuseButton;
+	static CButtonContainer s_TransferButton;
+	if(DoButton_Menu(&s_RefuseButton, BcLocalize("Refuse"), 0, &Refuse) || Ui()->ConsumeHotkey(CUi::HOTKEY_ESCAPE))
+	{
+		g_Config.m_BclShowSettingsTransfer = 0;
+		ConfigManager()->Save();
 		m_Popup = POPUP_NONE;
+	}
+	else if(DoButton_Menu(&s_TransferButton, BcLocalize("Transfer"), 0, &Transfer) || Ui()->ConsumeHotkey(CUi::HOTKEY_ENTER))
+	{
+		const CBestClientLight::EOriginSettingsTransfer Result = GameClient()->m_BestClientLight.TransferOriginSettings();
+		if(Result == CBestClientLight::EOriginSettingsTransfer::OK)
+			m_Popup = POPUP_NONE;
+		else if(Result == CBestClientLight::EOriginSettingsTransfer::MISSING)
+			PopupMessage(BcLocalize("Settings transfer"), BcLocalize("Could not find the original config settings_BestClient.cfg."), Localize("Ok"), POPUP_SETTINGS_TRANSFER);
+		else
+			PopupMessage(BcLocalize("Settings transfer"), BcLocalize("Could not save the transferred settings."), Localize("Ok"), POPUP_SETTINGS_TRANSFER);
 	}
 }
 
@@ -352,7 +401,7 @@ void CMenus::RenderSettingsBestClientLightConfigPresets(CUIRect MainView)
 	}
 
 	{
-		CUIRect Bottom, Saved;
+		CUIRect Bottom, Saved, TransferButton;
 		MainView.HSplitBottom(LineSize + MarginSmall, &MainView, &Bottom);
 		Bottom.HSplitTop(MarginSmall, nullptr, &Bottom);
 		Bottom.VSplitLeft(170.0f, &Button, &Bottom);
@@ -361,6 +410,21 @@ void CMenus::RenderSettingsBestClientLightConfigPresets(CUIRect MainView)
 		str_format(aFolder, sizeof(aFolder), "%s %s", BcLocalize("Configs"), BcLocalize("Folder"));
 		if(DoButton_Menu(&s_FolderButton, aFolder, 0, &Button))
 			Presets.OpenFolder();
+		Bottom.VSplitLeft(MarginSmall, nullptr, &Bottom);
+		Bottom.VSplitLeft(170.0f, &TransferButton, &Bottom);
+		static CButtonContainer s_TransferOriginButton;
+		static int64_t s_TransferredUntil = 0;
+		const bool ShowTransferred = s_TransferredUntil != 0 && time_get() < s_TransferredUntil;
+		if(DoButton_Menu(&s_TransferOriginButton, ShowTransferred ? BcLocalize("Transferred") : BcLocalize("Transfer origin"), 0, &TransferButton))
+		{
+			const CBestClientLight::EOriginSettingsTransfer Result = GameClient()->m_BestClientLight.TransferOriginSettings();
+			if(Result == CBestClientLight::EOriginSettingsTransfer::OK)
+				s_TransferredUntil = time_get() + time_freq();
+			else if(Result == CBestClientLight::EOriginSettingsTransfer::MISSING)
+				PopupMessage(BcLocalize("Settings transfer"), BcLocalize("Could not find the original config settings_BestClient.cfg."), Localize("Ok"));
+			else
+				PopupMessage(BcLocalize("Settings transfer"), BcLocalize("Could not save the transferred settings."), Localize("Ok"));
+		}
 		Bottom.VSplitRight(120.0f, nullptr, &Saved);
 		char aBuf[64];
 		str_format(aBuf, sizeof(aBuf), BcLocalize("Saved: %d"), (int)Presets.m_vPresets.size());
@@ -2671,8 +2735,16 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 
 		if(s_SelectedBindIndex < static_cast<int>(GameClient()->m_FastActions.m_vBinds.size()))
 		{
-			str_copy(GameClient()->m_FastActions.m_vBinds[s_SelectedBindIndex].m_aName, s_aBindName);
-			str_copy(GameClient()->m_FastActions.m_vBinds[s_SelectedBindIndex].m_aCommand, s_aBindCommand);
+			CFastActions::CBind &Bind = GameClient()->m_FastActions.m_vBinds[s_SelectedBindIndex];
+			const char *pName = IsLegacySlotName(Bind.m_aName, s_SelectedBindIndex) ? "" : Bind.m_aName;
+			if(s_BindNameInput.IsActive())
+				str_copy(Bind.m_aName, s_aBindName);
+			else if(str_comp(s_aBindName, pName) != 0)
+				str_copy(s_aBindName, pName);
+			if(s_BindCommandInput.IsActive())
+				str_copy(Bind.m_aCommand, s_aBindCommand);
+			else if(str_comp(s_aBindCommand, Bind.m_aCommand) != 0)
+				str_copy(s_aBindCommand, Bind.m_aCommand);
 		}
 
 		static CButtonContainer s_FastActionsClearButton;

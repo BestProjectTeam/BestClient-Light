@@ -13,6 +13,7 @@
 #include <engine/http.h>
 #include <engine/shared/config.h>
 #include <engine/shared/json.h>
+#include <engine/shared/linereader.h>
 #include <engine/storage.h>
 #include <engine/textrender.h>
 
@@ -520,6 +521,35 @@ void CMenus::RenderFrozenSkinSettings(CUIRect &View)
 		0, FROZEN_SKIN_MAX_DARKEN);
 
 	Ui()->DoLabel(&ValueLabel, aBuf, ValueLabel.h * CUi::ms_FontmodHeight * 0.8f, TEXTALIGN_ML);
+}
+
+CBestClientLight::EOriginSettingsTransfer CBestClientLight::TransferOriginSettings()
+{
+	static constexpr const char *ORIGIN_CONFIG = "settings_BestClient.cfg";
+
+	CLineReader Reader;
+	if(!Reader.OpenFile(Storage()->OpenFile(ORIGIN_CONFIG, IOFLAG_READ, IStorage::TYPE_SAVE)))
+		return EOriginSettingsTransfer::MISSING;
+
+	while(const char *pLine = Reader.Get())
+	{
+		const char *pToken = str_skip_whitespaces_const(pLine);
+		if(pToken[0] == '\0' || pToken[0] == '#' || str_startswith(pToken, "//") != nullptr)
+			continue;
+
+		char aCommand[8192];
+		const char *pBcRest = str_startswith_nocase(pToken, "bc_");
+		if(pBcRest != nullptr && pBcRest[0] != '\0' && !str_isspace(pBcRest[0]))
+			str_format(aCommand, sizeof(aCommand), "bcl_%s", pBcRest);
+		else
+			str_copy(aCommand, pToken, sizeof(aCommand));
+		Console()->ExecuteLine(aCommand, IConsole::CLIENT_ID_UNSPECIFIED, true);
+	}
+
+	g_Config.m_BclShowSettingsTransfer = 0;
+	if(!ConfigManager()->Save())
+		return EOriginSettingsTransfer::SAVE_FAILED;
+	return EOriginSettingsTransfer::OK;
 }
 
 void CBestClientLight::EnsureAudioDefaultPack()

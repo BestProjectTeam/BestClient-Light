@@ -167,6 +167,9 @@ MACRO_CONFIG_INT(BclMenuUiBetterFont, bcl_menu_ui_better_font, 1, 0, 1, CFGFLAG_
 MACRO_CONFIG_INT(BclShowStylePicker, bcl_show_style_picker, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show one-time menu UI style picker on first launch")
 MACRO_CONFIG_INT(BclSettingsNavExpanded, bcl_settings_nav_expanded, 0, 0, 7, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Better settings nav expanded groups (bit 0 = DDNet, 1 = TClient, 2 = BestClient Light)")
 
+// SettingsTransfer
+MACRO_CONFIG_INT(BclShowSettingsTransfer, bcl_show_settings_transfer, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show the one-time prompt to copy original BestClient settings into BestClient Light")
+
 // Browser Utils
 MACRO_CONFIG_INT(BclAutoServerListRefresh, bcl_auto_server_list_refresh, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Automatically refresh the server browser list while a browser tab is open")
 MACRO_CONFIG_INT(BclAutoServerListRefreshSeconds, bcl_auto_server_list_refresh_seconds, 10, 1, 300, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Auto refresh interval for the server browser list in seconds")

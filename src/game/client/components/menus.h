@@ -941,6 +941,7 @@ public:
 		POPUP_WARNING,
 		POPUP_SAVE_SKIN,
 		POPUP_STYLE_PICKER, // bestclient-light
+		POPUP_SETTINGS_TRANSFER, // bestclient-light
 	};
 
 	enum
@@ -1001,7 +1002,9 @@ private:
 	void RenderSettingsBestClientLightInfo(CUIRect MainView); // bestclient-light
 	void RenderSettingsBestClientLightConfigPresets(CUIRect MainView); // bestclient-light
 	void RenderPopupStylePicker(CUIRect Box); // bestclient-light
+	void RenderPopupSettingsTransfer(CUIRect Box); // bestclient-light
 	void FinishWelcomeToStylePicker(); // bestclient-light
+	void FinishStylePicker(); // bestclient-light
 	// bestclient-light
 public:
 	void SetBestClientLightSettingsTab(int Tab);

@@ -65,7 +65,15 @@ public:
 
 	bool ApplyFrozenSkin(CTeeRenderInfo &RenderInfo, bool Frozen);
 
+	enum class EOriginSettingsTransfer
+	{
+		MISSING,
+		OK,
+		SAVE_FAILED,
+	};
+
 	void EnsureAudioDefaultPack();
+	EOriginSettingsTransfer TransferOriginSettings();
 
 	void UpdateGoresMode();
 	void OnGoresFireInput(int Pressed);
