@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_UI_ANIMATIONS_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_UI_ANIMATIONS_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_UI_ANIMATIONS_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_UI_ANIMATIONS_H
 
 #include <base/color.h>
 #include <base/vmath.h>
@@ -21,12 +21,12 @@ namespace BCUiAnimations
 {
 inline bool Enabled()
 {
-	return g_Config.m_BcAnimations != 0;
+	return g_Config.m_BclAnimations != 0;
 }
 
 inline bool SettingsUiAnimationEnabled()
 {
-	return Enabled() && g_Config.m_BcModuleUiRevealAnimation != 0;
+	return Enabled() && g_Config.m_BclModuleUiRevealAnimation != 0;
 }
 
 inline float Clamp01(float v)
@@ -74,7 +74,7 @@ inline float UpdatePhase(float &Phase, float Target, float Dt, float DurationSec
 inline void UpdateModuleRevealPhase(float &Phase, bool Expanded, float Dt)
 {
 	if(SettingsUiAnimationEnabled())
-		UpdatePhase(Phase, Expanded ? 1.0f : 0.0f, Dt, MsToSeconds(g_Config.m_BcModuleUiRevealAnimationMs));
+		UpdatePhase(Phase, Expanded ? 1.0f : 0.0f, Dt, MsToSeconds(g_Config.m_BclModuleUiRevealAnimationMs));
 	else
 		Phase = Expanded ? 1.0f : 0.0f;
 }

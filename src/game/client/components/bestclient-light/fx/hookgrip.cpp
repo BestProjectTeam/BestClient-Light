@@ -22,17 +22,17 @@ ColorRGBA FgfRainbow(float Hue, float Lightness)
 
 ColorRGBA FgfThemeColor()
 {
-	switch(g_Config.m_BcHookStyle)
+	switch(g_Config.m_BclHookStyle)
 	{
-	case FGF_HOOK_STYLE_WHIRLWIND: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookWindColor));
-	case FGF_HOOK_STYLE_BLACK_HOLE: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookHoleColor));
-	case FGF_HOOK_STYLE_MAGIC: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookMagicColor));
-	case FGF_HOOK_STYLE_FIRE: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookFireColor));
+	case FGF_HOOK_STYLE_WHIRLWIND: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookWindColor));
+	case FGF_HOOK_STYLE_BLACK_HOLE: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookHoleColor));
+	case FGF_HOOK_STYLE_MAGIC: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookMagicColor));
+	case FGF_HOOK_STYLE_FIRE: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookFireColor));
 	case FGF_HOOK_STYLE_TROLL: return ColorRGBA(0.95f, 0.95f, 0.95f, 1.0f);
 	case FGF_HOOK_STYLE_RAINBOW: return FgfRainbow((float)std::fmod(time_get() / (double)time_freq() * 0.25, 1.0));
-	case FGF_HOOK_STYLE_LIGHTNING: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookBoltColor));
-	case FGF_HOOK_STYLE_TENTACLE: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookTentacleColor));
-	default: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcFreezeLightningColor));
+	case FGF_HOOK_STYLE_LIGHTNING: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookBoltColor));
+	case FGF_HOOK_STYLE_TENTACLE: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookTentacleColor));
+	default: return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclFreezeLightningColor));
 	}
 }
 

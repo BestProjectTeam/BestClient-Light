@@ -51,7 +51,7 @@ bool ParseFinishedMaps(const json_value *pRoot, std::unordered_set<std::string> 
 
 bool CEgoFinishedMaps::Enabled() const
 {
-	return g_Config.m_BcShowFinishedMapOnEgo != 0;
+	return g_Config.m_BclShowFinishedMapOnEgo != 0;
 }
 
 bool CEgoFinishedMaps::IsFinishedMap(const CServerInfo *pServer) const

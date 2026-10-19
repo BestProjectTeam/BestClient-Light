@@ -26,7 +26,7 @@ void CSnapTap::Reset(int Dummy)
 
 bool CSnapTap::IsActive() const
 {
-	return g_Config.m_BcSnapTap != 0 && !IsBlockedByCommunity();
+	return g_Config.m_BclSnapTap != 0 && !IsBlockedByCommunity();
 }
 
 void CSnapTap::UpdateState(int Dummy, bool LeftPressed, bool RightPressed)
@@ -78,7 +78,7 @@ int CSnapTap::ResolveDirection(int Dummy, bool LeftPressed, bool RightPressed)
 		}
 		else if(m_aAppliedDirection[Dummy] != CandidateDirection)
 		{
-			const int64_t Delay = (time_freq() * (int64_t)g_Config.m_BcSnapTapDelay) / 1000;
+			const int64_t Delay = (time_freq() * (int64_t)g_Config.m_BclSnapTapDelay) / 1000;
 			if(time_get() - m_aLastPressedTime[Dummy] >= Delay)
 				m_aAppliedDirection[Dummy] = CandidateDirection;
 		}

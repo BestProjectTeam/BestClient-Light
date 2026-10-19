@@ -10,7 +10,7 @@
 
 #include <game/client/component.h>
 #include <game/client/render.h>
-#include <game/client/ui_rect.h> // bestclient
+#include <game/client/ui_rect.h> // bestclient-light
 
 struct SScoreInfo
 {
@@ -47,9 +47,9 @@ struct SScoreInfo
 class CHud : public CComponent
 {
 	float m_Width, m_Height;
-	// bestclient
+	// bestclient-light
 	float m_LastHudWidth = -1.0f;
-	// bestclient
+	// bestclient-light
 
 	int m_HudQuadContainerIndex;
 	SScoreInfo m_aScoreInfo[2];
@@ -91,9 +91,9 @@ class CHud : public CComponent
 	float m_PracticeLine1Width = -1.0f;
 	float m_PracticeLine2Width = -1.0f;
 	int m_LastMovementInfoTick = -1;
-	void RenderSpectatorCount(bool ForcePreview = false); // bestclient
-	void RenderDummyActions(bool ForcePreview = false); // bestclient
-	void RenderMovementInformation(bool ForcePreview = false); // bestclient
+	void RenderSpectatorCount(bool ForcePreview = false); // bestclient-light
+	void RenderDummyActions(bool ForcePreview = false); // bestclient-light
+	void RenderMovementInformation(bool ForcePreview = false); // bestclient-light
 
 	void UpdateMovementInformationTextContainer(STextContainerIndex &TextContainer, float FontSize, float Value, float &PrevValue, bool AllowUpdate);
 	void RenderMovementInformationTextContainer(STextContainerIndex &TextContainer, const ColorRGBA &Color, float X, float Y);
@@ -111,14 +111,14 @@ class CHud : public CComponent
 	void RenderPauseNotification();
 	void RenderSuddenDeath();
 
-	void RenderScoreHud(bool ForcePreview = false); // bestclient
+	void RenderScoreHud(bool ForcePreview = false); // bestclient-light
 	int m_LastLocalClientId = -1;
 
 	void RenderSpectatorHud();
 	void RenderWarmupTimer();
-	void RenderLocalTime(bool ForcePreview = false); // bestclient
-	void RenderFrozenHud(bool ForcePreview = false); // bestclient
-	void RenderNotifyLast(bool ForcePreview = false); // bestclient
+	void RenderLocalTime(bool ForcePreview = false); // bestclient-light
+	void RenderFrozenHud(bool ForcePreview = false); // bestclient-light
+	void RenderNotifyLast(bool ForcePreview = false); // bestclient-light
 
 	static constexpr float MOVEMENT_INFORMATION_LINE_HEIGHT = 8.0f;
 
@@ -133,7 +133,7 @@ public:
 	void OnInit() override;
 	void OnNewSnapshot() override;
 
-	// bestclient
+	// bestclient-light
 	void EnsureHudSize(float Width, float Height)
 	{
 		m_Width = Width;
@@ -161,9 +161,9 @@ public:
 	void RenderFrozenHudPreview() { RenderFrozenHud(true); }
 	CUIRect GetNotifyLastHudEditorRect() const { return GetNotifyLastRect(true); }
 	void RenderNotifyLastPreview() { RenderNotifyLast(true); }
-	// bestclient
+	// bestclient-light
 	float GetPlayerRecordSeconds(int Dummy) const { return m_aPlayerRecord[Dummy]; }
-	// bestclient
+	// bestclient-light
 
 	// DDRace
 
@@ -173,7 +173,7 @@ public:
 private:
 	void RenderRecord();
 	void RenderDDRaceEffects();
-	void GetFrozenTeamCounts(int &NumInTeam, int &NumFrozen, int &LocalTeamId, int *pNumUnfreezing = nullptr) const; // bestclient
+	void GetFrozenTeamCounts(int &NumInTeam, int &NumFrozen, int &LocalTeamId, int *pNumUnfreezing = nullptr) const; // bestclient-light
 	float m_TimeCpDiff;
 	float m_aPlayerRecord[NUM_DUMMIES];
 	float m_FinishTimeDiff;
@@ -182,7 +182,7 @@ private:
 	int m_TimeCpLastReceivedTick;
 	bool m_ShowFinishTime;
 
-	inline float GetMovementInformationBoxHeight() const; // bestclient
+	inline float GetMovementInformationBoxHeight() const; // bestclient-light
 	inline int GetDigitsIndex(int Value, int Max);
 
 	// Quad Offsets

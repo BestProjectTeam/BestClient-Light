@@ -16,9 +16,9 @@ using FgfGlow::Whiten;
 
 static constexpr float FADE_TIME = 0.3f;
 
-static float BoltJitter() { return g_Config.m_BcHookBoltJitter / 100.0f; }
-static float BoltSparks() { return g_Config.m_BcHookBoltSparks / 100.0f; }
-static ColorRGBA BoltColor() { return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookBoltColor)); }
+static float BoltJitter() { return g_Config.m_BclHookBoltJitter / 100.0f; }
+static float BoltSparks() { return g_Config.m_BclHookBoltSparks / 100.0f; }
+static ColorRGBA BoltColor() { return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookBoltColor)); }
 
 static float Noise(float Seed)
 {
@@ -198,7 +198,7 @@ void CHookLightning::Draw(float Scale, float Time)
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		const CHookGripTracker::CGrip &Grip = m_Tracker.Grip(i);
-		if(Grip.m_Fade <= 0.0f || !g_Config.m_BcHookBoltArc)
+		if(Grip.m_Fade <= 0.0f || !g_Config.m_BclHookBoltArc)
 			continue;
 		const CBoltState &State = m_aStates[i];
 		const float Alpha = Grip.m_Fade * Grip.m_Alpha;
@@ -233,7 +233,7 @@ void CHookLightning::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(g_Config.m_BcHookStyle != FGF_HOOK_STYLE_LIGHTNING || !g_Config.m_BcHookTip)
+	if(g_Config.m_BclHookStyle != FGF_HOOK_STYLE_LIGHTNING || !g_Config.m_BclHookTip)
 	{
 		if(m_WasActive)
 			OnReset();
@@ -241,8 +241,8 @@ void CHookLightning::OnRender()
 	}
 	m_WasActive = true;
 
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	m_Tracker.Update(GameClient(), Passed, g_Config.m_BcHookChargeTime / 1000.0f, FADE_TIME,
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	m_Tracker.Update(GameClient(), Passed, g_Config.m_BclHookChargeTime / 1000.0f, FADE_TIME,
 		[&](int ClientId, CHookGripTracker::EEvent Event, const CHookGripTracker::CGrip &Grip) {
 			switch(Event)
 			{

@@ -523,9 +523,9 @@ void CCommandProcessorFragment_OpenGL3_3::Cmd_Shutdown(const SCommand_Shutdown *
 	glDeleteVertexArrays(MAX_STREAM_BUFFER_COUNT, m_aPrimitiveDrawVertexId);
 	glDeleteBuffers(1, &m_PrimitiveDrawBufferIdTex3D);
 	glDeleteVertexArrays(1, &m_PrimitiveDrawVertexIdTex3D);
-	// bestclient
+	// bestclient-light
 	DestroyMotionBlurTexture();
-	// bestclient
+	// bestclient-light
 
 	for(int i = 0; i < (int)m_vTextures.size(); ++i)
 	{
@@ -1458,8 +1458,8 @@ void CCommandProcessorFragment_OpenGL3_3::Cmd_RenderQuadContainerAsSpriteMultipl
 	}
 }
 
-// bestclient
-#include <game/client/components/bestclient/motion_blur_opengl.inl>
-// bestclient
+// bestclient-light
+#include <game/client/components/bestclient-light/motion_blur_opengl.inl>
+// bestclient-light
 
 #endif

@@ -38,7 +38,7 @@ void CTooltips::SetFadeTime(const void *pId, float Time)
 	}
 }
 
-// bestclient
+// bestclient-light
 void CTooltips::SetTextColor(const void *pId, ColorRGBA TextColor)
 {
 	uintptr_t Id = reinterpret_cast<uintptr_t>(pId);
@@ -49,7 +49,7 @@ void CTooltips::SetTextColor(const void *pId, ColorRGBA TextColor)
 		It->second.m_TextColor = TextColor;
 	}
 }
-// bestclient
+// bestclient-light
 
 void CTooltips::DoToolTip(const void *pId, const CUIRect *pNearRect, const char *pText, float WidthHint)
 {
@@ -163,9 +163,9 @@ void CTooltips::OnRender()
 
 		if(TextContainerIndex.Valid())
 		{
-			// bestclient
+			// bestclient-light
 			ColorRGBA TextColor = Tooltip.m_CustomTextColor ? Tooltip.m_TextColor : TextRender()->DefaultTextColor();
-			// bestclient
+			// bestclient-light
 			TextColor.a *= AlphaFactor;
 			ColorRGBA OutlineColor = TextRender()->DefaultTextOutlineColor();
 			OutlineColor.a *= AlphaFactor;

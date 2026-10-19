@@ -54,9 +54,9 @@ public:
 
 	virtual void PossibleConfigVariables(const char *pStr, int FlagMask, POSSIBLECFGFUNC pfnCallback, void *pUserData) = 0;
 
-	// bestclient
+	// bestclient-light
 	virtual void VisitVariables(void (*pfnCallback)(struct SConfigVariable *pVariable, void *pUserData), void *pUserData) = 0;
-	// bestclient
+	// bestclient-light
 };
 
 extern IConfigManager *CreateConfigManager();

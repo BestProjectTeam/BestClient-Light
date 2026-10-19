@@ -29,12 +29,12 @@ bool CWeaponVfx::RenderWeaponLaser(vec2 From, vec2 Pos, ColorRGBA OuterColor, Co
 	if(Type != LASERTYPE_RIFLE && Type != LASERTYPE_SHOTGUN && Type >= 0)
 		return false;
 	const bool Shotgun = Type == LASERTYPE_SHOTGUN;
-	const int Enabled = Shotgun ? g_Config.m_BcShotgunGlow : g_Config.m_BcLaserGlow;
-	const int Power = Shotgun ? g_Config.m_BcShotgunGlowPower : g_Config.m_BcLaserGlowPower;
+	const int Enabled = Shotgun ? g_Config.m_BclShotgunGlow : g_Config.m_BclLaserGlow;
+	const int Power = Shotgun ? g_Config.m_BclShotgunGlowPower : g_Config.m_BclLaserGlowPower;
 	if(!Enabled || Power <= 0 || (g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideEffects))
 		return false;
-	const int Mode = std::clamp(Shotgun ? g_Config.m_BcShotgunGlowMode : g_Config.m_BcLaserGlowMode, 0, NUM_MODES - 1);
-	const unsigned Color = Shotgun ? g_Config.m_BcShotgunGlowColor : g_Config.m_BcLaserGlowColor;
+	const int Mode = std::clamp(Shotgun ? g_Config.m_BclShotgunGlowMode : g_Config.m_BclLaserGlowMode, 0, NUM_MODES - 1);
+	const unsigned Color = Shotgun ? g_Config.m_BclShotgunGlowColor : g_Config.m_BclLaserGlowColor;
 	ColorRGBA DrawOuter = OuterColor;
 	ColorRGBA DrawInner = InnerColor;
 	if(Color != 0)

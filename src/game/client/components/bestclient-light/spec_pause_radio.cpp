@@ -76,7 +76,7 @@ CSpecPauseRadio::CSpecPauseRadio()
 
 void CSpecPauseRadio::OnInit()
 {
-	if(g_Config.m_BcBetterSpectate)
+	if(g_Config.m_BclBetterSpectate)
 		SyncSpectateBinds(true);
 }
 
@@ -216,7 +216,7 @@ void CSpecPauseRadio::OnRender()
 			m_SelectedType = m_SelectorMouse.x < 0.0f ? SPEC_PAUSE_PAUSE : SPEC_PAUSE_SPEC;
 	}
 
-	if(m_ActiveSince > time_get() - time_freq() * g_Config.m_BcSpecPauseShowDelay * 0.001f)
+	if(m_ActiveSince > time_get() - time_freq() * g_Config.m_BclSpecPauseShowDelay * 0.001f)
 		return;
 
 	Ui()->MapScreen();
@@ -293,14 +293,14 @@ void CSpecPauseRadio::ConOpenRadio(IConsole::IResult *pResult, void *pUserData)
 void CSpecPauseRadio::ConchainBetterSpectate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	CSpecPauseRadio *pSelf = static_cast<CSpecPauseRadio *>(pUserData);
-	const int OldValue = g_Config.m_BcBetterSpectate;
+	const int OldValue = g_Config.m_BclBetterSpectate;
 	pfnCallback(pResult, pCallbackUserData);
-	if(pResult->NumArguments() && OldValue != g_Config.m_BcBetterSpectate)
-		pSelf->SyncSpectateBinds(g_Config.m_BcBetterSpectate != 0);
+	if(pResult->NumArguments() && OldValue != g_Config.m_BclBetterSpectate)
+		pSelf->SyncSpectateBinds(g_Config.m_BclBetterSpectate != 0);
 }
 
 void CSpecPauseRadio::OnConsoleInit()
 {
 	Console()->Register("+specpause", "", CFGFLAG_CLIENT, ConOpenRadio, this, "Open the spec pause radio menu");
-	Console()->Chain("bc_better_spectate", ConchainBetterSpectate, this);
+	Console()->Chain("bcl_better_spectate", ConchainBetterSpectate, this);
 }

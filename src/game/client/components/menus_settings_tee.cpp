@@ -2,7 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "menus.h"
 
-#include <base/math.h> // bestclient
+#include <base/math.h> // bestclient-light
 #include <base/str.h>
 
 #include <engine/font_icons.h>
@@ -27,7 +27,7 @@
 
 void CMenus::RenderSettingsTee(CUIRect MainView)
 {
-	// bestclient
+	// bestclient-light
 	const float NameClanSkinHeight = 3.0f * 20.0f + 2.0f * 5.0f;
 	const float CustomColorsRowHeight = 20.0f;
 	const float LeftStackHeight = NameClanSkinHeight + 5.0f + CustomColorsRowHeight;
@@ -50,7 +50,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 	TabBar.VSplitMid(&TabBar, &ChangeInfo, 20.f);
 	TabBar.VSplitMid(&PlayerTab, &DummyTab);
 	TopArea.HSplitTop(10.0f, nullptr, &TopArea);
-	// bestclient
+	// bestclient-light
 
 	static CButtonContainer s_PlayerTabButton;
 	if(DoButton_MenuTab(&s_PlayerTabButton, Localize("Player"), !m_Dummy, &PlayerTab, IGraphics::CORNER_L, nullptr, nullptr, nullptr, nullptr, 4.0f))
@@ -90,7 +90,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 	unsigned *pColorBody;
 	unsigned *pColorFeet;
 	int *pEmote;
-	int *pCountry; // bestclient
+	int *pCountry; // bestclient-light
 	static CLineInput s_NameInput;
 	static CLineInput s_ClanInput;
 	if(!m_Dummy)
@@ -117,17 +117,17 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 		pCountry = &g_Config.m_ClDummyCountry;
 		s_NameInput.SetBuffer(g_Config.m_ClDummyName, sizeof(g_Config.m_ClDummyName));
 		s_NameInput.SetEmptyText(Client()->DummyName());
-		s_ClanInput.SetBuffer(g_Config.m_ClDummyClan, sizeof(g_Config.m_ClDummyClan)); // bestclient
+		s_ClanInput.SetBuffer(g_Config.m_ClDummyClan, sizeof(g_Config.m_ClDummyClan)); // bestclient-light
 	}
 
-	// bestclient
+	// bestclient-light
 	CUIRect YourSkin, Checkboxes, SkinPrefix, Button, Label, CustomColorsRow;
 	TopArea.VSplitLeft(TopArea.w * 0.55f, &YourSkin, &TopArea);
 	YourSkin.VSplitRight(12.0f, &YourSkin, nullptr);
 	Checkboxes = TopArea;
 	Checkboxes.VSplitRight(10.0f, &Checkboxes, nullptr);
 	SkinPrefix = RightColumn;
-	// bestclient
+	// bestclient-light
 
 	// Checkboxes
 	bool ShouldRefresh = false;
@@ -158,7 +158,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 		g_Config.m_ClFatSkins ^= 1;
 	}
 
-	// Skin quality // bestclient
+	// Skin quality // bestclient-light
 	{
 		Checkboxes.HSplitTop(2.0f, nullptr, &Checkboxes);
 		Checkboxes.HSplitTop(QualitySliderHeight, &Button, &Checkboxes);
@@ -204,7 +204,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 			Ui()->DoLabel(&WarningRect, Localize("and crash your game"), 11.0f, TEXTALIGN_MC);
 			TextRender()->TextColor(TextRender()->DefaultTextColor());
 		}
-	} // bestclient
+	} // bestclient-light
 
 	// Skin prefix
 	{
@@ -234,9 +234,9 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 		}
 	}
 
-	RenderFrozenSkinSettings(SkinPrefix); // bestclient
+	RenderFrozenSkinSettings(SkinPrefix); // bestclient-light
 
-	// Player identity and skin area. // bestclient
+	// Player identity and skin area. // bestclient-light
 	CUIRect RandomColorsButton, CustomColorsButton, RandomSkinButton, TeePreview, Fields;
 	YourSkin.HSplitTop(NameClanSkinHeight, &TeePreview, &YourSkin);
 	YourSkin.HSplitTop(5.0f, nullptr, &YourSkin);
@@ -247,7 +247,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 	CUIRect TeePreviewBackground = TeePreview;
 	TeePreviewBackground.w = TeePreviewBackground.h = 50.0f;
 	TeePreviewBackground.x += (TeePreview.w - TeePreviewBackground.w) / 2.0f;
-	TeePreviewBackground.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f), IGraphics::CORNER_ALL, 5.0f); // bestclient
+	TeePreviewBackground.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f), IGraphics::CORNER_ALL, 5.0f); // bestclient-light
 
 	CUIRect NameRow, ClanRow, SkinRow;
 	Fields.HSplitTop(20.0f, &NameRow, &Fields);
@@ -270,7 +270,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 	if(Ui()->DoEditBox(&s_NameInput, &NameInput, 14.0f))
 		SetNeedSendInfo();
 	if(Ui()->DoEditBox(&s_ClanInput, &ClanInput, 14.0f))
-		SetNeedSendInfo(); // bestclient
+		SetNeedSendInfo(); // bestclient-light
 
 	char aBuf[128 + IO_MAX_PATH_LENGTH];
 
@@ -287,7 +287,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 	OwnSkinInfo.ApplyColors(*pUseCustomColor, *pColorBody, *pColorFeet);
 	OwnSkinInfo.m_Size = 50.0f;
 
-	// Tee // bestclient
+	// Tee // bestclient-light
 	{
 		vec2 OffsetToMid;
 		CRenderTools::GetRenderTeeOffsetToRenderedTee(CAnimState::GetIdle(), &OwnSkinInfo, OffsetToMid);
@@ -307,7 +307,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 				GameClient()->m_Emoticon.EyeEmote(*pEmote);
 		}
 		GameClient()->m_Tooltips.DoToolTip(&s_InteractiveTeeButtonId, &TeePreview, Localize("Choose default eyes when joining a server"));
-	} // bestclient
+	} // bestclient-light
 
 	// Skin loading status
 	const auto &&RenderSkinStatus = [&](CUIRect Parent, const CSkins::CSkinContainer *pSkinContainer, const void *pStatusTooltipId) {
@@ -354,7 +354,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 		}
 	};
 	static char s_StatusTooltipId;
-	RenderSkinStatus(TeePreview, pOwnSkinContainer, &s_StatusTooltipId); // bestclient
+	RenderSkinStatus(TeePreview, pOwnSkinContainer, &s_StatusTooltipId); // bestclient-light
 
 	// Skin name
 	static CLineInput s_SkinInput;
@@ -367,7 +367,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 		SkinList.ForceRefresh();
 	}
 
-	static CButtonContainer s_FlagButton; // bestclient
+	static CButtonContainer s_FlagButton; // bestclient-light
 	if(DoButton_Menu(&s_FlagButton, "", 0, &FlagButton))
 	{
 		static SPopupMenuId s_PopupCountryId;
@@ -384,15 +384,15 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 	const float OldFlagWidth = FlagIcon.w;
 	FlagIcon.w = FlagIcon.h * 2.0f;
 	FlagIcon.x += (OldFlagWidth - FlagIcon.w) / 2.0f;
-	GameClient()->m_CountryFlags.Render(*pCountry, ColorRGBA(1.0f, 1.0f, 1.0f, Ui()->HotItem() == &s_FlagButton ? 1.0f : 0.85f), FlagIcon.x, FlagIcon.y, FlagIcon.w, FlagIcon.h); // bestclient
+	GameClient()->m_CountryFlags.Render(*pCountry, ColorRGBA(1.0f, 1.0f, 1.0f, Ui()->HotItem() == &s_FlagButton ? 1.0f : 0.85f), FlagIcon.x, FlagIcon.y, FlagIcon.w, FlagIcon.h); // bestclient-light
 
-	CustomColorsButton = CustomColorsRow; // bestclient
+	CustomColorsButton = CustomColorsRow; // bestclient-light
 	CustomColorsButton.VSplitRight(30.0f, &CustomColorsButton, &RandomSkinButton);
 	CustomColorsButton.VSplitRight(3.0f, &CustomColorsButton, nullptr);
 	if(*pUseCustomColor)
 	{
 		CustomColorsButton.VSplitRight(110.0f, &CustomColorsButton, &RandomColorsButton);
-		CustomColorsButton.VSplitRight(5.0f, &CustomColorsButton, nullptr); // bestclient
+		CustomColorsButton.VSplitRight(5.0f, &CustomColorsButton, nullptr); // bestclient-light
 	}
 
 	// Random skin button
@@ -419,7 +419,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 		SetNeedSendInfo();
 	}
 
-	static CButtonContainer s_RandomizeColors; // bestclient
+	static CButtonContainer s_RandomizeColors; // bestclient-light
 	if(*pUseCustomColor && DoButton_Menu(&s_RandomizeColors, "Random Colors", 0, &RandomColorsButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 5.0f, 0.0f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.5f)))
 	{
 		if(m_Dummy)
@@ -432,10 +432,10 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 			g_Config.m_ClPlayerColorBody = ColorHSLA((std::rand() % 100) / 100.0f, (std::rand() % 100) / 100.0f, (std::rand() % 100) / 100.0f, 1).Pack(false);
 			g_Config.m_ClPlayerColorFeet = ColorHSLA((std::rand() % 100) / 100.0f, (std::rand() % 100) / 100.0f, (std::rand() % 100) / 100.0f, 1).Pack(false);
 		}
-		SetNeedSendInfo(); // bestclient
+		SetNeedSendInfo(); // bestclient-light
 	}
 
-	// Custom color pickers // bestclient
+	// Custom color pickers // bestclient-light
 	if(*pUseCustomColor)
 	{
 		CUIRect CustomColors;
@@ -456,10 +456,10 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 			}
 		}
 	}
-	else // bestclient
+	else // bestclient-light
 	{
 		MainView.HSplitTop(2.0f, nullptr, &MainView);
-	} // bestclient
+	} // bestclient-light
 
 	// Layout bottom controls and use remainder for skin selector
 	CUIRect QuickSearch, DatabaseButton, DirectoryButton, RefreshButton;
@@ -556,7 +556,7 @@ void CMenus::RenderSettingsTee(CUIRect MainView)
 	}
 
 	const int NewSelected = s_ListBox.DoEnd();
-	if(OldSelected != NewSelected && NewSelected >= 0 && (size_t)NewSelected < vSkinList.size()) // bestclient
+	if(OldSelected != NewSelected && NewSelected >= 0 && (size_t)NewSelected < vSkinList.size()) // bestclient-light
 	{
 		str_copy(pSkinName, vSkinList[NewSelected].SkinContainer()->Name(), SkinNameSize);
 		SkinList.ForceRefresh();

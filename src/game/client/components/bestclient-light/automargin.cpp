@@ -75,7 +75,7 @@ void CBcAutoMargin::OnNewSnapshot()
 
 void CBcAutoMargin::OnUpdate()
 {
-	if(!g_Config.m_BcAutoMargin)
+	if(!g_Config.m_BclAutoMargin)
 	{
 		if(m_WasEnabled)
 		{

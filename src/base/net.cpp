@@ -1391,7 +1391,7 @@ int net_tcp_connect_non_blocking(NETSOCKET sock, NETADDR bindaddr)
 	return res;
 }
 
-// bestclient
+// bestclient-light
 int net_tcp_connect_timeout(NETSOCKET sock, const NETADDR *addr, int TimeoutMs)
 {
 	net_set_non_blocking(sock);
@@ -1437,7 +1437,7 @@ int net_tcp_connect_timeout(NETSOCKET sock, const NETADDR *addr, int TimeoutMs)
 		return 0;
 	return -1;
 }
-// bestclient
+// bestclient-light
 
 int net_tcp_send(NETSOCKET sock, const void *data, int size)
 {

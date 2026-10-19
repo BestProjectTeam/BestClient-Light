@@ -14,7 +14,7 @@
 #include <engine/external/json-parser/json.h>
 #include <engine/http.h>
 #include <engine/serverbrowser.h>
-#include <engine/shared/config.h> // bestclient
+#include <engine/shared/config.h> // bestclient-light
 #include <engine/shared/jobs.h>
 #include <engine/shared/linereader.h>
 #include <engine/shared/serverinfo.h>
@@ -26,9 +26,9 @@
 
 using namespace std::chrono_literals;
 
-// bestclient
-static const char *BESTCLIENT_SERVERLIST_URL = "https://master.bestclient.fun/servers.json";
-// bestclient
+// bestclient-light
+static const char *BESTCLIENT_LIGHT_SERVERLIST_URL = "https://master.bestclient.fun/servers.json";
+// bestclient-light
 
 static int SanitizeAge(std::optional<int64_t> Age)
 {
@@ -320,7 +320,7 @@ void CChooseMaster::CJob::Run()
 class CServerBrowserHttp : public IServerBrowserHttp
 {
 public:
-	CServerBrowserHttp(IEngine *pEngine, IStorage *pStorage, IHttp *pHttp, const char **ppUrls, int NumUrls, int PreviousBestIndex); // bestclient
+	CServerBrowserHttp(IEngine *pEngine, IStorage *pStorage, IHttp *pHttp, const char **ppUrls, int NumUrls, int PreviousBestIndex); // bestclient-light
 	~CServerBrowserHttp() override;
 	void Shutdown() override;
 	void Update() override;
@@ -351,12 +351,12 @@ private:
 	static bool Parse(json_value *pJson, std::vector<CServerInfo> *pvServers);
 
 	IHttp *m_pHttp;
-	// bestclient
+	// bestclient-light
 	IEngine *m_pEngine;
 	IStorage *m_pStorage;
-	bool m_UseBestClientMaster;
+	bool m_UseBestClientLightMaster;
 	void ResetMasterChooser();
-	// bestclient
+	// bestclient-light
 
 	int m_State = STATE_WANTREFRESH;
 	std::shared_ptr<IHttpRequest> m_pGetServers;
@@ -367,12 +367,12 @@ private:
 
 CServerBrowserHttp::CServerBrowserHttp(IEngine *pEngine, IStorage *pStorage, IHttp *pHttp, const char **ppUrls, int NumUrls, int PreviousBestIndex) :
 	m_pHttp(pHttp),
-	// bestclient
+	// bestclient-light
 	m_pEngine(pEngine),
 	m_pStorage(pStorage),
-	m_UseBestClientMaster(g_Config.m_BcMastersrv != 0),
+	m_UseBestClientLightMaster(g_Config.m_BclMastersrv != 0),
 	m_pChooseMaster(new CChooseMaster(pEngine, pHttp, Validate, ppUrls, NumUrls, PreviousBestIndex))
-	// bestclient
+	// bestclient-light
 {
 	Refresh();
 }
@@ -394,8 +394,8 @@ void CServerBrowserHttp::Shutdown()
 
 void CServerBrowserHttp::Update()
 {
-	// bestclient
-	if(m_UseBestClientMaster != (g_Config.m_BcMastersrv != 0))
+	// bestclient-light
+	if(m_UseBestClientLightMaster != (g_Config.m_BclMastersrv != 0))
 	{
 		if(m_pGetServers != nullptr)
 		{
@@ -405,7 +405,7 @@ void CServerBrowserHttp::Update()
 		ResetMasterChooser();
 		m_State = STATE_WANTREFRESH;
 	}
-	// bestclient
+	// bestclient-light
 
 	if(m_State == STATE_WANTREFRESH)
 	{
@@ -445,10 +445,10 @@ void CServerBrowserHttp::Update()
 			log_error("serverbrowser_http", "failed getting serverlist, trying to find best URL");
 			m_pChooseMaster->Reset();
 			m_pChooseMaster->Refresh();
-			// bestclient
-			if(m_UseBestClientMaster)
+			// bestclient-light
+			if(m_UseBestClientLightMaster)
 				m_State = STATE_WANTREFRESH;
-			// bestclient
+			// bestclient-light
 		}
 		else
 		{
@@ -527,7 +527,7 @@ bool CServerBrowserHttp::Parse(json_value *pJson, std::vector<CServerInfo> *pvSe
 		CServerInfo SetInfo = ParsedInfo;
 		SetInfo.m_Location = ParsedLocation;
 		SetInfo.m_NumAddresses = 0;
-		// bestclient
+		// bestclient-light
 		const json_value &MapUrl = Info["map"]["url"];
 		const json_value &MapSha256 = Info["map"]["sha256"];
 		const json_value &MapSize = Info["map"]["size"];
@@ -544,7 +544,7 @@ bool CServerBrowserHttp::Parse(json_value *pJson, std::vector<CServerInfo> *pvSe
 					SetInfo.m_MapSize = (int)MapSize.u.integer;
 			}
 		}
-		// bestclient
+		// bestclient-light
 		bool GotVersion6 = false;
 		for(unsigned int a = 0; a < Addresses.u.array.length; a++)
 		{
@@ -598,15 +598,15 @@ static const char *DEFAULT_SERVERLIST_URLS[] = {
 	"https://master4.ddnet.org/ddnet/15/servers.json",
 };
 
-// bestclient
-static int FillServerlistUrls(IStorage *pStorage, bool PreferBestClientMaster, char aaUrls[CChooseMaster::MAX_URLS][256], const char **apUrls, const char ***pppUrls)
+// bestclient-light
+static int FillServerlistUrls(IStorage *pStorage, bool PreferBestClientLightMaster, char aaUrls[CChooseMaster::MAX_URLS][256], const char **apUrls, const char ***pppUrls)
 {
 	int NumUrls = 0;
 	*pppUrls = apUrls;
 
-	if(PreferBestClientMaster)
+	if(PreferBestClientLightMaster)
 	{
-		apUrls[0] = BESTCLIENT_SERVERLIST_URL;
+		apUrls[0] = BESTCLIENT_LIGHT_SERVERLIST_URL;
 		NumUrls = 1;
 	}
 
@@ -618,7 +618,7 @@ static int FillServerlistUrls(IStorage *pStorage, bool PreferBestClientMaster, c
 		{
 			if(NumUrls == CChooseMaster::MAX_URLS)
 				break;
-			if(PreferBestClientMaster && str_comp(pLine, BESTCLIENT_SERVERLIST_URL) == 0)
+			if(PreferBestClientLightMaster && str_comp(pLine, BESTCLIENT_LIGHT_SERVERLIST_URL) == 0)
 				continue;
 			str_copy(aaUrls[NumUrls], pLine);
 			apUrls[NumUrls] = aaUrls[NumUrls];
@@ -628,7 +628,7 @@ static int FillServerlistUrls(IStorage *pStorage, bool PreferBestClientMaster, c
 
 	if(NumUrls == NumUrlsBeforeDefaults)
 	{
-		if(!PreferBestClientMaster)
+		if(!PreferBestClientLightMaster)
 		{
 			*pppUrls = DEFAULT_SERVERLIST_URLS;
 			return std::size(DEFAULT_SERVERLIST_URLS);
@@ -648,14 +648,14 @@ static int FillServerlistUrls(IStorage *pStorage, bool PreferBestClientMaster, c
 
 void CServerBrowserHttp::ResetMasterChooser()
 {
-	const bool UseBestClientMaster = g_Config.m_BcMastersrv != 0;
+	const bool UseBestClientLightMaster = g_Config.m_BclMastersrv != 0;
 	char aaUrls[CChooseMaster::MAX_URLS][256];
 	const char *apUrls[CChooseMaster::MAX_URLS] = {nullptr};
 	const char **ppUrls = apUrls;
-	const int NumUrls = FillServerlistUrls(m_pStorage, UseBestClientMaster, aaUrls, apUrls, &ppUrls);
-	const int PreviousBestIndex = UseBestClientMaster ? 0 : -1;
+	const int NumUrls = FillServerlistUrls(m_pStorage, UseBestClientLightMaster, aaUrls, apUrls, &ppUrls);
+	const int PreviousBestIndex = UseBestClientLightMaster ? 0 : -1;
 
-	m_UseBestClientMaster = UseBestClientMaster;
+	m_UseBestClientLightMaster = UseBestClientLightMaster;
 	m_pChooseMaster->Shutdown();
 	m_pChooseMaster = std::make_unique<CChooseMaster>(m_pEngine, m_pHttp, Validate, ppUrls, NumUrls, PreviousBestIndex);
 	if(PreviousBestIndex < 0)
@@ -667,10 +667,10 @@ IServerBrowserHttp *CreateServerBrowserHttp(IEngine *pEngine, IStorage *pStorage
 	char aaUrls[CChooseMaster::MAX_URLS][256];
 	const char *apUrls[CChooseMaster::MAX_URLS] = {nullptr};
 	const char **ppUrls = apUrls;
-	const bool UseBestClientMaster = g_Config.m_BcMastersrv != 0;
-	const int NumUrls = FillServerlistUrls(pStorage, UseBestClientMaster, aaUrls, apUrls, &ppUrls);
-	int PreviousBestIndex = UseBestClientMaster ? 0 : -1;
-	if(!UseBestClientMaster)
+	const bool UseBestClientLightMaster = g_Config.m_BclMastersrv != 0;
+	const int NumUrls = FillServerlistUrls(pStorage, UseBestClientLightMaster, aaUrls, apUrls, &ppUrls);
+	int PreviousBestIndex = UseBestClientLightMaster ? 0 : -1;
+	if(!UseBestClientLightMaster)
 	{
 		for(int i = 0; i < NumUrls; i++)
 		{
@@ -683,5 +683,5 @@ IServerBrowserHttp *CreateServerBrowserHttp(IEngine *pEngine, IStorage *pStorage
 	}
 	return new CServerBrowserHttp(pEngine, pStorage, pHttp, ppUrls, NumUrls, PreviousBestIndex);
 }
-// bestclient
+// bestclient-light
 

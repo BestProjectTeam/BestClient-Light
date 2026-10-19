@@ -25,14 +25,14 @@ CEffects::CEffects()
 
 void CEffects::AirJump(vec2 Pos, float Alpha, float Volume, bool OtherPlayer)
 {
-	// bestclient
+	// bestclient-light
 	if(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideEffects)
 	{
-		if(g_Config.m_SndGame && !BestClientShouldMuteOthersAirJumpSound(g_Config.m_BcMuteOthersAirJump, OtherPlayer))
+		if(g_Config.m_SndGame && !BestClientLightShouldMuteOthersAirJumpSound(g_Config.m_BclMuteOthersAirJump, OtherPlayer))
 			GameClient()->m_Sounds.PlayAt(CSounds::CHN_WORLD, SOUND_PLAYER_AIRJUMP, Volume, Pos);
 		return;
 	}
-	// bestclient
+	// bestclient-light
 
 	CParticle p;
 	p.SetDefault();
@@ -54,10 +54,10 @@ void CEffects::AirJump(vec2 Pos, float Alpha, float Volume, bool OtherPlayer)
 	p.m_Pos = Pos + vec2(6.0f, 16.0f);
 	GameClient()->m_Particles.Add(CParticles::GROUP_GENERAL, &p);
 
-	// bestclient
-	if(g_Config.m_SndGame && !BestClientShouldMuteOthersAirJumpSound(g_Config.m_BcMuteOthersAirJump, OtherPlayer))
+	// bestclient-light
+	if(g_Config.m_SndGame && !BestClientLightShouldMuteOthersAirJumpSound(g_Config.m_BclMuteOthersAirJump, OtherPlayer))
 		GameClient()->m_Sounds.PlayAt(CSounds::CHN_WORLD, SOUND_PLAYER_AIRJUMP, Volume, Pos);
-	// bestclient
+	// bestclient-light
 }
 
 void CEffects::DamageIndicator(vec2 Pos, vec2 Dir, float Alpha)
@@ -90,10 +90,10 @@ void CEffects::PowerupShine(vec2 Pos, vec2 Size, float Alpha)
 
 void CEffects::FreezingFlakes(vec2 Pos, vec2 Size, float Alpha)
 {
-	// bestclient
+	// bestclient-light
 	if(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideEffects)
 		return;
-	// bestclient
+	// bestclient-light
 
 	if(!m_Add5hz)
 		return;
@@ -343,9 +343,9 @@ void CEffects::Confetti(vec2 Pos, float Alpha)
 
 void CEffects::Explosion(vec2 Pos, float Alpha)
 {
-	// bestclient
+	// bestclient-light
 	const bool CustomExplosion = GameClient()->m_WeaponVfx.TriggerExplosion(Pos, Alpha);
-	// bestclient
+	// bestclient-light
 	// add to flow
 	for(int y = -8; y <= 8; y++)
 		for(int x = -8; x <= 8; x++)
@@ -368,10 +368,10 @@ void CEffects::Explosion(vec2 Pos, float Alpha)
 	p.m_Rot = random_angle();
 	p.m_Color.a = Alpha;
 	p.m_StartAlpha = Alpha;
-	// bestclient
+	// bestclient-light
 	if(!CustomExplosion)
 		GameClient()->m_Particles.Add(CParticles::GROUP_EXPLOSIONS, &p);
-	// bestclient
+	// bestclient-light
 
 	// Nudge position slightly to edge of closest tile so the
 	// smoke doesn't get stuck inside the tile.
@@ -396,9 +396,9 @@ void CEffects::Explosion(vec2 Pos, float Alpha)
 	}
 
 	// add the smoke
-	// bestclient
+	// bestclient-light
 	for(int i = 0; !CustomExplosion && i < 24; i++)
-	// bestclient
+	// bestclient-light
 	{
 		p.SetDefault();
 		p.m_Spr = SPRITE_PART_SMOKE;
@@ -414,21 +414,21 @@ void CEffects::Explosion(vec2 Pos, float Alpha)
 		GameClient()->m_Particles.Add(CParticles::GROUP_GENERAL, &p);
 	}
 
-	// bestclient
+	// bestclient-light
 	GameClient()->m_PhysicBalls.OnExplosion(Pos, Alpha == 1.0f);
-	// bestclient
+	// bestclient-light
 }
 
 void CEffects::HammerHit(vec2 Pos, float Alpha, float Volume, bool OtherPlayer)
 {
-	// bestclient
+	// bestclient-light
 	if(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideEffects)
 	{
-		if(g_Config.m_SndGame && !BestClientShouldMuteOthersHammerHitSound(g_Config.m_BcMuteOthersHammer, OtherPlayer))
+		if(g_Config.m_SndGame && !BestClientLightShouldMuteOthersHammerHitSound(g_Config.m_BclMuteOthersHammer, OtherPlayer))
 			GameClient()->m_Sounds.PlayAt(CSounds::CHN_WORLD, SOUND_HAMMER_HIT, Volume, Pos);
 		return;
 	}
-	// bestclient
+	// bestclient-light
 
 	// add the explosion
 	CParticle p;
@@ -442,10 +442,10 @@ void CEffects::HammerHit(vec2 Pos, float Alpha, float Volume, bool OtherPlayer)
 	p.m_Color.a = Alpha;
 	p.m_StartAlpha = Alpha;
 	GameClient()->m_Particles.Add(CParticles::GROUP_EXPLOSIONS, &p);
-	// bestclient
-	if(g_Config.m_SndGame && !BestClientShouldMuteOthersHammerHitSound(g_Config.m_BcMuteOthersHammer, OtherPlayer))
+	// bestclient-light
+	if(g_Config.m_SndGame && !BestClientLightShouldMuteOthersHammerHitSound(g_Config.m_BclMuteOthersHammer, OtherPlayer))
 		GameClient()->m_Sounds.PlayAt(CSounds::CHN_WORLD, SOUND_HAMMER_HIT, Volume, Pos);
-	// bestclient
+	// bestclient-light
 }
 
 void CEffects::OnRender()

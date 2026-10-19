@@ -2235,7 +2235,7 @@ int CGraphics_Threaded::IssueInit()
 		Flags |= IGraphicsBackend::INITFLAG_VSYNC;
 	}
 
-	const int Result = m_pBackend->Init("BestClient", &g_Config.m_GfxScreen, &g_Config.m_GfxScreenWidth, &g_Config.m_GfxScreenHeight, &g_Config.m_GfxScreenRefreshRate, &g_Config.m_GfxFsaaSamples, Flags, &m_DesktopSize.x, &m_DesktopSize.y, &m_ScreenWidth, &m_ScreenHeight, m_pStorage); // bestclient
+	const int Result = m_pBackend->Init("BestClient Light", &g_Config.m_GfxScreen, &g_Config.m_GfxScreenWidth, &g_Config.m_GfxScreenHeight, &g_Config.m_GfxScreenRefreshRate, &g_Config.m_GfxFsaaSamples, Flags, &m_DesktopSize.x, &m_DesktopSize.y, &m_ScreenWidth, &m_ScreenHeight, m_pStorage); // bestclient-light
 	m_DrawableWidth = m_ScreenWidth;
 	m_DrawableHeight = m_ScreenHeight;
 	AddBackEndWarningIfExists();
@@ -2257,7 +2257,7 @@ int CGraphics_Threaded::IssueInit()
 // TClient
 bool g_GraphicsForcedAspect = true;
 
-// bestclient
+// bestclient-light
 static int s_GraphicsCustomAspect = -1;
 
 static void ResolveCustomAspect(bool ApplyCustomAspect, int &CustomAspect, float &CustomAspectF)
@@ -2266,12 +2266,12 @@ static void ResolveCustomAspect(bool ApplyCustomAspect, int &CustomAspect, float
 	CustomAspectF = 0.0f;
 	if(!ApplyCustomAspect)
 		return;
-	const int AspectMode = g_Config.m_BcCustomAspectRatioMode >= 0 ? g_Config.m_BcCustomAspectRatioMode : (g_Config.m_BcCustomAspectRatio > 0 ? 1 : 0);
-	if(AspectMode <= 0 || g_Config.m_BcCustomAspectRatio < 100)
+	const int AspectMode = g_Config.m_BclCustomAspectRatioMode >= 0 ? g_Config.m_BclCustomAspectRatioMode : (g_Config.m_BclCustomAspectRatio > 0 ? 1 : 0);
+	if(AspectMode <= 0 || g_Config.m_BclCustomAspectRatio < 100)
 		return;
-	CustomAspect = g_Config.m_BcCustomAspectRatio;
-	if(AspectMode == 2 && g_Config.m_BcCustomAspectRatioNum > 0 && g_Config.m_BcCustomAspectRatioDen > 0)
-		CustomAspectF = (float)g_Config.m_BcCustomAspectRatioNum / (float)g_Config.m_BcCustomAspectRatioDen;
+	CustomAspect = g_Config.m_BclCustomAspectRatio;
+	if(AspectMode == 2 && g_Config.m_BclCustomAspectRatioNum > 0 && g_Config.m_BclCustomAspectRatioDen > 0)
+		CustomAspectF = (float)g_Config.m_BclCustomAspectRatioNum / (float)g_Config.m_BclCustomAspectRatioDen;
 	else
 		CustomAspectF = CustomAspect / 100.0f;
 }
@@ -2301,13 +2301,13 @@ void CGraphics_Threaded::PopPreviewViewport()
 	m_ScreenAspectOverrideEnabled = m_PreviewSavedAspectOverrideEnabled;
 	UpdateViewport(m_ViewportX, 0, m_ScreenWidth, m_ScreenHeight, false);
 }
-// bestclient
+// bestclient-light
 
 void CGraphics_Threaded::SetForcedAspect(bool Force, bool ApplyCustomAspect)
 {
 	if(!IsBackendInitialized())
 		return;
-	// bestclient
+	// bestclient-light
 	int CustomAspect;
 	float CustomAspectF;
 	ResolveCustomAspect(ApplyCustomAspect, CustomAspect, CustomAspectF);
@@ -2317,7 +2317,7 @@ void CGraphics_Threaded::SetForcedAspect(bool Force, bool ApplyCustomAspect)
 	g_GraphicsForcedAspect = Force;
 	s_GraphicsCustomAspect = CustomAspect;
 	m_ScreenAspectOverride = CustomAspectF;
-	// bestclient
+	// bestclient-light
 	m_pBackend->GetViewportSize(m_ScreenWidth, m_ScreenHeight);
 	AdjustViewport(false);
 	UpdateViewport(m_ViewportX, 0, m_ScreenWidth, m_ScreenHeight, false);
@@ -2340,13 +2340,13 @@ void CGraphics_Threaded::AdjustViewport(bool SendViewportChangeToBackend)
 
 	// adjust the viewport to only allow certain aspect ratios
 	// keep this in sync with backend_vulkan GetSwapImageSize's check
-	// bestclient
+	// bestclient-light
 	if(s_GraphicsCustomAspect >= 100)
 	{
 		m_IsForcedViewport = false;
 	}
 	else if(m_ScreenHeight > 4 * m_ScreenWidth / 5 && g_GraphicsForcedAspect)
-	// bestclient
+	// bestclient-light
 	{
 		m_IsForcedViewport = true;
 		m_ScreenHeight = 4 * m_ScreenWidth / 5;

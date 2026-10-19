@@ -101,10 +101,10 @@ void CMod::OnRender()
 		auto RenderHitbox = [&](vec2 Position, float Alpha) {
 			if(Alpha <= 0.0f)
 				return;
-			// bestclient
+			// bestclient-light
 			if(!GameClient()->OptimizerAllowRenderPos(Position))
 				return;
-			// bestclient
+			// bestclient-light
 			const float RadiusInner = 16.0f;
 			const float RadiusOuter = 30.0f;
 			Graphics()->QuadsBegin();
@@ -193,8 +193,8 @@ void CMod::OnFire(bool Pressed)
 	if(!Player.m_Active)
 		return;
 	// Find person who we have shot
-	const CGameClient::CClientData *pBestClient = nullptr;
-	float BestClientScore = -INFINITY;
+	const CGameClient::CClientData *pBestClientLight = nullptr;
+	float BestClientLightScore = -INFINITY;
 	if(GameClient()->m_Snap.m_SpecInfo.m_Active || Player.m_Team == TEAM_SPECTATORS)
 	{
 		const vec2 Pos = GameClient()->m_Camera.m_Center;
@@ -207,10 +207,10 @@ void CMod::OnFire(bool Pressed)
 			if(PosDelta > MaxRange)
 				continue;
 			const float Score = MaxRange - PosDelta;
-			if(Score > BestClientScore)
+			if(Score > BestClientLightScore)
 			{
-				BestClientScore = Score;
-				pBestClient = &Other;
+				BestClientLightScore = Score;
+				pBestClientLight = &Other;
 			}
 		}
 	}
@@ -230,16 +230,16 @@ void CMod::OnFire(bool Pressed)
 			if(AngleDelta < 0.9f)
 				continue;
 			const float Score = (AngleDelta - 1.0f) * 10.0f * MaxRange + (MaxRange - PosDelta);
-			if(Score > BestClientScore)
+			if(Score > BestClientLightScore)
 			{
-				BestClientScore = Score;
-				pBestClient = &Other;
+				BestClientLightScore = Score;
+				pBestClientLight = &Other;
 			}
 		}
 	}
-	if(!pBestClient)
+	if(!pBestClientLight)
 		return;
 
-	m_ModWeaponActiveId = pBestClient->ClientId();
+	m_ModWeaponActiveId = pBestClientLight->ClientId();
 	m_ModWeaponActiveTimeLeft = MOD_WEAPON_TIME;
 }

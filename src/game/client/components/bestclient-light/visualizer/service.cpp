@@ -40,7 +40,7 @@ constexpr T maximum(T a, T b, T c)
 #include <algorithm>
 #include <cmath>
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 	CRealtimeMusicVisualizer::CRealtimeMusicVisualizer()
@@ -91,4 +91,4 @@ namespace BestClientVisualizer
 		return m_pSource->PollFrame(OutFrame);
 	}
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer

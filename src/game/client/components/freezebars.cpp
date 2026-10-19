@@ -8,10 +8,10 @@ void CFreezeBars::RenderFreezeBar(const int ClientId)
 	const float FreezeBarHalfWidth = 32.0f;
 	const float FreezeBarHeight = 16.0f;
 
-	// bestclient
+	// bestclient-light
 	if(!GameClient()->OptimizerAllowRenderPos(GameClient()->m_aClients[ClientId].m_RenderPos))
 		return;
-	// bestclient
+	// bestclient-light
 
 	// pCharacter contains the predicted character for local players or the last snap for players who are spectated
 	CCharacterCore *pCharacter = &GameClient()->m_aClients[ClientId].m_RegularPredicted; // TClient

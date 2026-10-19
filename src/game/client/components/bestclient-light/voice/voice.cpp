@@ -18,7 +18,7 @@
 #include <engine/font_icons.h>
 #include <engine/graphics.h>
 #include <engine/http.h>
-#include <engine/shared/bestclient_indicator_protocol.h>
+#include <engine/shared/bestclient-light_indicator_protocol.h>
 #include <engine/shared/config.h>
 #include <engine/shared/json.h>
 #include <engine/storage.h>
@@ -45,8 +45,8 @@ namespace
 {
 	constexpr int CAPTURE_READ_SAMPLES = 4096;
 	constexpr int MAX_RECEIVE_PACKETS_PER_TICK = 64;
-	constexpr int PLAYBACK_TARGET_FRAMES = BestClientVoice::FRAME_SIZE * 3;
-	constexpr int PLAYBACK_MAX_RESYNC_FRAMES = BestClientVoice::FRAME_SIZE * 4;
+	constexpr int PLAYBACK_TARGET_FRAMES = BestClientLightVoice::FRAME_SIZE * 3;
+	constexpr int PLAYBACK_MAX_RESYNC_FRAMES = BestClientLightVoice::FRAME_SIZE * 4;
 	constexpr int MAX_PACKET_GAP_FOR_PLC = 3;
 	constexpr int PEER_TIMEOUT_SECONDS = 10;
 	constexpr int VOICE_TALKING_TIMEOUT_MS = 350;
@@ -59,7 +59,7 @@ namespace
 	constexpr int SERVER_LIST_PING_TIMEOUT_SEC = 2;
 	constexpr int SERVER_LIST_PING_INTERVAL_SEC = 30;
 	constexpr const char *MANAGED_VOICE_SERVER_CONFIG = "managed";
-	constexpr const char *VOICE_MUTED_CFG_PATH = "BestClient/voice_muted.cfg";
+	constexpr const char *VOICE_MUTED_CFG_PATH = "bestclient-light/voice_muted.cfg";
 	constexpr const char *DEFAULT_VOICE_SERVER_ADDRESS = "193.23.201.125:8777";
 	constexpr uint8_t OBFUSCATION_KEY = 0x5a;
 	constexpr std::array<uint8_t, 23> OBFUSCATED_VOICE_AUTH_KEY = {
@@ -101,7 +101,7 @@ namespace
 		int Len = (int)str_length(pStr);
 		if(Len > MaxLen)
 			Len = MaxLen;
-		BestClientVoice::WriteU16(vOut, (uint16_t)Len);
+		BestClientLightVoice::WriteU16(vOut, (uint16_t)Len);
 		for(int i = 0; i < Len; i++)
 			vOut.push_back((uint8_t)pStr[i]);
 	}
@@ -110,21 +110,21 @@ namespace
 	{
 		if(LocalClientId >= 0 && LocalClientId < MAX_CLIENTS && pName != nullptr)
 		{
-			BestClientVoice::WriteU8(vBody, BestClientVoice::HELLO_NAME_PRESENT);
-			WriteVoiceString(vBody, pName, BestClientVoice::MAX_PLAYER_NAME_LENGTH);
+			BestClientLightVoice::WriteU8(vBody, BestClientLightVoice::HELLO_NAME_PRESENT);
+			WriteVoiceString(vBody, pName, BestClientLightVoice::MAX_PLAYER_NAME_LENGTH);
 		}
 		else
-			BestClientVoice::WriteU8(vBody, BestClientVoice::HELLO_NAME_ABSENT);
-		BestClientVoice::WriteUuid(vBody, Instance);
-		BestClientVoice::WriteU8(vBody, Channel);
-		if(Channel == BestClientVoice::HELLO_CHANNEL_SECONDARY && pLinkToken != nullptr)
-			BestClientVoice::WriteRaw(vBody, pLinkToken, BestClientVoice::LINK_TOKEN_SIZE);
+			BestClientLightVoice::WriteU8(vBody, BestClientLightVoice::HELLO_NAME_ABSENT);
+		BestClientLightVoice::WriteUuid(vBody, Instance);
+		BestClientLightVoice::WriteU8(vBody, Channel);
+		if(Channel == BestClientLightVoice::HELLO_CHANNEL_SECONDARY && pLinkToken != nullptr)
+			BestClientLightVoice::WriteRaw(vBody, pLinkToken, BestClientLightVoice::LINK_TOKEN_SIZE);
 	}
 
 	bool ReadVoiceString(const uint8_t *pData, int DataSize, int &Offset, std::string &Out, int MaxLen = 128)
 	{
 		uint16_t Size = 0;
-		if(!BestClientVoice::ReadU16(pData, DataSize, Offset, Size))
+		if(!BestClientLightVoice::ReadU16(pData, DataSize, Offset, Size))
 			return false;
 		if(Size > (uint16_t)MaxLen)
 			return false;
@@ -137,26 +137,26 @@ namespace
 
 	void ToggleVoiceMicMute()
 	{
-		if(g_Config.m_BcVoiceChatMicMuted)
+		if(g_Config.m_BclVoiceChatMicMuted)
 		{
-			if(g_Config.m_BcVoiceChatHeadphonesMuted)
+			if(g_Config.m_BclVoiceChatHeadphonesMuted)
 				return;
-			g_Config.m_BcVoiceChatMicMuted = 0;
+			g_Config.m_BclVoiceChatMicMuted = 0;
 		}
 		else
 		{
-			g_Config.m_BcVoiceChatMicMuted = 1;
+			g_Config.m_BclVoiceChatMicMuted = 1;
 		}
 	}
 
 	void ToggleVoiceHeadphonesMute()
 	{
-		const bool Muted = g_Config.m_BcVoiceChatHeadphonesMuted == 0;
-		g_Config.m_BcVoiceChatHeadphonesMuted = Muted ? 1 : 0;
+		const bool Muted = g_Config.m_BclVoiceChatHeadphonesMuted == 0;
+		g_Config.m_BclVoiceChatHeadphonesMuted = Muted ? 1 : 0;
 		if(Muted)
-			g_Config.m_BcVoiceChatMicMuted = 1;
+			g_Config.m_BclVoiceChatMicMuted = 1;
 		else
-			g_Config.m_BcVoiceChatMicMuted = 0;
+			g_Config.m_BclVoiceChatMicMuted = 0;
 	}
 
 	bool IsLegacyVoiceServerAddress(const char *pAddress)
@@ -172,8 +172,8 @@ namespace
 
 	void EnsureDefaultVoiceServerAddress()
 	{
-		if(IsLegacyVoiceServerAddress(g_Config.m_BcVoiceChatServerAddress))
-			str_copy(g_Config.m_BcVoiceChatServerAddress, MANAGED_VOICE_SERVER_CONFIG, sizeof(g_Config.m_BcVoiceChatServerAddress));
+		if(IsLegacyVoiceServerAddress(g_Config.m_BclVoiceChatServerAddress))
+			str_copy(g_Config.m_BclVoiceChatServerAddress, MANAGED_VOICE_SERVER_CONFIG, sizeof(g_Config.m_BclVoiceChatServerAddress));
 	}
 
 	const char *GetAudioDeviceNameByIndex(int IsCapture, int Index)
@@ -272,7 +272,7 @@ namespace
 			Target = MinGain + (1.0f - MinGain) * T;
 		}
 
-		const float Dt = Count / (float)BestClientVoice::SAMPLE_RATE;
+		const float Dt = Count / (float)BestClientLightVoice::SAMPLE_RATE;
 		const float AttackSec = 0.01f;
 		const float ReleaseSec = 0.08f;
 		const float AttackCoeff = 1.0f - std::exp(-Dt / AttackSec);
@@ -300,7 +300,7 @@ namespace
 
 		const float CutoffHz = 120.0f;
 		const float Rc = 1.0f / (2.0f * 3.14159265f * CutoffHz);
-		const float Dt = 1.0f / BestClientVoice::SAMPLE_RATE;
+		const float Dt = 1.0f / BestClientLightVoice::SAMPLE_RATE;
 		const float Alpha = Rc / (Rc + Dt);
 
 		const float Threshold = 0.20f;
@@ -310,8 +310,8 @@ namespace
 		const float MakeupGain = 1.6f;
 		const float NoiseFloor = 0.02f;
 		const float Limiter = 0.50f;
-		const float AttackCoeff = 1.0f - std::exp(-1.0f / (AttackSec * BestClientVoice::SAMPLE_RATE));
-		const float ReleaseCoeff = 1.0f - std::exp(-1.0f / (ReleaseSec * BestClientVoice::SAMPLE_RATE));
+		const float AttackCoeff = 1.0f - std::exp(-1.0f / (AttackSec * BestClientLightVoice::SAMPLE_RATE));
+		const float ReleaseCoeff = 1.0f - std::exp(-1.0f / (ReleaseSec * BestClientLightVoice::SAMPLE_RATE));
 
 		for(int i = 0; i < Count; ++i)
 		{
@@ -604,7 +604,7 @@ void CVoiceChat::OnReset()
 	m_HelloResetPending = false;
 	m_AdvertisedRoomKey.clear();
 	m_AdvertisedPlayerName.clear();
-	m_AdvertisedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID - 1;
+	m_AdvertisedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID - 1;
 	m_AdvertisedTeam = std::numeric_limits<int>::min();
 	m_ClientInstanceId = UUID_ZEROED;
 	mem_zero(m_LinkToken, sizeof(m_LinkToken));
@@ -613,12 +613,12 @@ void CVoiceChat::OnReset()
 	m_LastUnofficialNoticeTick = 0;
 	m_SecondaryAdvertisedRoomKey.clear();
 	m_SecondaryAdvertisedPlayerName.clear();
-	m_SecondaryAdvertisedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID - 1;
+	m_SecondaryAdvertisedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID - 1;
 	m_SecondaryAdvertisedTeam = std::numeric_limits<int>::min();
 	m_SecondaryClientInstanceId = UUID_ZEROED;
-	m_EnableYourGroupRevealPhase = g_Config.m_BcVoiceChatUseTeam0 ? 1.0f : 0.0f;
-	m_LastUseTeam0Mode = g_Config.m_BcVoiceChatUseTeam0 != 0;
-	m_LastEnableYourGroup = g_Config.m_BcVoiceChatUseTeam0 != 0 && g_Config.m_BcVoiceChatEnableYourGroup != 0;
+	m_EnableYourGroupRevealPhase = g_Config.m_BclVoiceChatUseTeam0 ? 1.0f : 0.0f;
+	m_LastUseTeam0Mode = g_Config.m_BclVoiceChatUseTeam0 != 0;
+	m_LastEnableYourGroup = g_Config.m_BclVoiceChatUseTeam0 != 0 && g_Config.m_BclVoiceChatEnableYourGroup != 0;
 	ClearPeerState();
 	m_CapturePcm.Clear();
 	m_MicMonitorPcm.Clear();
@@ -636,7 +636,7 @@ void CVoiceChat::LoadMutedNamesFromFile()
 	if(!Storage()->ReadFile(VOICE_MUTED_CFG_PATH, IStorage::TYPE_SAVE, &pData, &DataSize))
 	{
 		SaveMutedNamesToFile();
-		str_copy(m_aLastPersistedMutedNames, g_Config.m_BcVoiceChatMutedNames, sizeof(m_aLastPersistedMutedNames));
+		str_copy(m_aLastPersistedMutedNames, g_Config.m_BclVoiceChatMutedNames, sizeof(m_aLastPersistedMutedNames));
 		return;
 	}
 
@@ -647,15 +647,15 @@ void CVoiceChat::LoadMutedNamesFromFile()
 	m_MutedNameKeys = std::move(LoadedMutedNames);
 	char aOut[512];
 	WriteVoiceNameList(m_MutedNameKeys, aOut, sizeof(aOut));
-	str_copy(g_Config.m_BcVoiceChatMutedNames, aOut, sizeof(g_Config.m_BcVoiceChatMutedNames));
-	str_copy(m_aLastMutedNames, g_Config.m_BcVoiceChatMutedNames, sizeof(m_aLastMutedNames));
-	str_copy(m_aLastPersistedMutedNames, g_Config.m_BcVoiceChatMutedNames, sizeof(m_aLastPersistedMutedNames));
+	str_copy(g_Config.m_BclVoiceChatMutedNames, aOut, sizeof(g_Config.m_BclVoiceChatMutedNames));
+	str_copy(m_aLastMutedNames, g_Config.m_BclVoiceChatMutedNames, sizeof(m_aLastMutedNames));
+	str_copy(m_aLastPersistedMutedNames, g_Config.m_BclVoiceChatMutedNames, sizeof(m_aLastPersistedMutedNames));
 	m_PeerListDirty = true;
 }
 
 void CVoiceChat::SaveMutedNamesToFile()
 {
-	Storage()->CreateFolder("BestClient", IStorage::TYPE_SAVE);
+	Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
 	IOHANDLE File = Storage()->OpenFile(VOICE_MUTED_CFG_PATH, IOFLAG_WRITE, IStorage::TYPE_SAVE);
 	if(!File)
 		return;
@@ -709,7 +709,7 @@ void CVoiceChat::OnUpdate()
 		ResetServerListTask();
 	}
 
-	const bool Enabled = g_Config.m_BcVoiceChatEnable != 0;
+	const bool Enabled = g_Config.m_BclVoiceChatEnable != 0;
 	if(!Enabled)
 	{
 		if(m_Socket)
@@ -721,22 +721,22 @@ void CVoiceChat::OnUpdate()
 	const bool Online = Client()->State() == IClient::STATE_ONLINE;
 	EnsureDefaultVoiceServerAddress();
 
-	if(g_Config.m_BcVoiceChatHeadphonesMuted && !g_Config.m_BcVoiceChatMicMuted)
-		g_Config.m_BcVoiceChatMicMuted = 1;
+	if(g_Config.m_BclVoiceChatHeadphonesMuted && !g_Config.m_BclVoiceChatMicMuted)
+		g_Config.m_BclVoiceChatMicMuted = 1;
 
-	const bool UseTeam0Mode = g_Config.m_BcVoiceChatUseTeam0 != 0;
-	if(!UseTeam0Mode && g_Config.m_BcVoiceChatEnableYourGroup != 0)
-		g_Config.m_BcVoiceChatEnableYourGroup = 0;
-	const bool EnableYourGroup = UseTeam0Mode && g_Config.m_BcVoiceChatEnableYourGroup != 0;
+	const bool UseTeam0Mode = g_Config.m_BclVoiceChatUseTeam0 != 0;
+	if(!UseTeam0Mode && g_Config.m_BclVoiceChatEnableYourGroup != 0)
+		g_Config.m_BclVoiceChatEnableYourGroup = 0;
+	const bool EnableYourGroup = UseTeam0Mode && g_Config.m_BclVoiceChatEnableYourGroup != 0;
 
-	const bool ModuleUiRevealAnimationsEnabled = BCUiAnimations::Enabled() && g_Config.m_BcModuleUiRevealAnimation != 0;
+	const bool ModuleUiRevealAnimationsEnabled = BCUiAnimations::Enabled() && g_Config.m_BclModuleUiRevealAnimation != 0;
 	if(ModuleUiRevealAnimationsEnabled)
 	{
 		BCUiAnimations::UpdatePhase(
 			m_EnableYourGroupRevealPhase,
 			UseTeam0Mode ? 1.0f : 0.0f,
 			Client()->RenderFrameTime(),
-			BCUiAnimations::MsToSeconds(g_Config.m_BcModuleUiRevealAnimationMs));
+			BCUiAnimations::MsToSeconds(g_Config.m_BclModuleUiRevealAnimationMs));
 	}
 	else
 	{
@@ -754,22 +754,22 @@ void CVoiceChat::OnUpdate()
 		InvalidatePeerCaches();
 	}
 
-	if(str_comp(m_aLastMutedNames, g_Config.m_BcVoiceChatMutedNames) != 0)
+	if(str_comp(m_aLastMutedNames, g_Config.m_BclVoiceChatMutedNames) != 0)
 	{
-		ParseVoiceNameList(g_Config.m_BcVoiceChatMutedNames, m_MutedNameKeys);
-		str_copy(m_aLastMutedNames, g_Config.m_BcVoiceChatMutedNames, sizeof(m_aLastMutedNames));
+		ParseVoiceNameList(g_Config.m_BclVoiceChatMutedNames, m_MutedNameKeys);
+		str_copy(m_aLastMutedNames, g_Config.m_BclVoiceChatMutedNames, sizeof(m_aLastMutedNames));
 		m_PeerListDirty = true;
 	}
-	if(str_comp(m_aLastNameVolumes, g_Config.m_BcVoiceChatNameVolumes) != 0)
+	if(str_comp(m_aLastNameVolumes, g_Config.m_BclVoiceChatNameVolumes) != 0)
 	{
-		ParseVoiceNameVolumeList(g_Config.m_BcVoiceChatNameVolumes, m_NameVolumePercent);
-		str_copy(m_aLastNameVolumes, g_Config.m_BcVoiceChatNameVolumes, sizeof(m_aLastNameVolumes));
+		ParseVoiceNameVolumeList(g_Config.m_BclVoiceChatNameVolumes, m_NameVolumePercent);
+		str_copy(m_aLastNameVolumes, g_Config.m_BclVoiceChatNameVolumes, sizeof(m_aLastNameVolumes));
 		m_PeerListDirty = true;
 	}
 	LoadMutedNamesFromFile();
-	if(str_comp(m_aLastPersistedMutedNames, g_Config.m_BcVoiceChatMutedNames) != 0)
+	if(str_comp(m_aLastPersistedMutedNames, g_Config.m_BclVoiceChatMutedNames) != 0)
 	{
-		str_copy(m_aLastPersistedMutedNames, g_Config.m_BcVoiceChatMutedNames, sizeof(m_aLastPersistedMutedNames));
+		str_copy(m_aLastPersistedMutedNames, g_Config.m_BclVoiceChatMutedNames, sizeof(m_aLastPersistedMutedNames));
 		m_MutedListDirty = true;
 	}
 	if(m_MutedListDirty)
@@ -785,7 +785,7 @@ void CVoiceChat::OnUpdate()
 
 	const std::string EffectiveServerAddr = EffectiveServerAddress();
 	const bool ServerChanged = str_comp(m_aLastServerAddr, EffectiveServerAddr.c_str()) != 0;
-	const bool DeviceChanged = m_LastInputDevice != g_Config.m_BcVoiceChatInputDevice || m_LastOutputDevice != g_Config.m_BcVoiceChatOutputDevice;
+	const bool DeviceChanged = m_LastInputDevice != g_Config.m_BclVoiceChatInputDevice || m_LastOutputDevice != g_Config.m_BclVoiceChatOutputDevice;
 
 	if(Online && m_vServerEntries.empty() && !m_pServerListTask)
 	{
@@ -809,8 +809,8 @@ void CVoiceChat::OnUpdate()
 			StartVoice();
 		}
 		str_copy(m_aLastServerAddr, EffectiveServerAddr.c_str(), sizeof(m_aLastServerAddr));
-		m_LastInputDevice = g_Config.m_BcVoiceChatInputDevice;
-		m_LastOutputDevice = g_Config.m_BcVoiceChatOutputDevice;
+		m_LastInputDevice = g_Config.m_BclVoiceChatInputDevice;
+		m_LastOutputDevice = g_Config.m_BclVoiceChatOutputDevice;
 	}
 
 	if(!Online)
@@ -852,7 +852,7 @@ void CVoiceChat::OnUpdate()
 	if(!m_pEncoder)
 		return;
 
-	const int ClampedBitrate = std::clamp(g_Config.m_BcVoiceChatBitrate, 6, VOICE_MAX_BITRATE_KBPS);
+	const int ClampedBitrate = std::clamp(g_Config.m_BclVoiceChatBitrate, 6, VOICE_MAX_BITRATE_KBPS);
 	if(m_LastBitrate != ClampedBitrate)
 	{
 		ConfigureVoiceOpusEncoder(m_pEncoder, ClampedBitrate);
@@ -1023,8 +1023,8 @@ float CVoiceChat::GetMenuSettingsBlockHeight(float RevealPhase) const
 		kVoiceMenuTitleToEnableSpacing +
 		kVoiceMenuEnableRowHeight;
 	const int ServerCount = (int)m_vServerEntries.size();
-	const bool RadiusFilterEnabled = g_Config.m_BcVoiceChatRadiusEnabled != 0;
-	const bool AutomaticMode = g_Config.m_BcVoiceChatActivationMode == 0;
+	const bool RadiusFilterEnabled = g_Config.m_BclVoiceChatRadiusEnabled != 0;
+	const bool AutomaticMode = g_Config.m_BclVoiceChatActivationMode == 0;
 	const float Team0GroupRevealPhase = BCUiAnimations::EaseOutCubic(std::clamp(m_EnableYourGroupRevealPhase, 0.0f, 1.0f));
 	const float ExpandedHeight = VoiceMenuExpandedHeightForServerCount(ServerCount, RadiusFilterEnabled, AutomaticMode, Team0GroupRevealPhase);
 	return HeaderHeight + ExpandedHeight * BCUiAnimations::EaseOutCubic(RevealPhase) + kVoiceMenuOuterMargin * 2.0f;
@@ -1045,7 +1045,7 @@ void CVoiceChat::RenderMenuSettingsBlock(const CUIRect &View, float RevealPhase)
 		FetchServerList();
 	};
 
-	const bool NeedAutoReload = g_Config.m_BcVoiceChatEnable && Client()->State() == IClient::STATE_ONLINE && m_vServerEntries.empty() &&
+	const bool NeedAutoReload = g_Config.m_BclVoiceChatEnable && Client()->State() == IClient::STATE_ONLINE && m_vServerEntries.empty() &&
 				    (!m_pServerListTask || m_pServerListTask->Done() || m_pServerListTask->State() == EHttpState::ERROR || m_pServerListTask->State() == EHttpState::ABORTED);
 	if(NeedAutoReload)
 		ReloadServerList();
@@ -1053,11 +1053,11 @@ void CVoiceChat::RenderMenuSettingsBlock(const CUIRect &View, float RevealPhase)
 	auto ConnectToServer = [&](const char *pAddress) {
 		if(!pAddress || pAddress[0] == '\0')
 			return;
-		if(str_comp(g_Config.m_BcVoiceChatServerAddress, pAddress) != 0)
+		if(str_comp(g_Config.m_BclVoiceChatServerAddress, pAddress) != 0)
 		{
-			str_copy(g_Config.m_BcVoiceChatServerAddress, pAddress, sizeof(g_Config.m_BcVoiceChatServerAddress));
+			str_copy(g_Config.m_BclVoiceChatServerAddress, pAddress, sizeof(g_Config.m_BclVoiceChatServerAddress));
 			str_copy(m_aLastServerAddr, ResolvedVoiceServerAddress(pAddress), sizeof(m_aLastServerAddr));
-			if(Client()->State() == IClient::STATE_ONLINE && g_Config.m_BcVoiceChatEnable)
+			if(Client()->State() == IClient::STATE_ONLINE && g_Config.m_BclVoiceChatEnable)
 			{
 				if(m_Socket)
 					StopVoice();
@@ -1138,20 +1138,20 @@ void CVoiceChat::RenderMenuSettingsBlock(const CUIRect &View, float RevealPhase)
 	AddSpacing(kVoiceMenuTitleToEnableSpacing);
 	if(AddRow(kVoiceMenuEnableRowHeight, Row))
 	{
-		if(GameClient()->m_Menus.DoButton_CheckBox(&m_EnableVoiceButton, BcLocalize("Enable voice chat"), g_Config.m_BcVoiceChatEnable, &Row))
+		if(GameClient()->m_Menus.DoButton_CheckBox(&m_EnableVoiceButton, BcLocalize("Enable voice chat"), g_Config.m_BclVoiceChatEnable, &Row))
 		{
-			g_Config.m_BcVoiceChatEnable ^= 1;
-			if(!g_Config.m_BcVoiceChatEnable && m_Socket)
+			g_Config.m_BclVoiceChatEnable ^= 1;
+			if(!g_Config.m_BclVoiceChatEnable && m_Socket)
 				StopVoice();
 		}
 	}
 
-	if(!g_Config.m_BcVoiceChatEnable || RevealPhase <= 0.0f)
+	if(!g_Config.m_BclVoiceChatEnable || RevealPhase <= 0.0f)
 		return;
 
 	const int InitialServerCount = (int)m_vServerEntries.size();
-	const bool RadiusFilterEnabled = g_Config.m_BcVoiceChatRadiusEnabled != 0;
-	const bool AutomaticMode = g_Config.m_BcVoiceChatActivationMode == 0;
+	const bool RadiusFilterEnabled = g_Config.m_BclVoiceChatRadiusEnabled != 0;
+	const bool AutomaticMode = g_Config.m_BclVoiceChatActivationMode == 0;
 	const float Team0GroupRevealPhase = BCUiAnimations::EaseOutCubic(std::clamp(m_EnableYourGroupRevealPhase, 0.0f, 1.0f));
 	const float ExpandedTargetHeight = VoiceMenuExpandedHeightForServerCount(InitialServerCount, RadiusFilterEnabled, AutomaticMode, Team0GroupRevealPhase);
 	const float ExpandedVisibleHeight = ExpandedTargetHeight * BCUiAnimations::EaseOutCubic(RevealPhase);
@@ -1178,18 +1178,18 @@ void CVoiceChat::RenderMenuSettingsBlock(const CUIRect &View, float RevealPhase)
 	AddExpandedSpacing(4.0f);
 	if(AddExpandedRow(20.0f, Row))
 	{
-		if(GameClient()->m_Menus.DoButton_CheckBox(&m_InGameOnlyButton, BcLocalize("In-Game Only"), g_Config.m_BcVoiceChatInGameOnly, &Row))
-			g_Config.m_BcVoiceChatInGameOnly ^= 1;
+		if(GameClient()->m_Menus.DoButton_CheckBox(&m_InGameOnlyButton, BcLocalize("In-Game Only"), g_Config.m_BclVoiceChatInGameOnly, &Row))
+			g_Config.m_BclVoiceChatInGameOnly ^= 1;
 	}
 
 	AddExpandedSpacing(4.0f);
 	if(AddExpandedRow(20.0f, Row))
 	{
-		if(GameClient()->m_Menus.DoButton_CheckBox(&m_UseTeam0Button, BcLocalize("Use team0"), g_Config.m_BcVoiceChatUseTeam0, &Row))
+		if(GameClient()->m_Menus.DoButton_CheckBox(&m_UseTeam0Button, BcLocalize("Use team0"), g_Config.m_BclVoiceChatUseTeam0, &Row))
 		{
-			g_Config.m_BcVoiceChatUseTeam0 ^= 1;
-			if(g_Config.m_BcVoiceChatUseTeam0 == 0)
-				g_Config.m_BcVoiceChatEnableYourGroup = 0;
+			g_Config.m_BclVoiceChatUseTeam0 ^= 1;
+			if(g_Config.m_BclVoiceChatUseTeam0 == 0)
+				g_Config.m_BclVoiceChatEnableYourGroup = 0;
 		}
 	}
 
@@ -1200,24 +1200,24 @@ void CVoiceChat::RenderMenuSettingsBlock(const CUIRect &View, float RevealPhase)
 		CUIRect ClippedRow;
 		if(AddExpandedRow(20.0f * YourGroupRowPhase, ClippedRow) && ClippedRow.h > 0.0f)
 		{
-			if(GameClient()->m_Menus.DoButton_CheckBox(&m_EnableYourGroupButton, BcLocalize("Enable your group"), g_Config.m_BcVoiceChatEnableYourGroup, &ClippedRow))
-				g_Config.m_BcVoiceChatEnableYourGroup ^= 1;
+			if(GameClient()->m_Menus.DoButton_CheckBox(&m_EnableYourGroupButton, BcLocalize("Enable your group"), g_Config.m_BclVoiceChatEnableYourGroup, &ClippedRow))
+				g_Config.m_BclVoiceChatEnableYourGroup ^= 1;
 		}
 	}
 
 	AddExpandedSpacing(4.0f);
 	if(AddExpandedRow(20.0f, Row))
 	{
-		if(GameClient()->m_Menus.DoButton_CheckBox(&m_RadiusFilterButton, BcLocalize("Radius filter"), g_Config.m_BcVoiceChatRadiusEnabled, &Row))
-			g_Config.m_BcVoiceChatRadiusEnabled ^= 1;
+		if(GameClient()->m_Menus.DoButton_CheckBox(&m_RadiusFilterButton, BcLocalize("Radius filter"), g_Config.m_BclVoiceChatRadiusEnabled, &Row))
+			g_Config.m_BclVoiceChatRadiusEnabled ^= 1;
 	}
 
-	if(g_Config.m_BcVoiceChatRadiusEnabled)
+	if(g_Config.m_BclVoiceChatRadiusEnabled)
 	{
 		AddExpandedSpacing(3.0f);
 		if(AddExpandedRow(20.0f, Row))
 		{
-			Ui()->DoScrollbarOption(&g_Config.m_BcVoiceChatRadiusTiles, &g_Config.m_BcVoiceChatRadiusTiles, &Row, BcLocalize("Radius (tiles)"), 1, 500);
+			Ui()->DoScrollbarOption(&g_Config.m_BclVoiceChatRadiusTiles, &g_Config.m_BclVoiceChatRadiusTiles, &Row, BcLocalize("Radius (tiles)"), 1, 500);
 		}
 	}
 
@@ -1231,29 +1231,29 @@ void CVoiceChat::RenderMenuSettingsBlock(const CUIRect &View, float RevealPhase)
 		static CButtonContainer s_ModePttButton;
 		CUIRect Left, Right;
 		Row.VSplitMid(&Left, &Right, 1.0f);
-		const bool Automatic = g_Config.m_BcVoiceChatActivationMode == 0;
-		const bool Ptt = g_Config.m_BcVoiceChatActivationMode == 1;
+		const bool Automatic = g_Config.m_BclVoiceChatActivationMode == 0;
+		const bool Ptt = g_Config.m_BclVoiceChatActivationMode == 1;
 		if(GameClient()->m_Menus.DoButton_Menu(&s_ModeAutomaticButton, BcLocalize("Automatic"), Automatic, &Left, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_L))
-			g_Config.m_BcVoiceChatActivationMode = 0;
+			g_Config.m_BclVoiceChatActivationMode = 0;
 		if(GameClient()->m_Menus.DoButton_Menu(&s_ModePttButton, BcLocalize("Push-to-talk"), Ptt, &Right, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_R))
-			g_Config.m_BcVoiceChatActivationMode = 1;
+			g_Config.m_BclVoiceChatActivationMode = 1;
 	}
-	if(g_Config.m_BcVoiceChatActivationMode == 0)
+	if(g_Config.m_BclVoiceChatActivationMode == 0)
 	{
 		AddExpandedSpacing(3.0f);
 		if(AddExpandedRow(20.0f, Row))
-			Ui()->DoScrollbarOption(&g_Config.m_BcVoiceChatVadThreshold, &g_Config.m_BcVoiceChatVadThreshold, &Row, BcLocalize("VAD threshold (%)"), 0, 100);
+			Ui()->DoScrollbarOption(&g_Config.m_BclVoiceChatVadThreshold, &g_Config.m_BclVoiceChatVadThreshold, &Row, BcLocalize("VAD threshold (%)"), 0, 100);
 
 		AddExpandedSpacing(3.0f);
 		if(AddExpandedRow(20.0f, Row))
-			Ui()->DoScrollbarOption(&g_Config.m_BcVoiceChatVadReleaseDelayMs, &g_Config.m_BcVoiceChatVadReleaseDelayMs, &Row, BcLocalize("VAD release delay (ms)"), 0, 1000);
+			Ui()->DoScrollbarOption(&g_Config.m_BclVoiceChatVadReleaseDelayMs, &g_Config.m_BclVoiceChatVadReleaseDelayMs, &Row, BcLocalize("VAD release delay (ms)"), 0, 1000);
 	}
 
 	AddExpandedSpacing(4.0f);
 	if(AddExpandedRow(20.0f, Row))
 	{
-		if(GameClient()->m_Menus.DoButton_CheckBox(&m_MicCheckButton, BcLocalize("Mic check (loopback)"), g_Config.m_BcVoiceChatMicCheck, &Row))
-			g_Config.m_BcVoiceChatMicCheck ^= 1;
+		if(GameClient()->m_Menus.DoButton_CheckBox(&m_MicCheckButton, BcLocalize("Mic check (loopback)"), g_Config.m_BclVoiceChatMicCheck, &Row))
+			g_Config.m_BclVoiceChatMicCheck ^= 1;
 	}
 
 	AddExpandedSpacing(4.0f);
@@ -1285,18 +1285,18 @@ void CVoiceChat::RenderMenuSettingsBlock(const CUIRect &View, float RevealPhase)
 
 	AddExpandedSpacing(3.0f);
 	if(AddExpandedRow(20.0f, Row))
-		Ui()->DoScrollbarOption(&g_Config.m_BcVoiceChatMicGain, &g_Config.m_BcVoiceChatMicGain, &Row, BcLocalize("Mic gain"), 0, 300, &CUi::ms_LinearScrollbarScale, 0u, "%");
+		Ui()->DoScrollbarOption(&g_Config.m_BclVoiceChatMicGain, &g_Config.m_BclVoiceChatMicGain, &Row, BcLocalize("Mic gain"), 0, 300, &CUi::ms_LinearScrollbarScale, 0u, "%");
 
 	AddExpandedSpacing(3.0f);
 	if(AddExpandedRow(20.0f, Row))
-		Ui()->DoScrollbarOption(&g_Config.m_BcVoiceChatVolume, &g_Config.m_BcVoiceChatVolume, &Row, BcLocalize("Voice volume"), 0, 200, &CUi::ms_LogarithmicScrollbarScale, 0u, "%");
+		Ui()->DoScrollbarOption(&g_Config.m_BclVoiceChatVolume, &g_Config.m_BclVoiceChatVolume, &Row, BcLocalize("Voice volume"), 0, 200, &CUi::ms_LogarithmicScrollbarScale, 0u, "%");
 
 	AddExpandedSpacing(5.0f);
 	static CScrollRegion s_InputDeviceDropDownScrollRegion;
 	static CScrollRegion s_OutputDeviceDropDownScrollRegion;
-	RenderDeviceDropDown(ExpandedArea, BcLocalize("Microphone"), 1, g_Config.m_BcVoiceChatInputDevice, m_InputDeviceDropDownState, s_InputDeviceDropDownScrollRegion);
+	RenderDeviceDropDown(ExpandedArea, BcLocalize("Microphone"), 1, g_Config.m_BclVoiceChatInputDevice, m_InputDeviceDropDownState, s_InputDeviceDropDownScrollRegion);
 	AddExpandedSpacing(5.0f);
-	RenderDeviceDropDown(ExpandedArea, BcLocalize("Headphones"), 0, g_Config.m_BcVoiceChatOutputDevice, m_OutputDeviceDropDownState, s_OutputDeviceDropDownScrollRegion);
+	RenderDeviceDropDown(ExpandedArea, BcLocalize("Headphones"), 0, g_Config.m_BclVoiceChatOutputDevice, m_OutputDeviceDropDownState, s_OutputDeviceDropDownScrollRegion);
 
 	AddExpandedSpacing(6.0f);
 	if(AddExpandedRow(16.0f, Row))
@@ -1438,8 +1438,8 @@ bool CVoiceChat::TryHandleChatCommand(const char *pLine)
 
 		char aOut[512];
 		WriteVoiceNameList(m_MutedNameKeys, aOut, sizeof(aOut));
-		str_copy(g_Config.m_BcVoiceChatMutedNames, aOut, sizeof(g_Config.m_BcVoiceChatMutedNames));
-		str_copy(m_aLastMutedNames, g_Config.m_BcVoiceChatMutedNames, sizeof(m_aLastMutedNames));
+		str_copy(g_Config.m_BclVoiceChatMutedNames, aOut, sizeof(g_Config.m_BclVoiceChatMutedNames));
+		str_copy(m_aLastMutedNames, g_Config.m_BclVoiceChatMutedNames, sizeof(m_aLastMutedNames));
 		m_PeerListDirty = true;
 
 		GameClient()->m_Chat.Echo(Localize("Voice mute: ok"));
@@ -1470,8 +1470,8 @@ bool CVoiceChat::TryHandleChatCommand(const char *pLine)
 		m_MutedNameKeys.erase(Key);
 		char aOut[512];
 		WriteVoiceNameList(m_MutedNameKeys, aOut, sizeof(aOut));
-		str_copy(g_Config.m_BcVoiceChatMutedNames, aOut, sizeof(g_Config.m_BcVoiceChatMutedNames));
-		str_copy(m_aLastMutedNames, g_Config.m_BcVoiceChatMutedNames, sizeof(m_aLastMutedNames));
+		str_copy(g_Config.m_BclVoiceChatMutedNames, aOut, sizeof(g_Config.m_BclVoiceChatMutedNames));
+		str_copy(m_aLastMutedNames, g_Config.m_BclVoiceChatMutedNames, sizeof(m_aLastMutedNames));
 		m_PeerListDirty = true;
 		GameClient()->m_Chat.Echo(Localize("Voice unmute: ok"));
 		return true;
@@ -1506,8 +1506,8 @@ bool CVoiceChat::TryHandleChatCommand(const char *pLine)
 
 		char aOut[512];
 		WriteVoiceNameVolumeList(m_NameVolumePercent, aOut, sizeof(aOut));
-		str_copy(g_Config.m_BcVoiceChatNameVolumes, aOut, sizeof(g_Config.m_BcVoiceChatNameVolumes));
-		str_copy(m_aLastNameVolumes, g_Config.m_BcVoiceChatNameVolumes, sizeof(m_aLastNameVolumes));
+		str_copy(g_Config.m_BclVoiceChatNameVolumes, aOut, sizeof(g_Config.m_BclVoiceChatNameVolumes));
+		str_copy(m_aLastNameVolumes, g_Config.m_BclVoiceChatNameVolumes, sizeof(m_aLastNameVolumes));
 		m_PeerListDirty = true;
 
 		char aMsg[128];
@@ -1522,8 +1522,8 @@ bool CVoiceChat::TryHandleChatCommand(const char *pLine)
 		{
 			char aMsg[128];
 			str_format(aMsg, sizeof(aMsg), Localize("Voice radius: %s (%d tiles)"),
-				g_Config.m_BcVoiceChatRadiusEnabled ? Localize("On") : Localize("Off"),
-				std::clamp(g_Config.m_BcVoiceChatRadiusTiles, 1, 500));
+				g_Config.m_BclVoiceChatRadiusEnabled ? Localize("On") : Localize("Off"),
+				std::clamp(g_Config.m_BclVoiceChatRadiusTiles, 1, 500));
 			GameClient()->m_Chat.Echo(aMsg);
 			GameClient()->m_Chat.Echo(Localize("Usage: !vradius on/off/<tiles>"));
 			return true;
@@ -1543,16 +1543,16 @@ bool CVoiceChat::TryHandleChatCommand(const char *pLine)
 
 		if(str_comp_nocase(aArg, "off") == 0)
 		{
-			g_Config.m_BcVoiceChatRadiusEnabled = 0;
+			g_Config.m_BclVoiceChatRadiusEnabled = 0;
 			char aMsg[128];
-			str_format(aMsg, sizeof(aMsg), Localize("Voice radius: %s (%d tiles)"), Localize("Off"), std::clamp(g_Config.m_BcVoiceChatRadiusTiles, 1, 500));
+			str_format(aMsg, sizeof(aMsg), Localize("Voice radius: %s (%d tiles)"), Localize("Off"), std::clamp(g_Config.m_BclVoiceChatRadiusTiles, 1, 500));
 			GameClient()->m_Chat.Echo(aMsg);
 			return true;
 		}
 
 		if(str_comp_nocase(aArg, "on") == 0)
 		{
-			int Tiles = std::clamp(g_Config.m_BcVoiceChatRadiusTiles, 1, 500);
+			int Tiles = std::clamp(g_Config.m_BclVoiceChatRadiusTiles, 1, 500);
 			char aTiles[32];
 			if(ReadToken(p, aTiles, sizeof(aTiles)))
 			{
@@ -1562,8 +1562,8 @@ bool CVoiceChat::TryHandleChatCommand(const char *pLine)
 					return true;
 				}
 			}
-			g_Config.m_BcVoiceChatRadiusTiles = Tiles;
-			g_Config.m_BcVoiceChatRadiusEnabled = 1;
+			g_Config.m_BclVoiceChatRadiusTiles = Tiles;
+			g_Config.m_BclVoiceChatRadiusEnabled = 1;
 
 			char aMsg[128];
 			str_format(aMsg, sizeof(aMsg), Localize("Voice radius: %s (%d tiles)"), Localize("On"), Tiles);
@@ -1578,8 +1578,8 @@ bool CVoiceChat::TryHandleChatCommand(const char *pLine)
 			return true;
 		}
 
-		g_Config.m_BcVoiceChatRadiusTiles = Tiles;
-		g_Config.m_BcVoiceChatRadiusEnabled = 1;
+		g_Config.m_BclVoiceChatRadiusTiles = Tiles;
+		g_Config.m_BclVoiceChatRadiusEnabled = 1;
 		char aMsg[128];
 		str_format(aMsg, sizeof(aMsg), Localize("Voice radius: %s (%d tiles)"), Localize("On"), Tiles);
 		GameClient()->m_Chat.Echo(aMsg);
@@ -1591,8 +1591,8 @@ bool CVoiceChat::TryHandleChatCommand(const char *pLine)
 
 void CVoiceChat::RenderHudMuteStatusIndicator(float HudWidth, float HudHeight, bool ForcePreview)
 {
-	const bool ShowMicMuted = g_Config.m_BcVoiceChatMicMuted != 0;
-	const bool ShowHeadphonesMuted = g_Config.m_BcVoiceChatHeadphonesMuted != 0;
+	const bool ShowMicMuted = g_Config.m_BclVoiceChatMicMuted != 0;
+	const bool ShowHeadphonesMuted = g_Config.m_BclVoiceChatHeadphonesMuted != 0;
 	if(!ForcePreview && (!HudLayout::IsEnabled(HudLayout::MODULE_VOICE_STATUS) || (!ShowMicMuted && !ShowHeadphonesMuted)))
 		return;
 	const CUIRect Rect = GetHudMuteStatusIndicatorRect(HudWidth, HudHeight, ForcePreview);
@@ -1650,8 +1650,8 @@ void CVoiceChat::RenderHudMuteStatusIndicator(float HudWidth, float HudHeight, b
 
 CUIRect CVoiceChat::GetHudMuteStatusIndicatorRect(float HudWidth, float HudHeight, bool ForcePreview) const
 {
-	const bool ShowMicMuted = g_Config.m_BcVoiceChatMicMuted != 0;
-	const bool ShowHeadphonesMuted = g_Config.m_BcVoiceChatHeadphonesMuted != 0;
+	const bool ShowMicMuted = g_Config.m_BclVoiceChatMicMuted != 0;
+	const bool ShowHeadphonesMuted = g_Config.m_BclVoiceChatHeadphonesMuted != 0;
 	if(!ForcePreview && (!HudLayout::IsEnabled(HudLayout::MODULE_VOICE_STATUS) || (!ShowMicMuted && !ShowHeadphonesMuted)))
 		return CUIRect{0.0f, 0.0f, 0.0f, 0.0f};
 
@@ -1669,7 +1669,7 @@ CUIRect CVoiceChat::GetHudMuteStatusIndicatorRect(float HudWidth, float HudHeigh
 		BoxHeight};
 	const bool MusicPlayerComponentDisabled = false;
 	const CMusicPlayer::SHudReservation MusicReservation = GameClient()->m_MusicPlayer.HudReservation();
-	const bool MusicPlayerHudActive = !MusicPlayerComponentDisabled && g_Config.m_BcMusicPlayer != 0 && MusicReservation.m_Visible && MusicReservation.m_Active;
+	const bool MusicPlayerHudActive = !MusicPlayerComponentDisabled && g_Config.m_BclMusicPlayer != 0 && MusicReservation.m_Visible && MusicReservation.m_Active;
 	if(MusicPlayerHudActive)
 	{
 		const vec2 Offset = GameClient()->m_MusicPlayer.GetHudPushOffsetForRect(Rect, HudWidth, HudHeight, 2.0f);
@@ -1684,9 +1684,9 @@ CUIRect CVoiceChat::GetHudMuteStatusIndicatorRect(float HudWidth, float HudHeigh
 
 void CVoiceChat::RenderHudTalkingIndicator(float HudWidth, float HudHeight, bool ForcePreview)
 {
-	if(!ForcePreview && (!HudLayout::IsEnabled(HudLayout::MODULE_VOICE_TALKERS) || g_Config.m_BcVoiceChatEnable == 0))
+	if(!ForcePreview && (!HudLayout::IsEnabled(HudLayout::MODULE_VOICE_TALKERS) || g_Config.m_BclVoiceChatEnable == 0))
 		return;
-	if(!ForcePreview && g_Config.m_BcVoiceChatHeadphonesMuted != 0)
+	if(!ForcePreview && g_Config.m_BclVoiceChatHeadphonesMuted != 0)
 		return;
 
 	const std::vector<STalkingEntry> &vEntries = m_vTalkingEntries;
@@ -1906,7 +1906,7 @@ CUIRect CVoiceChat::GetHudTalkingIndicatorRect(float HudWidth, float HudHeight, 
 {
 	if(!ForcePreview && !HudLayout::IsEnabled(HudLayout::MODULE_VOICE_TALKERS))
 		return CUIRect{0.0f, 0.0f, 0.0f, 0.0f};
-	if(!ForcePreview && g_Config.m_BcVoiceChatHeadphonesMuted != 0)
+	if(!ForcePreview && g_Config.m_BclVoiceChatHeadphonesMuted != 0)
 		return CUIRect{0.0f, 0.0f, 0.0f, 0.0f};
 
 	const std::vector<STalkingEntry> &vEntries = m_vTalkingEntries;
@@ -1992,7 +1992,7 @@ CVoiceChat::EVoiceNetOpen CVoiceChat::OpenNetworking()
 	if(net_addr_from_str(&Resolved, ServerAddress.c_str()) == 0)
 	{
 		if(Resolved.port == 0)
-			Resolved.port = BestClientVoice::DEFAULT_PORT;
+			Resolved.port = BestClientLightVoice::DEFAULT_PORT;
 	}
 	else if(m_pHostLookup && str_comp(m_pHostLookup->Hostname(), ServerAddress.c_str()) == 0)
 	{
@@ -2005,7 +2005,7 @@ CVoiceChat::EVoiceNetOpen CVoiceChat::OpenNetworking()
 		}
 		Resolved = m_pHostLookup->Addr();
 		if(Resolved.port == 0)
-			Resolved.port = BestClientVoice::DEFAULT_PORT;
+			Resolved.port = BestClientLightVoice::DEFAULT_PORT;
 	}
 	else
 	{
@@ -2047,7 +2047,7 @@ CVoiceChat::EVoiceNetOpen CVoiceChat::OpenNetworking()
 	m_SecondaryAdvertisedTeam = std::numeric_limits<int>::min();
 	m_SecondaryAdvertisedRoomKey.clear();
 	m_SecondaryAdvertisedPlayerName.clear();
-	m_SecondaryAdvertisedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID - 1;
+	m_SecondaryAdvertisedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID - 1;
 	m_SecondaryClientInstanceId = UUID_ZEROED;
 	return EVoiceNetOpen::READY;
 }
@@ -2067,7 +2067,7 @@ void CVoiceChat::CloseNetworking()
 	m_LastHeartbeatTick = 0;
 	m_AdvertisedRoomKey.clear();
 	m_AdvertisedPlayerName.clear();
-	m_AdvertisedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID - 1;
+	m_AdvertisedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID - 1;
 	m_AdvertisedTeam = std::numeric_limits<int>::min();
 	m_ClientInstanceId = UUID_ZEROED;
 	mem_zero(m_LinkToken, sizeof(m_LinkToken));
@@ -2106,7 +2106,7 @@ bool CVoiceChat::OpenSecondaryNetworking()
 	m_SecondarySendSequence = 0;
 	m_SecondaryHelloResetPending = true;
 	m_SecondaryAdvertisedRoomKey.clear();
-	m_SecondaryAdvertisedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID - 1;
+	m_SecondaryAdvertisedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID - 1;
 	m_SecondaryAdvertisedTeam = std::numeric_limits<int>::min();
 	m_SecondaryClientInstanceId = RandomUuid();
 	return true;
@@ -2128,7 +2128,7 @@ void CVoiceChat::CloseSecondaryNetworking()
 	m_SecondaryHelloResetPending = false;
 	m_SecondaryAdvertisedRoomKey.clear();
 	m_SecondaryAdvertisedPlayerName.clear();
-	m_SecondaryAdvertisedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID - 1;
+	m_SecondaryAdvertisedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID - 1;
 	m_SecondaryAdvertisedTeam = std::numeric_limits<int>::min();
 	m_SecondaryClientInstanceId = UUID_ZEROED;
 }
@@ -2170,10 +2170,10 @@ bool CVoiceChat::OpenAudioDevices()
 	m_PlaybackSpec = {};
 
 	SDL_AudioSpec WantedCapture = {};
-	WantedCapture.freq = BestClientVoice::SAMPLE_RATE;
+	WantedCapture.freq = BestClientLightVoice::SAMPLE_RATE;
 	WantedCapture.format = AUDIO_S16SYS;
 	WantedCapture.channels = 1;
-	WantedCapture.samples = BestClientVoice::FRAME_SIZE;
+	WantedCapture.samples = BestClientLightVoice::FRAME_SIZE;
 	WantedCapture.callback = nullptr;
 
 	const int CaptureDeviceCount = SDL_GetNumAudioDevices(1);
@@ -2188,7 +2188,7 @@ bool CVoiceChat::OpenAudioDevices()
 	else
 	{
 		SDL_AudioSpec ObtainedCapture = {};
-		const char *pCaptureDeviceName = GetAudioDeviceNameByIndex(1, g_Config.m_BcVoiceChatInputDevice);
+		const char *pCaptureDeviceName = GetAudioDeviceNameByIndex(1, g_Config.m_BclVoiceChatInputDevice);
 		m_CaptureDevice = SDL_OpenAudioDevice(pCaptureDeviceName, 1, &WantedCapture, &ObtainedCapture, 0);
 		if(m_CaptureDevice == 0 && pCaptureDeviceName)
 		{
@@ -2206,14 +2206,14 @@ bool CVoiceChat::OpenAudioDevices()
 	}
 
 	SDL_AudioSpec WantedPlayback = {};
-	WantedPlayback.freq = BestClientVoice::SAMPLE_RATE;
+	WantedPlayback.freq = BestClientLightVoice::SAMPLE_RATE;
 	WantedPlayback.format = AUDIO_S16SYS;
 	WantedPlayback.channels = 2;
-	WantedPlayback.samples = BestClientVoice::FRAME_SIZE;
+	WantedPlayback.samples = BestClientLightVoice::FRAME_SIZE;
 	WantedPlayback.callback = nullptr;
 
 	SDL_AudioSpec ObtainedPlayback = {};
-	const char *pPlaybackDeviceName = GetAudioDeviceNameByIndex(0, g_Config.m_BcVoiceChatOutputDevice);
+	const char *pPlaybackDeviceName = GetAudioDeviceNameByIndex(0, g_Config.m_BclVoiceChatOutputDevice);
 	m_PlaybackDevice = SDL_OpenAudioDevice(pPlaybackDeviceName, 0, &WantedPlayback, &ObtainedPlayback, 0);
 	if(m_PlaybackDevice == 0 && pPlaybackDeviceName)
 	{
@@ -2253,14 +2253,14 @@ void CVoiceChat::CloseAudioDevices()
 bool CVoiceChat::CreateEncoder()
 {
 	int Error = 0;
-	m_pEncoder = opus_encoder_create(BestClientVoice::SAMPLE_RATE, BestClientVoice::CHANNELS, OPUS_APPLICATION_VOIP, &Error);
+	m_pEncoder = opus_encoder_create(BestClientLightVoice::SAMPLE_RATE, BestClientLightVoice::CHANNELS, OPUS_APPLICATION_VOIP, &Error);
 	if(Error != OPUS_OK || !m_pEncoder)
 	{
 		dbg_msg("voice", "failed to create opus encoder: %d", Error);
 		m_pEncoder = nullptr;
 		return false;
 	}
-	m_LastBitrate = std::clamp(g_Config.m_BcVoiceChatBitrate, 6, VOICE_MAX_BITRATE_KBPS);
+	m_LastBitrate = std::clamp(g_Config.m_BclVoiceChatBitrate, 6, VOICE_MAX_BITRATE_KBPS);
 	ConfigureVoiceOpusEncoder(m_pEncoder, m_LastBitrate);
 	m_LastEncoderLossPerc = 0;
 	m_LastEncoderFec = 0;
@@ -2372,27 +2372,27 @@ void CVoiceChat::SendHello()
 	const int LocalClientId = LocalGameClientId();
 	const int VoiceTeam = LocalVoiceTeam();
 	const uint64_t AuthTimestamp = CurrentHelloAuthTimestamp();
-	const uint16_t RoomKeySize = (uint16_t)std::min<size_t>(RoomKey.size(), BestClientVoice::MAX_ROOM_KEY_LENGTH);
+	const uint16_t RoomKeySize = (uint16_t)std::min<size_t>(RoomKey.size(), BestClientLightVoice::MAX_ROOM_KEY_LENGTH);
 
 	std::vector<uint8_t> vBody;
-	vBody.reserve(20 + RoomKeySize + 2 + BestClientVoice::MAX_PLAYER_NAME_LENGTH);
-	BestClientVoice::WriteU16(vBody, (uint16_t)BestClientVoice::CLIENT_BUILD);
-	BestClientVoice::WriteU16(vBody, RoomKeySize);
+	vBody.reserve(20 + RoomKeySize + 2 + BestClientLightVoice::MAX_PLAYER_NAME_LENGTH);
+	BestClientLightVoice::WriteU16(vBody, (uint16_t)BestClientLightVoice::CLIENT_BUILD);
+	BestClientLightVoice::WriteU16(vBody, RoomKeySize);
 	vBody.insert(vBody.end(), RoomKey.begin(), RoomKey.begin() + RoomKeySize);
-	BestClientVoice::WriteS16(vBody, (int16_t)LocalClientId);
-	BestClientVoice::WriteS16(vBody, (int16_t)VoiceTeam);
-	BestClientVoice::WriteU64(vBody, AuthTimestamp);
+	BestClientLightVoice::WriteS16(vBody, (int16_t)LocalClientId);
+	BestClientLightVoice::WriteS16(vBody, (int16_t)VoiceTeam);
+	BestClientLightVoice::WriteU64(vBody, AuthTimestamp);
 	const char *pName = nullptr;
 	if(LocalClientId >= 0 && LocalClientId < MAX_CLIENTS)
 		pName = GameClient()->m_aClients[LocalClientId].m_aName;
-	AppendHelloIdentity(vBody, LocalClientId, pName, m_ClientInstanceId, BestClientVoice::HELLO_CHANNEL_PRIMARY, nullptr);
+	AppendHelloIdentity(vBody, LocalClientId, pName, m_ClientInstanceId, BestClientLightVoice::HELLO_CHANNEL_PRIMARY, nullptr);
 
 	m_PendingHelloPayload = vBody;
 	m_ChallengeActive = false;
 
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(8 + vBody.size());
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_HELLO);
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_HELLO);
 	vPacket.insert(vPacket.end(), vBody.begin(), vBody.end());
 
 	net_udp_send(m_Socket, &m_ServerAddr, vPacket.data(), (int)vPacket.size());
@@ -2416,27 +2416,27 @@ void CVoiceChat::SendHelloSecondary()
 	const int LocalClientId = LocalGameClientId();
 	const int VoiceTeam = LocalOwnVoiceTeam();
 	const uint64_t AuthTimestamp = CurrentHelloAuthTimestamp();
-	const uint16_t RoomKeySize = (uint16_t)std::min<size_t>(RoomKey.size(), BestClientVoice::MAX_ROOM_KEY_LENGTH);
+	const uint16_t RoomKeySize = (uint16_t)std::min<size_t>(RoomKey.size(), BestClientLightVoice::MAX_ROOM_KEY_LENGTH);
 
 	std::vector<uint8_t> vBody;
-	vBody.reserve(20 + RoomKeySize + 2 + BestClientVoice::MAX_PLAYER_NAME_LENGTH);
-	BestClientVoice::WriteU16(vBody, (uint16_t)BestClientVoice::CLIENT_BUILD);
-	BestClientVoice::WriteU16(vBody, RoomKeySize);
+	vBody.reserve(20 + RoomKeySize + 2 + BestClientLightVoice::MAX_PLAYER_NAME_LENGTH);
+	BestClientLightVoice::WriteU16(vBody, (uint16_t)BestClientLightVoice::CLIENT_BUILD);
+	BestClientLightVoice::WriteU16(vBody, RoomKeySize);
 	vBody.insert(vBody.end(), RoomKey.begin(), RoomKey.begin() + RoomKeySize);
-	BestClientVoice::WriteS16(vBody, (int16_t)LocalClientId);
-	BestClientVoice::WriteS16(vBody, (int16_t)VoiceTeam);
-	BestClientVoice::WriteU64(vBody, AuthTimestamp);
+	BestClientLightVoice::WriteS16(vBody, (int16_t)LocalClientId);
+	BestClientLightVoice::WriteS16(vBody, (int16_t)VoiceTeam);
+	BestClientLightVoice::WriteU64(vBody, AuthTimestamp);
 	const char *pName = nullptr;
 	if(LocalClientId >= 0 && LocalClientId < MAX_CLIENTS)
 		pName = GameClient()->m_aClients[LocalClientId].m_aName;
-	AppendHelloIdentity(vBody, LocalClientId, pName, m_SecondaryClientInstanceId, BestClientVoice::HELLO_CHANNEL_SECONDARY, m_LinkToken);
+	AppendHelloIdentity(vBody, LocalClientId, pName, m_SecondaryClientInstanceId, BestClientLightVoice::HELLO_CHANNEL_SECONDARY, m_LinkToken);
 
 	m_SecondaryPendingHelloPayload = vBody;
 	m_SecondaryChallengeActive = false;
 
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(8 + vBody.size());
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_HELLO);
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_HELLO);
 	vPacket.insert(vPacket.end(), vBody.begin(), vBody.end());
 
 	net_udp_send(m_SecondarySocket, &m_ServerAddr, vPacket.data(), (int)vPacket.size());
@@ -2459,19 +2459,19 @@ void CVoiceChat::SendHelloResponse(NETSOCKET Socket, const uint8_t *pNonce, cons
 	const std::string AuthKey = VoiceAuthKey();
 
 	std::vector<uint8_t> vHmacInput;
-	vHmacInput.reserve(BestClientVoice::CHALLENGE_NONCE_SIZE + vHelloPayload.size());
-	vHmacInput.insert(vHmacInput.end(), pNonce, pNonce + BestClientVoice::CHALLENGE_NONCE_SIZE);
+	vHmacInput.reserve(BestClientLightVoice::CHALLENGE_NONCE_SIZE + vHelloPayload.size());
+	vHmacInput.insert(vHmacInput.end(), pNonce, pNonce + BestClientLightVoice::CHALLENGE_NONCE_SIZE);
 	vHmacInput.insert(vHmacInput.end(), vHelloPayload.begin(), vHelloPayload.end());
 
-	const SHA256_DIGEST Proof = BestClientIndicator::ComputeHmacSha256(
+	const SHA256_DIGEST Proof = BestClientLightIndicator::ComputeHmacSha256(
 		AuthKey.c_str(), vHmacInput.data(), (int)vHmacInput.size());
-	const SHA256_DIGEST OfficialProof = BestClientIndicator::ComputeHmacSha256(
-		BESTCLIENT_OFFICIAL_CODE, vHmacInput.data(), (int)vHmacInput.size());
+	const SHA256_DIGEST OfficialProof = BestClientLightIndicator::ComputeHmacSha256(
+		BESTCLIENT_LIGHT_OFFICIAL_CODE, vHmacInput.data(), (int)vHmacInput.size());
 
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(8 + 2 + vHelloPayload.size() + SHA256_DIGEST_LENGTH * 2);
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_HELLO_RESPONSE);
-	BestClientVoice::WriteU16(vPacket, (uint16_t)vHelloPayload.size());
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_HELLO_RESPONSE);
+	BestClientLightVoice::WriteU16(vPacket, (uint16_t)vHelloPayload.size());
 	vPacket.insert(vPacket.end(), vHelloPayload.begin(), vHelloPayload.end());
 	vPacket.insert(vPacket.end(), Proof.data, Proof.data + SHA256_DIGEST_LENGTH);
 	vPacket.insert(vPacket.end(), OfficialProof.data, OfficialProof.data + SHA256_DIGEST_LENGTH);
@@ -2486,7 +2486,7 @@ void CVoiceChat::SendGoodbye()
 
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(8);
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_GOODBYE);
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_GOODBYE);
 	net_udp_send(m_Socket, &m_ServerAddr, vPacket.data(), (int)vPacket.size());
 }
 
@@ -2497,7 +2497,7 @@ void CVoiceChat::SendGoodbyeSecondary()
 
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(8);
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_GOODBYE);
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_GOODBYE);
 	net_udp_send(m_SecondarySocket, &m_ServerAddr, vPacket.data(), (int)vPacket.size());
 }
 
@@ -2511,7 +2511,7 @@ void CVoiceChat::VoiceModAuth(const char *pKey)
 
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(6);
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_MOD_AUTH_REQ);
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_MOD_AUTH_REQ);
 	net_udp_send(m_Socket, &m_ServerAddr, vPacket.data(), (int)vPacket.size());
 }
 
@@ -2521,7 +2521,7 @@ void CVoiceChat::SendModPlayerListReq()
 		return;
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(6);
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_MOD_PLAYER_LIST_REQ);
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_MOD_PLAYER_LIST_REQ);
 	net_udp_send(m_Socket, &m_ServerAddr, vPacket.data(), (int)vPacket.size());
 }
 
@@ -2531,9 +2531,9 @@ void CVoiceChat::SendModMuteReq(uint16_t SessionId, bool Mute)
 		return;
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(9);
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_MOD_MUTE_REQ);
-	BestClientVoice::WriteU16(vPacket, SessionId);
-	BestClientVoice::WriteU8(vPacket, Mute ? 1 : 0);
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_MOD_MUTE_REQ);
+	BestClientLightVoice::WriteU16(vPacket, SessionId);
+	BestClientLightVoice::WriteU8(vPacket, Mute ? 1 : 0);
 	net_udp_send(m_Socket, &m_ServerAddr, vPacket.data(), (int)vPacket.size());
 }
 
@@ -2541,17 +2541,17 @@ void CVoiceChat::SendVoiceFrame(const uint8_t *pOpusData, int OpusSize, int Team
 {
 	if(!m_Socket || !m_Registered || !m_HasServerAddr)
 		return;
-	if(OpusSize <= 0 || OpusSize > BestClientVoice::MAX_OPUS_PACKET_SIZE)
+	if(OpusSize <= 0 || OpusSize > BestClientLightVoice::MAX_OPUS_PACKET_SIZE)
 		return;
 
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(32 + OpusSize);
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_VOICE);
-	BestClientVoice::WriteS16(vPacket, (int16_t)Team);
-	BestClientVoice::WriteS32(vPacket, round_to_int(Position.x));
-	BestClientVoice::WriteS32(vPacket, round_to_int(Position.y));
-	BestClientVoice::WriteU16(vPacket, m_SendSequence++);
-	BestClientVoice::WriteU16(vPacket, (uint16_t)OpusSize);
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_VOICE);
+	BestClientLightVoice::WriteS16(vPacket, (int16_t)Team);
+	BestClientLightVoice::WriteS32(vPacket, round_to_int(Position.x));
+	BestClientLightVoice::WriteS32(vPacket, round_to_int(Position.y));
+	BestClientLightVoice::WriteU16(vPacket, m_SendSequence++);
+	BestClientLightVoice::WriteU16(vPacket, (uint16_t)OpusSize);
 	vPacket.insert(vPacket.end(), pOpusData, pOpusData + OpusSize);
 	net_udp_send(m_Socket, &m_ServerAddr, vPacket.data(), (int)vPacket.size());
 }
@@ -2560,17 +2560,17 @@ void CVoiceChat::SendVoiceFrameSecondary(const uint8_t *pOpusData, int OpusSize,
 {
 	if(!m_SecondarySocket || !m_SecondaryRegistered || !m_HasServerAddr)
 		return;
-	if(OpusSize <= 0 || OpusSize > BestClientVoice::MAX_OPUS_PACKET_SIZE)
+	if(OpusSize <= 0 || OpusSize > BestClientLightVoice::MAX_OPUS_PACKET_SIZE)
 		return;
 
 	std::vector<uint8_t> vPacket;
 	vPacket.reserve(32 + OpusSize);
-	BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_VOICE);
-	BestClientVoice::WriteS16(vPacket, (int16_t)Team);
-	BestClientVoice::WriteS32(vPacket, round_to_int(Position.x));
-	BestClientVoice::WriteS32(vPacket, round_to_int(Position.y));
-	BestClientVoice::WriteU16(vPacket, m_SecondarySendSequence++);
-	BestClientVoice::WriteU16(vPacket, (uint16_t)OpusSize);
+	BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_VOICE);
+	BestClientLightVoice::WriteS16(vPacket, (int16_t)Team);
+	BestClientLightVoice::WriteS32(vPacket, round_to_int(Position.x));
+	BestClientLightVoice::WriteS32(vPacket, round_to_int(Position.y));
+	BestClientLightVoice::WriteU16(vPacket, m_SecondarySendSequence++);
+	BestClientLightVoice::WriteU16(vPacket, (uint16_t)OpusSize);
 	vPacket.insert(vPacket.end(), pOpusData, pOpusData + OpusSize);
 	net_udp_send(m_SecondarySocket, &m_ServerAddr, vPacket.data(), (int)vPacket.size());
 }
@@ -2583,16 +2583,16 @@ void CVoiceChat::ProcessVoiceRelayPacket(const uint8_t *pRawData, int DataSize, 
 	int32_t PosY = 0;
 	uint16_t Sequence = 0;
 	uint16_t OpusSize = 0;
-	if(!BestClientVoice::ReadU16(pRawData, DataSize, Offset, SenderId) ||
-		!BestClientVoice::ReadS16(pRawData, DataSize, Offset, Team) ||
-		!BestClientVoice::ReadS32(pRawData, DataSize, Offset, PosX) ||
-		!BestClientVoice::ReadS32(pRawData, DataSize, Offset, PosY) ||
-		!BestClientVoice::ReadU16(pRawData, DataSize, Offset, Sequence) ||
-		!BestClientVoice::ReadU16(pRawData, DataSize, Offset, OpusSize))
+	if(!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, SenderId) ||
+		!BestClientLightVoice::ReadS16(pRawData, DataSize, Offset, Team) ||
+		!BestClientLightVoice::ReadS32(pRawData, DataSize, Offset, PosX) ||
+		!BestClientLightVoice::ReadS32(pRawData, DataSize, Offset, PosY) ||
+		!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, Sequence) ||
+		!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, OpusSize))
 	{
 		return;
 	}
-	if(Offset + OpusSize > DataSize || OpusSize == 0 || OpusSize > BestClientVoice::MAX_OPUS_PACKET_SIZE)
+	if(Offset + OpusSize > DataSize || OpusSize == 0 || OpusSize > BestClientLightVoice::MAX_OPUS_PACKET_SIZE)
 		return;
 	if(SenderId == SelfVoiceId)
 		return;
@@ -2600,7 +2600,7 @@ void CVoiceChat::ProcessVoiceRelayPacket(const uint8_t *pRawData, int DataSize, 
 	auto ItPeer = m_Peers.find(SenderId);
 	if(ItPeer == m_Peers.end())
 	{
-		if((int)m_Peers.size() >= BestClientVoice::MAX_VOICE_PEERS)
+		if((int)m_Peers.size() >= BestClientLightVoice::MAX_VOICE_PEERS)
 			return;
 		CRemotePeer &NewPeer = m_Peers[SenderId];
 		NewPeer.m_LastReceiveTick = time_get();
@@ -2650,7 +2650,7 @@ void CVoiceChat::ProcessVoiceRelayPacket(const uint8_t *pRawData, int DataSize, 
 	if(!Peer.m_pDecoder)
 	{
 		int Error = 0;
-		Peer.m_pDecoder = opus_decoder_create(BestClientVoice::SAMPLE_RATE, BestClientVoice::CHANNELS, &Error);
+		Peer.m_pDecoder = opus_decoder_create(BestClientLightVoice::SAMPLE_RATE, BestClientLightVoice::CHANNELS, &Error);
 		if(Error != OPUS_OK || !Peer.m_pDecoder)
 		{
 			Peer.m_pDecoder = nullptr;
@@ -2658,7 +2658,7 @@ void CVoiceChat::ProcessVoiceRelayPacket(const uint8_t *pRawData, int DataSize, 
 		}
 	}
 
-	int16_t aDecoded[BestClientVoice::FRAME_SIZE];
+	int16_t aDecoded[BestClientLightVoice::FRAME_SIZE];
 	if(Peer.m_HasSequence)
 	{
 		if(!IsForwardSequence(Peer.m_LastSequence, Sequence))
@@ -2682,7 +2682,7 @@ void CVoiceChat::ProcessVoiceRelayPacket(const uint8_t *pRawData, int DataSize, 
 			{
 				if(MissingPackets == 1)
 				{
-					const int FecSamples = opus_decode(Peer.m_pDecoder, pRawData + Offset, OpusSize, aDecoded, BestClientVoice::FRAME_SIZE, 1);
+					const int FecSamples = opus_decode(Peer.m_pDecoder, pRawData + Offset, OpusSize, aDecoded, BestClientLightVoice::FRAME_SIZE, 1);
 					if(FecSamples > 0)
 					{
 						const size_t Dropped = Peer.m_DecodedPcm.PushBack(aDecoded, (size_t)FecSamples);
@@ -2691,7 +2691,7 @@ void CVoiceChat::ProcessVoiceRelayPacket(const uint8_t *pRawData, int DataSize, 
 					}
 					else
 					{
-						const int PlcSamples = opus_decode(Peer.m_pDecoder, nullptr, 0, aDecoded, BestClientVoice::FRAME_SIZE, 0);
+						const int PlcSamples = opus_decode(Peer.m_pDecoder, nullptr, 0, aDecoded, BestClientLightVoice::FRAME_SIZE, 0);
 						if(PlcSamples > 0)
 						{
 							const size_t Dropped = Peer.m_DecodedPcm.PushBack(aDecoded, (size_t)PlcSamples);
@@ -2704,7 +2704,7 @@ void CVoiceChat::ProcessVoiceRelayPacket(const uint8_t *pRawData, int DataSize, 
 				{
 					for(uint16_t Missing = 0; Missing < MissingPackets; ++Missing)
 					{
-						const int PlcSamples = opus_decode(Peer.m_pDecoder, nullptr, 0, aDecoded, BestClientVoice::FRAME_SIZE, 0);
+						const int PlcSamples = opus_decode(Peer.m_pDecoder, nullptr, 0, aDecoded, BestClientLightVoice::FRAME_SIZE, 0);
 						if(PlcSamples <= 0)
 							break;
 						const size_t Dropped = Peer.m_DecodedPcm.PushBack(aDecoded, (size_t)PlcSamples);
@@ -2716,7 +2716,7 @@ void CVoiceChat::ProcessVoiceRelayPacket(const uint8_t *pRawData, int DataSize, 
 		}
 	}
 
-	const int DecodedSamples = opus_decode(Peer.m_pDecoder, pRawData + Offset, OpusSize, aDecoded, BestClientVoice::FRAME_SIZE, 0);
+	const int DecodedSamples = opus_decode(Peer.m_pDecoder, pRawData + Offset, OpusSize, aDecoded, BestClientLightVoice::FRAME_SIZE, 0);
 	if(DecodedSamples <= 0)
 	{
 		++Peer.m_ConsecutiveDecodeFails;
@@ -2753,45 +2753,45 @@ void CVoiceChat::ProcessNetwork()
 			continue;
 
 		int Offset = 0;
-		BestClientVoice::EPacketType Type;
-		if(!BestClientVoice::ReadHeader(pRawData, DataSize, Type, Offset))
+		BestClientLightVoice::EPacketType Type;
+		if(!BestClientLightVoice::ReadHeader(pRawData, DataSize, Type, Offset))
 			continue;
 		m_LastServerPacketTick = time_get();
 
-		if(Type == BestClientVoice::PACKET_AUTH_REJECT)
+		if(Type == BestClientLightVoice::PACKET_AUTH_REJECT)
 		{
 			uint8_t Reason = 0;
-			if(!BestClientVoice::ReadU8(pRawData, DataSize, Offset, Reason))
+			if(!BestClientLightVoice::ReadU8(pRawData, DataSize, Offset, Reason))
 				continue;
-			if(Reason == BestClientVoice::AUTH_REJECT_UNOFFICIAL)
+			if(Reason == BestClientLightVoice::AUTH_REJECT_UNOFFICIAL)
 				m_OfficialRejected = true;
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_HELLO_CHALLENGE)
+		if(Type == BestClientLightVoice::PACKET_HELLO_CHALLENGE)
 		{
 			if(m_OfficialRejected || m_PendingHelloPayload.empty())
 				continue;
-			if((int)(Offset + BestClientVoice::CHALLENGE_NONCE_SIZE) > DataSize)
+			if((int)(Offset + BestClientLightVoice::CHALLENGE_NONCE_SIZE) > DataSize)
 				continue;
-			mem_copy(m_ChallengeNonce, pRawData + Offset, BestClientVoice::CHALLENGE_NONCE_SIZE);
+			mem_copy(m_ChallengeNonce, pRawData + Offset, BestClientLightVoice::CHALLENGE_NONCE_SIZE);
 			m_ChallengeActive = true;
 			SendHelloResponse(m_Socket, m_ChallengeNonce, m_PendingHelloPayload);
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_HELLO_ACK)
+		if(Type == BestClientLightVoice::PACKET_HELLO_ACK)
 		{
 			if(m_PendingHelloPayload.empty())
 				continue;
 			uint16_t VoiceId = 0;
 			uint16_t ServerFlags = 0;
-			if(BestClientVoice::ReadU16(pRawData, DataSize, Offset, VoiceId) && BestClientVoice::ReadU16(pRawData, DataSize, Offset, ServerFlags))
+			if(BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, VoiceId) && BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, ServerFlags))
 			{
 				(void)ServerFlags;
-				if(Offset + BestClientVoice::LINK_TOKEN_SIZE <= DataSize)
+				if(Offset + BestClientLightVoice::LINK_TOKEN_SIZE <= DataSize)
 				{
-					mem_copy(m_LinkToken, pRawData + Offset, BestClientVoice::LINK_TOKEN_SIZE);
+					mem_copy(m_LinkToken, pRawData + Offset, BestClientLightVoice::LINK_TOKEN_SIZE);
 					m_HasLinkToken = true;
 				}
 				const bool FullReset = m_HelloResetPending || !m_Registered || (m_ClientVoiceId != 0 && m_ClientVoiceId != VoiceId);
@@ -2810,13 +2810,13 @@ void CVoiceChat::ProcessNetwork()
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_PEER_LIST)
+		if(Type == BestClientLightVoice::PACKET_PEER_LIST)
 		{
 			if(!m_Registered || m_ClientVoiceId == 0)
 				continue;
 
 			uint16_t PeerCount = 0;
-			if(!BestClientVoice::ReadU16(pRawData, DataSize, Offset, PeerCount))
+			if(!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, PeerCount))
 				continue;
 
 			std::unordered_set<uint16_t> vSeenPeerIds;
@@ -2827,7 +2827,7 @@ void CVoiceChat::ProcessNetwork()
 			for(uint16_t i = 0; i < PeerCount; ++i)
 			{
 				uint16_t PeerId = 0;
-				if(!BestClientVoice::ReadU16(pRawData, DataSize, Offset, PeerId))
+				if(!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, PeerId))
 				{
 					ParseOk = false;
 					break;
@@ -2835,7 +2835,7 @@ void CVoiceChat::ProcessNetwork()
 				if(PeerId == 0 || PeerId == m_ClientVoiceId)
 					continue;
 				vSeenPeerIds.insert(PeerId);
-				if(m_Peers.find(PeerId) == m_Peers.end() && (int)m_Peers.size() >= BestClientVoice::MAX_VOICE_PEERS)
+				if(m_Peers.find(PeerId) == m_Peers.end() && (int)m_Peers.size() >= BestClientLightVoice::MAX_VOICE_PEERS)
 					continue;
 				CRemotePeer &Peer = m_Peers[PeerId];
 				Peer.m_LastReceiveTick = Now;
@@ -2861,13 +2861,13 @@ void CVoiceChat::ProcessNetwork()
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_PEER_LIST_EX)
+		if(Type == BestClientLightVoice::PACKET_PEER_LIST_EX)
 		{
 			if(!m_Registered || m_ClientVoiceId == 0)
 				continue;
 
 			uint16_t PeerCount = 0;
-			if(!BestClientVoice::ReadU16(pRawData, DataSize, Offset, PeerCount))
+			if(!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, PeerCount))
 				continue;
 
 			std::unordered_set<uint16_t> vSeenPeerIds;
@@ -2877,9 +2877,9 @@ void CVoiceChat::ProcessNetwork()
 			for(uint16_t i = 0; i < PeerCount; ++i)
 			{
 				uint16_t PeerId = 0;
-				int16_t AnnouncedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID;
-				if(!BestClientVoice::ReadU16(pRawData, DataSize, Offset, PeerId) ||
-					!BestClientVoice::ReadS16(pRawData, DataSize, Offset, AnnouncedGameClientId))
+				int16_t AnnouncedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID;
+				if(!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, PeerId) ||
+					!BestClientLightVoice::ReadS16(pRawData, DataSize, Offset, AnnouncedGameClientId))
 				{
 					ParseOk = false;
 					break;
@@ -2887,7 +2887,7 @@ void CVoiceChat::ProcessNetwork()
 				if(PeerId == 0 || PeerId == m_ClientVoiceId)
 					continue;
 				vSeenPeerIds.insert(PeerId);
-				if(m_Peers.find(PeerId) == m_Peers.end() && (int)m_Peers.size() >= BestClientVoice::MAX_VOICE_PEERS)
+				if(m_Peers.find(PeerId) == m_Peers.end() && (int)m_Peers.size() >= BestClientLightVoice::MAX_VOICE_PEERS)
 					continue;
 				CRemotePeer &Peer = m_Peers[PeerId];
 				Peer.m_LastReceiveTick = Now;
@@ -2914,30 +2914,30 @@ void CVoiceChat::ProcessNetwork()
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_MOD_AUTH_CHALLENGE)
+		if(Type == BestClientLightVoice::PACKET_MOD_AUTH_CHALLENGE)
 		{
 			if(!m_ModAuthPending || m_PendingModKey.empty())
 				continue;
-			if(DataSize - Offset < BestClientVoice::MOD_NONCE_SIZE)
+			if(DataSize - Offset < BestClientLightVoice::MOD_NONCE_SIZE)
 				continue;
 			const uint8_t *pNonce = pRawData + Offset;
 
-			const SHA256_DIGEST Proof = BestClientIndicator::ComputeHmacSha256(
-				m_PendingModKey.c_str(), pNonce, BestClientVoice::MOD_NONCE_SIZE);
+			const SHA256_DIGEST Proof = BestClientLightIndicator::ComputeHmacSha256(
+				m_PendingModKey.c_str(), pNonce, BestClientLightVoice::MOD_NONCE_SIZE);
 			m_PendingModKey.clear();
 
 			std::vector<uint8_t> vResp;
 			vResp.reserve(6 + SHA256_DIGEST_LENGTH);
-			BestClientVoice::WriteHeader(vResp, BestClientVoice::PACKET_MOD_AUTH_RESPONSE);
+			BestClientLightVoice::WriteHeader(vResp, BestClientLightVoice::PACKET_MOD_AUTH_RESPONSE);
 			vResp.insert(vResp.end(), Proof.data, Proof.data + SHA256_DIGEST_LENGTH);
 			net_udp_send(m_Socket, &m_ServerAddr, vResp.data(), (int)vResp.size());
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_MOD_AUTH_ACK)
+		if(Type == BestClientLightVoice::PACKET_MOD_AUTH_ACK)
 		{
 			uint8_t Status = 0;
-			if(BestClientVoice::ReadU8(pRawData, DataSize, Offset, Status))
+			if(BestClientLightVoice::ReadU8(pRawData, DataSize, Offset, Status))
 			{
 				m_ModAuthPending = false;
 				m_PendingModKey.clear();
@@ -2956,12 +2956,12 @@ void CVoiceChat::ProcessNetwork()
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_MOD_PLAYER_LIST)
+		if(Type == BestClientLightVoice::PACKET_MOD_PLAYER_LIST)
 		{
 			if(!m_ModAuthed)
 				continue;
 			uint16_t Count = 0;
-			if(!BestClientVoice::ReadU16(pRawData, DataSize, Offset, Count))
+			if(!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, Count))
 				continue;
 			m_vModPlayers.clear();
 			m_vModPlayers.reserve(Count);
@@ -2972,10 +2972,10 @@ void CVoiceChat::ProcessNetwork()
 				int16_t GameClientId = -1;
 				std::string Name;
 				uint8_t IsMuted = 0;
-				if(!BestClientVoice::ReadU16(pRawData, DataSize, Offset, SessionId) ||
-					!BestClientVoice::ReadS16(pRawData, DataSize, Offset, GameClientId) ||
-					!ReadVoiceString(pRawData, DataSize, Offset, Name, BestClientVoice::MAX_PLAYER_NAME_LENGTH) ||
-					!BestClientVoice::ReadU8(pRawData, DataSize, Offset, IsMuted))
+				if(!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, SessionId) ||
+					!BestClientLightVoice::ReadS16(pRawData, DataSize, Offset, GameClientId) ||
+					!ReadVoiceString(pRawData, DataSize, Offset, Name, BestClientLightVoice::MAX_PLAYER_NAME_LENGTH) ||
+					!BestClientLightVoice::ReadU8(pRawData, DataSize, Offset, IsMuted))
 				{
 					ParseOk = false;
 					break;
@@ -2992,12 +2992,12 @@ void CVoiceChat::ProcessNetwork()
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_MOD_MUTE_ACK)
+		if(Type == BestClientLightVoice::PACKET_MOD_MUTE_ACK)
 		{
 			uint16_t SessionId = 0;
 			uint8_t IsMuted = 0;
-			if(BestClientVoice::ReadU16(pRawData, DataSize, Offset, SessionId) &&
-				BestClientVoice::ReadU8(pRawData, DataSize, Offset, IsMuted))
+			if(BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, SessionId) &&
+				BestClientLightVoice::ReadU8(pRawData, DataSize, Offset, IsMuted))
 			{
 				for(auto &Player : m_vModPlayers)
 				{
@@ -3011,7 +3011,7 @@ void CVoiceChat::ProcessNetwork()
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_YOU_ARE_MUTED)
+		if(Type == BestClientLightVoice::PACKET_YOU_ARE_MUTED)
 		{
 			const int64_t NowTick = time_get();
 			m_IsMutedByMod = true;
@@ -3023,7 +3023,7 @@ void CVoiceChat::ProcessNetwork()
 			continue;
 		}
 
-		if(Type != BestClientVoice::PACKET_VOICE_RELAY)
+		if(Type != BestClientLightVoice::PACKET_VOICE_RELAY)
 			continue;
 
 		if(!m_Registered || m_ClientVoiceId == 0)
@@ -3052,39 +3052,39 @@ void CVoiceChat::ProcessSecondaryNetwork()
 			continue;
 
 		int Offset = 0;
-		BestClientVoice::EPacketType Type;
-		if(!BestClientVoice::ReadHeader(pRawData, DataSize, Type, Offset))
+		BestClientLightVoice::EPacketType Type;
+		if(!BestClientLightVoice::ReadHeader(pRawData, DataSize, Type, Offset))
 			continue;
 		m_SecondaryLastServerPacketTick = time_get();
 
-		if(Type == BestClientVoice::PACKET_AUTH_REJECT)
+		if(Type == BestClientLightVoice::PACKET_AUTH_REJECT)
 		{
 			uint8_t Reason = 0;
-			if(!BestClientVoice::ReadU8(pRawData, DataSize, Offset, Reason))
+			if(!BestClientLightVoice::ReadU8(pRawData, DataSize, Offset, Reason))
 				continue;
-			if(Reason == BestClientVoice::AUTH_REJECT_UNOFFICIAL)
+			if(Reason == BestClientLightVoice::AUTH_REJECT_UNOFFICIAL)
 				m_OfficialRejected = true;
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_HELLO_CHALLENGE)
+		if(Type == BestClientLightVoice::PACKET_HELLO_CHALLENGE)
 		{
 			if(m_OfficialRejected || m_SecondaryPendingHelloPayload.empty())
 				continue;
-			if((int)(Offset + BestClientVoice::CHALLENGE_NONCE_SIZE) > DataSize)
+			if((int)(Offset + BestClientLightVoice::CHALLENGE_NONCE_SIZE) > DataSize)
 				continue;
-			mem_copy(m_SecondaryChallengeNonce, pRawData + Offset, BestClientVoice::CHALLENGE_NONCE_SIZE);
+			mem_copy(m_SecondaryChallengeNonce, pRawData + Offset, BestClientLightVoice::CHALLENGE_NONCE_SIZE);
 			m_SecondaryChallengeActive = true;
 			SendHelloResponse(m_SecondarySocket, m_SecondaryChallengeNonce, m_SecondaryPendingHelloPayload);
 			continue;
 		}
 
-		if(Type == BestClientVoice::PACKET_HELLO_ACK)
+		if(Type == BestClientLightVoice::PACKET_HELLO_ACK)
 		{
 			if(m_SecondaryPendingHelloPayload.empty())
 				continue;
 			uint16_t VoiceId = 0;
-			if(BestClientVoice::ReadU16(pRawData, DataSize, Offset, VoiceId))
+			if(BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, VoiceId))
 			{
 				const bool FullReset = m_SecondaryHelloResetPending || !m_SecondaryRegistered || (m_SecondaryClientVoiceId != 0 && m_SecondaryClientVoiceId != VoiceId);
 				if(FullReset)
@@ -3096,7 +3096,7 @@ void CVoiceChat::ProcessSecondaryNetwork()
 			continue;
 		}
 
-		if(Type != BestClientVoice::PACKET_VOICE_RELAY)
+		if(Type != BestClientLightVoice::PACKET_VOICE_RELAY)
 			continue;
 
 		if(!m_SecondaryRegistered || m_SecondaryClientVoiceId == 0)
@@ -3141,13 +3141,13 @@ void CVoiceChat::ProcessServerListPing()
 			break;
 
 		int Offset = 0;
-		BestClientVoice::EPacketType Type;
-		if(!BestClientVoice::ReadHeader(pRawData, DataSize, Type, Offset))
+		BestClientLightVoice::EPacketType Type;
+		if(!BestClientLightVoice::ReadHeader(pRawData, DataSize, Type, Offset))
 			continue;
-		if(Type != BestClientVoice::PACKET_PONG)
+		if(Type != BestClientLightVoice::PACKET_PONG)
 			continue;
 		uint16_t Token = 0;
-		if(!BestClientVoice::ReadU16(pRawData, DataSize, Offset, Token))
+		if(!BestClientLightVoice::ReadU16(pRawData, DataSize, Offset, Token))
 			continue;
 
 		for(auto &Entry : m_vServerEntries)
@@ -3187,7 +3187,7 @@ void CVoiceChat::ProcessCapture()
 			SDL_ClearQueuedAudio(m_CaptureDevice);
 		return;
 	}
-	if(g_Config.m_BcVoiceChatActivationMode == 1 && !m_PushToTalkPressed && !g_Config.m_BcVoiceChatMicCheck)
+	if(g_Config.m_BclVoiceChatActivationMode == 1 && !m_PushToTalkPressed && !g_Config.m_BclVoiceChatMicCheck)
 	{
 		m_LastProcessCaptureTick = time_get();
 		m_WasTransmitActive = false;
@@ -3231,8 +3231,8 @@ void CVoiceChat::ProcessCapture()
 	else if(m_CapturePcm.Size() == 0)
 	{
 		const int64_t Now = time_get();
-		const bool ExpectingCaptureData = m_Registered && !g_Config.m_BcVoiceChatMicMuted &&
-						  (g_Config.m_BcVoiceChatMicCheck || g_Config.m_BcVoiceChatActivationMode == 0 || m_PushToTalkPressed);
+		const bool ExpectingCaptureData = m_Registered && !g_Config.m_BclVoiceChatMicMuted &&
+						  (g_Config.m_BclVoiceChatMicCheck || g_Config.m_BclVoiceChatActivationMode == 0 || m_PushToTalkPressed);
 		if(ExpectingCaptureData)
 		{
 			if(m_LastProcessCaptureTick == 0)
@@ -3259,16 +3259,16 @@ void CVoiceChat::ProcessCapture()
 		m_MicLevelTarget = mix(m_MicLevelTarget, 0.0f, 0.08f);
 	}
 
-	while(m_CapturePcm.Size() >= (size_t)BestClientVoice::FRAME_SIZE)
+	while(m_CapturePcm.Size() >= (size_t)BestClientLightVoice::FRAME_SIZE)
 	{
-		int16_t aFrameRaw[BestClientVoice::FRAME_SIZE];
-		int16_t aFrame[BestClientVoice::FRAME_SIZE];
-		m_CapturePcm.PopFront(aFrameRaw, BestClientVoice::FRAME_SIZE);
+		int16_t aFrameRaw[BestClientLightVoice::FRAME_SIZE];
+		int16_t aFrame[BestClientLightVoice::FRAME_SIZE];
+		m_CapturePcm.PopFront(aFrameRaw, BestClientLightVoice::FRAME_SIZE);
 
-		const int MicGainPercent = std::clamp(g_Config.m_BcVoiceChatMicGain, 0, 300);
+		const int MicGainPercent = std::clamp(g_Config.m_BclVoiceChatMicGain, 0, 300);
 		int PeakBeforeLimiter = 0;
-		int aScaled[BestClientVoice::FRAME_SIZE];
-		for(int i = 0; i < BestClientVoice::FRAME_SIZE; ++i)
+		int aScaled[BestClientLightVoice::FRAME_SIZE];
+		for(int i = 0; i < BestClientLightVoice::FRAME_SIZE; ++i)
 		{
 			const int Scaled = (aFrameRaw[i] * MicGainPercent) / 100;
 			aScaled[i] = Scaled;
@@ -3283,18 +3283,18 @@ void CVoiceChat::ProcessCapture()
 		m_MicLimiterGain = std::clamp(m_MicLimiterGain, 0.10f, 1.0f);
 
 		int Peak = 0;
-		for(int i = 0; i < BestClientVoice::FRAME_SIZE; ++i)
+		for(int i = 0; i < BestClientLightVoice::FRAME_SIZE; ++i)
 		{
 			const int Out = round_to_int(aScaled[i] * m_MicLimiterGain);
 			aFrame[i] = (int16_t)std::clamp(Out, (int)std::numeric_limits<int16_t>::min(), (int)std::numeric_limits<int16_t>::max());
 			Peak = std::max(Peak, absolute(Out));
 		}
 
-		const bool AutoMode = g_Config.m_BcVoiceChatActivationMode == 0;
+		const bool AutoMode = g_Config.m_BclVoiceChatActivationMode == 0;
 		if(AutoMode)
 		{
-			ApplyAutoNoiseSuppressorSimple(aFrame, BestClientVoice::FRAME_SIZE, 0.50f, m_AutoNsNoiseFloor, m_AutoNsGate);
-			ApplyAutoHpfCompressor(aFrame, BestClientVoice::FRAME_SIZE, m_AutoHpfPrevIn, m_AutoHpfPrevOut, m_AutoCompEnv);
+			ApplyAutoNoiseSuppressorSimple(aFrame, BestClientLightVoice::FRAME_SIZE, 0.50f, m_AutoNsNoiseFloor, m_AutoNsGate);
+			ApplyAutoHpfCompressor(aFrame, BestClientLightVoice::FRAME_SIZE, m_AutoHpfPrevIn, m_AutoHpfPrevOut, m_AutoCompEnv);
 		}
 		else
 		{
@@ -3306,28 +3306,28 @@ void CVoiceChat::ProcessCapture()
 		}
 
 		int64_t AvgLevel = 0;
-		for(int i = 0; i < BestClientVoice::FRAME_SIZE; ++i)
+		for(int i = 0; i < BestClientLightVoice::FRAME_SIZE; ++i)
 			AvgLevel += absolute(aFrame[i]);
-		AvgLevel /= BestClientVoice::FRAME_SIZE;
+		AvgLevel /= BestClientLightVoice::FRAME_SIZE;
 		const float LevelLinear = std::clamp((float)AvgLevel / 32767.0f, 0.0f, 1.0f);
 		const float PeakLinear = std::clamp((float)Peak / 32767.0f, 0.0f, 1.0f);
 		const float MicLevelScale = 4.0f;
 		const float LevelLinearScaled = std::clamp(LevelLinear * MicLevelScale, 0.0f, 1.0f);
 		m_MicLevelTarget = LevelLinearScaled;
 
-		if(g_Config.m_BcVoiceChatMicCheck)
-			m_MicMonitorPcm.PushBack(aFrame, BestClientVoice::FRAME_SIZE);
+		if(g_Config.m_BclVoiceChatMicCheck)
+			m_MicMonitorPcm.PushBack(aFrame, BestClientLightVoice::FRAME_SIZE);
 
 		if(!ShouldTransmit())
 		{
 			if(m_OfficialRejected)
 			{
 				bool Attempt = false;
-				if(g_Config.m_BcVoiceChatActivationMode == 1)
+				if(g_Config.m_BclVoiceChatActivationMode == 1)
 					Attempt = m_PushToTalkPressed;
 				else
 				{
-					const float VadThreshold = std::clamp(g_Config.m_BcVoiceChatVadThreshold / 100.0f, 0.0f, 1.0f);
+					const float VadThreshold = std::clamp(g_Config.m_BclVoiceChatVadThreshold / 100.0f, 0.0f, 1.0f);
 					Attempt = VadThreshold <= 0.0f || PeakLinear >= VadThreshold;
 				}
 				if(Attempt && !m_WasTransmitActive)
@@ -3347,14 +3347,14 @@ void CVoiceChat::ProcessCapture()
 
 		const int64_t NowTick = time_get();
 		bool Active = false;
-		if(g_Config.m_BcVoiceChatActivationMode == 1)
+		if(g_Config.m_BclVoiceChatActivationMode == 1)
 		{
 			Active = m_PushToTalkPressed;
 		}
 		else
 		{
-			const float VadThreshold = std::clamp(g_Config.m_BcVoiceChatVadThreshold / 100.0f, 0.0f, 1.0f);
-			const int VadReleaseMs = std::clamp(g_Config.m_BcVoiceChatVadReleaseDelayMs, 0, 1000);
+			const float VadThreshold = std::clamp(g_Config.m_BclVoiceChatVadThreshold / 100.0f, 0.0f, 1.0f);
+			const int VadReleaseMs = std::clamp(g_Config.m_BclVoiceChatVadReleaseDelayMs, 0, 1000);
 			const int64_t VadReleaseTicks = (int64_t)time_freq() * VadReleaseMs / 1000;
 			const bool Trigger = VadThreshold <= 0.0f || PeakLinear >= VadThreshold;
 
@@ -3385,8 +3385,8 @@ void CVoiceChat::ProcessCapture()
 			m_WasTransmitActive = true;
 		}
 
-		uint8_t aEncoded[BestClientVoice::MAX_OPUS_PACKET_SIZE];
-		const int EncodedSize = opus_encode(m_pEncoder, aFrame, BestClientVoice::FRAME_SIZE, aEncoded, (int)sizeof(aEncoded));
+		uint8_t aEncoded[BestClientLightVoice::MAX_OPUS_PACKET_SIZE];
+		const int EncodedSize = opus_encode(m_pEncoder, aFrame, BestClientLightVoice::FRAME_SIZE, aEncoded, (int)sizeof(aEncoded));
 		if(EncodedSize > 0)
 		{
 			const vec2 Position = LocalPosition();
@@ -3433,25 +3433,25 @@ void CVoiceChat::ProcessPlayback()
 	if(QueuedBytes >= TargetBytes)
 		return;
 
-	const float MasterVolume = g_Config.m_BcVoiceChatHeadphonesMuted ? 0.0f : (g_Config.m_BcVoiceChatVolume / 100.0f);
+	const float MasterVolume = g_Config.m_BclVoiceChatHeadphonesMuted ? 0.0f : (g_Config.m_BclVoiceChatVolume / 100.0f);
 
 	while(SDL_GetQueuedAudioSize(m_PlaybackDevice) < TargetBytes)
 	{
-		int16_t aOut[BestClientVoice::FRAME_SIZE * 2];
+		int16_t aOut[BestClientLightVoice::FRAME_SIZE * 2];
 		mem_zero(aOut, sizeof(aOut));
-		int aMix[BestClientVoice::FRAME_SIZE * 2];
+		int aMix[BestClientLightVoice::FRAME_SIZE * 2];
 		mem_zero(aMix, sizeof(aMix));
 
 		bool MixedAnySamples = false;
-		const float MicCheckGain = g_Config.m_BcVoiceChatMicCheck ? 0.75f * MasterVolume : 0.0f;
+		const float MicCheckGain = g_Config.m_BclVoiceChatMicCheck ? 0.75f * MasterVolume : 0.0f;
 		if(MicCheckGain <= 0.0f)
 		{
-			m_MicMonitorPcm.DiscardFront(std::min(m_MicMonitorPcm.Size(), (size_t)BestClientVoice::FRAME_SIZE));
+			m_MicMonitorPcm.DiscardFront(std::min(m_MicMonitorPcm.Size(), (size_t)BestClientLightVoice::FRAME_SIZE));
 		}
-		else if(m_MicMonitorPcm.Size() >= (size_t)BestClientVoice::FRAME_SIZE)
+		else if(m_MicMonitorPcm.Size() >= (size_t)BestClientLightVoice::FRAME_SIZE)
 		{
-			int16_t aMicFrame[BestClientVoice::FRAME_SIZE] = {};
-			const size_t MicSamples = m_MicMonitorPcm.PopFront(aMicFrame, BestClientVoice::FRAME_SIZE);
+			int16_t aMicFrame[BestClientLightVoice::FRAME_SIZE] = {};
+			const size_t MicSamples = m_MicMonitorPcm.PopFront(aMicFrame, BestClientLightVoice::FRAME_SIZE);
 			for(size_t i = 0; i < MicSamples; ++i)
 			{
 				const int Mixed = (int)(aMicFrame[i] * MicCheckGain);
@@ -3478,8 +3478,8 @@ void CVoiceChat::ProcessPlayback()
 				continue;
 			}
 
-			int16_t aPeerFrame[BestClientVoice::FRAME_SIZE] = {};
-			const size_t PeerSamples = Peer.m_DecodedPcm.PopFront(aPeerFrame, BestClientVoice::FRAME_SIZE);
+			int16_t aPeerFrame[BestClientLightVoice::FRAME_SIZE] = {};
+			const size_t PeerSamples = Peer.m_DecodedPcm.PopFront(aPeerFrame, BestClientLightVoice::FRAME_SIZE);
 			for(size_t i = 0; i < PeerSamples; ++i)
 			{
 				const int Mixed = (int)(aPeerFrame[i] * Gain);
@@ -3494,7 +3494,7 @@ void CVoiceChat::ProcessPlayback()
 			break;
 
 		int64_t Peak = 0;
-		for(int i = 0; i < BestClientVoice::FRAME_SIZE * 2; ++i)
+		for(int i = 0; i < BestClientLightVoice::FRAME_SIZE * 2; ++i)
 		{
 			const int64_t Sample = aMix[i];
 			const int64_t Abs = Sample < 0 ? -Sample : Sample;
@@ -3502,7 +3502,7 @@ void CVoiceChat::ProcessPlayback()
 		}
 
 		const float ClipScale = Peak > (int)std::numeric_limits<int16_t>::max() ? ((float)std::numeric_limits<int16_t>::max() / (float)Peak) : 1.0f;
-		for(int i = 0; i < BestClientVoice::FRAME_SIZE * 2; ++i)
+		for(int i = 0; i < BestClientLightVoice::FRAME_SIZE * 2; ++i)
 		{
 			const int Out = round_to_int(aMix[i] * ClipScale);
 			aOut[i] = (int16_t)std::clamp(Out, (int)std::numeric_limits<int16_t>::min(), (int)std::numeric_limits<int16_t>::max());
@@ -3697,20 +3697,20 @@ void CVoiceChat::RefreshTalkingCache()
 
 void CVoiceChat::NotifyUnofficialTalkAttempt()
 {
-	if(!m_OfficialRejected || g_Config.m_BcVoiceChatEnable == 0 || g_Config.m_BcVoiceChatMicMuted || IsInGameOnlyBlocked())
+	if(!m_OfficialRejected || g_Config.m_BclVoiceChatEnable == 0 || g_Config.m_BclVoiceChatMicMuted || IsInGameOnlyBlocked())
 		return;
 	const int64_t Now = time_get();
 	if(m_LastUnofficialNoticeTick != 0 && Now - m_LastUnofficialNoticeTick < time_freq())
 		return;
 	m_LastUnofficialNoticeTick = Now;
-	GameClient()->m_Chat.Echo(Localize("Voice chat is only for the original BestClient. Your client was detected as fake."));
+	GameClient()->m_Chat.Echo(Localize("Voice chat is only for the original BestClient Light. Your client was detected as fake."));
 }
 
 bool CVoiceChat::ShouldTransmit() const
 {
 	if(!m_Registered)
 		return false;
-	if(g_Config.m_BcVoiceChatMicMuted)
+	if(g_Config.m_BclVoiceChatMicMuted)
 		return false;
 	if(IsInGameOnlyBlocked())
 		return false;
@@ -3719,7 +3719,7 @@ bool CVoiceChat::ShouldTransmit() const
 
 bool CVoiceChat::IsInGameOnlyBlocked() const
 {
-	if(g_Config.m_BcVoiceChatInGameOnly == 0)
+	if(g_Config.m_BclVoiceChatInGameOnly == 0)
 		return false;
 	IEngineGraphics *pEngineGraphics = Kernel()->RequestInterface<IEngineGraphics>();
 	return pEngineGraphics && pEngineGraphics->WindowActive() == 0;
@@ -3727,12 +3727,12 @@ bool CVoiceChat::IsInGameOnlyBlocked() const
 
 bool CVoiceChat::ShouldStartVoicePipeline(bool Online) const
 {
-	return Online && g_Config.m_BcVoiceChatEnable != 0;
+	return Online && g_Config.m_BclVoiceChatEnable != 0;
 }
 
 bool CVoiceChat::HasPendingPlaybackAudio() const
 {
-	if(g_Config.m_BcVoiceChatMicCheck && m_MicMonitorPcm.Size() > 0)
+	if(g_Config.m_BclVoiceChatMicCheck && m_MicMonitorPcm.Size() > 0)
 		return true;
 	for(const auto &PeerPair : m_Peers)
 	{
@@ -3744,7 +3744,7 @@ bool CVoiceChat::HasPendingPlaybackAudio() const
 
 bool CVoiceChat::ShouldKeepVoicePipelineActive() const
 {
-	return g_Config.m_BcVoiceChatEnable != 0;
+	return g_Config.m_BclVoiceChatEnable != 0;
 }
 
 bool CVoiceChat::ShouldUseSecondaryTeamConnection() const
@@ -3771,12 +3771,12 @@ int CVoiceChat::LocalOwnVoiceTeam() const
 
 bool CVoiceChat::IsUseTeam0Mode() const
 {
-	return g_Config.m_BcVoiceChatUseTeam0 != 0;
+	return g_Config.m_BclVoiceChatUseTeam0 != 0;
 }
 
 bool CVoiceChat::IsEnableYourGroupMode() const
 {
-	return IsUseTeam0Mode() && g_Config.m_BcVoiceChatEnableYourGroup != 0;
+	return IsUseTeam0Mode() && g_Config.m_BclVoiceChatEnableYourGroup != 0;
 }
 
 bool CVoiceChat::IsVoiceTeamAudible(int Team) const
@@ -3814,23 +3814,23 @@ std::string CVoiceChat::CurrentRoomKey() const
 int CVoiceChat::LocalGameClientId() const
 {
 	if(Client()->State() != IClient::STATE_ONLINE)
-		return BestClientVoice::INVALID_GAME_CLIENT_ID;
+		return BestClientLightVoice::INVALID_GAME_CLIENT_ID;
 	return GameClient()->m_Snap.m_LocalClientId;
 }
 
 std::string CVoiceChat::EffectiveServerAddress() const
 {
-	return ResolvedVoiceServerAddress(g_Config.m_BcVoiceChatServerAddress);
+	return ResolvedVoiceServerAddress(g_Config.m_BclVoiceChatServerAddress);
 }
 
 const char *CVoiceChat::EffectiveServerLabel() const
 {
-	return IsManagedServerConfig() ? "BestClient Voice" : g_Config.m_BcVoiceChatServerAddress;
+	return IsManagedServerConfig() ? "BestClient Light Voice" : g_Config.m_BclVoiceChatServerAddress;
 }
 
 bool CVoiceChat::IsManagedServerConfig() const
 {
-	return IsLegacyVoiceServerAddress(g_Config.m_BcVoiceChatServerAddress);
+	return IsLegacyVoiceServerAddress(g_Config.m_BclVoiceChatServerAddress);
 }
 
 uint64_t CVoiceChat::CurrentHelloAuthTimestamp() const
@@ -3873,12 +3873,12 @@ float CVoiceChat::ComputePeerGain(const CRemotePeer &Peer) const
 
 bool CVoiceChat::IsRadiusFilterEnabled() const
 {
-	return g_Config.m_BcVoiceChatRadiusEnabled != 0;
+	return g_Config.m_BclVoiceChatRadiusEnabled != 0;
 }
 
 float CVoiceChat::RadiusFilterDistanceUnits() const
 {
-	const int RadiusTiles = std::clamp(g_Config.m_BcVoiceChatRadiusTiles, 1, 500);
+	const int RadiusTiles = std::clamp(g_Config.m_BclVoiceChatRadiusTiles, 1, 500);
 	return RadiusTiles * VOICE_TILE_WORLD_SIZE;
 }
 
@@ -3904,10 +3904,10 @@ bool CVoiceChat::IsClientTalking(int ClientId) const
 
 	if(IsLocalClient)
 	{
-		if(g_Config.m_BcVoiceChatMicMuted)
+		if(g_Config.m_BclVoiceChatMicMuted)
 			return false;
 
-		if(g_Config.m_BcVoiceChatActivationMode == 1)
+		if(g_Config.m_BclVoiceChatActivationMode == 1)
 			return m_PushToTalkPressed;
 
 		const int64_t NowTick = time_get();
@@ -4007,7 +4007,7 @@ void CVoiceChat::FinishServerList()
 			Entry.m_Address = pAddressValue->u.string.ptr;
 			if(Flag.type == json_integer)
 				Entry.m_Flag = (int)Flag.u.integer;
-			if(BestClientVoice::ParseAddress(ResolvedVoiceServerAddress(Entry.m_Address.c_str()), BestClientVoice::DEFAULT_PORT, Entry.m_Addr))
+			if(BestClientLightVoice::ParseAddress(ResolvedVoiceServerAddress(Entry.m_Address.c_str()), BestClientLightVoice::DEFAULT_PORT, Entry.m_Addr))
 				Entry.m_HasAddr = true;
 
 			m_vServerEntries.push_back(Entry);
@@ -4046,11 +4046,11 @@ void CVoiceChat::StartServerListPings()
 			continue;
 		std::vector<uint8_t> vPacket;
 		vPacket.reserve(16);
-		BestClientVoice::WriteHeader(vPacket, BestClientVoice::PACKET_PING);
+		BestClientLightVoice::WriteHeader(vPacket, BestClientLightVoice::PACKET_PING);
 		if(s_NextPingToken == 0)
 			++s_NextPingToken;
 		const uint16_t PingToken = s_NextPingToken++;
-		BestClientVoice::WriteU16(vPacket, PingToken);
+		BestClientLightVoice::WriteU16(vPacket, PingToken);
 		net_udp_send(m_ServerListPingSocket, &Entry.m_Addr, vPacket.data(), (int)vPacket.size());
 		Entry.m_LastPingSendTick = time_get();
 		Entry.m_PingToken = PingToken;
@@ -4063,8 +4063,8 @@ void CVoiceChat::ConVoiceConnect(IConsole::IResult *pResult, void *pUserData)
 {
 	CVoiceChat *pSelf = static_cast<CVoiceChat *>(pUserData);
 	if(pResult->NumArguments() > 0)
-		str_copy(g_Config.m_BcVoiceChatServerAddress, pResult->GetString(0), sizeof(g_Config.m_BcVoiceChatServerAddress));
-	g_Config.m_BcVoiceChatEnable = 1;
+		str_copy(g_Config.m_BclVoiceChatServerAddress, pResult->GetString(0), sizeof(g_Config.m_BclVoiceChatServerAddress));
+	g_Config.m_BclVoiceChatEnable = 1;
 	if(pSelf->Client()->State() != IClient::STATE_ONLINE)
 		return;
 	pSelf->StopVoice();
@@ -4073,15 +4073,15 @@ void CVoiceChat::ConVoiceConnect(IConsole::IResult *pResult, void *pUserData)
 	pSelf->m_RuntimeState = RUNTIME_RECONNECTING;
 	pSelf->StartVoice();
 	str_copy(pSelf->m_aLastServerAddr, pSelf->EffectiveServerAddress().c_str(), sizeof(pSelf->m_aLastServerAddr));
-	pSelf->m_LastInputDevice = g_Config.m_BcVoiceChatInputDevice;
-	pSelf->m_LastOutputDevice = g_Config.m_BcVoiceChatOutputDevice;
+	pSelf->m_LastInputDevice = g_Config.m_BclVoiceChatInputDevice;
+	pSelf->m_LastOutputDevice = g_Config.m_BclVoiceChatOutputDevice;
 }
 
 void CVoiceChat::ConVoiceDisconnect(IConsole::IResult *pResult, void *pUserData)
 {
 	(void)pResult;
 	CVoiceChat *pSelf = static_cast<CVoiceChat *>(pUserData);
-	g_Config.m_BcVoiceChatEnable = 0;
+	g_Config.m_BclVoiceChatEnable = 0;
 	if(pSelf->m_Socket)
 		pSelf->StopVoice();
 	dbg_msg("voice", "voice disconnected");
@@ -4092,13 +4092,13 @@ void CVoiceChat::ConVoiceStatus(IConsole::IResult *pResult, void *pUserData)
 	(void)pResult;
 	CVoiceChat *pSelf = static_cast<CVoiceChat *>(pUserData);
 	dbg_msg("voice", "enabled=%d connected=%d participants=%d server='%s' ptt=%d radius=%d radius_tiles=%d",
-		g_Config.m_BcVoiceChatEnable ? 1 : 0,
+		g_Config.m_BclVoiceChatEnable ? 1 : 0,
 		pSelf->m_Registered ? 1 : 0,
 		(int)pSelf->m_vVisibleMemberPeerIds.size(),
 		pSelf->EffectiveServerLabel(),
 		pSelf->m_PushToTalkPressed ? 1 : 0,
-		g_Config.m_BcVoiceChatRadiusEnabled ? 1 : 0,
-		std::clamp(g_Config.m_BcVoiceChatRadiusTiles, 1, 500));
+		g_Config.m_BclVoiceChatRadiusEnabled ? 1 : 0,
+		std::clamp(g_Config.m_BclVoiceChatRadiusTiles, 1, 500));
 }
 
 void CVoiceChat::ConKeyVoiceTalk(IConsole::IResult *pResult, void *pUserData)
@@ -4107,7 +4107,7 @@ void CVoiceChat::ConKeyVoiceTalk(IConsole::IResult *pResult, void *pUserData)
 	const bool Pressed = pResult->GetInteger(0) != 0;
 	const bool Started = Pressed && !pSelf->m_PushToTalkPressed;
 	pSelf->m_PushToTalkPressed = Pressed;
-	if(Started && g_Config.m_BcVoiceChatActivationMode == 1)
+	if(Started && g_Config.m_BclVoiceChatActivationMode == 1)
 		pSelf->NotifyUnofficialTalkAttempt();
 }
 

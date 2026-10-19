@@ -1,2204 +1,2204 @@
-[BestClient]
+[BestClient Light]
 Checkbox
 == Чекбокс
 
-[BestClient]
+[BestClient Light]
 Sample text Aa
 == Пример текста Aa
 
-[BestClient]
+[BestClient Light]
 Legacy
 == Легаси
 
-[BestClient]
+[BestClient Light]
 Better UI
 == Улучшенный UI
 
-[BestClient]
+[BestClient Light]
 Choose Legacy
 == Выбрать легаси
 
-[BestClient]
+[BestClient Light]
 Choose Better UI
 == Выбрать улучшенный UI
 
-[BestClient]
+[BestClient Light]
 Chat Media
 == Чат-медиа
 
-[BestClient]
+[BestClient Light]
 Render media previews from chat links
 == Рендерить превью медиа из ссылок в чате
 
-[BestClient]
+[BestClient Light]
 Show photos in chat media
 == Показывать фото в чат-медиа
 
-[BestClient]
+[BestClient Light]
 Show GIFs in chat media
 == Показывать GIF в чат-медиа
 
-[BestClient]
+[BestClient Light]
 Content filtering
 == Фильтр контента
 
-[BestClient]
+[BestClient Light]
 Allowed media domains
 == Разрешённые домены медиа
 
-[BestClient]
+[BestClient Light]
 Media preview width
 == Ширина превью медиа
 
-[BestClient]
+[BestClient Light]
 Hide media bind
 == Бинд скрытия медиа
 
-[BestClient]
+[BestClient Light]
 Visuals
 == Визуал
 
-[BestClient]
+[BestClient Light]
 Gameplay
 == Геймплей
 
-[BestClient]
+[BestClient Light]
 Others
 == Другое
 
-[BestClient]
+[BestClient Light]
 Info
 == Инфо
 
-[BestClient]
+[BestClient Light]
 high fps intake
 == Высокий FPS
 
-[BestClient]
+[BestClient Light]
 HUD editor
 == HUD-редактор
 
-[BestClient]
+[BestClient Light]
 Open in HUD editor
 == Открыть в HUD-редакторе
 
-[BestClient]
+[BestClient Light]
 Join a game first
 == Сначала зайди в игру
 
-[BestClient]
+[BestClient Light]
 Visuals QoL
 == Удобства визуала
 
-[BestClient]
+[BestClient Light]
 Map preview in server list
 == Превью карты в списке серверов
 
-[BestClient]
+[BestClient Light]
 Show real hitbox
 == Показывать реальный хитбокс
 
-[BestClient]
+[BestClient Light]
 Real hitbox dot color
 == Цвет точки реального хитбокса
 
-[BestClient]
+[BestClient Light]
 Show player below indicator
 == Показывать индикатор игрока снизу
 
-[BestClient]
+[BestClient Light]
 Show current checkpoint in hud
 == Показывать текущий чекпоинт в HUD
 
-[BestClient]
+[BestClient Light]
 Show points in tab
 == Показывать поинты в табе
 
-[BestClient]
+[BestClient Light]
 Show spectator nicknames
 == Показывать ники наблюдателей
 
-[BestClient]
+[BestClient Light]
 Show vote percentage
 == Показывать процент голосов
 
-[BestClient]
+[BestClient Light]
 Display max FPS
 == Показывать максимальный FPS
 
-[BestClient]
-Bestclient discord rpc (restart requires)
+[BestClient Light]
+BestClient Light discord rpc (restart requires)
 == Discord RPC бестклиента (нужен перезапуск)
 
-[BestClient]
+[BestClient Light]
 Bind/Emote wheel scale
 == Масштаб колеса биндов/эмоций
 
-[BestClient]
+[BestClient Light]
 Scoreboard scale
 == Масштаб скорборда
 
-[BestClient]
+[BestClient Light]
 UI scale
 == Масштаб UI
 
-[BestClient]
+[BestClient Light]
 Jelly Tee
 == Джелли тии
 
-[BestClient]
+[BestClient Light]
 Enable Jelly Tee
 == Включить джелли тии
 
-[BestClient]
+[BestClient Light]
 Jelly Others
 == Джелли других
 
-[BestClient]
+[BestClient Light]
 Jelly strength
 == Сила джелли
 
-[BestClient]
+[BestClient Light]
 Jelly duration
 == Длительность джелли
 
-[BestClient]
+[BestClient Light]
 Corner indicator
 == Индикатор углов
 
-[BestClient]
+[BestClient Light]
 Enable corner indicator
 == Включить индикатор углов
 
-[BestClient]
+[BestClient Light]
 Only in team
 == Только в команде
 
-[BestClient]
+[BestClient Light]
 Show alive teammates
 == Показывать живых тиммейтов
 
-[BestClient]
+[BestClient Light]
 Show frozen teammates
 == Показывать зафриженных тиммейтов
 
-[BestClient]
+[BestClient Light]
 Indicate last teammate
 == Указывать последнего тиммейта
 
-[BestClient]
+[BestClient Light]
 Scale by distance
 == Масштаб от дистанции
 
-[BestClient]
+[BestClient Light]
 Ninja skin when frozen
 == Ниндзя-скин во фризе
 
-[BestClient]
+[BestClient Light]
 Alive size
 == Размер живого
 
-[BestClient]
+[BestClient Light]
 Frozen size
 == Размер во фризе
 
-[BestClient]
+[BestClient Light]
 Last teammate size
 == Размер последнего тиммейта
 
-[BestClient]
+[BestClient Light]
 Use custom colors
 == Свои цвета
 
-[BestClient]
+[BestClient Light]
 Alive color
 == Цвет живого
 
-[BestClient]
+[BestClient Light]
 Frozen color
 == Цвет фриза
 
-[BestClient]
+[BestClient Light]
 Last teammate color
 == Цвет последнего тиммейта
 
-[BestClient]
+[BestClient Light]
 Chat Bubbles
 == Чат-баблы
 
-[BestClient]
+[BestClient Light]
 Show chat bubbles above players
 == Показывать чат-баблы над игроками
 
-[BestClient]
+[BestClient Light]
 Show chat bubbles above you
 == Показывать чат-баблы над тобой
 
-[BestClient]
+[BestClient Light]
 Show chat bubbles in demo
 == Показывать чат-баблы в демо
 
-[BestClient]
+[BestClient Light]
 Chat bubble size
 == Размер чат-бабла
 
-[BestClient]
+[BestClient Light]
 Show for
 == Показывать
 
-[BestClient]
+[BestClient Light]
 Fade in
 == Появление
 
-[BestClient]
+[BestClient Light]
 Fade out
 == Исчезновение
 
-[BestClient]
+[BestClient Light]
 Stack animation
 == Стек-анимация
 
-[BestClient]
+[BestClient Light]
 Corner rounding
 == Скругление углов
 
-[BestClient]
+[BestClient Light]
 Text
 == Текст
 
-[BestClient]
+[BestClient Light]
 Outline
 == Обводка
 
-[BestClient]
+[BestClient Light]
 Gradient
 == Градиент
 
-[BestClient]
+[BestClient Light]
 Gradient nicknames
 == Градиент ников
 
-[BestClient]
+[BestClient Light]
 Gradient clans
 == Градиент кланов
 
-[BestClient]
+[BestClient Light]
 Gradient skin
 == Градиент скина
 
-[BestClient]
+[BestClient Light]
 Gradient everything
 == Градиент всего
 
-[BestClient]
+[BestClient Light]
 Animate speed
 == Скорость анимации
 
-[BestClient]
+[BestClient Light]
 Mode
 == Режим
 
-[BestClient]
+[BestClient Light]
 Skin
 == Скин
 
-[BestClient]
+[BestClient Light]
 Custom
 == Свой
 
-[BestClient]
+[BestClient Light]
 Color count
 == Число цветов
 
-[BestClient]
+[BestClient Light]
 Color 1
 == Цвет 1
 
-[BestClient]
+[BestClient Light]
 Color 2
 == Цвет 2
 
-[BestClient]
+[BestClient Light]
 Color 3
 == Цвет 3
 
-[BestClient]
+[BestClient Light]
 Color 4
 == Цвет 4
 
-[BestClient]
+[BestClient Light]
 Flying Name Plates
 == Летающие неймплейты
 
-[BestClient]
+[BestClient Light]
 Enable flying name plates
 == Включить летающие неймплейты
 
-[BestClient]
+[BestClient Light]
 Hide line
 == Скрыть линию
 
-[BestClient]
+[BestClient Light]
 Lift above player
 == Поднять над игроком
 
-[BestClient]
+[BestClient Light]
 Movement drag
 == Драг движения
 
-[BestClient]
+[BestClient Light]
 Follow speed
 == Скорость следования
 
-[BestClient]
+[BestClient Light]
 3D Particles
 == 3D частицы
 
-[BestClient]
+[BestClient Light]
 Enable 3D Particles
 == Включить 3D частицы
 
-[BestClient]
+[BestClient Light]
 Density
 == Плотность
 
-[BestClient]
+[BestClient Light]
 Particle type
 == Тип частиц
 
-[BestClient]
+[BestClient Light]
 Cube
 == Куб
 
-[BestClient]
+[BestClient Light]
 Heart
 == Сердце
 
-[BestClient]
+[BestClient Light]
 Mixed
 == Микс
 
-[BestClient]
+[BestClient Light]
 Size
 == Размер
 
-[BestClient]
+[BestClient Light]
 Color mode
 == Режим цвета
 
-[BestClient]
+[BestClient Light]
 Glow
 == Свечение
 
-[BestClient]
+[BestClient Light]
 Media Background
 == Медиа-фон
 
-[BestClient]
+[BestClient Light]
 Enable to main menu
 == Включить в главном меню
 
-[BestClient]
+[BestClient Light]
 Enable to game background
 == Включить на фоне игры
 
-[BestClient]
+[BestClient Light]
 No media files in backgrounds folder
 == Нет медиафайлов в папке backgrounds
 
-[BestClient]
+[BestClient Light]
 Map offset
 == Смещение карты
 
-[BestClient]
+[BestClient Light]
 0 keeps the image fixed to the screen. Higher values add camera parallax. Move the camera to see the effect.
 == 0 держит картинку на экране. Выше — параллакс камеры. Подвигай камеру, чтобы увидеть эффект.
 
-[BestClient]
+[BestClient Light]
 Hidden: overlay entities is 0.
 == Скрыто: overlay entities = 0.
 
-[BestClient]
+[BestClient Light]
 Cursor Trail
 == След курсора
 
-[BestClient]
+[BestClient Light]
 Enable
 == Включить
 
-[BestClient]
+[BestClient Light]
 Cursor
 == Курсор
 
-[BestClient]
+[BestClient Light]
 Trail size
 == Размер следа
 
-[BestClient]
+[BestClient Light]
 Number of frames
 == Число кадров
 
-[BestClient]
+[BestClient Light]
 Opacity
 == Прозрачность
 
-[BestClient]
+[BestClient Light]
 Sampling FPS
 == FPS сэмплинга
 
-[BestClient]
+[BestClient Light]
 Disable movement
 == Отключить движение
 
-[BestClient]
+[BestClient Light]
 Trail image
 == Картинка следа
 
-[BestClient]
+[BestClient Light]
 No images in CTrails folder
 == Нет картинок в папке CTrails
 
-[BestClient]
+[BestClient Light]
 Enable better UI
 == Включить улучшенный UI
 
-[BestClient]
+[BestClient Light]
 Better checkbox
 == Улучшенный чекбокс
 
-[BestClient]
+[BestClient Light]
 Better scrollbar
 == Улучшенный скроллбар
 
-[BestClient]
+[BestClient Light]
 Better tab option
 == Улучшенные вкладки
 
-[BestClient]
+[BestClient Light]
 Left
 == Слева
 
-[BestClient]
+[BestClient Light]
 Right
 == Справа
 
-[BestClient]
+[BestClient Light]
 Better color picker
 == Улучшенный выбор цвета
 
-[BestClient]
+[BestClient Light]
 Better font
 == Улучшенный шрифт
 
-[BestClient]
+[BestClient Light]
 UI Themes
 == Темы UI
 
-[BestClient]
+[BestClient Light]
 Scrollbar
 == Скроллбар
 
-[BestClient]
+[BestClient Light]
 Button
 == Кнопка
 
-[BestClient]
+[BestClient Light]
 Droplist
 == Дроплист
 
-[BestClient]
+[BestClient Light]
 Input field
 == Поле ввода
 
-[BestClient]
+[BestClient Light]
 Function block
 == Блок функции
 
-[BestClient]
+[BestClient Light]
 UI background
 == Фон UI
 
-[BestClient]
+[BestClient Light]
 Settings tabs
 == Вкладки настроек
 
-[BestClient]
+[BestClient Light]
 Badge
 == Бейдж
 
-[BestClient]
+[BestClient Light]
 Binds
 == Бинды
 
-[BestClient]
+[BestClient Light]
 Accent
 == Акцент
 
-[BestClient]
+[BestClient Light]
 Enable colorable background
 == Включить цветной фон
 
-[BestClient]
+[BestClient Light]
 Background color
 == Цвет фона
 
-[BestClient]
+[BestClient Light]
 Exported!
 == Экспортировано!
 
-[BestClient]
+[BestClient Light]
 Export
 == Экспорт
 
-[BestClient]
+[BestClient Light]
 Imported!
 == Импортировано!
 
-[BestClient]
+[BestClient Light]
 Import
 == Импорт
 
-[BestClient]
+[BestClient Light]
 Copy theme to clipboard
 == Копировать тему в буфер
 
-[BestClient]
+[BestClient Light]
 Paste theme from clipboard
 == Вставить тему из буфера
 
-[BestClient]
+[BestClient Light]
 Enable motion blur
 == Включить Motion Blur
 
-[BestClient]
+[BestClient Light]
 Blend strength
 == Сила смешивания
 
-[BestClient]
+[BestClient Light]
 Animations
 == Анимации
 
-[BestClient]
+[BestClient Light]
 Enable animations
 == Включить анимации
 
-[BestClient]
+[BestClient Light]
 Settings animation
 == Анимация настроек
 
-[BestClient]
+[BestClient Light]
 Settings (ms)
 == Настройки (мс)
 
-[BestClient]
+[BestClient Light]
 Chat message animations
 == Анимации сообщений чата
 
-[BestClient]
+[BestClient Light]
 Chat message (ms)
 == Сообщение чата (мс)
 
-[BestClient]
+[BestClient Light]
 Chat open animation
 == Анимация открытия чата
 
-[BestClient]
+[BestClient Light]
 Chat open (ms)
 == Открытие чата (мс)
 
-[BestClient]
+[BestClient Light]
 Chat typing animation
 == Анимация печати в чате
 
-[BestClient]
+[BestClient Light]
 Chat typing (ms)
 == Печать в чате (мс)
 
-[BestClient]
+[BestClient Light]
 Killfeed animation
 == Анимация киллфида
 
-[BestClient]
+[BestClient Light]
 Killfeed (ms)
 == Киллфид (мс)
 
-[BestClient]
+[BestClient Light]
 Main menu animation
 == Анимация главного меню
 
-[BestClient]
+[BestClient Light]
 Main menu speed
 == Скорость главного меню
 
-[BestClient]
+[BestClient Light]
 Music Player
 == Музыкальный плеер
 
-[BestClient]
+[BestClient Light]
 Enable music player
 == Включить музыкальный плеер
 
-[BestClient]
+[BestClient Light]
 Static
 == Статик
 
-[BestClient]
+[BestClient Light]
 Cover
 == Обложка
 
-[BestClient]
+[BestClient Light]
 Static color
 == Статик-цвет
 
-[BestClient]
+[BestClient Light]
 Visualizer mode
 == Режим визуалайзера
 
-[BestClient]
+[BestClient Light]
 Bottom
 == Снизу
 
-[BestClient]
+[BestClient Light]
 Center
 == Центр
 
-[BestClient]
+[BestClient Light]
 Up
 == Вверх
 
-[BestClient]
+[BestClient Light]
 Text scale
 == Масштаб текста
 
-[BestClient]
+[BestClient Light]
 Columns
 == Колонки
 
-[BestClient]
+[BestClient Light]
 Rounding
 == Скругление
 
-[BestClient]
+[BestClient Light]
 Soft
 == Софт
 
-[BestClient]
+[BestClient Light]
 Show song lyrics
 == Показывать текст песни
 
-[BestClient]
+[BestClient Light]
 Show current time
 == Показывать текущее время
 
-[BestClient]
+[BestClient Light]
 Keystrokes
 == Кейстроки
 
-[BestClient]
+[BestClient Light]
 Classic
 == Классика
 
-[BestClient]
+[BestClient Light]
 Minecraft
 == Майнкрафт
 
-[BestClient]
+[BestClient Light]
 Enable keyboard
 == Включить клавиатуру
 
-[BestClient]
+[BestClient Light]
 Full
 == Фулл
 
-[BestClient]
+[BestClient Light]
 Minimal
 == Минимал
 
-[BestClient]
+[BestClient Light]
 Micro
 == Микро
 
-[BestClient]
+[BestClient Light]
 Only A/D
 == Только A/D
 
-[BestClient]
+[BestClient Light]
 Pressed opacity
 == Прозрачность нажатия
 
-[BestClient]
+[BestClient Light]
 Enable LMB
 == Включить ЛКМ
 
-[BestClient]
+[BestClient Light]
 Enable RMB
 == Включить ПКМ
 
-[BestClient]
+[BestClient Light]
 Enable Space
 == Включить Space
 
-[BestClient]
+[BestClient Light]
 Enable mouse
 == Включить мышь
 
-[BestClient]
+[BestClient Light]
 Arrow
 == Стрелка
 
-[BestClient]
+[BestClient Light]
 Dot Dot
 == Дот дот
 
-[BestClient]
+[BestClient Light]
 Nothing
 == Ничего
 
-[BestClient]
+[BestClient Light]
 Aspect Ratio
 == Соотношение сторон
 
-[BestClient]
+[BestClient Light]
 Off (default)
 == Выкл (по умолчанию)
 
-[BestClient]
+[BestClient Light]
 Preset
 == Пресет
 
-[BestClient]
+[BestClient Light]
 Game only
 == Только игра
 
-[BestClient]
+[BestClient Light]
 Game no HUD
 == Игра без HUD
 
-[BestClient]
+[BestClient Light]
 Custom size
 == Свой размер
 
-[BestClient]
+[BestClient Light]
 Looks like you're on a server where this feature is forbidden
 == Похоже, на этом сервере эта фича запрещена
 
-[BestClient]
+[BestClient Light]
 Unavailable while camera zoom is disabled
 == Недоступно, пока зум камеры выключен
 
-[BestClient]
+[BestClient Light]
 Physic Balls
 == Физик боллы
 
-[BestClient]
+[BestClient Light]
 Ball amount: %d
 == Количество шаров: %d
 
-[BestClient]
+[BestClient Light]
 Clear all balls
 == Убрать все шары
 
-[BestClient]
+[BestClient Light]
 Ball skin
 == Скин шара
 
-[BestClient]
+[BestClient Light]
 Spawn count
 == Число спавна
 
-[BestClient]
+[BestClient Light]
 New Ball
 == Новый шар
 
-[BestClient]
+[BestClient Light]
 New Ball Cursor
 == Новый шар на курсоре
 
-[BestClient]
+[BestClient Light]
 ticks
 == тики
 
-[BestClient]
+[BestClient Light]
 Inputs
 == Инпуты
 
-[BestClient]
+[BestClient Light]
 Enable Inputs
 == Включить инпуты
 
-[BestClient]
+[BestClient Light]
 Fast
 == Фаст
 
-[BestClient]
+[BestClient Light]
 Best
 == Бест
 
-[BestClient]
+[BestClient Light]
 Saiko
 == Сайко
 
-[BestClient]
+[BestClient Light]
 Delta
 == Дельта
 
-[BestClient]
+[BestClient Light]
 Cloud
 == Клауд
 
-[BestClient]
+[BestClient Light]
 Prediction offset
 == Предикшен оффсет
 
-[BestClient]
+[BestClient Light]
 Fast Input others
 == Фаст инпут других
 
-[BestClient]
+[BestClient Light]
 Smoothing
 == Сглаживание
 
-[BestClient]
+[BestClient Light]
 Latency compensation
 == Компенсация задержки
 
-[BestClient]
+[BestClient Light]
 Interpolation
 == Интерполяция
 
-[BestClient]
+[BestClient Light]
 Linear
 == Линейная
 
-[BestClient]
+[BestClient Light]
 Cubic
 == Кубическая
 
-[BestClient]
+[BestClient Light]
 Smooth
 == Плавная
 
-[BestClient]
+[BestClient Light]
 Best input others
 == Бест инпут других
 
-[BestClient]
+[BestClient Light]
 Saiko input others
 == Сайко инпут других
 
-[BestClient]
+[BestClient Light]
 Delta input others
 == Дельта инпут других
 
-[BestClient]
+[BestClient Light]
 F input others
 == F инпут других
 
-[BestClient]
+[BestClient Light]
 Cloud input others
 == Клауд инпут других
 
-[BestClient]
+[BestClient Light]
 Sub-Tick aiming
 == Сабтик аиминг
 
-[BestClient]
+[BestClient Light]
 Repredict on mid-tick hook direction change (may lag)
 == Репредикт при смене направления хука в середине тика (может лагать)
 
-[BestClient]
+[BestClient Light]
 Auto margin
 == Автомаргин
 
-[BestClient]
+[BestClient Light]
 Input Debounce
 == Инпут дебаунс
 
-[BestClient]
+[BestClient Light]
 Snap Tap
 == Снап тап
 
-[BestClient]
+[BestClient Light]
 Off
 == Выкл
 
-[BestClient]
+[BestClient Light]
 Delay
 == Задержка
 
-[BestClient]
+[BestClient Light]
 Gores mode
 == Режим горес
 
-[BestClient]
+[BestClient Light]
 Enable gores mode
 == Включить режим горес
 
-[BestClient]
+[BestClient Light]
 Disable if you have shotgun, grenade or laser
 == Выключать, если есть дробовик, граната или лазер
 
-[BestClient]
+[BestClient Light]
 Optimizer
 == Оптимизатор
 
-[BestClient]
+[BestClient Light]
 Enable optimizer
 == Включить оптимизатор
 
-[BestClient]
+[BestClient Light]
 Disable all particles render
 == Отключить рендер всех частиц
 
-[BestClient]
+[BestClient Light]
 Disable map quads render
 == Отключить рендер квадов карты
 
-[BestClient]
+[BestClient Light]
 Disable high detail
 == Отключить высокую детализацию
 
-[BestClient]
+[BestClient Light]
 FPS fog (cull outside limit)
 == FPS-туман (отрезать за лимитом)
 
-[BestClient]
+[BestClient Light]
 FPS fog
 == FPS-туман
 
-[BestClient]
+[BestClient Light]
 Render FPS fog rectangle
 == Рендерить прямоугольник FPS-тумана
 
-[BestClient]
+[BestClient Light]
 Cull map tiles outside FPS fog
 == Отсекать тайлы карты за FPS-туманом
 
-[BestClient]
+[BestClient Light]
 Radius
 == Радиус
 
-[BestClient]
+[BestClient Light]
 Zoom %
 == Зум %
 
-[BestClient]
+[BestClient Light]
 Radius (tiles)
 == Радиус (тайлы)
 
-[BestClient]
+[BestClient Light]
 Visible area (%)
 == Видимая область (%)
 
-[BestClient]
+[BestClient Light]
 Performance
 == Производительность
 
-[BestClient]
+[BestClient Light]
 High DDNet Process Priority
 == Высокий приоритет процесса DDNet
 
-[BestClient]
+[BestClient Light]
 Lower Discords Process Priority
 == Понизить приоритет процесса Discord
 
-[BestClient]
+[BestClient Light]
 Gameplay QoL
 == Удобства геймплея
 
-[BestClient]
+[BestClient Light]
 Automatic update
 == Автообновление
 
-[BestClient]
+[BestClient Light]
 Cinematic camera
 == Синематик камера
 
-[BestClient]
+[BestClient Light]
 Strength
 == Сила
 
-[BestClient]
+[BestClient Light]
 Extend zoom (0.5 steps)
 == Расширить зум (шаг 0.5)
 
-[BestClient]
+[BestClient Light]
 Better spectate
 == Беттер спектейт
 
-[BestClient]
+[BestClient Light]
 Replace your say /pause bind (default: Q) with +specpause (pause/spec radio)
 == Заменить бинд say /pause (по умолчанию: Q) на +specpause (пауза/спек радио)
 
-[BestClient]
+[BestClient Light]
 Show delay
 == Показывать задержку
 
-[BestClient]
+[BestClient Light]
 Notify when moved in spec
 == Уведомлять, когда тебя двигают в спеке
 
-[BestClient]
+[BestClient Light]
 Notification text
 == Текст уведомления
 
-[BestClient]
+[BestClient Light]
 Lock team automatically after joining
 == Автолок команды после входа
 
-[BestClient]
+[BestClient Light]
 Auto lock delay
 == Задержка автолока
 
-[BestClient]
+[BestClient Light]
 Confirm before quitting
 == Подтверждение перед выходом
 
-[BestClient]
+[BestClient Light]
 Moving/ego tiles prediction
 == Предикшен мувинг/эго тайлов
 
-[BestClient]
+[BestClient Light]
 Fast Actions
 == Фаст экшенс
 
-[BestClient]
+[BestClient Light]
 Enable Fast Actions
 == Включить фаст экшенс
 
-[BestClient]
+[BestClient Light]
 Selected slot
 == Выбранный слот
 
-[BestClient]
+[BestClient Light]
 Name:
 == Имя:
 
-[BestClient]
+[BestClient Light]
 Name (optional)
 == Имя (необязательно)
 
-[BestClient]
+[BestClient Light]
 Clear command
 == Очистить команду
 
-[BestClient]
+[BestClient Light]
 In game: hold bind key, press 1..6, release key to execute
 == В игре: зажми бинд, нажми 1..6, отпусти клавишу, чтобы выполнить
 
-[BestClient]
+[BestClient Light]
 Fast Actions key
 == Клавиша фаст экшенс
 
-[BestClient]
+[BestClient Light]
 Finish Prediction
 == Финиш предикшен
 
-[BestClient]
+[BestClient Light]
 Enable finish prediction
 == Включить финиш предикшен
 
-[BestClient]
+[BestClient Light]
 Show time
 == Показывать время
 
-[BestClient]
+[BestClient Light]
 Time left
 == Оставшееся время
 
-[BestClient]
+[BestClient Light]
 Finish time
 == Время финиша
 
-[BestClient]
+[BestClient Light]
 Show milliseconds
 == Показывать миллисекунды
 
-[BestClient]
+[BestClient Light]
 Show percentage
 == Показывать процент
 
-[BestClient]
+[BestClient Light]
 Show always
 == Показывать всегда
 
-[BestClient]
+[BestClient Light]
 Consider freeze walls
 == Учитывать фриз-стены
 
-[BestClient]
+[BestClient Light]
 Edge Info
 == Эдж инфо
 
-[BestClient]
+[BestClient Light]
 Show edge info
 == Показывать эдж инфо
 
-[BestClient]
+[BestClient Light]
 Show edge info about freeze
 == Эдж инфо про фриз
 
-[BestClient]
+[BestClient Light]
 Show edge info about jumps
 == Эдж инфо про прыжки
 
-[BestClient]
+[BestClient Light]
 Color when over freeze
 == Цвет над фризом
 
-[BestClient]
+[BestClient Light]
 Color when over kill
 == Цвет над киллом
 
-[BestClient]
+[BestClient Light]
 Color when falling safely
 == Цвет безопасного падения
 
-[BestClient]
+[BestClient Light]
 Chat QoL
 == Удобства чата
 
-[BestClient]
+[BestClient Light]
 Save unsent messages
 == Сохранять неотправленные сообщения
 
-[BestClient]
+[BestClient Light]
 Silent typing
 == Тихая печать
 
-[BestClient]
+[BestClient Light]
 Commands in other layout
 == Команды в другой раскладке
 
-[BestClient]
+[BestClient Light]
 Reply/copy message menu
 == Меню ответа/копирования сообщения
 
-[BestClient]
+[BestClient Light]
 Notify about saves on map
 == Уведомлять о сейвах на карте
 
-[BestClient]
+[BestClient Light]
 Twitch Chat
 == Твич-чат
 
-[BestClient]
+[BestClient Light]
 Nick
 == Ник
 
-[BestClient]
+[BestClient Light]
 Stop
 == Стоп
 
-[BestClient]
+[BestClient Light]
 Start
 == Старт
 
-[BestClient]
+[BestClient Light]
 Browser Utils
 == Браузер утилиты
 
-[BestClient]
+[BestClient Light]
 Auto server list refresh
 == Автообновление списка серверов
 
-[BestClient]
+[BestClient Light]
 Seconds
 == Секунды
 
-[BestClient]
+[BestClient Light]
 Short EGO/KoG server name
 == Короткое имя сервера EGO/KoG
 
-[BestClient]
+[BestClient Light]
 Show finished map on EGO
 == Показывать пройденную карту на EGO
 
-[BestClient]
+[BestClient Light]
 Show finished map on Legit Network
 == Показывать пройденную карту на Legit Network
 
-[BestClient]
-Use BestClient MasterServer
-== Использовать мастерсервер BestClient
+[BestClient Light]
+Use BestClient Light MasterServer
+== Использовать мастерсервер BestClient Light
 
-[BestClient]
+[BestClient Light]
 Rollback Demo
 == Роллбэк демо
 
-[BestClient]
+[BestClient Light]
 Enable rollback demo recording
 == Включить запись роллбэк демо
 
-[BestClient]
+[BestClient Light]
 Rollback length
 == Длина роллбэка
 
-[BestClient]
+[BestClient Light]
 Rollback bind
 == Бинд роллбэка
 
-[BestClient]
+[BestClient Light]
 Focus Mode
 == Фокус-режим
 
-[BestClient]
+[BestClient Light]
 Enable Focus Mode
 == Включить фокус-режим
 
-[BestClient]
+[BestClient Light]
 Hide Player Names
 == Скрыть имена игроков
 
-[BestClient]
+[BestClient Light]
 Hide Visual Effects
 == Скрыть визуальные эффекты
 
-[BestClient]
+[BestClient Light]
 Hide HUD
 == Скрыть HUD
 
-[BestClient]
+[BestClient Light]
 Hide Song Player
 == Скрыть плеер
 
-[BestClient]
+[BestClient Light]
 Hide Unnecessary UI
 == Скрыть лишний UI
 
-[BestClient]
+[BestClient Light]
 Hide Chat
 == Скрыть чат
 
-[BestClient]
+[BestClient Light]
 Hide Scoreboard
 == Скрыть скорборд
 
-[BestClient]
+[BestClient Light]
 Auto reply when chat is hidden
 == Автоответ, когда чат скрыт
 
-[BestClient]
+[BestClient Light]
 Focus mode bind
 == Бинд фокус-режима
 
-[BestClient]
+[BestClient Light]
 Voice Moderation
 == Модерация войса
 
-[BestClient]
+[BestClient Light]
 Voice Binds
 == Войс-бинды
 
-[BestClient]
+[BestClient Light]
 Voice
 == Войс
 
-[BestClient]
+[BestClient Light]
 Push-to-talk
 == Пуш-ту-толк
 
-[BestClient]
+[BestClient Light]
 Mute microphone
 == Мут микрофона
 
-[BestClient]
+[BestClient Light]
 Mute headphones
 == Мут наушников
 
-[BestClient]
+[BestClient Light]
 System default
 == Системное по умолчанию
 
-[BestClient]
+[BestClient Light]
 Device #%d
 == Устройство #%d
 
-[BestClient]
+[BestClient Light]
 Enable voice chat
 == Включить войс-чат
 
-[BestClient]
+[BestClient Light]
 In-Game Only
 == Только в игре
 
-[BestClient]
+[BestClient Light]
 Use team0
 == Использовать team0
 
-[BestClient]
+[BestClient Light]
 Enable your group
 == Включить свою группу
 
-[BestClient]
+[BestClient Light]
 Radius filter
 == Фильтр по радиусу
 
-[BestClient]
+[BestClient Light]
 Radius (tiles)
 == Радиус (тайлы)
 
-[BestClient]
+[BestClient Light]
 Activation mode
 == Режим активации
 
-[BestClient]
+[BestClient Light]
 Automatic
 == Автоматически
 
-[BestClient]
+[BestClient Light]
 VAD threshold (%)
 == Порог VAD (%)
 
-[BestClient]
+[BestClient Light]
 VAD release delay (ms)
 == Задержка отпускания VAD (мс)
 
-[BestClient]
+[BestClient Light]
 Mic check (loopback)
 == Проверка микрофона (свой голос)
 
-[BestClient]
+[BestClient Light]
 Mic level
 == Уровень микрофона
 
-[BestClient]
+[BestClient Light]
 Mic gain
 == Усиление микрофона
 
-[BestClient]
+[BestClient Light]
 Voice volume
 == Громкость войса
 
-[BestClient]
+[BestClient Light]
 Microphone
 == Микрофон
 
-[BestClient]
+[BestClient Light]
 Headphones
 == Наушники
 
-[BestClient]
+[BestClient Light]
 Status
 == Статус
 
-[BestClient]
+[BestClient Light]
 Connected
 == Подключено
 
-[BestClient]
+[BestClient Light]
 Offline
 == Оффлайн
 
-[BestClient]
+[BestClient Light]
 Reload servers
 == Обновить серверы
 
-[BestClient]
+[BestClient Light]
 Available servers
 == Доступные серверы
 
-[BestClient]
+[BestClient Light]
 Loading server list...
 == Загрузка списка серверов...
 
-[BestClient]
+[BestClient Light]
 No servers loaded
 == Серверы не загружены
 
-[BestClient]
+[BestClient Light]
 Voice commands
 == Команды войса
 
-[BestClient]
+[BestClient Light]
 !vmute "name" / !vunmute "name"
 == !vmute "имя" / !vunmute "имя"
 
-[BestClient]
+[BestClient Light]
 !volume "name" 0-100
 == !volume "имя" 0-100
 
-[BestClient]
+[BestClient Light]
 !vradius on/off/<tiles>
 == !vradius on/off/<тайлы>
 
-[BestClient]
+[BestClient Light]
 Client Indicator
 == Индикатор клиента
 
-[BestClient]
+[BestClient Light]
 Show indicator in name plates
 == Показывать индикатор в неймплейтах
 
-[BestClient]
+[BestClient Light]
 Show above yourself
 == Показывать над собой
 
-[BestClient]
+[BestClient Light]
 Name plate indicator size
 == Размер индикатора в неймплейте
 
-[BestClient]
+[BestClient Light]
 Show indicator in scoreboard
 == Показывать индикатор в скорборде
 
-[BestClient]
+[BestClient Light]
 Scoreboard indicator size
 == Размер индикатора в скорборде
 
-[BestClient]
+[BestClient Light]
 Not connected to voice server
 == Нет подключения к войс-серверу
 
-[BestClient]
+[BestClient Light]
 Voice Moderator Login
 == Вход модератора войса
 
-[BestClient]
+[BestClient Light]
 Mod key:
 == Мод-ключ:
 
-[BestClient]
+[BestClient Light]
 Authenticating...
 == Проверка...
 
-[BestClient]
+[BestClient Light]
 Wrong key
 == Неверный ключ
 
-[BestClient]
+[BestClient Light]
 Login as Voice Mod
 == Войти как мод войса
 
-[BestClient]
+[BestClient Light]
 Voice players on this server
 == Игроки войса на этом сервере
 
-[BestClient]
+[BestClient Light]
 Refresh
 == Обновить
 
-[BestClient]
+[BestClient Light]
 No players in current voice room
 == В текущей войс-комнате нет игроков
 
-[BestClient]
+[BestClient Light]
 Action
 == Действие
 
-[BestClient]
+[BestClient Light]
 slot %d
 == слот %d
 
-[BestClient]
+[BestClient Light]
 Mini games
 == Мини-игры
 
-[BestClient]
-BestClient Links
-== Ссылки BestClient
+[BestClient Light]
+BestClient Light Links
+== Ссылки BestClient Light
 
-[BestClient]
+[BestClient Light]
 Telegram
 == Telegram
 
-[BestClient]
+[BestClient Light]
 Check update
 == Чек апдейт
 
-[BestClient]
+[BestClient Light]
 Config Files
 == Файлы конфигов
 
-[BestClient]
-BestClient Settings
-== Настройки BestClient
+[BestClient Light]
+BestClient Light Settings
+== Настройки BestClient Light
 
-[BestClient]
-BestClient Developers
-== Разработчики BestClient
+[BestClient Light]
+BestClient Light Developers
+== Разработчики BestClient Light
 
-[BestClient]
+[BestClient Light]
 Hide Settings Tabs
 == Скрыть вкладки настроек
 
-[BestClient]
+[BestClient Light]
 Laser Glow
 == Свечение лазера
 
-[BestClient]
+[BestClient Light]
 Shotgun Glow
 == Свечение дробовика
 
-[BestClient]
+[BestClient Light]
 Rocket Glow
 == Свечение ракеты
 
-[BestClient]
+[BestClient Light]
 Rocket
 == Ракета
 
-[BestClient]
+[BestClient Light]
 Prism
 == Призма
 
-[BestClient]
+[BestClient Light]
 Pulse
 == Пульс
 
-[BestClient]
+[BestClient Light]
 Crystal
 == Кристалл
 
-[BestClient]
+[BestClient Light]
 Power
 == Мощность
 
-[BestClient]
+[BestClient Light]
 Nuke effects
 == Эффекты ньюка
 
-[BestClient]
+[BestClient Light]
 Enable Nuke effects
 == Включить эффекты ньюка
 
-[BestClient]
+[BestClient Light]
 Screen shake
 == Тряска экрана
 
-[BestClient]
+[BestClient Light]
 Nuke size
 == Размер ньюка
 
-[BestClient]
+[BestClient Light]
 Custom hooks
 == Кастомные хуки
 
-[BestClient]
+[BestClient Light]
 Hook
 == Хук
 
-[BestClient]
+[BestClient Light]
 None
 == Нет
 
-[BestClient]
+[BestClient Light]
 Whirlwind
 == Вихрь
 
-[BestClient]
+[BestClient Light]
 Black hole
 == Чёрная дыра
 
-[BestClient]
+[BestClient Light]
 Magic
 == Магия
 
-[BestClient]
+[BestClient Light]
 Fire
 == Огонь
 
-[BestClient]
+[BestClient Light]
 Troll
 == Тролль
 
-[BestClient]
+[BestClient Light]
 Lightning
 == Молния
 
-[BestClient]
+[BestClient Light]
 Tentacle
 == Щупальце
 
-[BestClient]
+[BestClient Light]
 Style the hook
 == Стилизовать хук
 
-[BestClient]
+[BestClient Light]
 Style the tip
 == Стилизовать кончик
 
-[BestClient]
+[BestClient Light]
 Grow time
 == Время роста
 
-[BestClient]
+[BestClient Light]
 Grab gust
 == Порыв захвата
 
-[BestClient]
+[BestClient Light]
 Eye
 == Глаз
 
-[BestClient]
+[BestClient Light]
 Wind lines
 == Линии ветра
 
-[BestClient]
+[BestClient Light]
 Spin speed
 == Скорость вращения
 
-[BestClient]
+[BestClient Light]
 Line thickness
 == Толщина линии
 
-[BestClient]
+[BestClient Light]
 Wind opacity
 == Прозрачность ветра
 
-[BestClient]
+[BestClient Light]
 Leaves
 == Листья
 
-[BestClient]
+[BestClient Light]
 Dust
 == Пыль
 
-[BestClient]
+[BestClient Light]
 Wind color
 == Цвет ветра
 
-[BestClient]
+[BestClient Light]
 Disk
 == Диск
 
-[BestClient]
+[BestClient Light]
 Matter
 == Материя
 
-[BestClient]
+[BestClient Light]
 Spin
 == Вращение
 
-[BestClient]
+[BestClient Light]
 Disk color
 == Цвет диска
 
-[BestClient]
+[BestClient Light]
 Runes
 == Руны
 
-[BestClient]
+[BestClient Light]
 Sparkles
 == Искры
 
-[BestClient]
+[BestClient Light]
 Spell color
 == Цвет заклинания
 
-[BestClient]
+[BestClient Light]
 Smoke
 == Дым
 
-[BestClient]
+[BestClient Light]
 Flames
 == Пламя
 
-[BestClient]
+[BestClient Light]
 Embers
 == Угли
 
-[BestClient]
+[BestClient Light]
 Fire color
 == Цвет огня
 
-[BestClient]
+[BestClient Light]
 Rays
 == Лучи
 
-[BestClient]
+[BestClient Light]
 Flow
 == Поток
 
-[BestClient]
+[BestClient Light]
 Glitter
 == Блёстки
 
-[BestClient]
+[BestClient Light]
 Ribbon width
 == Ширина ленты
 
-[BestClient]
+[BestClient Light]
 Wall arcs
 == Дуги у стены
 
-[BestClient]
+[BestClient Light]
 Jitter
 == Дрожание
 
-[BestClient]
+[BestClient Light]
 Forks
 == Развилки
 
-[BestClient]
+[BestClient Light]
 Sparks
 == Искры
 
-[BestClient]
+[BestClient Light]
 Lightning color
 == Цвет молнии
 
-[BestClient]
+[BestClient Light]
 Suckers
 == Присоски
 
-[BestClient]
+[BestClient Light]
 Writhing
 == Извивание
 
-[BestClient]
+[BestClient Light]
 Thickness
 == Толщина
 
-[BestClient]
+[BestClient Light]
 Slime
 == Слизь
 
-[BestClient]
+[BestClient Light]
 Flesh color
 == Цвет плоти
 
-[BestClient]
+[BestClient Light]
 Hook effects
 == Эффекты хука
 
-[BestClient]
+[BestClient Light]
 Air jump ring
 == Кольцо прыжка в воздухе
 
-[BestClient]
+[BestClient Light]
 Disable jump particles
 == Отключить частицы прыжка
 
-[BestClient]
+[BestClient Light]
 Hammer slash
 == Взмах молота
 
-[BestClient]
+[BestClient Light]
 Disable hammer particles
 == Отключить частицы молота
 
-[BestClient]
+[BestClient Light]
 Hook lasso
 == Лассо хука
 
-[BestClient]
+[BestClient Light]
 Hook box
 == Бокс хука
 
-[BestClient]
+[BestClient Light]
 Hook hold
 == Удержание хука
 
-[BestClient]
+[BestClient Light]
 Hold aura
 == Аура удержания
 
-[BestClient]
+[BestClient Light]
 Hold burst
 == Вспышка удержания
 
-[BestClient]
+[BestClient Light]
 Energy motes
 == Частицы энергии
 
-[BestClient]
+[BestClient Light]
 Weather
 == Погода
 
-[BestClient]
+[BestClient Light]
 Snow
 == Снег
 
-[BestClient]
+[BestClient Light]
 Rain
 == Дождь
 
-[BestClient]
+[BestClient Light]
 Fireflies
 == Светлячки
 
-[BestClient]
+[BestClient Light]
 Amount
 == Количество
 
-[BestClient]
+[BestClient Light]
 Dust color
 == Цвет пыли
 
-[BestClient]
+[BestClient Light]
 Rain color
 == Цвет дождя
 
-[BestClient]
+[BestClient Light]
 Firefly color
 == Цвет светлячков
 
-[BestClient]
+[BestClient Light]
 Dots
 == Точки
 
-[BestClient]
+[BestClient Light]
 Snowflakes
 == Снежинки
 
-[BestClient]
+[BestClient Light]
 Snow color
 == Цвет снега
 
-[BestClient]
+[BestClient Light]
 Freeze lifesteal
 == Фриз лайфстил
 
-[BestClient]
+[BestClient Light]
 Shield
 == Щит
 
-[BestClient]
+[BestClient Light]
 Reach
 == Дальность
 
-[BestClient]
+[BestClient Light]
 Frost
 == Мороз
 
-[BestClient]
+[BestClient Light]
 Custom hook color
 == Свой цвет хука
 
-[BestClient]
+[BestClient Light]
 Cold color
 == Холодный цвет
 
-[BestClient]
+[BestClient Light]
 Freeze lightning
 == Фриз-молния
 
-[BestClient]
+[BestClient Light]
 Impact
 == Удар
 
-[BestClient]
+[BestClient Light]
 Branches
 == Ветки
 
-[BestClient]
+[BestClient Light]
 Shake
 == Тряска
 
-[BestClient]
+[BestClient Light]
 Strike me
 == Ударить в меня
 
-[BestClient]
+[BestClient Light]
 Join a server to preview the lightning
 == Зайди на сервер, чтобы увидеть превью молнии
 
-[BestClient]
+[BestClient Light]
 Enabled
 == Включено
 
-[BestClient]
+[BestClient Light]
 Scale
 == Масштаб
 
-[BestClient]
+[BestClient Light]
 Reset scale
 == Сбросить масштаб
 
-[BestClient]
+[BestClient Light]
 Reset position
 == Сбросить позицию
 
-[BestClient]
+[BestClient Light]
 Reset all
 == Сбросить всё
 
-[BestClient]
+[BestClient Light]
 disabled
 == выключено
 
-[BestClient]
+[BestClient Light]
 preview
 == превью
 
-[BestClient]
+[BestClient Light]
 Reset All
 == Сбросить всё
 
-[BestClient]
+[BestClient Light]
 Disabled.
 == Выключено.
 
-[BestClient]
+[BestClient Light]
 Failed to load PNG.
 == Не удалось загрузить PNG.
 
-[BestClient]
+[BestClient Light]
 Failed to upload PNG.
 == Не удалось отправить PNG.
 
-[BestClient]
+[BestClient Light]
 Loaded image.
 == Картинка загружена.
 
-[BestClient]
+[BestClient Light]
 Failed to read file.
 == Не удалось прочитать файл.
 
-[BestClient]
+[BestClient Light]
 Failed to upload image.
 == Не удалось отправить картинку.
 
-[BestClient]
+[BestClient Light]
 Failed to decode image.
 == Не удалось декодировать картинку.
 
-[BestClient]
+[BestClient Light]
 Loaded animated image.
 == Анимированная картинка загружена.
 
-[BestClient]
+[BestClient Light]
 Video backgrounds are unavailable in this build.
 == Видеофоны недоступны в этой сборке.
 
-[BestClient]
+[BestClient Light]
 Failed to open video.
 == Не удалось открыть видео.
 
-[BestClient]
+[BestClient Light]
 Failed to read video info.
 == Не удалось прочитать инфо видео.
 
-[BestClient]
+[BestClient Light]
 No video stream found.
 == Видеопоток не найден.
 
-[BestClient]
+[BestClient Light]
 Unsupported video codec.
 == Неподдерживаемый видеокодек.
 
-[BestClient]
+[BestClient Light]
 Failed to initialize video decoder.
 == Не удалось запустить видео декодер.
 
-[BestClient]
+[BestClient Light]
 Invalid video dimensions.
 == Неверный размер видео.
 
-[BestClient]
+[BestClient Light]
 Failed to allocate video frames.
 == Не удалось выделить кадры видео.
 
-[BestClient]
+[BestClient Light]
 Failed to allocate RGBA frame.
 == Не удалось выделить RGBA-кадр.
 
-[BestClient]
+[BestClient Light]
 Failed to initialize video scaler.
 == Не удалось запустить видеоскейлер.
 
-[BestClient]
+[BestClient Light]
 Failed to decode first video frame.
 == Не удалось декодировать первый кадр видео.
 
-[BestClient]
+[BestClient Light]
 Loaded video.
 == Видео загружено.
 
-[BestClient]
+[BestClient Light]
 No media selected.
 == Медиа не выбрано.
 
-[BestClient]
+[BestClient Light]
 Failed while decoding video.
 == Ошибка при декодировании видео.
 
-[BestClient]
+[BestClient Light]
 Back to Info
 == Назад в инфо
 
-[BestClient]
+[BestClient Light]
 Press any key to start
 == Нажми любую клавишу, чтобы начать
 
-[BestClient]
+[BestClient Light]
 Game Over
 == Гейм овер
 
-[BestClient]
+[BestClient Light]
 Victory
 == Победа
 
-[BestClient]
+[BestClient Light]
 Draw - Stalemate
 == Ничья — пат
 
-[BestClient]
+[BestClient Light]
 Draw - Fifty move rule
 == Ничья — правило 50 ходов
 
-[BestClient]
+[BestClient Light]
 Draw - Threefold repetition
 == Ничья — троекратное повторение
 
-[BestClient]
+[BestClient Light]
 Winner: White
 == Победитель: белые
 
-[BestClient]
+[BestClient Light]
 Winner: Black
 == Победитель: чёрные
 
-[BestClient]
+[BestClient Light]
 Turn: White
 == Ход: белые
 
-[BestClient]
+[BestClient Light]
 Turn: Black
 == Ход: чёрные
 
-[BestClient]
+[BestClient Light]
 White Wins
 == Победа белых
 
-[BestClient]
+[BestClient Light]
 Black Wins
 == Победа чёрных
 
-[BestClient]
+[BestClient Light]
 All pairs found
 == Все пары найдены
 
-[BestClient]
+[BestClient Light]
 You Win
 == Ты выиграл
 
-[BestClient]
+[BestClient Light]
 Bot Wins
 == Бот выиграл
 
-[BestClient]
+[BestClient Light]
 All bricks cleared
 == Все кирпичи разбиты
 
-[BestClient]
+[BestClient Light]
 Numbers
 == Цифры
 
-[BestClient]
+[BestClient Light]
 Clear
 == Очистить
 
-[BestClient]
+[BestClient Light]
 Sudoku Solved
 == Судоку решён
 
-[BestClient]
+[BestClient Light]
 Get $200
 == Получить $200
 
-[BestClient]
+[BestClient Light]
 Multiplier:
 == Множитель:
 
-[BestClient]
+[BestClient Light]
 Locked
 == Лок
 
-[BestClient]
+[BestClient Light]
 Not enough funds
 == Не хватает средств
 
-[BestClient]
+[BestClient Light]
 Spinning...
 == Крутится...
 
-[BestClient]
+[BestClient Light]
 SPIN
 == КРУТИТЬ
 
-[BestClient]
+[BestClient Light]
 Type to search settings
 == Введи текст для поиска настроек
 
-[BestClient]
+[BestClient Light]
 Element
 == Элемент
 
-[BestClient]
+[BestClient Light]
 Casino
 == Казино
 
-[BestClient]
+[BestClient Light]
 Snake
 == Снейк
 
-[BestClient]
+[BestClient Light]
 Minesweeper
 == Майнсвипер
 
-[BestClient]
+[BestClient Light]
 Chess
 == Шахматы
 
-[BestClient]
+[BestClient Light]
 Memory
 == Мемори
 
-[BestClient]
+[BestClient Light]
 Pong
 == Понг
 
-[BestClient]
+[BestClient Light]
 Brick Breaker
 == Брик брейкер
 
-[BestClient]
+[BestClient Light]
 Sudoku
 == Судоку
 
-[BestClient]
+[BestClient Light]
 Spin the reels, bet & win
 == Крути барабаны, ставь и выигрывай
 
-[BestClient]
+[BestClient Light]
 Arrows/WASD, Space restart
 == Стрелки/WASD, Space — рестарт
 
-[BestClient]
+[BestClient Light]
 LMB open, RMB flag, hover hints
 == ЛКМ открыть, ПКМ флаг, наведение — подсказки
 
-[BestClient]
+[BestClient Light]
 Font Awesome chess pieces
 == Фигуры Font Awesome
 
-[BestClient]
+[BestClient Light]
 Find all matching pairs
 == Найди все пары
 
-[BestClient]
+[BestClient Light]
 W/S or Up/Down to move paddle
 == W/S или вверх/вниз двигают ракетку
 
-[BestClient]
+[BestClient Light]
 Break all bricks with the ball
 == Разбей все кирпичи мячом
 
-[BestClient]
+[BestClient Light]
 Click cell, 1-9 place, 0/Del clear
 == Клик по клетке, 1-9 поставить, 0/Del стереть
 
-[BestClient]
+[BestClient Light]
 Easy
 == Легко
 
-[BestClient]
+[BestClient Light]
 Medium
 == Средне
 
-[BestClient]
+[BestClient Light]
 Hard
 == Сложно
 

@@ -14,8 +14,8 @@
 #include <engine/shared/config.h>
 #include <engine/textrender.h>
 
-#include <game/client/components/bestclient/bestclient.h> // bestclient
-#include <game/client/components/bestclient/ui_theme/style.h> // bestclient
+#include <game/client/components/bestclient-light/bestclient-light.h> // bestclient-light
+#include <game/client/components/bestclient-light/ui_theme/style.h> // bestclient-light
 #include <game/localization.h>
 
 #include <algorithm>
@@ -49,7 +49,7 @@ void CUi::RenderPopupMenus()
 		const bool Inside = MouseInside(&PopupMenu.m_Rect);
 		const bool Active = i == m_vPopupMenus.size() - 1;
 
-		// bestclient
+		// bestclient-light
 		bool SkipActiveLogic = false;
 		if(PopupMenu.m_Props.m_Draggable)
 		{
@@ -75,7 +75,7 @@ void CUi::RenderPopupMenus()
 				SkipActiveLogic = true;
 			}
 		}
-		// bestclient
+		// bestclient-light
 
 		if(Active)
 		{
@@ -116,7 +116,7 @@ void CUi::RenderPopupMenus()
 		PopupRect.Margin(SPopupMenu::POPUP_BORDER, &PopupRect);
 		PopupRect.Draw(PopupMenu.m_Props.m_BackgroundColor, PopupMenu.m_Props.m_Corners, 3.0f);
 		PopupRect.Margin(SPopupMenu::POPUP_MARGIN, &PopupRect);
-		// bestclient
+		// bestclient-light
 		if(PopupMenu.m_Props.m_Draggable)
 		{
 			CUIRect DragHint = PopupRect;
@@ -125,7 +125,7 @@ void CUi::RenderPopupMenus()
 			DragHint.h = 2.0f;
 			DragHint.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f), IGraphics::CORNER_ALL, 1.0f);
 		}
-		// bestclient
+		// bestclient-light
 
 		// The popup render function can open/close popups, which may resize the vector and thus
 		// invalidate the variable PopupMenu. We therefore store pId in a separate variable.
@@ -135,7 +135,7 @@ void CUi::RenderPopupMenus()
 	}
 }
 
-// bestclient
+// bestclient-light
 bool CUi::GetPopupPosition(const SPopupMenuId *pId, float &X, float &Y) const
 {
 	for(const SPopupMenu &PopupMenu : m_vPopupMenus)
@@ -175,7 +175,7 @@ void CUi::SetPopupMenuHeight(const SPopupMenuId *pId, float Height)
 		break;
 	}
 }
-// bestclient
+// bestclient-light
 
 void CUi::ClosePopupMenu(const SPopupMenuId *pId, bool IncludeDescendants)
 {
@@ -331,9 +331,9 @@ void CUi::SSelectionPopupContext::Reset()
 	m_Width = 300.0f + (SPopupMenu::POPUP_BORDER + SPopupMenu::POPUP_MARGIN) * 2;
 	m_AlignmentHeight = -1.0f;
 	m_TransparentButtons = false;
-	// bestclient
+	// bestclient-light
 	m_OpenUpward = false;
-	// bestclient
+	// bestclient-light
 }
 
 CUi::EPopupMenuFunctionResult CUi::PopupSelection(void *pContext, CUIRect View, bool Active)
@@ -383,7 +383,7 @@ CUi::EPopupMenuFunctionResult CUi::PopupSelection(void *pContext, CUIRect View, 
 		++Index;
 	}
 	if(pSelectionPopup->m_SpecialFontRenderMode)
-		BestClientApplyMenuFont(pUI->TextRender()); // bestclient
+		BestClientLightApplyMenuFont(pUI->TextRender()); // bestclient-light
 
 	pScrollRegion->End();
 
@@ -405,7 +405,7 @@ void CUi::ShowPopupSelection(float X, float Y, SSelectionPopupContext *pContext)
 		{
 			X = std::max(X - pContext->m_Width, Margin);
 		}
-		// bestclient
+		// bestclient-light
 		if(pContext->m_OpenUpward || Y + pContext->m_AlignmentHeight + PopupHeight > Screen()->h - Margin)
 		{
 			Y -= PopupHeight;
@@ -416,12 +416,12 @@ void CUi::ShowPopupSelection(float X, float Y, SSelectionPopupContext *pContext)
 			Y += pContext->m_AlignmentHeight;
 			pContext->m_Props.m_Corners = IGraphics::CORNER_B;
 		}
-		// bestclient
+		// bestclient-light
 	}
 	DoPopupMenu(pContext, X, Y, pContext->m_Width, PopupHeight, pContext, PopupSelection, pContext->m_Props);
 }
 
-// bestclient
+// bestclient-light
 int CUi::DoDropDown(CUIRect *pRect, int CurSelection, const char **pStrs, int Num, SDropDownState &State)
 {
 	return DoDropDown(pRect, CurSelection, pStrs, Num, State, false);
@@ -448,8 +448,8 @@ int CUi::DoDropDown(CUIRect *pRect, int CurSelection, const char **pStrs, int Nu
 	if(DoButton_Menu(State.m_UiElement, &State.m_ButtonContainer, LabelFunc, pRect, Props))
 	{
 		State.m_SelectionPopupContext.Reset();
-		State.m_SelectionPopupContext.m_Props.m_BorderColor = BestClientUiTheme::UiDropdown(ColorRGBA(0.7f, 0.7f, 0.7f, 0.9f));
-		State.m_SelectionPopupContext.m_Props.m_BackgroundColor = BestClientUiTheme::IsCustomUiDropdown() ? BestClientUiTheme::UiDropdown(0.25f) : ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f);
+		State.m_SelectionPopupContext.m_Props.m_BorderColor = BestClientLightUiTheme::UiDropdown(ColorRGBA(0.7f, 0.7f, 0.7f, 0.9f));
+		State.m_SelectionPopupContext.m_Props.m_BackgroundColor = BestClientLightUiTheme::IsCustomUiDropdown() ? BestClientLightUiTheme::UiDropdown(0.25f) : ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f);
 		for(int i = 0; i < Num; ++i)
 			State.m_SelectionPopupContext.m_vEntries.emplace_back(pStrs[i]);
 		State.m_SelectionPopupContext.m_EntryHeight = pRect->h;
@@ -471,9 +471,9 @@ int CUi::DoDropDown(CUIRect *pRect, int CurSelection, const char **pStrs, int Nu
 
 	return CurSelection;
 }
-// bestclient
+// bestclient-light
 
-// bestclient
+// bestclient-light
 static CUi::EPopupMenuFunctionResult PopupColorPickerNewStyle(CUi::SColorPickerPopupContext *pColorPicker, CUIRect View, bool Active)
 {
 	CUi *pUI = pColorPicker->m_pUI;
@@ -682,15 +682,15 @@ static CUi::EPopupMenuFunctionResult PopupColorPickerNewStyle(CUi::SColorPickerP
 
 	return CUi::POPUP_KEEP_OPEN;
 }
-// bestclient
+// bestclient-light
 
 CUi::EPopupMenuFunctionResult CUi::PopupColorPicker(void *pContext, CUIRect View, bool Active)
 {
 	SColorPickerPopupContext *pColorPicker = static_cast<SColorPickerPopupContext *>(pContext);
-	// bestclient
-	if(BestClientUiTheme::IsNewColorPicker())
+	// bestclient-light
+	if(BestClientLightUiTheme::IsNewColorPicker())
 		return PopupColorPickerNewStyle(pColorPicker, View, Active);
-	// bestclient
+	// bestclient-light
 	CUi *pUI = pColorPicker->m_pUI;
 	pColorPicker->m_State = EEditState::NONE;
 
@@ -968,8 +968,8 @@ void CUi::ShowPopupColorPicker(float X, float Y, SColorPickerPopupContext *pCont
 	pContext->m_pUI = this;
 	if(pContext->m_ColorMode == SColorPickerPopupContext::MODE_UNSET)
 		pContext->m_ColorMode = SColorPickerPopupContext::MODE_HSVA;
-	// bestclient
-	if(BestClientUiTheme::IsNewColorPicker())
+	// bestclient-light
+	if(BestClientLightUiTheme::IsNewColorPicker())
 	{
 		char aHex[16];
 		const unsigned PackedHex = pContext->m_RgbaColor.PackAlphaLast(pContext->m_Alpha);
@@ -982,6 +982,6 @@ void CUi::ShowPopupColorPicker(float X, float Y, SColorPickerPopupContext *pCont
 		DoPopupMenu(pContext, X, Y, 170.0f + 10.0f, PopupH + 10.0f, pContext, PopupColorPicker);
 	}
 	else
-		// bestclient
+		// bestclient-light
 		DoPopupMenu(pContext, X, Y, 160.0f + 10.0f, 209.0f + 10.0f, pContext, PopupColorPicker);
 }

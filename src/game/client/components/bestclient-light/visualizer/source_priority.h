@@ -1,12 +1,12 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_SOURCE_PRIORITY_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_SOURCE_PRIORITY_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_SOURCE_PRIORITY_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_SOURCE_PRIORITY_H
 
 #include <algorithm>
 #include <cctype>
 #include <string_view>
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 enum class EMediaSourcePriority
@@ -78,6 +78,6 @@ inline bool HintMatchesPlaybackSource(std::string_view HintServiceId, std::strin
 		(HintFirefox && (MediaSourceContainsI(AppName, "firefox") || MediaSourceContainsI(AppBinary, "firefox")));
 }
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer
 
 #endif

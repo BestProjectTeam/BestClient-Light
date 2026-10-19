@@ -29,7 +29,7 @@ enum
 	BC_PROFILE_ASSET_COUNT = 9,
 };
 
-struct SBestClientMultiSelectDropDownState
+struct SBestClientLightMultiSelectDropDownState
 {
 	CUIElement m_UiElement;
 	CButtonContainer m_ButtonContainer;
@@ -44,9 +44,9 @@ struct SBestClientMultiSelectDropDownState
 	std::vector<int> m_vBits;
 };
 
-void BestClientApplyProfileAssets(CGameClient *pGameClient, const CProfile &Profile)
+void BestClientLightApplyProfileAssets(CGameClient *pGameClient, const CProfile &Profile)
 {
-	const int Flags = g_Config.m_BcProfileAssets;
+	const int Flags = g_Config.m_BclProfileAssets;
 	if((Flags & BC_PROFILE_ASSET_ENTITIES) && Profile.m_AssetEntities[0] != '\0')
 	{
 		str_copy(g_Config.m_ClAssetsEntities, Profile.m_AssetEntities);
@@ -97,9 +97,9 @@ void BestClientApplyProfileAssets(CGameClient *pGameClient, const CProfile &Prof
 	}
 }
 
-void BestClientFillProfileAssets(CProfile &Profile)
+void BestClientLightFillProfileAssets(CProfile &Profile)
 {
-	const int Flags = g_Config.m_BcProfileAssets;
+	const int Flags = g_Config.m_BclProfileAssets;
 	str_copy(Profile.m_AssetEntities, (Flags & BC_PROFILE_ASSET_ENTITIES) ? g_Config.m_ClAssetsEntities : "");
 	str_copy(Profile.m_AssetGame, (Flags & BC_PROFILE_ASSET_GAME) ? g_Config.m_ClAssetGame : "");
 	str_copy(Profile.m_AssetEmoticons, (Flags & BC_PROFILE_ASSET_EMOTICONS) ? g_Config.m_ClAssetEmoticons : "");
@@ -157,7 +157,7 @@ static CUi::EPopupMenuFunctionResult PopupMultiSelect(void *pContext, CUIRect Vi
 	return CUi::POPUP_KEEP_OPEN;
 }
 
-static int DoMultiSelectDropDown(CUi *pUi, CMenus *pMenus, CUIRect *pRect, int Flags, const char **ppLabels, const int *pBits, int Num, SBestClientMultiSelectDropDownState &State)
+static int DoMultiSelectDropDown(CUi *pUi, CMenus *pMenus, CUIRect *pRect, int Flags, const char **ppLabels, const int *pBits, int Num, SBestClientLightMultiSelectDropDownState &State)
 {
 	if(!State.m_Init)
 	{
@@ -265,9 +265,9 @@ static int DoMultiSelectDropDown(CUi *pUi, CMenus *pMenus, CUIRect *pRect, int F
 	return State.m_Flags;
 }
 
-void BestClientDoProfileAssetsDropDown(CUi *pUi, CMenus *pMenus, CUIRect *pRect)
+void BestClientLightDoProfileAssetsDropDown(CUi *pUi, CMenus *pMenus, CUIRect *pRect)
 {
-	static SBestClientMultiSelectDropDownState s_State;
+	static SBestClientLightMultiSelectDropDownState s_State;
 	const char *apLabels[] = {
 		Localize("Entities"),
 		Localize("Game"),
@@ -290,5 +290,5 @@ void BestClientDoProfileAssetsDropDown(CUi *pUi, CMenus *pMenus, CUIRect *pRect)
 		BC_PROFILE_ASSET_ARROW,
 		BC_PROFILE_ASSET_AUDIO,
 	};
-	g_Config.m_BcProfileAssets = DoMultiSelectDropDown(pUi, pMenus, pRect, g_Config.m_BcProfileAssets, apLabels, s_aBits, BC_PROFILE_ASSET_COUNT, s_State);
+	g_Config.m_BclProfileAssets = DoMultiSelectDropDown(pUi, pMenus, pRect, g_Config.m_BclProfileAssets, apLabels, s_aBits, BC_PROFILE_ASSET_COUNT, s_State);
 }

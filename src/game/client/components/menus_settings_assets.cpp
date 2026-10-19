@@ -11,9 +11,9 @@
 #include <engine/storage.h>
 #include <engine/textrender.h>
 
-// bestclient
-#include <game/client/components/bestclient/better_preview.h>
-// bestclient
+// bestclient-light
+#include <game/client/components/bestclient-light/better_preview.h>
+// bestclient-light
 #include <game/client/gameclient.h>
 #include <game/client/ui_listbox.h>
 #include <game/localization.h>
@@ -1067,13 +1067,13 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 	};
 
 	MainView.HSplitTop(20.0f, &TabBar, &MainView);
-	// bestclient
+	// bestclient-light
 	const bool EditorExplore = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
 	const int VisibleAssetTabs = EditorExplore ? ASSETS_TAB_AUDIO : NUMBER_OF_ASSETS_TABS;
 	if(EditorExplore && s_CurCustomTab >= VisibleAssetTabs)
 		s_CurCustomTab = ASSETS_TAB_ENTITIES;
 	const float TabWidth = TabBar.w / (float)VisibleAssetTabs;
-	// bestclient
+	// bestclient-light
 	static CButtonContainer s_aPageTabs[NUMBER_OF_ASSETS_TABS] = {};
 	const char *apTabNames[NUMBER_OF_ASSETS_TABS] = {
 		Localize("Entities"),
@@ -1086,7 +1086,7 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 		Localize("Arrow"),
 		Localize("Audio")};
 
-	// bestclient
+	// bestclient-light
 	for(int Tab = ASSETS_TAB_ENTITIES; Tab < VisibleAssetTabs; ++Tab)
 	{
 		CUIRect Button;
@@ -1097,7 +1097,7 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 			s_CurCustomTab = Tab;
 		}
 	}
-	// bestclient
+	// bestclient-light
 
 	auto LoadStartTime = time_get_nanoseconds();
 	SMenuAssetScanUser User;
@@ -1273,29 +1273,29 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 	float Margin = 10;
 	float TextureWidth = 150;
 	float TextureHeight = 150;
-	// bestclient
-	const bool BetterPreview = g_Config.m_BcBetterPreview != 0;
+	// bestclient-light
+	const bool BetterPreview = g_Config.m_BclBetterPreview != 0;
 	const bool BetterPreviewEntities = BetterPreview && s_CurCustomTab == ASSETS_TAB_ENTITIES;
 	const bool BetterPreviewGunpacks = BetterPreview && s_CurCustomTab == ASSETS_TAB_GAME;
-	// bestclient
+	// bestclient-light
 
 	size_t SearchListSize = 0;
 
 	if(s_CurCustomTab == ASSETS_TAB_ENTITIES)
 	{
 		SearchListSize = gs_vpSearchEntitiesList.size();
-		// bestclient
+		// bestclient-light
 		if(BetterPreviewEntities)
 		{
 			TextureWidth = 200;
 			TextureHeight = 200;
 		}
-		// bestclient
+		// bestclient-light
 	}
 	else if(s_CurCustomTab == ASSETS_TAB_GAME)
 	{
 		SearchListSize = gs_vpSearchGamesList.size();
-		// bestclient
+		// bestclient-light
 		if(BetterPreviewGunpacks)
 		{
 			TextureWidth = 170;
@@ -1305,7 +1305,7 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 		{
 			TextureHeight = 75;
 		}
-		// bestclient
+		// bestclient-light
 	}
 	else if(s_CurCustomTab == ASSETS_TAB_EMOTICONS)
 	{
@@ -1326,27 +1326,27 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 	else if(s_CurCustomTab == ASSETS_TAB_CURSOR)
 	{
 		SearchListSize = gs_vpSearchCursorList.size();
-		// bestclient
+		// bestclient-light
 		TextureHeight = 64;
 		TextureWidth = 64;
-		// bestclient
+		// bestclient-light
 	}
 	else if(s_CurCustomTab == ASSETS_TAB_ARROW)
 	{
 		SearchListSize = gs_vpSearchArrowList.size();
-		// bestclient
+		// bestclient-light
 		TextureHeight = 64;
 		TextureWidth = 64;
-		// bestclient
+		// bestclient-light
 	}
 	else if(s_CurCustomTab == ASSETS_TAB_AUDIO)
 	{
 		SearchListSize = gs_vpSearchAudioPackList.size();
 	}
 
-	// bestclient
+	// bestclient-light
 	const float ItemHeight = s_CurCustomTab == ASSETS_TAB_AUDIO ? 28.0f : (BetterPreviewGunpacks ? (TextureHeight + Margin) : (TextureHeight + 15.0f + 10.0f + Margin));
-	// bestclient
+	// bestclient-light
 	const int ItemsPerRow = s_CurCustomTab == ASSETS_TAB_AUDIO ? 1 : std::max(1, (int)(CustomList.w / (Margin + TextureWidth)));
 
 	static CListBox s_ListBox;
@@ -1442,19 +1442,19 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 			LabelRect.VSplitRight(CanDelete ? 44.0f : 24.0f, &LabelRect, nullptr);
 			Ui()->DoLabel(&LabelRect, pItem->m_aName, 14.0f, TEXTALIGN_ML);
 		}
-		// bestclient
+		// bestclient-light
 		else if(BetterPreviewGunpacks)
 		{
-			BestClientBetterPreview::RenderGunpackCard(Graphics(), Ui(), pItem->m_RenderTexture, ItemRect, pItem->m_aName);
+			BestClientLightBetterPreview::RenderGunpackCard(Graphics(), Ui(), pItem->m_RenderTexture, ItemRect, pItem->m_aName);
 		}
-		// bestclient
+		// bestclient-light
 		else
 		{
 			CUIRect TextureRect;
 			ItemRect.HSplitTop(15, &ItemRect, &TextureRect);
 			TextureRect.HSplitTop(10, nullptr, &TextureRect);
 			Ui()->DoLabel(&ItemRect, pItem->m_aName, ItemRect.h - 2, TEXTALIGN_MC);
-			// bestclient
+			// bestclient-light
 			if(BetterPreviewEntities)
 			{
 				const auto *pEntitiesItem = static_cast<const SCustomEntities *>(pItem);
@@ -1464,10 +1464,10 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 				if(!Texture.IsValid())
 					Texture = pItem->m_RenderTexture;
 
-				BestClientBetterPreview::RenderEntities(Graphics(), Texture, TextureRect, TextureWidth);
+				BestClientLightBetterPreview::RenderEntities(Graphics(), Texture, TextureRect, TextureWidth);
 			}
 			else if(pItem->m_RenderTexture.IsValid())
-			// bestclient
+			// bestclient-light
 			{
 				Graphics()->WrapClamp();
 				Graphics()->TextureSet(pItem->m_RenderTexture);
@@ -1520,7 +1520,7 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 	}
 
 	const int NewSelected = s_ListBox.DoEnd();
-	// bestclient
+	// bestclient-light
 	const bool EditorPick = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
 	const bool EditorPickClicked = EditorPick && s_ListBox.WasItemSelected() && NewSelected >= 0 && !SkipSelectionBecauseDelete;
 	auto ApplyAssetConfig = [this](const SCustomItem *pSelectedItem) {
@@ -1572,13 +1572,13 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 			GameClient()->m_Sounds.Clear();
 		}
 	};
-	// bestclient
+	// bestclient-light
 	if((!EditorPick && OldSelected != NewSelected && NewSelected >= 0 && !SkipSelectionBecauseDelete) || EditorPickClicked)
 	{
 		const SCustomItem *pSelectedItem = GetCustomItem(s_CurCustomTab, NewSelected);
 		if(pSelectedItem != nullptr && pSelectedItem->m_aName[0] != '\0')
 		{
-			// bestclient
+			// bestclient-light
 			if(m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0)
 			{
 				if(s_CurCustomTab != ASSETS_TAB_AUDIO)
@@ -1586,7 +1586,7 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 			}
 			else
 				ApplyAssetConfig(pSelectedItem);
-			// bestclient
+			// bestclient-light
 		}
 	}
 
@@ -1600,7 +1600,7 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 	}
 
 	DirectoryButton.HSplitTop(5.0f, nullptr, &DirectoryButton);
-	// bestclient
+	// bestclient-light
 	TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
 	TextRender()->SetRenderFlags(ETextRenderFlags::TEXT_RENDER_FLAG_ONLY_ADVANCE_WIDTH | ETextRenderFlags::TEXT_RENDER_FLAG_NO_X_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_Y_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_PIXEL_ALIGNMENT | ETextRenderFlags::TEXT_RENDER_FLAG_NO_OVERSIZE);
 	if(s_CurCustomTab == ASSETS_TAB_ENTITIES || s_CurCustomTab == ASSETS_TAB_GAME)
@@ -1609,8 +1609,8 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 		DirectoryButton.VSplitLeft(5.0f, nullptr, &DirectoryButton);
 		DirectoryButton.VSplitLeft(25.0f, &ToggleRect, &DirectoryButton);
 		static CButtonContainer s_BetterPreviewToggleId;
-		if(DoButton_Menu(&s_BetterPreviewToggleId, g_Config.m_BcBetterPreview ? FontIcon::EYE : FontIcon::IMAGE, g_Config.m_BcBetterPreview, &ToggleRect))
-			g_Config.m_BcBetterPreview ^= 1;
+		if(DoButton_Menu(&s_BetterPreviewToggleId, g_Config.m_BclBetterPreview ? FontIcon::EYE : FontIcon::IMAGE, g_Config.m_BclBetterPreview, &ToggleRect))
+			g_Config.m_BclBetterPreview ^= 1;
 		GameClient()->m_Tooltips.DoToolTip(&s_BetterPreviewToggleId, &ToggleRect, Localize("Toggle between composed preview and raw texture"));
 	}
 	if(!EditorExplore)
@@ -1653,7 +1653,7 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 	}
 	TextRender()->SetRenderFlags(0);
 	TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
-	// bestclient
+	// bestclient-light
 	static CButtonContainer s_AssetsDirId;
 	if(DoButton_Menu(&s_AssetsDirId, Localize("Assets directory"), 0, &DirectoryButton))
 	{

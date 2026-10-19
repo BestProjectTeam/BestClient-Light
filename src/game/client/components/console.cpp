@@ -25,7 +25,7 @@
 
 #include <generated/client_data.h>
 
-#include <game/client/components/bestclient/console_scroll.h> // bestclient
+#include <game/client/components/bestclient-light/console_scroll.h> // bestclient-light
 #include <game/client/components/tclient/colored_parts.h>
 #include <game/client/gameclient.h>
 #include <game/client/ui.h>
@@ -829,9 +829,9 @@ void CGameConsole::CInstance::UpdateEntryTextAttributes(CBacklogEntry *pEntry) c
 	CTextCursor Cursor;
 	Cursor.m_FontSize = FONT_SIZE;
 	Cursor.m_Flags = 0;
-	// bestclient
+	// bestclient-light
 	Cursor.m_LineWidth = CConsoleScroll::LogLineWidth(*this);
-	// bestclient
+	// bestclient-light
 	Cursor.m_MaxLines = 10;
 	Cursor.m_LineSpacing = LINE_SPACING;
 	m_pGameConsole->TextRender()->TextEx(&Cursor, pEntry->m_aText, -1);
@@ -900,9 +900,9 @@ void CGameConsole::CInstance::UpdateSearch()
 	}
 
 	ITextRender *pTextRender = m_pGameConsole->Ui()->TextRender();
-	// bestclient
+	// bestclient-light
 	const int LineWidth = CConsoleScroll::LogLineWidth(*this);
-	// bestclient
+	// bestclient-light
 
 	CBacklogEntry *pEntry = m_Backlog.Last();
 	int EntryLine = 0, LineToScrollStart = 0, LineToScrollEnd = 0;
@@ -1471,10 +1471,10 @@ void CGameConsole::OnRender()
 				pConsole->m_NewLineCounter = 0;
 		}
 
-		// bestclient
+		// bestclient-light
 		if(m_ConsoleType == CONSOLETYPE_LOCAL || m_ConsoleType == CONSOLETYPE_REMOTE)
 			CConsoleScroll::Render(*this, pConsole, Screen, RowHeight, y, LineHeight);
-		// bestclient
+		// bestclient-light
 
 		// render console log (current entry, status, wrap lines)
 		CInstance::CBacklogEntry *pEntry = pConsole->m_Backlog.Last();
@@ -1539,9 +1539,9 @@ void CGameConsole::OnRender()
 			CTextCursor EntryCursor;
 			EntryCursor.SetPosition(vec2(0.0f, y - OffsetY));
 			EntryCursor.m_FontSize = FONT_SIZE;
-			// bestclient
+			// bestclient-light
 			EntryCursor.m_LineWidth = CConsoleScroll::LogLineWidth(*pConsole);
-			// bestclient
+			// bestclient-light
 			EntryCursor.m_MaxLines = pEntry->m_LineCount;
 			EntryCursor.m_LineSpacing = LINE_SPACING;
 			EntryCursor.m_CalculateSelectionMode = (m_ConsoleState == CONSOLE_OPEN && !m_ButtonPressed && pConsole->m_MousePress.y < pConsole->m_BoundingBox.m_Y && (pConsole->m_MouseIsPress || (pConsole->m_CurSelStart != pConsole->m_CurSelEnd) || pConsole->m_HasSelection)) ? TEXT_CURSOR_SELECTION_MODE_CALCULATE : TEXT_CURSOR_SELECTION_MODE_NONE;

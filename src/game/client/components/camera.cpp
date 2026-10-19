@@ -10,8 +10,8 @@
 
 #include <engine/shared/config.h>
 
-#include <game/client/components/bestclient/camera_demos.h> // bestclient
-#include <game/client/components/bestclient/camera_extras.h> // bestclient
+#include <game/client/components/bestclient-light/camera_demos.h> // bestclient-light
+#include <game/client/components/bestclient-light/camera_extras.h> // bestclient-light
 #include <game/client/gameclient.h>
 #include <game/collision.h>
 #include <game/localization.h>
@@ -66,9 +66,9 @@ float CCamera::ZoomProgress(float CurrentTime) const
 
 void CCamera::ScaleZoom(float Factor)
 {
-	// bestclient
+	// bestclient-light
 	CCameraDemos::RemoveDynamicFov(m_Zoom);
-	// bestclient
+	// bestclient-light
 	float CurrentTarget = m_Zooming ? m_ZoomSmoothingTarget : m_Zoom;
 	ChangeZoom(CurrentTarget * Factor, GameClient()->m_Snap.m_SpecInfo.m_Active && GameClient()->m_MultiViewActivated ? g_Config.m_ClMultiViewZoomSmoothness : g_Config.m_ClSmoothZoomTime, true);
 
@@ -87,9 +87,9 @@ float CCamera::MinZoomLevel()
 
 void CCamera::ChangeZoom(float Target, int Smoothness, bool IsUser)
 {
-	// bestclient
+	// bestclient-light
 	CCameraDemos::RemoveDynamicFov(m_Zoom);
-	// bestclient
+	// bestclient-light
 	if(Target > MaxZoomLevel() || Target < MinZoomLevel())
 	{
 		return;
@@ -123,9 +123,9 @@ void CCamera::ResetAutoSpecCamera()
 
 void CCamera::UpdateCamera()
 {
-	// bestclient
+	// bestclient-light
 	CCameraDemos::RemoveDynamicFov(m_Zoom);
-	// bestclient
+	// bestclient-light
 	// use hardcoded smooth camera for spectating unless player explicitly turn it off
 	bool CanUseCameraInfo = !GameClient()->m_MultiViewActivated;
 	if(Client()->State() == IClient::STATE_DEMOPLAYBACK)
@@ -222,9 +222,9 @@ void CCamera::UpdateCamera()
 		m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy] = vec2(0, 0);
 		m_CanUseCameraInfo = CanUseCameraInfo;
 		m_UsingAutoSpecCamera = UsingAutoSpecCamera;
-		// bestclient
+		// bestclient-light
 		CCameraDemos::UpdateEffects(GameClient(), Client()->RenderFrameTime(), m_Zoom, MinZoomLevel(), MaxZoomLevel());
-		// bestclient
+		// bestclient-light
 		return;
 	}
 
@@ -300,9 +300,9 @@ void CCamera::UpdateCamera()
 	m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy] = CurrentCameraOffset;
 	m_CanUseCameraInfo = CanUseCameraInfo;
 	m_UsingAutoSpecCamera = UsingAutoSpecCamera;
-	// bestclient
+	// bestclient-light
 	CCameraDemos::UpdateEffects(GameClient(), DeltaTime, m_Zoom, MinZoomLevel(), MaxZoomLevel());
-	// bestclient
+	// bestclient-light
 }
 
 void CCamera::OnRender()
@@ -345,22 +345,22 @@ void CCamera::OnRender()
 			GameClient()->m_Controls.ClampMousePos();
 			m_CamType = CAMTYPE_SPEC;
 		}
-		// bestclient
+		// bestclient-light
 		const vec2 TargetCenter = GameClient()->m_Controls.m_aMousePos[g_Config.m_ClDummy];
-		if(g_Config.m_BcCinematicCamera)
-			CCameraExtras::ApplyCinematicFreeview(m_Center, TargetCenter, m_CinematicCameraSmoothing, m_CinematicCameraPosition, g_Config.m_BcCinematicCameraStrength, Client()->RenderFrameTime());
+		if(g_Config.m_BclCinematicCamera)
+			CCameraExtras::ApplyCinematicFreeview(m_Center, TargetCenter, m_CinematicCameraSmoothing, m_CinematicCameraPosition, g_Config.m_BclCinematicCameraStrength, Client()->RenderFrameTime());
 		else
 		{
 			m_Center = TargetCenter;
 			CCameraExtras::ResetCinematic(m_CinematicCameraSmoothing);
 		}
-		// bestclient
+		// bestclient-light
 	}
 	else
 	{
-		// bestclient
+		// bestclient-light
 		CCameraExtras::ResetCinematic(m_CinematicCameraSmoothing);
-		// bestclient
+		// bestclient-light
 		if(m_CamType != CAMTYPE_PLAYER)
 		{
 			GameClient()->m_Controls.m_aMousePos[g_Config.m_ClDummy] = m_aLastPos[g_Config.m_ClDummy];
@@ -369,19 +369,19 @@ void CCamera::OnRender()
 			m_CamType = CAMTYPE_PLAYER;
 		}
 
-		// bestclient
+		// bestclient-light
 		const vec2 DemoCameraDriftOffset = CCameraDemos::DriftOffset(Client()->State() == IClient::STATE_DEMOPLAYBACK);
 		if(GameClient()->m_Snap.m_SpecInfo.m_Active)
 			m_Center = GameClient()->m_Snap.m_SpecInfo.m_Position + m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy] + DemoCameraDriftOffset;
 		else
 			m_Center = GameClient()->m_LocalCharacterPos + m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy] + DemoCameraDriftOffset;
-		// bestclient
+		// bestclient-light
 	}
 
-	// bestclient
+	// bestclient-light
 	if(m_CamType == CAMTYPE_SPEC)
 		CCameraDemos::ApplyFreeviewNumpad(Input(), Client()->RenderFrameTime(), m_ForceFreeview, m_ForceFreeviewPos, m_Center);
-	// bestclient
+	// bestclient-light
 
 	if(m_ForceFreeview && m_CamType == CAMTYPE_SPEC)
 	{
@@ -443,10 +443,10 @@ void CCamera::OnRender()
 
 	// demo always count as spectating
 	m_WasSpectating = GameClient()->m_Snap.m_SpecInfo.m_Active;
-	// bestclient
+	// bestclient-light
 	GameClient()->m_WeaponVfx.ApplyCameraShake(m_Center);
 	GameClient()->m_Lightning.ApplyCameraShake(m_Center);
-	// bestclient
+	// bestclient-light
 }
 
 void CCamera::OnConsoleInit()
@@ -468,9 +468,9 @@ void CCamera::OnReset()
 	m_Zooming = false;
 	m_AutoSpecCameraZooming = false;
 	m_UserZoomTarget = CCamera::ZoomStepsToValue(g_Config.m_ClDefaultZoom - 10);
-	// bestclient
+	// bestclient-light
 	CCameraDemos::Reset();
-	// bestclient
+	// bestclient-light
 }
 
 void CCamera::ConZoomPlus(IConsole::IResult *pResult, void *pUserData)
@@ -479,9 +479,9 @@ void CCamera::ConZoomPlus(IConsole::IResult *pResult, void *pUserData)
 	if(!pSelf->ZoomAllowed())
 		return;
 
-	// bestclient
-	float ZoomAmount = pResult->NumArguments() ? pResult->GetFloat(0) : CCameraExtras::DefaultZoomStep(g_Config.m_BcExtendZoom != 0);
-	// bestclient
+	// bestclient-light
+	float ZoomAmount = pResult->NumArguments() ? pResult->GetFloat(0) : CCameraExtras::DefaultZoomStep(g_Config.m_BclExtendZoom != 0);
+	// bestclient-light
 
 	pSelf->ScaleZoom(CCamera::ZoomStepsToValue(ZoomAmount));
 
@@ -494,9 +494,9 @@ void CCamera::ConZoomMinus(IConsole::IResult *pResult, void *pUserData)
 	if(!pSelf->ZoomAllowed())
 		return;
 
-	// bestclient
-	float ZoomAmount = pResult->NumArguments() ? pResult->GetFloat(0) : CCameraExtras::DefaultZoomStep(g_Config.m_BcExtendZoom != 0);
-	// bestclient
+	// bestclient-light
+	float ZoomAmount = pResult->NumArguments() ? pResult->GetFloat(0) : CCameraExtras::DefaultZoomStep(g_Config.m_BclExtendZoom != 0);
+	// bestclient-light
 	ZoomAmount *= -1.0f;
 
 	pSelf->ScaleZoom(CCamera::ZoomStepsToValue(ZoomAmount));

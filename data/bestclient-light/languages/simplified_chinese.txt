@@ -1,2200 +1,2200 @@
-[BestClient]
+[BestClient Light]
 Checkbox
 == 复选框
 
-[BestClient]
+[BestClient Light]
 Sample text Aa
 == 示例文本 Aa
 
-[BestClient]
+[BestClient Light]
 Legacy
 == 旧界面
 
-[BestClient]
+[BestClient Light]
 Better UI
 == 改进界面
 
-[BestClient]
+[BestClient Light]
 Choose Legacy
 == 选择旧界面
 
-[BestClient]
+[BestClient Light]
 Choose Better UI
 == 选择改进界面
 
-[BestClient]
+[BestClient Light]
 Chat Media
 == 聊天媒体
 
-[BestClient]
+[BestClient Light]
 Render media previews from chat links
 == 显示聊天链接的媒体预览
 
-[BestClient]
+[BestClient Light]
 Show photos in chat media
 == 在聊天媒体中显示图片
 
-[BestClient]
+[BestClient Light]
 Show GIFs in chat media
 == 在聊天媒体中显示 GIF
 
-[BestClient]
+[BestClient Light]
 Content filtering
 == 内容过滤
 
-[BestClient]
+[BestClient Light]
 Allowed media domains
 == 允许的媒体域名
 
-[BestClient]
+[BestClient Light]
 Media preview width
 == 媒体预览宽度
 
-[BestClient]
+[BestClient Light]
 Hide media bind
 == 隐藏媒体按键
 
-[BestClient]
+[BestClient Light]
 Visuals
 == 视觉
 
-[BestClient]
+[BestClient Light]
 Gameplay
 == 玩法
 
-[BestClient]
+[BestClient Light]
 Others
 == 其他
 
-[BestClient]
+[BestClient Light]
 Info
 == 信息
 
-[BestClient]
+[BestClient Light]
 high fps intake
 == 高 FPS
 
-[BestClient]
+[BestClient Light]
 HUD editor
 == HUD 编辑器
 
-[BestClient]
+[BestClient Light]
 Open in HUD editor
 == 在 HUD 编辑器中打开
 
-[BestClient]
+[BestClient Light]
 Join a game first
 == 请先进入游戏
 
-[BestClient]
+[BestClient Light]
 Visuals QoL
 == 视觉便利
 
-[BestClient]
+[BestClient Light]
 Map preview in server list
 == 服务器列表中的地图预览
 
-[BestClient]
+[BestClient Light]
 Show real hitbox
 == 显示真实碰撞箱
 
-[BestClient]
+[BestClient Light]
 Real hitbox dot color
 == 真实碰撞箱点颜色
 
-[BestClient]
+[BestClient Light]
 Show player below indicator
 == 显示下方玩家指示
 
-[BestClient]
+[BestClient Light]
 Show current checkpoint in hud
 == 在 HUD 中显示当前检查点
 
-[BestClient]
+[BestClient Light]
 Show points in tab
 == 在记分板中显示分数
 
-[BestClient]
+[BestClient Light]
 Show spectator nicknames
 == 显示观战者昵称
 
-[BestClient]
+[BestClient Light]
 Show vote percentage
 == 显示投票百分比
 
-[BestClient]
+[BestClient Light]
 Display max FPS
 == 显示最高 FPS
 
-[BestClient]
-Bestclient discord rpc (restart requires)
-== BestClient Discord RPC（需要重启）
+[BestClient Light]
+BestClient Light discord rpc (restart requires)
+== BestClient Light Discord RPC（需要重启）
 
-[BestClient]
+[BestClient Light]
 Bind/Emote wheel scale
 == 按键/表情轮盘缩放
 
-[BestClient]
+[BestClient Light]
 Scoreboard scale
 == 记分板缩放
 
-[BestClient]
+[BestClient Light]
 UI scale
 == 界面缩放
 
-[BestClient]
+[BestClient Light]
 Jelly Tee
 == 果冻 Tee
 
-[BestClient]
+[BestClient Light]
 Enable Jelly Tee
 == 启用果冻 Tee
 
-[BestClient]
+[BestClient Light]
 Jelly Others
 == 其他玩家果冻
 
-[BestClient]
+[BestClient Light]
 Jelly strength
 == 果冻强度
 
-[BestClient]
+[BestClient Light]
 Jelly duration
 == 果冻时长
 
-[BestClient]
+[BestClient Light]
 Corner indicator
 == 角落指示
 
-[BestClient]
+[BestClient Light]
 Enable corner indicator
 == 启用角落指示
 
-[BestClient]
+[BestClient Light]
 Only in team
 == 仅队伍中
 
-[BestClient]
+[BestClient Light]
 Show alive teammates
 == 显示存活队友
 
-[BestClient]
+[BestClient Light]
 Show frozen teammates
 == 显示冻结队友
 
-[BestClient]
+[BestClient Light]
 Indicate last teammate
 == 标出最后一名队友
 
-[BestClient]
+[BestClient Light]
 Scale by distance
 == 按距离缩放
 
-[BestClient]
+[BestClient Light]
 Ninja skin when frozen
 == 冻结时使用忍者皮肤
 
-[BestClient]
+[BestClient Light]
 Alive size
 == 存活大小
 
-[BestClient]
+[BestClient Light]
 Frozen size
 == 冻结大小
 
-[BestClient]
+[BestClient Light]
 Last teammate size
 == 最后队友大小
 
-[BestClient]
+[BestClient Light]
 Use custom colors
 == 使用自定义颜色
 
-[BestClient]
+[BestClient Light]
 Alive color
 == 存活颜色
 
-[BestClient]
+[BestClient Light]
 Frozen color
 == 冻结颜色
 
-[BestClient]
+[BestClient Light]
 Last teammate color
 == 最后队友颜色
 
-[BestClient]
+[BestClient Light]
 Chat Bubbles
 == 聊天气泡
 
-[BestClient]
+[BestClient Light]
 Show chat bubbles above players
 == 在玩家头顶显示聊天气泡
 
-[BestClient]
+[BestClient Light]
 Show chat bubbles above you
 == 在自己头顶显示聊天气泡
 
-[BestClient]
+[BestClient Light]
 Show chat bubbles in demo
 == 在演示中显示聊天气泡
 
-[BestClient]
+[BestClient Light]
 Chat bubble size
 == 聊天气泡大小
 
-[BestClient]
+[BestClient Light]
 Show for
 == 显示时长
 
-[BestClient]
+[BestClient Light]
 Fade in
 == 淡入
 
-[BestClient]
+[BestClient Light]
 Fade out
 == 淡出
 
-[BestClient]
+[BestClient Light]
 Stack animation
 == 堆叠动画
 
-[BestClient]
+[BestClient Light]
 Corner rounding
 == 圆角
 
-[BestClient]
+[BestClient Light]
 Text
 == 文本
 
-[BestClient]
+[BestClient Light]
 Outline
 == 描边
 
-[BestClient]
+[BestClient Light]
 Gradient
 == 渐变
 
-[BestClient]
+[BestClient Light]
 Gradient nicknames
 == 昵称渐变
 
-[BestClient]
+[BestClient Light]
 Gradient clans
 == 战队渐变
 
-[BestClient]
+[BestClient Light]
 Gradient skin
 == 皮肤渐变
 
-[BestClient]
+[BestClient Light]
 Gradient everything
 == 全部渐变
 
-[BestClient]
+[BestClient Light]
 Animate speed
 == 动画速度
 
-[BestClient]
+[BestClient Light]
 Mode
 == 模式
 
-[BestClient]
+[BestClient Light]
 Skin
 == 皮肤
 
-[BestClient]
+[BestClient Light]
 Custom
 == 自定义
 
-[BestClient]
+[BestClient Light]
 Color count
 == 颜色数量
 
-[BestClient]
+[BestClient Light]
 Color 1
 == 颜色 1
 
-[BestClient]
+[BestClient Light]
 Color 2
 == 颜色 2
 
-[BestClient]
+[BestClient Light]
 Color 3
 == 颜色 3
 
-[BestClient]
+[BestClient Light]
 Color 4
 == 颜色 4
 
-[BestClient]
+[BestClient Light]
 Flying Name Plates
 == 飘动名牌
 
-[BestClient]
+[BestClient Light]
 Enable flying name plates
 == 启用飘动名牌
 
-[BestClient]
+[BestClient Light]
 Hide line
 == 隐藏连线
 
-[BestClient]
+[BestClient Light]
 Lift above player
 == 抬到玩家上方
 
-[BestClient]
+[BestClient Light]
 Movement drag
 == 移动拖尾
 
-[BestClient]
+[BestClient Light]
 Follow speed
 == 跟随速度
 
-[BestClient]
+[BestClient Light]
 3D Particles
 == 3D 粒子
 
-[BestClient]
+[BestClient Light]
 Enable 3D Particles
 == 启用 3D 粒子
 
-[BestClient]
+[BestClient Light]
 Density
 == 密度
 
-[BestClient]
+[BestClient Light]
 Particle type
 == 粒子类型
 
-[BestClient]
+[BestClient Light]
 Cube
 == 方块
 
-[BestClient]
+[BestClient Light]
 Heart
 == 爱心
 
-[BestClient]
+[BestClient Light]
 Mixed
 == 混合
 
-[BestClient]
+[BestClient Light]
 Size
 == 大小
 
-[BestClient]
+[BestClient Light]
 Color mode
 == 颜色模式
 
-[BestClient]
+[BestClient Light]
 Glow
 == 发光
 
-[BestClient]
+[BestClient Light]
 Media Background
 == 媒体背景
 
-[BestClient]
+[BestClient Light]
 Enable to main menu
 == 用于主菜单
 
-[BestClient]
+[BestClient Light]
 Enable to game background
 == 用于游戏背景
 
-[BestClient]
+[BestClient Light]
 No media files in backgrounds folder
 == backgrounds 文件夹中没有媒体文件
 
-[BestClient]
+[BestClient Light]
 Map offset
 == 地图偏移
 
-[BestClient]
+[BestClient Light]
 0 keeps the image fixed to the screen. Higher values add camera parallax. Move the camera to see the effect.
 == 0 表示图片固定在屏幕上。数值越大，镜头视差越强。移动镜头即可看到效果。
 
-[BestClient]
+[BestClient Light]
 Hidden: overlay entities is 0.
 == 已隐藏：overlay entities 为 0。
 
-[BestClient]
+[BestClient Light]
 Cursor Trail
 == 光标拖尾
 
-[BestClient]
+[BestClient Light]
 Enable
 == 启用
 
-[BestClient]
+[BestClient Light]
 Cursor
 == 光标
 
-[BestClient]
+[BestClient Light]
 Trail size
 == 拖尾大小
 
-[BestClient]
+[BestClient Light]
 Number of frames
 == 帧数
 
-[BestClient]
+[BestClient Light]
 Opacity
 == 不透明度
 
-[BestClient]
+[BestClient Light]
 Sampling FPS
 == 采样 FPS
 
-[BestClient]
+[BestClient Light]
 Disable movement
 == 禁用移动
 
-[BestClient]
+[BestClient Light]
 Trail image
 == 拖尾图片
 
-[BestClient]
+[BestClient Light]
 No images in CTrails folder
 == CTrails 文件夹中没有图片
 
-[BestClient]
+[BestClient Light]
 Enable better UI
 == 启用改进界面
 
-[BestClient]
+[BestClient Light]
 Better checkbox
 == 改进复选框
 
-[BestClient]
+[BestClient Light]
 Better scrollbar
 == 改进滚动条
 
-[BestClient]
+[BestClient Light]
 Better tab option
 == 改进标签页
 
-[BestClient]
+[BestClient Light]
 Left
 == 左侧
 
-[BestClient]
+[BestClient Light]
 Right
 == 右侧
 
-[BestClient]
+[BestClient Light]
 Better color picker
 == 改进取色器
 
-[BestClient]
+[BestClient Light]
 Better font
 == 改进字体
 
-[BestClient]
+[BestClient Light]
 UI Themes
 == 界面主题
 
-[BestClient]
+[BestClient Light]
 Scrollbar
 == 滚动条
 
-[BestClient]
+[BestClient Light]
 Button
 == 按钮
 
-[BestClient]
+[BestClient Light]
 Droplist
 == 下拉列表
 
-[BestClient]
+[BestClient Light]
 Input field
 == 输入框
 
-[BestClient]
+[BestClient Light]
 Function block
 == 功能块
 
-[BestClient]
+[BestClient Light]
 UI background
 == 界面背景
 
-[BestClient]
+[BestClient Light]
 Settings tabs
 == 设置标签
 
-[BestClient]
+[BestClient Light]
 Badge
 == 徽章
 
-[BestClient]
+[BestClient Light]
 Binds
 == 按键
 
-[BestClient]
+[BestClient Light]
 Accent
 == 强调色
 
-[BestClient]
+[BestClient Light]
 Enable colorable background
 == 启用可着色背景
 
-[BestClient]
+[BestClient Light]
 Background color
 == 背景颜色
 
-[BestClient]
+[BestClient Light]
 Exported!
 == 已导出！
 
-[BestClient]
+[BestClient Light]
 Export
 == 导出
 
-[BestClient]
+[BestClient Light]
 Imported!
 == 已导入！
 
-[BestClient]
+[BestClient Light]
 Import
 == 导入
 
-[BestClient]
+[BestClient Light]
 Copy theme to clipboard
 == 复制主题到剪贴板
 
-[BestClient]
+[BestClient Light]
 Paste theme from clipboard
 == 从剪贴板粘贴主题
 
-[BestClient]
+[BestClient Light]
 Enable motion blur
 == 启用动态模糊
 
-[BestClient]
+[BestClient Light]
 Blend strength
 == 混合强度
 
-[BestClient]
+[BestClient Light]
 Animations
 == 动画
 
-[BestClient]
+[BestClient Light]
 Enable animations
 == 启用动画
 
-[BestClient]
+[BestClient Light]
 Settings animation
 == 设置动画
 
-[BestClient]
+[BestClient Light]
 Settings (ms)
 == 设置（毫秒）
 
-[BestClient]
+[BestClient Light]
 Chat message animations
 == 聊天消息动画
 
-[BestClient]
+[BestClient Light]
 Chat message (ms)
 == 聊天消息（毫秒）
 
-[BestClient]
+[BestClient Light]
 Chat open animation
 == 聊天打开动画
 
-[BestClient]
+[BestClient Light]
 Chat open (ms)
 == 打开聊天（毫秒）
 
-[BestClient]
+[BestClient Light]
 Chat typing animation
 == 聊天输入动画
 
-[BestClient]
+[BestClient Light]
 Chat typing (ms)
 == 聊天输入（毫秒）
 
-[BestClient]
+[BestClient Light]
 Killfeed animation
 == 击杀信息动画
 
-[BestClient]
+[BestClient Light]
 Killfeed (ms)
 == 击杀信息（毫秒）
 
-[BestClient]
+[BestClient Light]
 Main menu animation
 == 主菜单动画
 
-[BestClient]
+[BestClient Light]
 Main menu speed
 == 主菜单速度
 
-[BestClient]
+[BestClient Light]
 Music Player
 == 音乐播放器
 
-[BestClient]
+[BestClient Light]
 Enable music player
 == 启用音乐播放器
 
-[BestClient]
+[BestClient Light]
 Static
 == 静态
 
-[BestClient]
+[BestClient Light]
 Cover
 == 封面
 
-[BestClient]
+[BestClient Light]
 Static color
 == 静态颜色
 
-[BestClient]
+[BestClient Light]
 Visualizer mode
 == 可视化模式
 
-[BestClient]
+[BestClient Light]
 Bottom
 == 底部
 
-[BestClient]
+[BestClient Light]
 Center
 == 居中
 
-[BestClient]
+[BestClient Light]
 Up
 == 向上
 
-[BestClient]
+[BestClient Light]
 Text scale
 == 文本缩放
 
-[BestClient]
+[BestClient Light]
 Columns
 == 柱状
 
-[BestClient]
+[BestClient Light]
 Rounding
 == 圆角
 
-[BestClient]
+[BestClient Light]
 Soft
 == 柔和
 
-[BestClient]
+[BestClient Light]
 Show song lyrics
 == 显示歌词
 
-[BestClient]
+[BestClient Light]
 Show current time
 == 显示当前时间
 
-[BestClient]
+[BestClient Light]
 Keystrokes
 == 按键显示
 
-[BestClient]
+[BestClient Light]
 Classic
 == 经典
 
-[BestClient]
+[BestClient Light]
 Minecraft
 == 我的世界
 
-[BestClient]
+[BestClient Light]
 Enable keyboard
 == 启用键盘
 
-[BestClient]
+[BestClient Light]
 Full
 == 完整
 
-[BestClient]
+[BestClient Light]
 Minimal
 == 精简
 
-[BestClient]
+[BestClient Light]
 Micro
 == 微型
 
-[BestClient]
+[BestClient Light]
 Only A/D
 == 仅 A/D
 
-[BestClient]
+[BestClient Light]
 Pressed opacity
 == 按下不透明度
 
-[BestClient]
+[BestClient Light]
 Enable LMB
 == 启用左键
 
-[BestClient]
+[BestClient Light]
 Enable RMB
 == 启用右键
 
-[BestClient]
+[BestClient Light]
 Enable Space
 == 启用空格
 
-[BestClient]
+[BestClient Light]
 Enable mouse
 == 启用鼠标
 
-[BestClient]
+[BestClient Light]
 Arrow
 == 箭头
 
-[BestClient]
+[BestClient Light]
 Dot Dot
 == 点点
 
-[BestClient]
+[BestClient Light]
 Nothing
 == 无
 
-[BestClient]
+[BestClient Light]
 Aspect Ratio
 == 宽高比
 
-[BestClient]
+[BestClient Light]
 Off (default)
 == 关闭（默认）
 
-[BestClient]
+[BestClient Light]
 Preset
 == 预设
 
-[BestClient]
+[BestClient Light]
 Game only
 == 仅游戏
 
-[BestClient]
+[BestClient Light]
 Game no HUD
 == 游戏无 HUD
 
-[BestClient]
+[BestClient Light]
 Custom size
 == 自定义大小
 
-[BestClient]
+[BestClient Light]
 Looks like you're on a server where this feature is forbidden
 == 当前服务器似乎禁止此功能
 
-[BestClient]
+[BestClient Light]
 Unavailable while camera zoom is disabled
 == 镜头缩放关闭时不可用
 
-[BestClient]
+[BestClient Light]
 Physic Balls
 == 物理球
 
-[BestClient]
+[BestClient Light]
 Ball amount: %d
 == 球数量：%d
 
-[BestClient]
+[BestClient Light]
 Clear all balls
 == 清除所有球
 
-[BestClient]
+[BestClient Light]
 Ball skin
 == 球皮肤
 
-[BestClient]
+[BestClient Light]
 Spawn count
 == 生成数量
 
-[BestClient]
+[BestClient Light]
 New Ball
 == 新球
 
-[BestClient]
+[BestClient Light]
 New Ball Cursor
 == 在光标处生成球
 
-[BestClient]
+[BestClient Light]
 ticks
 == tick
 
-[BestClient]
+[BestClient Light]
 Inputs
 == 输入
 
-[BestClient]
+[BestClient Light]
 Enable Inputs
 == 启用输入
 
-[BestClient]
+[BestClient Light]
 Fast
 == 快速
 
-[BestClient]
+[BestClient Light]
 Best
 == 最佳
 
-[BestClient]
+[BestClient Light]
 Saiko
 == Saiko
 
-[BestClient]
+[BestClient Light]
 Delta
 == Delta
 
-[BestClient]
+[BestClient Light]
 Cloud
 == Cloud
 
-[BestClient]
+[BestClient Light]
 Prediction offset
 == 预测偏移
 
-[BestClient]
+[BestClient Light]
 Fast Input others
 == 快速输入（其他玩家）
 
-[BestClient]
+[BestClient Light]
 Smoothing
 == 平滑
 
-[BestClient]
+[BestClient Light]
 Latency compensation
 == 延迟补偿
 
-[BestClient]
+[BestClient Light]
 Interpolation
 == 插值
 
-[BestClient]
+[BestClient Light]
 Linear
 == 线性
 
-[BestClient]
+[BestClient Light]
 Cubic
 == 三次
 
-[BestClient]
+[BestClient Light]
 Smooth
 == 平滑
 
-[BestClient]
+[BestClient Light]
 Best input others
 == 最佳输入（其他玩家）
 
-[BestClient]
+[BestClient Light]
 Saiko input others
 == Saiko 输入（其他玩家）
 
-[BestClient]
+[BestClient Light]
 Delta input others
 == Delta 输入（其他玩家）
 
-[BestClient]
+[BestClient Light]
 F input others
 == F 输入（其他玩家）
 
-[BestClient]
+[BestClient Light]
 Cloud input others
 == Cloud 输入（其他玩家）
 
-[BestClient]
+[BestClient Light]
 Sub-Tick aiming
 == 子 Tick 瞄准
 
-[BestClient]
+[BestClient Light]
 Repredict on mid-tick hook direction change (may lag)
 == Tick 中途钩索转向时重新预测（可能卡顿）
 
-[BestClient]
+[BestClient Light]
 Auto margin
 == 自动边距
 
-[BestClient]
+[BestClient Light]
 Snap Tap
 == Snap Tap
 
-[BestClient]
+[BestClient Light]
 Off
 == 关闭
 
-[BestClient]
+[BestClient Light]
 Delay
 == 延迟
 
-[BestClient]
+[BestClient Light]
 Gores mode
 == Gores 模式
 
-[BestClient]
+[BestClient Light]
 Enable gores mode
 == 启用 Gores 模式
 
-[BestClient]
+[BestClient Light]
 Disable if you have shotgun, grenade or laser
 == 持有霰弹枪、榴弹或激光时关闭
 
-[BestClient]
+[BestClient Light]
 Optimizer
 == 优化器
 
-[BestClient]
+[BestClient Light]
 Enable optimizer
 == 启用优化器
 
-[BestClient]
+[BestClient Light]
 Disable all particles render
 == 关闭所有粒子渲染
 
-[BestClient]
+[BestClient Light]
 Disable map quads render
 == 关闭地图四边形渲染
 
-[BestClient]
+[BestClient Light]
 Disable high detail
 == 关闭高细节
 
-[BestClient]
+[BestClient Light]
 FPS fog (cull outside limit)
 == FPS 雾（裁掉范围外内容）
 
-[BestClient]
+[BestClient Light]
 FPS fog
 == FPS 雾
 
-[BestClient]
+[BestClient Light]
 Render FPS fog rectangle
 == 绘制 FPS 雾矩形
 
-[BestClient]
+[BestClient Light]
 Cull map tiles outside FPS fog
 == 裁掉 FPS 雾外的地图图块
 
-[BestClient]
+[BestClient Light]
 Radius
 == 半径
 
-[BestClient]
+[BestClient Light]
 Zoom %
 == 缩放 %
 
-[BestClient]
+[BestClient Light]
 Radius (tiles)
 == 半径（图块）
 
-[BestClient]
+[BestClient Light]
 Visible area (%)
 == 可见区域（%）
 
-[BestClient]
+[BestClient Light]
 Performance
 == 性能
 
-[BestClient]
+[BestClient Light]
 High DDNet Process Priority
 == 提高 DDNet 进程优先级
 
-[BestClient]
+[BestClient Light]
 Lower Discords Process Priority
 == 降低 Discord 进程优先级
 
-[BestClient]
+[BestClient Light]
 Gameplay QoL
 == 玩法便利
 
-[BestClient]
+[BestClient Light]
 Automatic update
 == 自动更新
 
-[BestClient]
+[BestClient Light]
 Cinematic camera
 == 电影镜头
 
-[BestClient]
+[BestClient Light]
 Strength
 == 强度
 
-[BestClient]
+[BestClient Light]
 Extend zoom (0.5 steps)
 == 扩展缩放（步进 0.5）
 
-[BestClient]
+[BestClient Light]
 Better spectate
 == 改进观战
 
-[BestClient]
+[BestClient Light]
 Replace your say /pause bind (default: Q) with +specpause (pause/spec radio)
 == 把 say /pause 按键（默认 Q）换成 +specpause（暂停/观战）
 
-[BestClient]
+[BestClient Light]
 Show delay
 == 显示延迟
 
-[BestClient]
+[BestClient Light]
 Notify when moved in spec
 == 观战中被移动时通知
 
-[BestClient]
+[BestClient Light]
 Notification text
 == 通知文本
 
-[BestClient]
+[BestClient Light]
 Lock team automatically after joining
 == 加入后自动锁定队伍
 
-[BestClient]
+[BestClient Light]
 Auto lock delay
 == 自动锁定延迟
 
-[BestClient]
+[BestClient Light]
 Confirm before quitting
 == 退出前确认
 
-[BestClient]
+[BestClient Light]
 Moving/ego tiles prediction
 == 移动/自我图块预测
 
-[BestClient]
+[BestClient Light]
 Fast Actions
 == 快速动作
 
-[BestClient]
+[BestClient Light]
 Enable Fast Actions
 == 启用快速动作
 
-[BestClient]
+[BestClient Light]
 Selected slot
 == 所选槽位
 
-[BestClient]
+[BestClient Light]
 Name:
 == 名称：
 
-[BestClient]
+[BestClient Light]
 Name (optional)
 == 名称（可选）
 
-[BestClient]
+[BestClient Light]
 Clear command
 == 清空命令
 
-[BestClient]
+[BestClient Light]
 In game: hold bind key, press 1..6, release key to execute
 == 游戏中：按住绑定键，按 1..6，松开后执行
 
-[BestClient]
+[BestClient Light]
 Fast Actions key
 == 快速动作按键
 
-[BestClient]
+[BestClient Light]
 Finish Prediction
 == 终点预测
 
-[BestClient]
+[BestClient Light]
 Enable finish prediction
 == 启用终点预测
 
-[BestClient]
+[BestClient Light]
 Show time
 == 显示时间
 
-[BestClient]
+[BestClient Light]
 Time left
 == 剩余时间
 
-[BestClient]
+[BestClient Light]
 Finish time
 == 完成时间
 
-[BestClient]
+[BestClient Light]
 Show milliseconds
 == 显示毫秒
 
-[BestClient]
+[BestClient Light]
 Show percentage
 == 显示百分比
 
-[BestClient]
+[BestClient Light]
 Show always
 == 始终显示
 
-[BestClient]
+[BestClient Light]
 Consider freeze walls
 == 计入冻结墙
 
-[BestClient]
+[BestClient Light]
 Edge Info
 == 边缘信息
 
-[BestClient]
+[BestClient Light]
 Show edge info
 == 显示边缘信息
 
-[BestClient]
+[BestClient Light]
 Show edge info about freeze
 == 显示冻结边缘信息
 
-[BestClient]
+[BestClient Light]
 Show edge info about jumps
 == 显示跳跃边缘信息
 
-[BestClient]
+[BestClient Light]
 Color when over freeze
 == 位于冻结上方时的颜色
 
-[BestClient]
+[BestClient Light]
 Color when over kill
 == 位于击杀上方时的颜色
 
-[BestClient]
+[BestClient Light]
 Color when falling safely
 == 安全下落时的颜色
 
-[BestClient]
+[BestClient Light]
 Chat QoL
 == 聊天便利
 
-[BestClient]
+[BestClient Light]
 Save unsent messages
 == 保存未发送的消息
 
-[BestClient]
+[BestClient Light]
 Silent typing
 == 静默输入
 
-[BestClient]
+[BestClient Light]
 Commands in other layout
 == 其他键盘布局下的命令
 
-[BestClient]
+[BestClient Light]
 Reply/copy message menu
 == 回复/复制消息菜单
 
-[BestClient]
+[BestClient Light]
 Notify about saves on map
 == 地图存档通知
 
-[BestClient]
+[BestClient Light]
 Twitch Chat
 == Twitch 聊天
 
-[BestClient]
+[BestClient Light]
 Nick
 == 昵称
 
-[BestClient]
+[BestClient Light]
 Stop
 == 停止
 
-[BestClient]
+[BestClient Light]
 Start
 == 开始
 
-[BestClient]
+[BestClient Light]
 Browser Utils
 == 浏览器工具
 
-[BestClient]
+[BestClient Light]
 Auto server list refresh
 == 自动刷新服务器列表
 
-[BestClient]
+[BestClient Light]
 Seconds
 == 秒
 
-[BestClient]
+[BestClient Light]
 Short EGO/KoG server name
 == 缩短 EGO/KoG 服务器名
 
-[BestClient]
+[BestClient Light]
 Show finished map on EGO
 == 在 EGO 上显示已完成地图
 
-[BestClient]
+[BestClient Light]
 Show finished map on Legit Network
 == 在 Legit Network 上显示已完成地图
 
-[BestClient]
-Use BestClient MasterServer
-== 使用 BestClient 主服务器
+[BestClient Light]
+Use BestClient Light MasterServer
+== 使用 BestClient Light 主服务器
 
-[BestClient]
+[BestClient Light]
 Rollback Demo
 == 回滚演示
 
-[BestClient]
+[BestClient Light]
 Enable rollback demo recording
 == 启用回滚演示录制
 
-[BestClient]
+[BestClient Light]
 Rollback length
 == 回滚长度
 
-[BestClient]
+[BestClient Light]
 Rollback bind
 == 回滚按键
 
-[BestClient]
+[BestClient Light]
 Focus Mode
 == 专注模式
 
-[BestClient]
+[BestClient Light]
 Enable Focus Mode
 == 启用专注模式
 
-[BestClient]
+[BestClient Light]
 Hide Player Names
 == 隐藏玩家名
 
-[BestClient]
+[BestClient Light]
 Hide Visual Effects
 == 隐藏视觉效果
 
-[BestClient]
+[BestClient Light]
 Hide HUD
 == 隐藏 HUD
 
-[BestClient]
+[BestClient Light]
 Hide Song Player
 == 隐藏播放器
 
-[BestClient]
+[BestClient Light]
 Hide Unnecessary UI
 == 隐藏多余界面
 
-[BestClient]
+[BestClient Light]
 Hide Chat
 == 隐藏聊天
 
-[BestClient]
+[BestClient Light]
 Hide Scoreboard
 == 隐藏记分板
 
-[BestClient]
+[BestClient Light]
 Auto reply when chat is hidden
 == 聊天隐藏时自动回复
 
-[BestClient]
+[BestClient Light]
 Focus mode bind
 == 专注模式按键
 
-[BestClient]
+[BestClient Light]
 Voice Moderation
 == 语音管理
 
-[BestClient]
+[BestClient Light]
 Voice Binds
 == 语音按键
 
-[BestClient]
+[BestClient Light]
 Voice
 == 语音
 
-[BestClient]
+[BestClient Light]
 Push-to-talk
 == 按住说话
 
-[BestClient]
+[BestClient Light]
 Mute microphone
 == 静音麦克风
 
-[BestClient]
+[BestClient Light]
 Mute headphones
 == 静音耳机
 
-[BestClient]
+[BestClient Light]
 System default
 == 系统默认
 
-[BestClient]
+[BestClient Light]
 Device #%d
 == 设备 #%d
 
-[BestClient]
+[BestClient Light]
 Enable voice chat
 == 启用语音聊天
 
-[BestClient]
+[BestClient Light]
 In-Game Only
 == 仅在游戏中
 
-[BestClient]
+[BestClient Light]
 Use team0
 == 使用 team0
 
-[BestClient]
+[BestClient Light]
 Enable your group
 == 启用自己的分组
 
-[BestClient]
+[BestClient Light]
 Radius filter
 == 距离过滤
 
-[BestClient]
+[BestClient Light]
 Radius (tiles)
 == 半径（格）
 
-[BestClient]
+[BestClient Light]
 Activation mode
 == 激活模式
 
-[BestClient]
+[BestClient Light]
 Automatic
 == 自动
 
-[BestClient]
+[BestClient Light]
 VAD threshold (%)
 == 语音活动检测阈值 (%)
 
-[BestClient]
+[BestClient Light]
 VAD release delay (ms)
 == 语音活动检测释放延迟（毫秒）
 
-[BestClient]
+[BestClient Light]
 Mic check (loopback)
 == 麦克风测试（听自己）
 
-[BestClient]
+[BestClient Light]
 Mic level
 == 麦克风电平
 
-[BestClient]
+[BestClient Light]
 Mic gain
 == 麦克风增益
 
-[BestClient]
+[BestClient Light]
 Voice volume
 == 语音音量
 
-[BestClient]
+[BestClient Light]
 Microphone
 == 麦克风
 
-[BestClient]
+[BestClient Light]
 Headphones
 == 耳机
 
-[BestClient]
+[BestClient Light]
 Status
 == 状态
 
-[BestClient]
+[BestClient Light]
 Connected
 == 已连接
 
-[BestClient]
+[BestClient Light]
 Offline
 == 离线
 
-[BestClient]
+[BestClient Light]
 Reload servers
 == 重新加载服务器
 
-[BestClient]
+[BestClient Light]
 Available servers
 == 可用服务器
 
-[BestClient]
+[BestClient Light]
 Loading server list...
 == 正在加载服务器列表...
 
-[BestClient]
+[BestClient Light]
 No servers loaded
 == 未加载服务器
 
-[BestClient]
+[BestClient Light]
 Voice commands
 == 语音命令
 
-[BestClient]
+[BestClient Light]
 !vmute "name" / !vunmute "name"
 == !vmute "名字" / !vunmute "名字"
 
-[BestClient]
+[BestClient Light]
 !volume "name" 0-100
 == !volume "名字" 0-100
 
-[BestClient]
+[BestClient Light]
 !vradius on/off/<tiles>
 == !vradius on/off/<格数>
 
-[BestClient]
+[BestClient Light]
 Client Indicator
 == 客户端标识
 
-[BestClient]
+[BestClient Light]
 Show indicator in name plates
 == 在名牌中显示标识
 
-[BestClient]
+[BestClient Light]
 Show above yourself
 == 在自己上方显示
 
-[BestClient]
+[BestClient Light]
 Name plate indicator size
 == 名牌标识大小
 
-[BestClient]
+[BestClient Light]
 Show indicator in scoreboard
 == 在记分板中显示标识
 
-[BestClient]
+[BestClient Light]
 Scoreboard indicator size
 == 记分板标识大小
 
-[BestClient]
+[BestClient Light]
 Not connected to voice server
 == 未连接到语音服务器
 
-[BestClient]
+[BestClient Light]
 Voice Moderator Login
 == 语音管理员登录
 
-[BestClient]
+[BestClient Light]
 Mod key:
 == 管理密钥：
 
-[BestClient]
+[BestClient Light]
 Authenticating...
 == 验证中...
 
-[BestClient]
+[BestClient Light]
 Wrong key
 == 密钥错误
 
-[BestClient]
+[BestClient Light]
 Login as Voice Mod
 == 以语音管理员登录
 
-[BestClient]
+[BestClient Light]
 Voice players on this server
 == 此服务器上的语音玩家
 
-[BestClient]
+[BestClient Light]
 Refresh
 == 刷新
 
-[BestClient]
+[BestClient Light]
 No players in current voice room
 == 当前语音房间没有玩家
 
-[BestClient]
+[BestClient Light]
 Action
 == 操作
 
-[BestClient]
+[BestClient Light]
 slot %d
 == 槽位 %d
 
-[BestClient]
+[BestClient Light]
 Mini games
 == 小游戏
 
-[BestClient]
-BestClient Links
-== BestClient 链接
+[BestClient Light]
+BestClient Light Links
+== BestClient Light 链接
 
-[BestClient]
+[BestClient Light]
 Telegram
 == Telegram
 
-[BestClient]
+[BestClient Light]
 Check update
 == 检查更新
 
-[BestClient]
+[BestClient Light]
 Config Files
 == 配置文件
 
-[BestClient]
-BestClient Settings
-== BestClient 设置
+[BestClient Light]
+BestClient Light Settings
+== BestClient Light 设置
 
-[BestClient]
-BestClient Developers
-== BestClient 开发者
+[BestClient Light]
+BestClient Light Developers
+== BestClient Light 开发者
 
-[BestClient]
+[BestClient Light]
 Hide Settings Tabs
 == 隐藏设置标签
 
-[BestClient]
+[BestClient Light]
 Laser Glow
 == 激光发光
 
-[BestClient]
+[BestClient Light]
 Shotgun Glow
 == 霰弹发光
 
-[BestClient]
+[BestClient Light]
 Rocket Glow
 == 火箭发光
 
-[BestClient]
+[BestClient Light]
 Rocket
 == 火箭
 
-[BestClient]
+[BestClient Light]
 Prism
 == 棱镜
 
-[BestClient]
+[BestClient Light]
 Pulse
 == 脉冲
 
-[BestClient]
+[BestClient Light]
 Crystal
 == 水晶
 
-[BestClient]
+[BestClient Light]
 Power
 == 强度
 
-[BestClient]
+[BestClient Light]
 Nuke effects
 == 爆炸效果
 
-[BestClient]
+[BestClient Light]
 Enable Nuke effects
 == 启用爆炸效果
 
-[BestClient]
+[BestClient Light]
 Screen shake
 == 屏幕震动
 
-[BestClient]
+[BestClient Light]
 Nuke size
 == 爆炸大小
 
-[BestClient]
+[BestClient Light]
 Custom hooks
 == 自定义钩索
 
-[BestClient]
+[BestClient Light]
 Hook
 == 钩
 
-[BestClient]
+[BestClient Light]
 None
 == 无
 
-[BestClient]
+[BestClient Light]
 Whirlwind
 == 旋风
 
-[BestClient]
+[BestClient Light]
 Black hole
 == 黑洞
 
-[BestClient]
+[BestClient Light]
 Magic
 == 魔法
 
-[BestClient]
+[BestClient Light]
 Fire
 == 火焰
 
-[BestClient]
+[BestClient Light]
 Troll
 == 恶搞
 
-[BestClient]
+[BestClient Light]
 Lightning
 == 闪电
 
-[BestClient]
+[BestClient Light]
 Tentacle
 == 触手
 
-[BestClient]
+[BestClient Light]
 Style the hook
 == 钩索样式
 
-[BestClient]
+[BestClient Light]
 Style the tip
 == 钩尖样式
 
-[BestClient]
+[BestClient Light]
 Grow time
 == 生长时间
 
-[BestClient]
+[BestClient Light]
 Grab gust
 == 抓取气流
 
-[BestClient]
+[BestClient Light]
 Eye
 == 眼睛
 
-[BestClient]
+[BestClient Light]
 Wind lines
 == 风线
 
-[BestClient]
+[BestClient Light]
 Spin speed
 == 旋转速度
 
-[BestClient]
+[BestClient Light]
 Line thickness
 == 线条粗细
 
-[BestClient]
+[BestClient Light]
 Wind opacity
 == 风的不透明度
 
-[BestClient]
+[BestClient Light]
 Leaves
 == 树叶
 
-[BestClient]
+[BestClient Light]
 Dust
 == 尘埃
 
-[BestClient]
+[BestClient Light]
 Wind color
 == 风的颜色
 
-[BestClient]
+[BestClient Light]
 Disk
 == 圆盘
 
-[BestClient]
+[BestClient Light]
 Matter
 == 物质
 
-[BestClient]
+[BestClient Light]
 Spin
 == 旋转
 
-[BestClient]
+[BestClient Light]
 Disk color
 == 圆盘颜色
 
-[BestClient]
+[BestClient Light]
 Runes
 == 符文
 
-[BestClient]
+[BestClient Light]
 Sparkles
 == 闪光
 
-[BestClient]
+[BestClient Light]
 Spell color
 == 法术颜色
 
-[BestClient]
+[BestClient Light]
 Smoke
 == 烟雾
 
-[BestClient]
+[BestClient Light]
 Flames
 == 火焰
 
-[BestClient]
+[BestClient Light]
 Embers
 == 余烬
 
-[BestClient]
+[BestClient Light]
 Fire color
 == 火焰颜色
 
-[BestClient]
+[BestClient Light]
 Rays
 == 光线
 
-[BestClient]
+[BestClient Light]
 Flow
 == 流动
 
-[BestClient]
+[BestClient Light]
 Glitter
 == 闪粉
 
-[BestClient]
+[BestClient Light]
 Ribbon width
 == 丝带宽度
 
-[BestClient]
+[BestClient Light]
 Wall arcs
 == 贴墙弧线
 
-[BestClient]
+[BestClient Light]
 Jitter
 == 抖动
 
-[BestClient]
+[BestClient Light]
 Forks
 == 分叉
 
-[BestClient]
+[BestClient Light]
 Sparks
 == 火花
 
-[BestClient]
+[BestClient Light]
 Lightning color
 == 闪电颜色
 
-[BestClient]
+[BestClient Light]
 Suckers
 == 吸盘
 
-[BestClient]
+[BestClient Light]
 Writhing
 == 扭动
 
-[BestClient]
+[BestClient Light]
 Thickness
 == 粗细
 
-[BestClient]
+[BestClient Light]
 Slime
 == 粘液
 
-[BestClient]
+[BestClient Light]
 Flesh color
 == 肉色
 
-[BestClient]
+[BestClient Light]
 Hook effects
 == 钩索效果
 
-[BestClient]
+[BestClient Light]
 Air jump ring
 == 二段跳光环
 
-[BestClient]
+[BestClient Light]
 Disable jump particles
 == 关闭跳跃粒子
 
-[BestClient]
+[BestClient Light]
 Hammer slash
 == 锤子挥砍
 
-[BestClient]
+[BestClient Light]
 Disable hammer particles
 == 关闭锤子粒子
 
-[BestClient]
+[BestClient Light]
 Hook lasso
 == 钩索套索
 
-[BestClient]
+[BestClient Light]
 Hook box
 == 钩索方框
 
-[BestClient]
+[BestClient Light]
 Hook hold
 == 钩索蓄力
 
-[BestClient]
+[BestClient Light]
 Hold aura
 == 蓄力光环
 
-[BestClient]
+[BestClient Light]
 Hold burst
 == 蓄力爆发
 
-[BestClient]
+[BestClient Light]
 Energy motes
 == 能量粒子
 
-[BestClient]
+[BestClient Light]
 Weather
 == 天气
 
-[BestClient]
+[BestClient Light]
 Snow
 == 雪
 
-[BestClient]
+[BestClient Light]
 Rain
 == 雨
 
-[BestClient]
+[BestClient Light]
 Fireflies
 == 萤火虫
 
-[BestClient]
+[BestClient Light]
 Amount
 == 数量
 
-[BestClient]
+[BestClient Light]
 Dust color
 == 尘埃颜色
 
-[BestClient]
+[BestClient Light]
 Rain color
 == 雨的颜色
 
-[BestClient]
+[BestClient Light]
 Firefly color
 == 萤火虫颜色
 
-[BestClient]
+[BestClient Light]
 Dots
 == 圆点
 
-[BestClient]
+[BestClient Light]
 Snowflakes
 == 雪花
 
-[BestClient]
+[BestClient Light]
 Snow color
 == 雪的颜色
 
-[BestClient]
+[BestClient Light]
 Freeze lifesteal
 == 冻结吸血
 
-[BestClient]
+[BestClient Light]
 Shield
 == 护盾
 
-[BestClient]
+[BestClient Light]
 Reach
 == 范围
 
-[BestClient]
+[BestClient Light]
 Frost
 == 冰霜
 
-[BestClient]
+[BestClient Light]
 Custom hook color
 == 自定义钩索颜色
 
-[BestClient]
+[BestClient Light]
 Cold color
 == 冷色
 
-[BestClient]
+[BestClient Light]
 Freeze lightning
 == 冻结闪电
 
-[BestClient]
+[BestClient Light]
 Impact
 == 冲击
 
-[BestClient]
+[BestClient Light]
 Branches
 == 分支
 
-[BestClient]
+[BestClient Light]
 Shake
 == 震动
 
-[BestClient]
+[BestClient Light]
 Strike me
 == 劈中自己
 
-[BestClient]
+[BestClient Light]
 Join a server to preview the lightning
 == 进入服务器以预览闪电
 
-[BestClient]
+[BestClient Light]
 Enabled
 == 已启用
 
-[BestClient]
+[BestClient Light]
 Scale
 == 缩放
 
-[BestClient]
+[BestClient Light]
 Reset scale
 == 重置缩放
 
-[BestClient]
+[BestClient Light]
 Reset position
 == 重置位置
 
-[BestClient]
+[BestClient Light]
 Reset all
 == 全部重置
 
-[BestClient]
+[BestClient Light]
 disabled
 == 已关闭
 
-[BestClient]
+[BestClient Light]
 preview
 == 预览
 
-[BestClient]
+[BestClient Light]
 Reset All
 == 全部重置
 
-[BestClient]
+[BestClient Light]
 Disabled.
 == 已关闭。
 
-[BestClient]
+[BestClient Light]
 Failed to load PNG.
 == PNG 加载失败。
 
-[BestClient]
+[BestClient Light]
 Failed to upload PNG.
 == PNG 上传失败。
 
-[BestClient]
+[BestClient Light]
 Loaded image.
 == 图片已加载。
 
-[BestClient]
+[BestClient Light]
 Failed to read file.
 == 读取文件失败。
 
-[BestClient]
+[BestClient Light]
 Failed to upload image.
 == 图片上传失败。
 
-[BestClient]
+[BestClient Light]
 Failed to decode image.
 == 图片解码失败。
 
-[BestClient]
+[BestClient Light]
 Loaded animated image.
 == 动态图片已加载。
 
-[BestClient]
+[BestClient Light]
 Video backgrounds are unavailable in this build.
 == 此版本不支持视频背景。
 
-[BestClient]
+[BestClient Light]
 Failed to open video.
 == 打开视频失败。
 
-[BestClient]
+[BestClient Light]
 Failed to read video info.
 == 读取视频信息失败。
 
-[BestClient]
+[BestClient Light]
 No video stream found.
 == 未找到视频流。
 
-[BestClient]
+[BestClient Light]
 Unsupported video codec.
 == 不支持的视频编码。
 
-[BestClient]
+[BestClient Light]
 Failed to initialize video decoder.
 == 初始化视频解码器失败。
 
-[BestClient]
+[BestClient Light]
 Invalid video dimensions.
 == 视频尺寸无效。
 
-[BestClient]
+[BestClient Light]
 Failed to allocate video frames.
 == 分配视频帧失败。
 
-[BestClient]
+[BestClient Light]
 Failed to allocate RGBA frame.
 == 分配 RGBA 帧失败。
 
-[BestClient]
+[BestClient Light]
 Failed to initialize video scaler.
 == 初始化视频缩放器失败。
 
-[BestClient]
+[BestClient Light]
 Failed to decode first video frame.
 == 解码第一帧失败。
 
-[BestClient]
+[BestClient Light]
 Loaded video.
 == 视频已加载。
 
-[BestClient]
+[BestClient Light]
 No media selected.
 == 未选择媒体。
 
-[BestClient]
+[BestClient Light]
 Failed while decoding video.
 == 解码视频时失败。
 
-[BestClient]
+[BestClient Light]
 Back to Info
 == 返回信息
 
-[BestClient]
+[BestClient Light]
 Press any key to start
 == 按任意键开始
 
-[BestClient]
+[BestClient Light]
 Game Over
 == 游戏结束
 
-[BestClient]
+[BestClient Light]
 Victory
 == 胜利
 
-[BestClient]
+[BestClient Light]
 Draw - Stalemate
 == 和棋 — 僵局
 
-[BestClient]
+[BestClient Light]
 Draw - Fifty move rule
 == 和棋 — 五十步规则
 
-[BestClient]
+[BestClient Light]
 Draw - Threefold repetition
 == 和棋 — 三次重复
 
-[BestClient]
+[BestClient Light]
 Winner: White
 == 胜者：白方
 
-[BestClient]
+[BestClient Light]
 Winner: Black
 == 胜者：黑方
 
-[BestClient]
+[BestClient Light]
 Turn: White
 == 回合：白方
 
-[BestClient]
+[BestClient Light]
 Turn: Black
 == 回合：黑方
 
-[BestClient]
+[BestClient Light]
 White Wins
 == 白方胜利
 
-[BestClient]
+[BestClient Light]
 Black Wins
 == 黑方胜利
 
-[BestClient]
+[BestClient Light]
 All pairs found
 == 全部配对完成
 
-[BestClient]
+[BestClient Light]
 You Win
 == 你赢了
 
-[BestClient]
+[BestClient Light]
 Bot Wins
 == 机器人赢了
 
-[BestClient]
+[BestClient Light]
 All bricks cleared
 == 砖块已全部清除
 
-[BestClient]
+[BestClient Light]
 Numbers
 == 数字
 
-[BestClient]
+[BestClient Light]
 Clear
 == 清除
 
-[BestClient]
+[BestClient Light]
 Sudoku Solved
 == 数独已完成
 
-[BestClient]
+[BestClient Light]
 Get $200
 == 领取 $200
 
-[BestClient]
+[BestClient Light]
 Multiplier:
 == 倍数：
 
-[BestClient]
+[BestClient Light]
 Locked
 == 锁定
 
-[BestClient]
+[BestClient Light]
 Not enough funds
 == 余额不足
 
-[BestClient]
+[BestClient Light]
 Spinning...
 == 旋转中...
 
-[BestClient]
+[BestClient Light]
 SPIN
 == 旋转
 
-[BestClient]
+[BestClient Light]
 Type to search settings
 == 输入以搜索设置
 
-[BestClient]
+[BestClient Light]
 Element
 == 元素
 
-[BestClient]
+[BestClient Light]
 Casino
 == 赌场
 
-[BestClient]
+[BestClient Light]
 Snake
 == 贪吃蛇
 
-[BestClient]
+[BestClient Light]
 Minesweeper
 == 扫雷
 
-[BestClient]
+[BestClient Light]
 Chess
 == 国际象棋
 
-[BestClient]
+[BestClient Light]
 Memory
 == 记忆
 
-[BestClient]
+[BestClient Light]
 Pong
 == 乒乓
 
-[BestClient]
+[BestClient Light]
 Brick Breaker
 == 打砖块
 
-[BestClient]
+[BestClient Light]
 Sudoku
 == 数独
 
-[BestClient]
+[BestClient Light]
 Spin the reels, bet & win
 == 转动转轮，下注并获胜
 
-[BestClient]
+[BestClient Light]
 Arrows/WASD, Space restart
 == 方向键/WASD，空格重新开始
 
-[BestClient]
+[BestClient Light]
 LMB open, RMB flag, hover hints
 == 左键打开，右键插旗，悬停提示
 
-[BestClient]
+[BestClient Light]
 Font Awesome chess pieces
 == Font Awesome 棋子
 
-[BestClient]
+[BestClient Light]
 Find all matching pairs
 == 找出所有配对
 
-[BestClient]
+[BestClient Light]
 W/S or Up/Down to move paddle
 == W/S 或上/下移动挡板
 
-[BestClient]
+[BestClient Light]
 Break all bricks with the ball
 == 用球打掉所有砖块
 
-[BestClient]
+[BestClient Light]
 Click cell, 1-9 place, 0/Del clear
 == 点击格子，1-9 填入，0/Del 清除
 
-[BestClient]
+[BestClient Light]
 Easy
 == 简单
 
-[BestClient]
+[BestClient Light]
 Medium
 == 中等
 
-[BestClient]
+[BestClient Light]
 Hard
 == 困难
 

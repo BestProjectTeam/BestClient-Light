@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <utility>
 
-static constexpr const char *CONFIGS_DIR = "BestClient/configs";
+static constexpr const char *CONFIGS_DIR = "bestclient-light/configs";
 
 bool CBcConfigPresets::NameOk(const char *pName)
 {
@@ -70,13 +70,13 @@ static int ListCallback(const CFsFileInfo *pInfo, int IsDir, int, void *pUser)
 
 static void CountChangedVariable(SConfigVariable *pVariable, void *pUserData)
 {
-	if(pVariable->m_ConfigDomain == ConfigDomain::BESTCLIENT && (pVariable->m_Flags & CFGFLAG_SAVE) != 0 && !pVariable->IsDefault())
+	if(pVariable->m_ConfigDomain == ConfigDomain::BESTCLIENT_LIGHT && (pVariable->m_Flags & CFGFLAG_SAVE) != 0 && !pVariable->IsDefault())
 		++*static_cast<int *>(pUserData);
 }
 
-static void ResetBestClientVariable(SConfigVariable *pVariable, void *)
+static void ResetBestClientLightVariable(SConfigVariable *pVariable, void *)
 {
-	if(pVariable->m_ConfigDomain == ConfigDomain::BESTCLIENT && (pVariable->m_Flags & CFGFLAG_SAVE) != 0)
+	if(pVariable->m_ConfigDomain == ConfigDomain::BESTCLIENT_LIGHT && (pVariable->m_Flags & CFGFLAG_SAVE) != 0)
 		pVariable->ResetToDefault();
 }
 
@@ -88,7 +88,7 @@ static void WritePresetLine(IOHANDLE File, const char *pLine)
 
 static void WritePresetVariable(SConfigVariable *pVariable, void *pUserData)
 {
-	if(pVariable->m_ConfigDomain != ConfigDomain::BESTCLIENT)
+	if(pVariable->m_ConfigDomain != ConfigDomain::BESTCLIENT_LIGHT)
 		return;
 	if((pVariable->m_Flags & CFGFLAG_SAVE) == 0 || pVariable->IsDefault())
 		return;
@@ -102,7 +102,7 @@ bool CBcConfigPresets::WriteFile(const char *pName)
 	char aPath[IO_MAX_PATH_LENGTH];
 	if(!MakePath(aPath, sizeof(aPath), pName))
 		return false;
-	Storage()->CreateFolder("BestClient", IStorage::TYPE_SAVE);
+	Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
 	Storage()->CreateFolder(CONFIGS_DIR, IStorage::TYPE_SAVE);
 
 	char aTmpPath[IO_MAX_PATH_LENGTH];
@@ -129,7 +129,7 @@ bool CBcConfigPresets::WriteFile(const char *pName)
 
 void CBcConfigPresets::OnConsoleInit()
 {
-	Storage()->CreateFolder("BestClient", IStorage::TYPE_SAVE);
+	Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
 	Storage()->CreateFolder(CONFIGS_DIR, IStorage::TYPE_SAVE);
 	Refresh();
 }
@@ -180,7 +180,7 @@ bool CBcConfigPresets::Load(const char *pName)
 	if(!MakePath(aPath, sizeof(aPath), pName))
 		return false;
 
-	ConfigManager()->VisitVariables(ResetBestClientVariable, nullptr);
+	ConfigManager()->VisitVariables(ResetBestClientLightVariable, nullptr);
 	if(!Console()->ExecuteFile(aPath, IConsole::CLIENT_ID_UNSPECIFIED, true, IStorage::TYPE_SAVE))
 		return false;
 	ConfigManager()->Save();
@@ -197,7 +197,7 @@ int CBcConfigPresets::CountChanged() const
 void CBcConfigPresets::OpenFolder() const
 {
 	CBcConfigPresets *pSelf = const_cast<CBcConfigPresets *>(this);
-	pSelf->Storage()->CreateFolder("BestClient", IStorage::TYPE_SAVE);
+	pSelf->Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
 	pSelf->Storage()->CreateFolder(CONFIGS_DIR, IStorage::TYPE_SAVE);
 	char aPath[IO_MAX_PATH_LENGTH];
 	pSelf->Storage()->GetCompletePath(IStorage::TYPE_SAVE, CONFIGS_DIR, aPath, sizeof(aPath));

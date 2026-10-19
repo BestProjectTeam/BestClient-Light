@@ -1,13 +1,13 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_CLIENTINDICATOR_VERSION_LABEL_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_CLIENTINDICATOR_VERSION_LABEL_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CLIENTINDICATOR_VERSION_LABEL_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CLIENTINDICATOR_VERSION_LABEL_H
 
 #include <base/str.h>
 
 #include <cstring>
 #include <string>
 
-inline bool BestClientIsVersionProofToken(const char *pToken, int Len)
+inline bool BestClientLightIsVersionProofToken(const char *pToken, int Len)
 {
 	if(Len != 8)
 		return false;
@@ -21,7 +21,7 @@ inline bool BestClientIsVersionProofToken(const char *pToken, int Len)
 	return true;
 }
 
-inline const char *BestClientFindVersionProofSep(const char *pRaw)
+inline const char *BestClientLightFindVersionProofSep(const char *pRaw)
 {
 	if(!pRaw || pRaw[0] == '\0')
 		return nullptr;
@@ -34,27 +34,27 @@ inline const char *BestClientFindVersionProofSep(const char *pRaw)
 	if(!pLastSpace || pLastSpace == pRaw)
 		return nullptr;
 	const char *pToken = pLastSpace + 1;
-	if(!BestClientIsVersionProofToken(pToken, str_length(pToken)))
+	if(!BestClientLightIsVersionProofToken(pToken, str_length(pToken)))
 		return nullptr;
 	return pLastSpace;
 }
 
-inline void BestClientStripVersionProof(char *pVersion)
+inline void BestClientLightStripVersionProof(char *pVersion)
 {
 	if(!pVersion)
 		return;
-	if(char *pSep = (char *)BestClientFindVersionProofSep(pVersion))
+	if(char *pSep = (char *)BestClientLightFindVersionProofSep(pVersion))
 		*pSep = '\0';
 	int End = str_length(pVersion);
 	while(End > 0 && pVersion[End - 1] == ' ')
 		pVersion[--End] = '\0';
 }
 
-inline std::string BestClientStripVersionProofStr(const std::string &Version)
+inline std::string BestClientLightStripVersionProofStr(const std::string &Version)
 {
 	char aBuf[128];
 	str_copy(aBuf, Version.c_str(), sizeof(aBuf));
-	BestClientStripVersionProof(aBuf);
+	BestClientLightStripVersionProof(aBuf);
 	return aBuf;
 }
 

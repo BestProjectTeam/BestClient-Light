@@ -68,7 +68,7 @@ void CWeaponVfx::OnRender()
 		OnReset();
 		return;
 	}
-	const bool RocketVfx = g_Config.m_BcRocketGlow || g_Config.m_BcMemeNukeExplosion;
+	const bool RocketVfx = g_Config.m_BclRocketGlow || g_Config.m_BclMemeNukeExplosion;
 	if(!RocketVfx)
 	{
 		if(m_HadRocketVfx)
@@ -77,7 +77,7 @@ void CWeaponVfx::OnRender()
 		return;
 	}
 	m_HadRocketVfx = true;
-	if(!g_Config.m_BcMemeNukeExplosion)
+	if(!g_Config.m_BclMemeNukeExplosion)
 	{
 		for(auto &Puff : m_aNukePuffs)
 			Puff.m_Active = false;

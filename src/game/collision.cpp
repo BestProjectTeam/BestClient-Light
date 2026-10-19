@@ -166,9 +166,9 @@ void CCollision::Unload()
 	m_pTune = nullptr;
 	delete[] m_pDoor;
 	m_pDoor = nullptr;
-	// bestclient
+	// bestclient-light
 	m_pExtraDoorTiles = nullptr;
-	// bestclient
+	// bestclient-light
 }
 
 void CCollision::FillAntibot(CAntibotMapData *pMapData) const
@@ -306,14 +306,14 @@ int CCollision::GetMoveRestrictions(CALLBACK_SWITCHACTIVE pfnSwitchActive, void 
 			{
 				Restrictions |= ::GetMoveRestrictions(d, DoorTile.m_Index, DoorTile.m_Flags);
 			}
-			// bestclient
+			// bestclient-light
 			if(m_pExtraDoorTiles)
 			{
 				const CDoorTile &ExtraTile = m_pExtraDoorTiles[ModMapIndex];
 				if(ExtraTile.m_Index && (int)ExtraTile.m_Number <= m_HighestSwitchNumber && pfnSwitchActive(ExtraTile.m_Number, pUser))
 					Restrictions |= ::GetMoveRestrictions(d, ExtraTile.m_Index, ExtraTile.m_Flags);
 			}
-			// bestclient
+			// bestclient-light
 		}
 	}
 	return Restrictions;

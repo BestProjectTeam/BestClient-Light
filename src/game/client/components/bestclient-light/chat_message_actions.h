@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_CHAT_MESSAGE_ACTIONS_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_CHAT_MESSAGE_ACTIONS_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CHAT_MESSAGE_ACTIONS_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CHAT_MESSAGE_ACTIONS_H
 
 #include <base/vmath.h>
 
@@ -9,7 +9,7 @@
 class IGraphics;
 class ITextRender;
 
-namespace BestClientChatMessageActions
+namespace BestClientLightChatMessageActions
 {
 
 enum class EAction
@@ -33,6 +33,6 @@ EAction HitTest(const SLayout &Layout, vec2 MousePos);
 bool PanelContains(const SLayout &Layout, vec2 MousePos);
 void DrawMessageHighlight(IGraphics *pGraphics, float X, float Y, float W, float H, float Rounding, float Alpha);
 
-} // namespace BestClientChatMessageActions
+} // namespace BestClientLightChatMessageActions
 
 #endif

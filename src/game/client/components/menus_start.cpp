@@ -14,9 +14,9 @@
 
 #include <generated/client_data.h>
 
-// bestclient
-#include <game/client/components/bestclient/version.h>
-// bestclient
+// bestclient-light
+#include <game/client/components/bestclient-light/version.h>
+// bestclient-light
 #include <game/client/gameclient.h>
 #include <game/client/ui.h>
 #include <game/localization.h>
@@ -65,7 +65,7 @@ void CMenusStart::RenderStartMenu(CUIRect MainView)
 	ExtMenu.HSplitBottom(5.0f, &ExtMenu, nullptr);
 	ExtMenu.HSplitBottom(20.0f, &ExtMenu, &Button);
 	static CButtonContainer s_CheckUpdateButton;
-	if(GameClient()->m_Menus.DoButton_Menu(&s_CheckUpdateButton, BcLocalize("Check update"), 0, &Button, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 5.0f, 0.0f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f))) // bestclient
+	if(GameClient()->m_Menus.DoButton_Menu(&s_CheckUpdateButton, BcLocalize("Check update"), 0, &Button, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 5.0f, 0.0f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f))) // bestclient-light
 	{
 #if defined(CONF_AUTOUPDATE)
 		Updater()->CheckForUpdate();
@@ -126,7 +126,7 @@ void CMenusStart::RenderStartMenu(CUIRect MainView)
 	}
 
 	{
-		const bool AnimEnabled = g_Config.m_BcMainMenuAnimation != 0;
+		const bool AnimEnabled = g_Config.m_BclMainMenuAnimation != 0;
 		int HoveredIndex = -1;
 		if(AnimEnabled)
 		{
@@ -143,7 +143,7 @@ void CMenusStart::RenderStartMenu(CUIRect MainView)
 		const bool AnyHovered = HoveredIndex != -1;
 		const float HoverScale = 1.08f;
 		const float OtherScale = 0.94f;
-		const float Speed = (float)g_Config.m_BcMainMenuAnimationSpeed;
+		const float Speed = (float)g_Config.m_BclMainMenuAnimationSpeed;
 		const float Blend = AnimEnabled ? std::clamp(Client()->RenderFrameTime() * Speed, 0.0f, 1.0f) : 1.0f;
 		for(int i = 0; i < MenuButtonCount; ++i)
 		{
@@ -219,7 +219,7 @@ void CMenusStart::RenderStartMenu(CUIRect MainView)
 
 			if(ShowDownloadButton)
 			{
-				str_format(aUpdateBuf, sizeof(aUpdateBuf), Localize("BestClient %s is out!"), Updater()->GetLatestVersionString());
+				str_format(aUpdateBuf, sizeof(aUpdateBuf), Localize("BestClient Light %s is out!"), Updater()->GetLatestVersionString());
 				TextRender()->TextColor(1.0f, 0.4f, 0.4f, 1.0f);
 			}
 			else if(ShowUpdateProgress)
@@ -282,7 +282,7 @@ void CMenusStart::RenderStartMenu(CUIRect MainView)
 		if(GameClient()->m_Menus.DoButton_Menu(&s_QuitButton, FontIcon::POWER_OFF, 0, &QuitButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, Rounding, 0.0f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f)) || (UsedEscape = Ui()->ConsumeHotkey(CUi::HOTKEY_ESCAPE)) || CheckHotKey(KEY_Q))
 		{
 			ResetIconMode();
-			if(g_Config.m_BcConfirmQuit || UsedEscape || GameClient()->Editor()->HasUnsavedData() || (GameClient()->CurrentRaceTime() / 60 >= g_Config.m_ClConfirmQuitTime && g_Config.m_ClConfirmQuitTime >= 0))
+			if(g_Config.m_BclConfirmQuit || UsedEscape || GameClient()->Editor()->HasUnsavedData() || (GameClient()->CurrentRaceTime() / 60 >= g_Config.m_ClConfirmQuitTime && g_Config.m_ClConfirmQuitTime >= 0))
 				GameClient()->m_Menus.ShowQuitPopup();
 			else
 				Client()->Quit();
@@ -307,13 +307,13 @@ void CMenusStart::RenderStartMenu(CUIRect MainView)
 
 		char aDDNetBuf[64];
 		char aTClientBuf[64];
-		char aBestClientBuf[64];
+		char aBestClientLightBuf[64];
 		str_format(aDDNetBuf, sizeof(aDDNetBuf), "DDNet %s", GAME_RELEASE_VERSION);
 		str_format(aTClientBuf, sizeof(aTClientBuf), "TClient %s", TCLIENT_VERSION);
-		str_format(aBestClientBuf, sizeof(aBestClientBuf), "BestClient %s", BESTCLIENT_VERSION);
+		str_format(aBestClientLightBuf, sizeof(aBestClientLightBuf), "BestClient Light %s", BESTCLIENT_LIGHT_VERSION);
 		Ui()->DoLabel(&VersionLine1, aDDNetBuf, 14.0f, TEXTALIGN_MR);
 		Ui()->DoLabel(&VersionLine2, aTClientBuf, 14.0f, TEXTALIGN_MR);
-		Ui()->DoLabel(&VersionLine3, aBestClientBuf, 14.0f, TEXTALIGN_MR);
+		Ui()->DoLabel(&VersionLine3, aBestClientLightBuf, 14.0f, TEXTALIGN_MR);
 
 		static CButtonContainer s_ConsoleButton;
 		SetIconMode();

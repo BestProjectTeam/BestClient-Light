@@ -11,7 +11,7 @@
 #include <engine/shared/config.h>
 #include <engine/textrender.h>
 
-#include <game/client/components/bestclient/ui_theme/settings_nav.h>
+#include <game/client/components/bestclient-light/ui_theme/settings_nav.h>
 #include <game/client/components/menus.h>
 #include <game/client/gameclient.h>
 #include <game/client/lineinput.h>
@@ -22,10 +22,10 @@
 #include <algorithm>
 #include <vector>
 
-namespace BestClientSettingsSearch
+namespace BestClientLightSettingsSearch
 {
 
-using namespace BestClientUiTheme;
+using namespace BestClientLightUiTheme;
 
 static constexpr float HIGHLIGHT_DURATION = 1.6f;
 static constexpr ColorRGBA HIGHLIGHT_COLOR = ColorRGBA(1.0f, 0.28f, 0.28f, 1.0f);
@@ -54,7 +54,7 @@ static std::vector<int> gs_vFiltered;
 
 static const char *CatalogText(const SEntry &Entry, const char *pText)
 {
-	if(pText && GroupForLeaf(Entry.m_Leaf) == SETTINGS_NAV_GROUP_BESTCLIENT)
+	if(pText && GroupForLeaf(Entry.m_Leaf) == SETTINGS_NAV_GROUP_BESTCLIENT_LIGHT)
 		return BcLocalize(pText);
 	return Localize(pText);
 }
@@ -84,7 +84,7 @@ static const char *GroupLabel(int Leaf)
 {
 	if(GroupForLeaf(Leaf) == SETTINGS_NAV_GROUP_TCLIENT)
 		return TCLocalize("TClient");
-	return Localize("BestClient");
+	return Localize("BestClient Light");
 }
 
 static void FormatPath(const SEntry &Entry, char *pBuf, size_t BufSize)
@@ -256,7 +256,7 @@ static void OpenSearchPopup(CMenus *pMenus, CUi *pUi, CGameClient *pGameClient, 
 	gs_PopupContext.m_pGameClient = pGameClient;
 	const float PopupW = 320.0f;
 	const float PopupH = 320.0f;
-	const float X = BestClientUiTheme::IsSettingsNavOnLeft() ? Anchor.x : (Anchor.x + Anchor.w - PopupW);
+	const float X = BestClientLightUiTheme::IsSettingsNavOnLeft() ? Anchor.x : (Anchor.x + Anchor.w - PopupW);
 	const float Y = Anchor.y + Anchor.h + 4.0f;
 	pUi->DoPopupMenu(&gs_PopupContext, X, Y, PopupW, PopupH, &gs_PopupContext, PopupRender);
 	gs_ForceSearchFocus = true;
@@ -267,7 +267,7 @@ static void OpenSearchPopup(CMenus *pMenus, CUi *pUi, CGameClient *pGameClient, 
 void RenderCornerButton(CMenus *pMenus, CUi *pUi, CGameClient *pGameClient, IInput *pInput, CUIRect Corner)
 {
 	CUIRect Button = Corner;
-	if(BestClientUiTheme::IsSettingsNavOnLeft())
+	if(BestClientLightUiTheme::IsSettingsNavOnLeft())
 	{
 		Button.VSplitLeft(12.0f, nullptr, &Button);
 		Button.VSplitLeft(28.0f, &Button, nullptr);
@@ -386,4 +386,4 @@ void ClearActiveScrollRegion(CScrollRegion *pRegion)
 	gs_pActiveScroll = gs_vScrollStack.empty() ? nullptr : gs_vScrollStack.back();
 }
 
-} // namespace BestClientSettingsSearch
+} // namespace BestClientLightSettingsSearch

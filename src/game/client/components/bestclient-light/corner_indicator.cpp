@@ -44,7 +44,7 @@ bool RenderLivePlayerIcon(CGameClient *pGameClient, int ClientId, vec2 Pos, floa
 
 void CornerIndicator::Render(CGameClient *pGameClient)
 {
-	if(!pGameClient || !g_Config.m_BcCornerIndicator)
+	if(!pGameClient || !g_Config.m_BclCornerIndicator)
 		return;
 	if(pGameClient->m_AspectRatio.IsBlockedByFng())
 		return;
@@ -54,7 +54,7 @@ void CornerIndicator::Render(CGameClient *pGameClient)
 		return;
 
 	const int LocalTeam = pGameClient->m_Teams.Team(LocalId);
-	if(LocalTeam >= TEAM_SUPER || (g_Config.m_BcCornerIndicatorOnlyInTeam && LocalTeam <= TEAM_FLOCK))
+	if(LocalTeam >= TEAM_SUPER || (g_Config.m_BclCornerIndicatorOnlyInTeam && LocalTeam <= TEAM_FLOCK))
 		return;
 
 	const int CurTick = pGameClient->Client()->GameTick(g_Config.m_ClDummy);
@@ -103,9 +103,9 @@ void CornerIndicator::Render(CGameClient *pGameClient)
 	const float ScreenCy = (ScreenT + ScreenB) * 0.5f;
 	const float ScreenHalfW = (ScreenR - ScreenL) * 0.5f;
 	const float ScreenHalfH = (ScreenB - ScreenT) * 0.5f;
-	const float SizeAlive = (float)g_Config.m_BcCornerIndicatorSizeAlive * CamZoom;
-	const float SizeFrozen = (float)g_Config.m_BcCornerIndicatorSizeFrozen * CamZoom;
-	const float SizeLastTeammate = (float)g_Config.m_BcCornerIndicatorLastTeammateSize * CamZoom;
+	const float SizeAlive = (float)g_Config.m_BclCornerIndicatorSizeAlive * CamZoom;
+	const float SizeFrozen = (float)g_Config.m_BclCornerIndicatorSizeFrozen * CamZoom;
+	const float SizeLastTeammate = (float)g_Config.m_BclCornerIndicatorLastTeammateSize * CamZoom;
 	const float Margin = std::max(SizeAlive, std::max(SizeFrozen, SizeLastTeammate)) * 0.55f;
 	const float MaxX = ScreenHalfW - Margin;
 	const float MaxY = ScreenHalfH - Margin;
@@ -115,7 +115,7 @@ void CornerIndicator::Render(CGameClient *pGameClient)
 		return;
 	}
 
-	const bool CustomColors = g_Config.m_BcCornerIndicatorCustomColors != 0;
+	const bool CustomColors = g_Config.m_BclCornerIndicatorCustomColors != 0;
 	for(int i = 0; i < Num; i++)
 	{
 		const vec2 PlayerPos = aIndicators[i].m_Pos;
@@ -137,39 +137,39 @@ void CornerIndicator::Render(CGameClient *pGameClient)
 		unsigned ColorConfig = 0;
 		if(!aIndicators[i].m_Frozen)
 		{
-			if(!g_Config.m_BcCornerIndicatorShowAlive)
+			if(!g_Config.m_BclCornerIndicatorShowAlive)
 				continue;
 			IconSize = SizeAlive;
-			ColorConfig = g_Config.m_BcCornerIndicatorColorAlive;
+			ColorConfig = g_Config.m_BclCornerIndicatorColorAlive;
 		}
 		else if(LastManStanding)
 		{
-			if(!g_Config.m_BcCornerIndicatorIndicateLastTeammate)
+			if(!g_Config.m_BclCornerIndicatorIndicateLastTeammate)
 				continue;
 			IconSize = SizeLastTeammate;
-			ColorConfig = g_Config.m_BcCornerIndicatorLastTeammateColor;
+			ColorConfig = g_Config.m_BclCornerIndicatorLastTeammateColor;
 		}
 		else
 		{
-			if(!g_Config.m_BcCornerIndicatorShowFrozen)
+			if(!g_Config.m_BclCornerIndicatorShowFrozen)
 				continue;
 			IconSize = SizeFrozen;
-			ColorConfig = g_Config.m_BcCornerIndicatorColorFrozen;
+			ColorConfig = g_Config.m_BclCornerIndicatorColorFrozen;
 		}
 
-		if(g_Config.m_BcCornerIndicatorProximity && g_Config.m_BcCornerIndicatorProximityRange > 1)
+		if(g_Config.m_BclCornerIndicatorProximity && g_Config.m_BclCornerIndicatorProximityRange > 1)
 		{
 			const float EdgeDistance = std::min(ScreenHalfW, ScreenHalfH);
 			const float BeyondEdge = std::max(0.0f, distance(vec2(ScreenCx, ScreenCy), PlayerPos) - EdgeDistance);
-			float Amount = std::min(1.0f, BeyondEdge / (float)g_Config.m_BcCornerIndicatorProximityRange);
+			float Amount = std::min(1.0f, BeyondEdge / (float)g_Config.m_BclCornerIndicatorProximityRange);
 			Amount *= Amount;
-			const float MinSize = (float)g_Config.m_BcCornerIndicatorProximityMinSize * CamZoom;
+			const float MinSize = (float)g_Config.m_BclCornerIndicatorProximityMinSize * CamZoom;
 			IconSize += (MinSize - IconSize) * Amount;
 		}
 
 		const int ClientId = aIndicators[i].m_ClientId;
 		CTeeRenderInfo TeeInfo = pGameClient->m_aClients[ClientId].m_RenderInfo;
-		if(g_Config.m_BcCornerIndicatorNinjaFrozen && aIndicators[i].m_Frozen)
+		if(g_Config.m_BclCornerIndicatorNinjaFrozen && aIndicators[i].m_Frozen)
 		{
 			const auto &pNinja = pGameClient->m_Players.NinjaTeeRenderInfo();
 			if(pNinja)

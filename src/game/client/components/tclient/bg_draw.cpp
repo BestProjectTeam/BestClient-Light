@@ -206,7 +206,7 @@ public:
 	{
 		return MoveTo(CBgDrawItemDataPoint(Pos, CurrentWidth(), CurrentColor()));
 	}
-	// bestclient
+	// bestclient-light
 	bool Erase(vec2 A, vec2 B, float Radius, std::vector<CBgDrawItemData> &vOutSegments) const
 	{
 		bool Erased = false;
@@ -246,7 +246,7 @@ public:
 		m_Drawing = false;
 		m_PathContainer.Update(m_Data);
 	}
-	// bestclient
+	// bestclient-light
 	void Render()
 	{
 		m_PathContainer.Render();
@@ -530,7 +530,7 @@ void CBgDraw::OnRender()
 			ActiveItem = std::nullopt;
 		}
 		std::optional<vec2> &LastPos = m_aLastPos[Dummy];
-		// bestclient
+		// bestclient-light
 		if(Input == InputMode::ERASE)
 		{
 			const float EraserRadius = (float)g_Config.m_TcBgDrawEraserSize * GameClient()->m_Camera.m_Zoom;
@@ -559,7 +559,7 @@ void CBgDraw::OnRender()
 		{
 			LastPos = std::nullopt;
 		}
-		// bestclient
+		// bestclient-light
 	}
 	// Remove extra items
 	MakeSpaceFor(0);

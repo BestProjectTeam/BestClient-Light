@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-namespace BestClientBetterPreview
+namespace BestClientLightBetterPreview
 {
 
 void RenderEntities(IGraphics *pGraphics, const IGraphics::CTextureHandle &Texture, const CUIRect &TextureRect, float TextureWidth)

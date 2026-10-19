@@ -68,10 +68,10 @@ void CTrails::OnRender()
 		else
 			m_HistoryValid[ClientId] = true;
 
-		// bestclient
+		// bestclient-light
 		if(!GameClient()->OptimizerAllowRenderPos(GameClient()->m_aClients[ClientId].m_RenderPos))
 			continue;
-		// bestclient
+		// bestclient-light
 
 		CTeeRenderInfo TeeInfo = GameClient()->m_aClients[ClientId].m_RenderInfo;
 

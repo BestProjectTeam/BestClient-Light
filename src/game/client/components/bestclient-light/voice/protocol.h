@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_VOICE_PROTOCOL_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_VOICE_PROTOCOL_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VOICE_PROTOCOL_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VOICE_PROTOCOL_H
 
 #include <base/mem.h>
 #include <base/net.h>
@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace BestClientVoice
+namespace BestClientLightVoice
 {
 constexpr uint32_t PROTOCOL_MAGIC = 0x42564331u;
 constexpr uint8_t PROTOCOL_VERSION = 4;

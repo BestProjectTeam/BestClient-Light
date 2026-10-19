@@ -19,8 +19,8 @@ static constexpr float SCORCH_TIME = 2.5f;
 static constexpr int CELL_WIDTH = 64;
 static constexpr int CELL_HEIGHT = 128;
 
-static float FireIntensity() { return g_Config.m_BcHookFireIntensity / 100.0f; }
-static float FireEmbers() { return g_Config.m_BcHookFireEmbers / 100.0f; }
+static float FireIntensity() { return g_Config.m_BclHookFireIntensity / 100.0f; }
+static float FireEmbers() { return g_Config.m_BclHookFireEmbers / 100.0f; }
 
 static float Near(const CHookGripTracker::CGrip &Grip)
 {
@@ -118,7 +118,7 @@ void CHookFire::OnReset()
 
 CHookFire::CPalette CHookFire::Palette()
 {
-	const ColorHSLA Hsl(g_Config.m_BcHookFireColor);
+	const ColorHSLA Hsl(g_Config.m_BclHookFireColor);
 	ColorHSLA OuterHsl = Hsl;
 	OuterHsl.h = std::fmod(OuterHsl.h + 0.97f, 1.0f);
 	OuterHsl.l *= 0.82f;
@@ -173,7 +173,7 @@ void CHookFire::EmitEmber(vec2 Pos, vec2 Vel, float Alpha)
 
 void CHookFire::EmitSmoke(vec2 Pos, vec2 Vel, float Size, float Alpha)
 {
-	if(!g_Config.m_BcHookFireSmoke)
+	if(!g_Config.m_BclHookFireSmoke)
 		return;
 	CGlowParticles::CSpark *pSpark = m_Smoke.NewSpark();
 	if(!pSpark)
@@ -443,7 +443,7 @@ void CHookFire::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(g_Config.m_BcHookStyle != FGF_HOOK_STYLE_FIRE)
+	if(g_Config.m_BclHookStyle != FGF_HOOK_STYLE_FIRE)
 	{
 		if(m_WasActive)
 			OnReset();
@@ -452,12 +452,12 @@ void CHookFire::OnRender()
 	m_WasActive = true;
 
 	const CPalette CurrentPalette = Palette();
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	const bool Tip = g_Config.m_BcHookTip != 0;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	const bool Tip = g_Config.m_BclHookTip != 0;
 
 	if(Tip)
 	{
-		m_Tracker.Update(GameClient(), Passed, g_Config.m_BcHookChargeTime / 1000.0f, FADE_TIME,
+		m_Tracker.Update(GameClient(), Passed, g_Config.m_BclHookChargeTime / 1000.0f, FADE_TIME,
 			[&](int ClientId, CHookGripTracker::EEvent Event, const CHookGripTracker::CGrip &Grip) {
 				switch(Event)
 				{

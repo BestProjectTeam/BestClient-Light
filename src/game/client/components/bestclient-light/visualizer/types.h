@@ -1,11 +1,11 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_TYPES_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_TYPES_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_TYPES_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_TYPES_H
 
 #include <array>
 #include <string>
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 static constexpr int MAX_VISUALIZER_BANDS = 32;
 
@@ -56,6 +56,6 @@ struct SVisualizerFrame
 
 const char *VisualizerBackendStatusName(EVisualizerBackendStatus Status);
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer
 
 #endif

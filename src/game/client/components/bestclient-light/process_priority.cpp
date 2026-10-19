@@ -28,12 +28,12 @@ void CProcessPriority::SetDDNetProcessPriority(bool Set)
 #if defined(CONF_FAMILY_WINDOWS)
 	if(!SetPriorityClass(GetCurrentProcess(), Set ? HIGH_PRIORITY_CLASS : NORMAL_PRIORITY_CLASS))
 	{
-		log_info("bestclient", Set ? "Failed to set process priority" : "Failed to reset process priority");
+		log_info("bestclient-light", Set ? "Failed to set process priority" : "Failed to reset process priority");
 		return;
 	}
 	if(!SetThreadPriority(GetCurrentThread(), Set ? THREAD_PRIORITY_HIGHEST : THREAD_PRIORITY_NORMAL))
 	{
-		log_info("bestclient", Set ? "Failed to set thread priority" : "Failed to reset thread priority");
+		log_info("bestclient-light", Set ? "Failed to set thread priority" : "Failed to reset thread priority");
 		return;
 	}
 #else
@@ -71,7 +71,7 @@ void CProcessPriority::SetDiscordProcessesNormalPriority()
 	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if(hSnapshot == INVALID_HANDLE_VALUE)
 	{
-		log_info("bestclient", "Failed to create process snapshot");
+		log_info("bestclient-light", "Failed to create process snapshot");
 		return;
 	}
 
@@ -106,14 +106,14 @@ void CProcessPriority::SetDiscordProcessesNormalPriority()
 	}
 
 	CloseHandle(hSnapshot);
-	log_info("bestclient", "Discord process priority: changed=%d failed=%d", Changed, Failed);
+	log_info("bestclient-light", "Discord process priority: changed=%d failed=%d", Changed, Failed);
 #endif
 }
 
 void CProcessPriority::OnInit()
 {
-	SetDDNetProcessPriority(g_Config.m_BcHighProcessPriority);
-	if(g_Config.m_BcDiscordNormalProcessPriority)
+	SetDDNetProcessPriority(g_Config.m_BclHighProcessPriority);
+	if(g_Config.m_BclDiscordNormalProcessPriority)
 		StartDiscordPriorityThread();
 
 	m_LastWindowActive = static_cast<IEngineGraphics *>(Graphics())->WindowActive() != 0;
@@ -123,7 +123,7 @@ void CProcessPriority::OnInit()
 void CProcessPriority::OnRender()
 {
 	const int64_t DiscordPriorityDelay = m_DiscordPriorityDelay.load();
-	if(g_Config.m_BcDiscordNormalProcessPriority && !m_DiscordPriorityThreadRunning.load() && DiscordPriorityDelay < time_get())
+	if(g_Config.m_BclDiscordNormalProcessPriority && !m_DiscordPriorityThreadRunning.load() && DiscordPriorityDelay < time_get())
 		StartDiscordPriorityThread();
 
 	const bool WindowActive = static_cast<IEngineGraphics *>(Graphics())->WindowActive() != 0;
@@ -131,7 +131,7 @@ void CProcessPriority::OnRender()
 	{
 		m_HasWindowActive = true;
 		m_LastWindowActive = WindowActive;
-		SetDDNetProcessPriority(g_Config.m_BcHighProcessPriority);
+		SetDDNetProcessPriority(g_Config.m_BclHighProcessPriority);
 	}
 }
 
@@ -147,8 +147,8 @@ void CProcessPriority::OnShutdown()
 
 void CProcessPriority::OnConsoleInit()
 {
-	Console()->Chain("bc_high_process_priority", ConchainDDNetProcessPriority, this);
-	Console()->Chain("bc_discord_normal_process_priority", ConchainDiscordProcessPriority, this);
+	Console()->Chain("bcl_high_process_priority", ConchainDDNetProcessPriority, this);
+	Console()->Chain("bcl_discord_normal_process_priority", ConchainDiscordProcessPriority, this);
 }
 
 void CProcessPriority::ConchainDDNetProcessPriority(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)

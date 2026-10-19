@@ -7,9 +7,9 @@
 #include <engine/font_icons.h>
 
 #include <game/client/components/binds.h>
-// bestclient
-#include <game/client/components/bestclient/ui_theme/style.h>
-// bestclient
+// bestclient-light
+#include <game/client/components/bestclient-light/ui_theme/style.h>
+// bestclient-light
 #include <game/client/gameclient.h>
 #include <game/client/ui.h>
 #include <game/localization.h>
@@ -87,13 +87,13 @@ CKeyBinder::CKeyReaderResult CKeyBinder::DoKeyReader(CButtonContainer *pReaderBu
 		GameClient()->m_Binds.GetKeyBindName(Result.m_Bind.m_Key, Result.m_Bind.m_ModifierMask, aBuf, sizeof(aBuf));
 	}
 
-	// bestclient
+	// bestclient-light
 	const bool TakingKey = m_pKeyReaderId == pReaderButton && m_TakeKey;
-	if(TakingKey && !BestClientUiTheme::IsCustomUiBind())
+	if(TakingKey && !BestClientLightUiTheme::IsCustomUiBind())
 		KeyReaderButton.Draw(ColorRGBA(0.0f, 1.0f, 0.0f, 0.4f), IGraphics::CORNER_L, 5.0f);
 	else
-		BestClientUiTheme::DrawUiBind(&KeyReaderButton, ColorRGBA(1.0f, 1.0f, 1.0f, TakingKey ? 0.4f : 0.5f * Ui()->ButtonColorMul(pReaderButton)), TakingKey, IGraphics::CORNER_L, 5.0f);
-	// bestclient
+		BestClientLightUiTheme::DrawUiBind(&KeyReaderButton, ColorRGBA(1.0f, 1.0f, 1.0f, TakingKey ? 0.4f : 0.5f * Ui()->ButtonColorMul(pReaderButton)), TakingKey, IGraphics::CORNER_L, 5.0f);
+	// bestclient-light
 	CUIRect Label;
 	KeyReaderButton.HMargin(1.0f, &Label);
 	Ui()->DoLabel(&Label, aBuf, Label.h * CUi::ms_FontmodHeight, TEXTALIGN_MC);

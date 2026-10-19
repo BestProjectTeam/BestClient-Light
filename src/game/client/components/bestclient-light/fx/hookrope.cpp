@@ -83,9 +83,9 @@ bool CHookRope::RenderRope(int ClientId, vec2 TeePos, vec2 HookPos, int HookStat
 {
 	if(BcFxSuppressed(GameClient()))
 		return false;
-	if(!g_Config.m_BcHookRope || !in_range(ClientId, MAX_CLIENTS - 1))
+	if(!g_Config.m_BclHookRope || !in_range(ClientId, MAX_CLIENTS - 1))
 		return false;
-	const int Style = g_Config.m_BcHookStyle;
+	const int Style = g_Config.m_BclHookStyle;
 	if(Style != FGF_HOOK_STYLE_WHIRLWIND && Style != FGF_HOOK_STYLE_BLACK_HOLE && Style != FGF_HOOK_STYLE_MAGIC && Style != FGF_HOOK_STYLE_TROLL &&
 		Style != FGF_HOOK_STYLE_RAINBOW && Style != FGF_HOOK_STYLE_LIGHTNING && Style != FGF_HOOK_STYLE_TENTACLE)
 		return false;
@@ -118,9 +118,9 @@ void CHookRope::RenderOverlay(int ClientId, vec2 TeePos, vec2 HookPos, int HookS
 {
 	if(BcFxSuppressed(GameClient()))
 		return;
-	if(!g_Config.m_BcHookRope || !in_range(ClientId, MAX_CLIENTS - 1) || !BcIsOwnTee(GameClient(), ClientId))
+	if(!g_Config.m_BclHookRope || !in_range(ClientId, MAX_CLIENTS - 1) || !BcIsOwnTee(GameClient(), ClientId))
 		return;
-	if(g_Config.m_BcHookStyle != FGF_HOOK_STYLE_FIRE)
+	if(g_Config.m_BclHookStyle != FGF_HOOK_STYLE_FIRE)
 		return;
 
 	RenderFire(ClientId, TeePos, HookPos, HookState == HOOK_GRABBED, Alpha, Passed(ClientId));
@@ -142,13 +142,13 @@ void CHookRope::RenderAir(int ClientId, vec2 TeePos, vec2 HookPos, bool Pulling,
 		return;
 
 	CRopeState &State = m_aStates[ClientId];
-	const ColorRGBA Wind = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookWindColor));
+	const ColorRGBA Wind = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookWindColor));
 	const ColorRGBA Bright = Whiten(Wind, 0.75f);
-	const float Opacity = g_Config.m_BcHookWindOpacity / 100.0f * Alpha;
-	const float Thickness = g_Config.m_BcHookWindThickness / 100.0f;
-	const float Spin = g_Config.m_BcHookWindSpin / 100.0f;
-	const float Density = g_Config.m_BcHookWindDensity / 100.0f;
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
+	const float Opacity = g_Config.m_BclHookWindOpacity / 100.0f * Alpha;
+	const float Thickness = g_Config.m_BclHookWindThickness / 100.0f;
+	const float Spin = g_Config.m_BclHookWindSpin / 100.0f;
+	const float Density = g_Config.m_BclHookWindDensity / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
 	const float Time = LocalTime() + ClientId * 1.37f;
 
 	const vec2 Along = (TeePos - HookPos) / Distance;
@@ -297,7 +297,7 @@ void CHookRope::RenderAir(int ClientId, vec2 TeePos, vec2 HookPos, bool Pulling,
 	if(Passed <= 0.0f)
 		return;
 
-	const float Amount = g_Config.m_BcHookWindDust / 100.0f;
+	const float Amount = g_Config.m_BclHookWindDust / 100.0f;
 	State.m_EmitAccumulator += Passed * Distance * 0.025f * Amount;
 	while(State.m_EmitAccumulator >= 1.0f)
 	{
@@ -327,7 +327,7 @@ void CHookRope::RenderVoid(int ClientId, vec2 TeePos, vec2 HookPos, bool Flying,
 
 	CRopeState &State = m_aStates[ClientId];
 
-	const ColorHSLA Hsl(g_Config.m_BcHookHoleColor);
+	const ColorHSLA Hsl(g_Config.m_BclHookHoleColor);
 	ColorHSLA DeepHsl = Hsl;
 	DeepHsl.h = std::fmod(DeepHsl.h + 0.95f, 1.0f);
 	DeepHsl.l *= 0.6f;
@@ -335,8 +335,8 @@ void CHookRope::RenderVoid(int ClientId, vec2 TeePos, vec2 HookPos, bool Flying,
 	const ColorRGBA Deep = color_cast<ColorRGBA>(DeepHsl);
 	const ColorRGBA Core = Whiten(Hot, 0.75f);
 
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	const float Spin = g_Config.m_BcHookHoleSpin / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	const float Spin = g_Config.m_BclHookHoleSpin / 100.0f;
 	const float Time = LocalTime() + ClientId * 1.37f;
 
 	const vec2 Along = (TeePos - HookPos) / Distance;
@@ -436,7 +436,7 @@ void CHookRope::RenderVoid(int ClientId, vec2 TeePos, vec2 HookPos, bool Flying,
 	if(Passed <= 0.0f)
 		return;
 
-	const float Amount = g_Config.m_BcHookHoleStreaks / 100.0f;
+	const float Amount = g_Config.m_BclHookHoleStreaks / 100.0f;
 
 	State.m_EmitAccumulator += Passed * Distance * 0.13f * Amount;
 	while(State.m_EmitAccumulator >= 1.0f)
@@ -502,8 +502,8 @@ void CHookRope::RenderMagic(int ClientId, vec2 TeePos, vec2 HookPos, bool Pullin
 
 	CRopeState &State = m_aStates[ClientId];
 	const CHookMagic::CPalette Palette = CHookMagic::Palette();
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	const float Spin = g_Config.m_BcHookMagicSpin / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	const float Spin = g_Config.m_BclHookMagicSpin / 100.0f;
 	const float Time = LocalTime() + ClientId * 1.37f;
 	const vec2 Along = (TeePos - HookPos) / Distance;
 	const vec2 Normal(-Along.y, Along.x);
@@ -540,7 +540,7 @@ void CHookRope::RenderMagic(int ClientId, vec2 TeePos, vec2 HookPos, bool Pullin
 		FgfGlow::DrawStrip(Graphics(), aPoints, aWidths, NumPoints, Palette.m_Accent.WithAlpha(0.75f * Alpha));
 	}
 
-	if(g_Config.m_BcHookMagicRunes)
+	if(g_Config.m_BclHookMagicRunes)
 	{
 		const float Spacing = 24.0f * Scale;
 		const float Travel = Time * 70.0f * Spin * Flow / Spacing;
@@ -598,7 +598,7 @@ void CHookRope::RenderMagic(int ClientId, vec2 TeePos, vec2 HookPos, bool Pullin
 	if(Passed <= 0.0f)
 		return;
 
-	const float Amount = g_Config.m_BcHookMagicSparkles / 100.0f;
+	const float Amount = g_Config.m_BclHookMagicSparkles / 100.0f;
 	State.m_EmitAccumulator += Passed * Distance * 0.08f * Amount;
 	while(State.m_EmitAccumulator >= 1.0f)
 	{
@@ -649,8 +649,8 @@ void CHookRope::RenderFire(int ClientId, vec2 TeePos, vec2 HookPos, bool Pulling
 	CHookFire &Fire = GameClient()->m_HookFire;
 	CRopeState &State = m_aStates[ClientId];
 	const CHookFire::CPalette Palette = CHookFire::Palette();
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	const float Intensity = g_Config.m_BcHookFireIntensity / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	const float Intensity = g_Config.m_BclHookFireIntensity / 100.0f;
 	const float Time = LocalTime() + ClientId * 1.37f;
 	const vec2 Along = (TeePos - HookPos) / Distance;
 
@@ -682,7 +682,7 @@ void CHookRope::RenderFire(int ClientId, vec2 TeePos, vec2 HookPos, bool Pulling
 		const float Heat = 0.6f + 0.4f * std::exp(-s / 120.0f);
 		Fire.EmitFlame(Pos, vec2(random_float(-15.0f, 15.0f), random_float(-80.0f, -40.0f)) * Scale,
 			random_float(7.0f, 11.0f) * Scale * Heat, random_float(0.25f, 0.4f), Alpha, Pos.x, 0.0f);
-		if(random_float() < 0.08f * g_Config.m_BcHookFireEmbers / 100.0f)
+		if(random_float() < 0.08f * g_Config.m_BclHookFireEmbers / 100.0f)
 			Fire.EmitEmber(Pos, vec2(random_float(-30.0f, 30.0f), random_float(-120.0f, -50.0f)), Alpha);
 	}
 
@@ -704,7 +704,7 @@ void CHookRope::RenderTroll(int ClientId, vec2 TeePos, vec2 HookPos, bool Pullin
 
 	CHookTroll &Troll = GameClient()->m_HookTroll;
 	CRopeState &State = m_aStates[ClientId];
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
 	const float Time = LocalTime() + ClientId * 1.37f;
 	const vec2 Along = (TeePos - HookPos) / Distance;
 	const vec2 Normal(-Along.y, Along.x);
@@ -747,9 +747,9 @@ void CHookRope::RenderRainbow(int ClientId, vec2 TeePos, vec2 HookPos, bool Pull
 		return;
 
 	CRopeState &State = m_aStates[ClientId];
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	const float Speed = g_Config.m_BcHookRainbowSpeed / 100.0f;
-	const float Width = g_Config.m_BcHookRainbowWidth / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	const float Speed = g_Config.m_BclHookRainbowSpeed / 100.0f;
+	const float Width = g_Config.m_BclHookRainbowWidth / 100.0f;
 	const float Time = LocalTime() + ClientId * 1.37f;
 	const vec2 Along = (TeePos - HookPos) / Distance;
 	const vec2 Normal(-Along.y, Along.x);
@@ -827,7 +827,7 @@ void CHookRope::RenderRainbow(int ClientId, vec2 TeePos, vec2 HookPos, bool Pull
 	if(Passed <= 0.0f)
 		return;
 
-	const float Amount = g_Config.m_BcHookRainbowGlitter / 100.0f;
+	const float Amount = g_Config.m_BclHookRainbowGlitter / 100.0f;
 	State.m_EmitAccumulator += Passed * Distance * 0.07f * Amount;
 	while(State.m_EmitAccumulator >= 1.0f)
 	{
@@ -883,10 +883,10 @@ void CHookRope::RenderBolt(int ClientId, vec2 TeePos, vec2 HookPos, bool Pulling
 		return;
 
 	CRopeState &State = m_aStates[ClientId];
-	const ColorRGBA Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookBoltColor));
+	const ColorRGBA Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookBoltColor));
 	const ColorRGBA Hot = Whiten(Color, 0.8f);
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	const float Jitter = g_Config.m_BcHookBoltJitter / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	const float Jitter = g_Config.m_BclHookBoltJitter / 100.0f;
 	const float Time = LocalTime() + ClientId * 1.37f;
 	const vec2 Along = (TeePos - HookPos) / Distance;
 	const vec2 Normal(-Along.y, Along.x);
@@ -906,7 +906,7 @@ void CHookRope::RenderBolt(int ClientId, vec2 TeePos, vec2 HookPos, bool Pulling
 	const ColorRGBA aColors[3] = {Color.WithAlpha(0.22f * Alpha), Color.WithAlpha(0.85f * Alpha), Hot.WithAlpha(0.95f * Alpha)};
 	FgfGlow::DrawStripScaled(Graphics(), aPoints, aScales, Count, aWidths, aColors, 3);
 
-	const int Branches = g_Config.m_BcHookBoltBranches;
+	const int Branches = g_Config.m_BclHookBoltBranches;
 	for(int i = 0; i < Branches; i++)
 	{
 		const float BranchSeed = Seed + 311.0f + i * 57.3f;
@@ -935,7 +935,7 @@ void CHookRope::RenderBolt(int ClientId, vec2 TeePos, vec2 HookPos, bool Pulling
 	if(Passed <= 0.0f)
 		return;
 
-	const float Amount = g_Config.m_BcHookBoltSparks / 100.0f;
+	const float Amount = g_Config.m_BclHookBoltSparks / 100.0f;
 	State.m_EmitAccumulator += Passed * Distance * 0.05f * Amount;
 	while(State.m_EmitAccumulator >= 1.0f)
 	{
@@ -968,12 +968,12 @@ void CHookRope::RenderTentacle(int ClientId, vec2 TeePos, vec2 HookPos, bool Pul
 		return;
 
 	CRopeState &State = m_aStates[ClientId];
-	const ColorRGBA Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookTentacleColor));
+	const ColorRGBA Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookTentacleColor));
 	const ColorRGBA Dark = Blend(Color, ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f), 0.5f);
 	const ColorRGBA Bright = Whiten(Color, 0.5f);
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	const float Waves = g_Config.m_BcHookTentacleWaves / 100.0f;
-	const float Thickness = g_Config.m_BcHookTentacleThickness / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	const float Waves = g_Config.m_BclHookTentacleWaves / 100.0f;
+	const float Thickness = g_Config.m_BclHookTentacleThickness / 100.0f;
 	const float Time = LocalTime() + ClientId * 1.37f;
 	const vec2 Along = (TeePos - HookPos) / Distance;
 	const vec2 Normal(-Along.y, Along.x);
@@ -1016,7 +1016,7 @@ void CHookRope::RenderTentacle(int ClientId, vec2 TeePos, vec2 HookPos, bool Pul
 	}
 	Graphics()->QuadsEnd();
 
-	if(g_Config.m_BcHookTentacleSuckers)
+	if(g_Config.m_BclHookTentacleSuckers)
 	{
 		Graphics()->TextureSet(m_DiscTexture);
 		Graphics()->QuadsBegin();
@@ -1056,7 +1056,7 @@ void CHookRope::RenderTentacle(int ClientId, vec2 TeePos, vec2 HookPos, bool Pul
 	if(Passed <= 0.0f)
 		return;
 
-	const float Slime = g_Config.m_BcHookTentacleSlime / 100.0f;
+	const float Slime = g_Config.m_BclHookTentacleSlime / 100.0f;
 	State.m_EmitAccumulator += Passed * Distance * 0.015f * Slime;
 	while(State.m_EmitAccumulator >= 1.0f)
 	{

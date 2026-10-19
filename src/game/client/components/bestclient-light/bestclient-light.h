@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_BESTCLIENT_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_BESTCLIENT_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_BESTCLIENT_LIGHT_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_BESTCLIENT_LIGHT_H
 
 #include <base/color.h>
 #include <base/vmath.h>
@@ -19,19 +19,19 @@ class IConfigManager;
 
 class CTeeRenderInfo;
 
-constexpr float BESTCLIENT_LOCAL_HAMMER_HIT_RADIUS = 120.0f;
+constexpr float BESTCLIENT_LIGHT_LOCAL_HAMMER_HIT_RADIUS = 120.0f;
 
-bool BestClientShouldMuteOthersHookSound(int SoundId, bool MuteEnabled, bool LocalJustGrabbed);
-bool BestClientShouldMuteOthersHammerHitSound(bool MuteEnabled, bool IsOtherPlayer);
-bool BestClientShouldMuteOthersHammerWorldSound(int SoundId, bool MuteEnabled, bool IsOtherPlayer);
-bool BestClientShouldMuteOthersAirJumpSound(bool MuteEnabled, bool IsOtherPlayer);
-bool BestClientIsLocalHammerHitEvent(vec2 HitPos, bool LocalJustFired, vec2 LocalPos, float Radius = BESTCLIENT_LOCAL_HAMMER_HIT_RADIUS);
+bool BestClientLightShouldMuteOthersHookSound(int SoundId, bool MuteEnabled, bool LocalJustGrabbed);
+bool BestClientLightShouldMuteOthersHammerHitSound(bool MuteEnabled, bool IsOtherPlayer);
+bool BestClientLightShouldMuteOthersHammerWorldSound(int SoundId, bool MuteEnabled, bool IsOtherPlayer);
+bool BestClientLightShouldMuteOthersAirJumpSound(bool MuteEnabled, bool IsOtherPlayer);
+bool BestClientLightIsLocalHammerHitEvent(vec2 HitPos, bool LocalJustFired, vec2 LocalPos, float Radius = BESTCLIENT_LIGHT_LOCAL_HAMMER_HIT_RADIUS);
 
 class CGameClient;
-void BestClientPlayAirJump(CGameClient *pGameClient, int ClientId, vec2 Pos, float Alpha, float Volume);
-void BestClientPlayHammerHit(CGameClient *pGameClient, vec2 Pos, float Alpha, float Volume, int ClientId);
+void BestClientLightPlayAirJump(CGameClient *pGameClient, int ClientId, vec2 Pos, float Alpha, float Volume);
+void BestClientLightPlayHammerHit(CGameClient *pGameClient, vec2 Pos, float Alpha, float Volume, int ClientId);
 
-class CBestClient : public CComponent
+class CBestClientLight : public CComponent
 {
 	CMenuMediaBackground m_MenuMediaBackground;
 	bool m_GoresHeavyWeapon = false;
@@ -88,15 +88,15 @@ public:
 	void FetchFindHours(const char *pName);
 };
 
-float BestClientScoreboardPlayerPopupHeight(const class CGameClient *pGameClient, bool IsLocal, bool IsSpectatorRow, int ClientId);
+float BestClientLightScoreboardPlayerPopupHeight(const class CGameClient *pGameClient, bool IsLocal, bool IsSpectatorRow, int ClientId);
 
-float BestClientTeeRenderSize(const class CGameClient *pGameClient, int ClientId);
-void BestClientRenderRealHitbox(class IGraphics *pGraphics, class CGameClient *pGameClient, int ClientId, vec2 Position);
-void BestClientRenderVotePercentages(class CUi *pUi, class ITextRender *pTextRender, const class CUIRect &Bars, int Yes, int No, int Total);
-void BestClientRenderIndicatorIcon(class IGraphics *pGraphics, const class CUIRect &Rect, bool Developer = false, bool Fake = false, ColorRGBA Color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+float BestClientLightTeeRenderSize(const class CGameClient *pGameClient, int ClientId);
+void BestClientLightRenderRealHitbox(class IGraphics *pGraphics, class CGameClient *pGameClient, int ClientId, vec2 Position);
+void BestClientLightRenderVotePercentages(class CUi *pUi, class ITextRender *pTextRender, const class CUIRect &Bars, int Yes, int No, int Total);
+void BestClientLightRenderIndicatorIcon(class IGraphics *pGraphics, const class CUIRect &Rect, bool Developer = false, bool Fake = false, ColorRGBA Color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 
-constexpr const char *BESTCLIENT_BETTER_FONT_FACE = "ActayWide Bold";
-void BestClientApplyMenuFont(class ITextRender *pTextRender);
-void BestClientRefreshMenuFont(class CGameClient *pGameClient);
+constexpr const char *BESTCLIENT_LIGHT_BETTER_FONT_FACE = "ActayWide Bold";
+void BestClientLightApplyMenuFont(class ITextRender *pTextRender);
+void BestClientLightRefreshMenuFont(class CGameClient *pGameClient);
 
 #endif

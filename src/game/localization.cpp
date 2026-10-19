@@ -24,13 +24,13 @@ const char *TCLocalize(const char *pStr, const char *pContext)
 	return Localize(pStr, pContext);
 }
 
-// bestclient
+// bestclient-light
 const char *BcLocalize(const char *pStr)
 {
-	const char *pNewStr = g_Localization.FindString(str_quickhash(pStr), str_quickhash("BestClient"));
+	const char *pNewStr = g_Localization.FindString(str_quickhash(pStr), str_quickhash("BestClient Light"));
 	return pNewStr ? pNewStr : Localize(pStr);
 }
-// bestclient
+// bestclient-light
 
 void CLocalizationDatabase::LoadIndexfile(IStorage *pStorage, IConsole *pConsole)
 {
@@ -261,7 +261,7 @@ bool CLocalizationDatabase::Load(const char *pFilename, IStorage *pStorage, ICon
 
 void CLocalizationDatabase::AddString(const char *pOrgStr, const char *pNewStr, const char *pContext)
 {
-	// bestclient
+	// bestclient-light
 	const unsigned Hash = str_quickhash(pOrgStr);
 	const unsigned ContextHash = str_quickhash(pContext);
 	for(const CString &String : m_vStrings)
@@ -270,7 +270,7 @@ void CLocalizationDatabase::AddString(const char *pOrgStr, const char *pNewStr, 
 			return;
 	}
 	m_vStrings.emplace_back(Hash, ContextHash, m_StringsHeap.StoreString(*pNewStr ? pNewStr : pOrgStr));
-	// bestclient
+	// bestclient-light
 }
 
 const char *CLocalizationDatabase::FindString(unsigned Hash, unsigned ContextHash) const

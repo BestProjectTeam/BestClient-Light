@@ -120,8 +120,8 @@ int PickType(int ConfigType)
 
 ColorRGBA MakeParticleColor()
 {
-	ColorRGBA BaseColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_Bc3dParticlesColor, true));
-	if(g_Config.m_Bc3dParticlesColorMode == 2)
+	ColorRGBA BaseColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_Bcl3dParticlesColor, true));
+	if(g_Config.m_Bcl3dParticlesColorMode == 2)
 	{
 		const ColorHSLA RandomColor(random_float(), 0.85f, 0.65f, BaseColor.a);
 		BaseColor = color_cast<ColorRGBA>(RandomColor);
@@ -170,7 +170,7 @@ void C3DParticles::OnRender()
 	if(GameClient()->OptimizerDisableParticles())
 		return;
 
-	if(!g_Config.m_Bc3dParticles)
+	if(!g_Config.m_Bcl3dParticles)
 	{
 		if(!m_vParticles.empty())
 			ResetParticles();
@@ -183,11 +183,11 @@ void C3DParticles::OnRender()
 		return;
 	}
 
-	const int CurType = g_Config.m_Bc3dParticlesType;
-	const int CurSizeMax = g_Config.m_Bc3dParticlesSizeMax;
-	const int CurDensity = g_Config.m_Bc3dParticlesDensity;
-	const int CurColorMode = g_Config.m_Bc3dParticlesColorMode;
-	const unsigned CurColor = g_Config.m_Bc3dParticlesColor;
+	const int CurType = g_Config.m_Bcl3dParticlesType;
+	const int CurSizeMax = g_Config.m_Bcl3dParticlesSizeMax;
+	const int CurDensity = g_Config.m_Bcl3dParticlesDensity;
+	const int CurColorMode = g_Config.m_Bcl3dParticlesColorMode;
+	const unsigned CurColor = g_Config.m_Bcl3dParticlesColor;
 
 	const bool StructuralChanged = !m_HasConfigSnapshot ||
 		CurType != m_LastType ||
@@ -234,8 +234,8 @@ void C3DParticles::OnRender()
 	m_LastLocalPos = LocalPos;
 	m_HasLastLocalPos = true;
 
-	const float Depth = std::clamp((float)g_Config.m_Bc3dParticlesDepth, 10.0f, 1000.0f);
-	const float BaseAlpha = std::clamp(g_Config.m_Bc3dParticlesAlpha / 100.0f, 0.0f, 1.0f);
+	const float Depth = std::clamp((float)g_Config.m_Bcl3dParticlesDepth, 10.0f, 1000.0f);
+	const float BaseAlpha = std::clamp(g_Config.m_Bcl3dParticlesAlpha / 100.0f, 0.0f, 1.0f);
 
 	const CScreenRect ScreenRect = Graphics()->GetScreen();
 	const float ScreenMinX = std::min(ScreenRect.m_TopLeft.x, ScreenRect.m_BottomRight.x);
@@ -259,15 +259,15 @@ void C3DParticles::OnRender()
 	const int MapWInt = Collision()->GetWidth();
 	const int MapHInt = Collision()->GetHeight();
 
-	int ConfigType = (int)g_Config.m_Bc3dParticlesType;
+	int ConfigType = (int)g_Config.m_Bcl3dParticlesType;
 	if(ConfigType < SHAPE_CUBE)
 		ConfigType = SHAPE_CUBE;
 	else if(ConfigType > SHAPE_MIXED)
 		ConfigType = SHAPE_MIXED;
-	const int SizeMaxValue = std::clamp((int)g_Config.m_Bc3dParticlesSizeMax, 2, 200);
+	const int SizeMaxValue = std::clamp((int)g_Config.m_Bcl3dParticlesSizeMax, 2, 200);
 	const float SizeMin = (float)std::max(2, SizeMaxValue - 3);
 	const float SizeMax = (float)SizeMaxValue;
-	const float ViewMargin = std::clamp((float)g_Config.m_Bc3dParticlesViewMargin, 0.0f, 1000.0f);
+	const float ViewMargin = std::clamp((float)g_Config.m_Bcl3dParticlesViewMargin, 0.0f, 1000.0f);
 
 	const float CullPad = SizeMax * PROJ_SCALE_MAX + 8.0f;
 	const float CullHalfW = ScreenHalfW / PROJ_SCALE_MIN + CullPad;
@@ -280,7 +280,7 @@ void C3DParticles::OnRender()
 	const float RenderMaxX = CullMaxX + ViewMargin;
 	const float RenderMinY = CullMinY - ViewMargin;
 	const float RenderMaxY = CullMaxY + ViewMargin;
-	const float Speed = (float)g_Config.m_Bc3dParticlesSpeed;
+	const float Speed = (float)g_Config.m_Bcl3dParticlesSpeed;
 	const int MaxCount = (ConfigType == SHAPE_HEART) ? PARTICLE_MAX_HEART : PARTICLE_MAX_CUBE;
 
 	const float DensityT = std::clamp((CurDensity - 1) / 599.0f, 0.0f, 1.0f);
@@ -332,11 +332,11 @@ void C3DParticles::OnRender()
 		m_LastAutoCount = TargetCount;
 	}
 
-	const float PushRadius = std::clamp((float)g_Config.m_Bc3dParticlesPushRadius, 0.0f, 1000.0f);
-	const float PushStrength = std::clamp((float)g_Config.m_Bc3dParticlesPushStrength, 0.0f, 2000.0f);
+	const float PushRadius = std::clamp((float)g_Config.m_Bcl3dParticlesPushRadius, 0.0f, 1000.0f);
+	const float PushStrength = std::clamp((float)g_Config.m_Bcl3dParticlesPushStrength, 0.0f, 2000.0f);
 	const float MaxSpeed = std::max(40.0f, Speed * 4.0f);
 	const float PushRadiusSq = PushRadius * PushRadius;
-	const bool EnableParticleCollisions = g_Config.m_Bc3dParticlesCollide != 0;
+	const bool EnableParticleCollisions = g_Config.m_Bcl3dParticlesCollide != 0;
 
 	const float UpdateHalfW = std::max((CullHalfW + ViewMargin) * UPDATE_EXPAND, 500.0f);
 	const float UpdateHalfH = std::max((CullHalfH + ViewMargin) * UPDATE_EXPAND, 500.0f);
@@ -447,7 +447,7 @@ void C3DParticles::RenderParticles(float CullMinX, float CullMaxX, float CullMin
 
 	Graphics()->TextureClear();
 
-	const bool GlowEnabled = g_Config.m_Bc3dParticlesGlow != 0;
+	const bool GlowEnabled = g_Config.m_Bcl3dParticlesGlow != 0;
 	const vec3 GlowOffsetVec(-GLOW_OFFSET, -GLOW_OFFSET, 0.0f);
 	const vec2 CameraCenter = GameClient()->m_Camera.m_Center;
 

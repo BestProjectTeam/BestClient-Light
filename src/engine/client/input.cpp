@@ -700,7 +700,7 @@ static int TranslateMouseWheelEventKey(const SDL_MouseWheelEvent &MouseWheelEven
 	}
 }
 
-// bestclient
+// bestclient-light
 static void LogWindowEvent(const char *pEvent, Uint32 WindowId)
 {
 	SDL_Window *pWindow = SDL_GetWindowFromID(WindowId);
@@ -712,9 +712,9 @@ static void LogWindowEvent(const char *pEvent, Uint32 WindowId)
 		SDL_GetWindowSize(pWindow, &Width, &Height);
 		Flags = SDL_GetWindowFlags(pWindow);
 	}
-	log_info("bestclient", "window %s fullscreen=%d borderless=%d size=%dx%d flags=0x%x", pEvent, g_Config.m_GfxFullscreen, g_Config.m_GfxBorderless, Width, Height, Flags);
+	log_info("bestclient-light", "window %s fullscreen=%d borderless=%d size=%dx%d flags=0x%x", pEvent, g_Config.m_GfxFullscreen, g_Config.m_GfxBorderless, Width, Height, Flags);
 }
-// bestclient
+// bestclient-light
 
 #if defined(CONF_PLATFORM_EMSCRIPTEN)
 extern "C" {
@@ -857,9 +857,9 @@ int CInput::Update()
 				Graphics()->GotResized(Event.window.data1, Event.window.data2, -1);
 				break;
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
-				// bestclient
+				// bestclient-light
 				LogWindowEvent("focus-gained", Event.window.windowID);
-				// bestclient
+				// bestclient-light
 				if(m_InputGrabbed)
 				{
 #if defined(CONF_PLATFORM_MACOS) // Todo: remove this when fixed in SDL: https://github.com/libsdl-org/SDL/issues/13920
@@ -873,9 +873,9 @@ int CInput::Update()
 				IgnoreKeys = true;
 				break;
 			case SDL_WINDOWEVENT_FOCUS_LOST:
-				// bestclient
+				// bestclient-light
 				LogWindowEvent("focus-lost", Event.window.windowID);
-				// bestclient
+				// bestclient-light
 				std::fill(std::begin(m_aCurrentKeyStates), std::end(m_aCurrentKeyStates), false);
 				m_MouseFocus = false;
 				IgnoreKeys = true;
@@ -887,9 +887,9 @@ int CInput::Update()
 				}
 				break;
 			case SDL_WINDOWEVENT_MINIMIZED:
-				// bestclient
+				// bestclient-light
 				LogWindowEvent("minimized", Event.window.windowID);
-				// bestclient
+				// bestclient-light
 #if defined(CONF_PLATFORM_ANDROID) // Save the config when minimized on Android.
 				m_pConfigManager->Save();
 #endif
@@ -897,19 +897,19 @@ int CInput::Update()
 				break;
 
 			case SDL_WINDOWEVENT_MAXIMIZED:
-				// bestclient
+				// bestclient-light
 				LogWindowEvent("maximized", Event.window.windowID);
-				// bestclient
+				// bestclient-light
 #if defined(CONF_PLATFORM_MACOS) // Todo: remove this when fixed in SDL: https://github.com/libsdl-org/SDL/issues/13920
 				MouseModeAbsolute();
 				MouseModeRelative();
 #endif
 				[[fallthrough]];
 			case SDL_WINDOWEVENT_RESTORED:
-				// bestclient
+				// bestclient-light
 				if(Event.window.event == SDL_WINDOWEVENT_RESTORED)
 					LogWindowEvent("restored", Event.window.windowID);
-				// bestclient
+				// bestclient-light
 				Graphics()->WindowCreateNtf(Event.window.windowID);
 				break;
 			}

@@ -7,7 +7,7 @@ class IUpdater : public IInterface
 {
 	MACRO_INTERFACE("updater")
 public:
-	// bestclient
+	// bestclient-light
 	enum EUpdaterState
 	{
 		CLEAN,
@@ -27,7 +27,7 @@ public:
 	virtual void GetCurrentFile(char *pBuf, int BufSize) = 0;
 	virtual int GetCurrentPercent() = 0;
 	virtual const char *GetLatestVersionString() = 0;
-	// bestclient
+	// bestclient-light
 };
 
 #endif

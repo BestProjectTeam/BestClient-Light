@@ -17,29 +17,29 @@
 #include <engine/shared/localization.h>
 #include <engine/textrender.h>
 
-// bestclient
+// bestclient-light
 #include <base/net.h>
-#include <game/client/components/bestclient/bestclient.h>
-// bestclient
+#include <game/client/components/bestclient-light/bestclient-light.h>
+// bestclient-light
 
 #include <game/client/animstate.h>
-#include <game/client/components/bestclient/clientindicator/version_label.h>
+#include <game/client/components/bestclient-light/clientindicator/version_label.h>
 #include <game/client/components/countryflags.h>
 #include <game/client/gameclient.h>
 #include <game/client/ui.h>
 #include <game/client/ui_listbox.h>
 #include <game/localization.h>
 
-// bestclient
+// bestclient-light
 #include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
-// bestclient
+// bestclient-light
 
 static constexpr ColorRGBA HIGHLIGHTED_TEXT_COLOR = ColorRGBA(0.4f, 0.4f, 1.0f, 1.0f);
 
-// bestclient
+// bestclient-light
 static CUIRect CenterSquareIcon(const CUIRect &Rect, float Margin)
 {
 	CUIRect Icon = Rect;
@@ -52,7 +52,7 @@ static CUIRect CenterSquareIcon(const CUIRect &Rect, float Margin)
 	return Icon;
 }
 
-static void RenderCenteredBestClientTabIcon(IGraphics *pGraphics, const CUIRect &Rect, ColorRGBA Color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f))
+static void RenderCenteredBestClientLightTabIcon(IGraphics *pGraphics, const CUIRect &Rect, ColorRGBA Color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f))
 {
 	CUIRect Icon = Rect;
 	const float Size = std::min(Rect.w, Rect.h) - 6.0f;
@@ -60,9 +60,9 @@ static void RenderCenteredBestClientTabIcon(IGraphics *pGraphics, const CUIRect 
 	Icon.h = Size;
 	Icon.x += (Rect.w - Size) / 2.0f;
 	Icon.y += (Rect.h - Size) / 2.0f;
-	BestClientRenderIndicatorIcon(pGraphics, Icon, false, false, Color);
+	BestClientLightRenderIndicatorIcon(pGraphics, Icon, false, false, Color);
 }
-// bestclient
+// bestclient-light
 
 static ColorRGBA PlayerBackgroundColor(bool Friend, bool Clan, bool Afk, bool InSelectedServer, bool Inside)
 {
@@ -133,10 +133,10 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		COL_NAME,
 		COL_GAMETYPE,
 		COL_MAP,
-		// bestclient
-		COL_BESTCLIENT_DEV,
-		COL_BESTCLIENT,
-		// bestclient
+		// bestclient-light
+		COL_BESTCLIENT_LIGHT_DEV,
+		COL_BESTCLIENT_LIGHT,
+		// bestclient-light
 		COL_FRIENDS,
 		COL_PLAYERS,
 		COL_PING,
@@ -154,14 +154,14 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		UI_ELEM_MAP_2,
 		UI_ELEM_MAP_3,
 		UI_ELEM_FINISH_ICON,
-		// bestclient
-		UI_ELEM_BESTCLIENT_DEV_ICON,
-		// bestclient
+		// bestclient-light
+		UI_ELEM_BESTCLIENT_LIGHT_DEV_ICON,
+		// bestclient-light
 		UI_ELEM_PLAYERS,
 		UI_ELEM_FRIEND_ICON,
-		// bestclient
-		UI_ELEM_BESTCLIENT_ICON,
-		// bestclient
+		// bestclient-light
+		UI_ELEM_BESTCLIENT_LIGHT_ICON,
+		// bestclient-light
 		UI_ELEM_PING,
 		UI_ELEM_KEY_ICON,
 		NUM_UI_ELEMS,
@@ -177,10 +177,10 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		{COL_NAME, IServerBrowser::SORT_NAME, Localizable("Name"), 0, 50.0f, {0}},
 		{COL_GAMETYPE, IServerBrowser::SORT_GAMETYPE, Localizable("Type"), 1, 50.0f, {0}},
 		{COL_MAP, IServerBrowser::SORT_MAP, Localizable("Map"), 1, 120.0f + (Headers.w - 480) / 8, {0}},
-		// bestclient
-		{COL_BESTCLIENT_DEV, -1, "", 1, ClickableIconSpace, {0}},
-		{COL_BESTCLIENT, IServerBrowser::SORT_NUMBESTCLIENT, "", 1, ClickableIconSpace, {0}},
-		// bestclient
+		// bestclient-light
+		{COL_BESTCLIENT_LIGHT_DEV, -1, "", 1, ClickableIconSpace, {0}},
+		{COL_BESTCLIENT_LIGHT, IServerBrowser::SORT_NUMBESTCLIENT_LIGHT, "", 1, ClickableIconSpace, {0}},
+		// bestclient-light
 		{COL_FRIENDS, IServerBrowser::SORT_NUMFRIENDS, "", 1, ClickableIconSpace, {0}},
 		{COL_PLAYERS, IServerBrowser::SORT_NUMPLAYERS, Localizable("Players"), 1, 60.0f, {0}},
 		{-1, -1, "", 1, 4.0f, {0}},
@@ -247,13 +247,13 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 			TextRender()->SetRenderFlags(0);
 			TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
 		}
-		// bestclient
-		else if(Col.m_Id == COL_BESTCLIENT)
+		// bestclient-light
+		else if(Col.m_Id == COL_BESTCLIENT_LIGHT)
 		{
 			const CUIRect Icon = CenterSquareIcon(Col.m_Rect, 2.0f);
-			BestClientRenderIndicatorIcon(Graphics(), Icon, false, false, ColorRGBA(1.0f, 1.0f, 1.0f, 0.9f));
+			BestClientLightRenderIndicatorIcon(Graphics(), Icon, false, false, ColorRGBA(1.0f, 1.0f, 1.0f, 0.9f));
 		}
-		// bestclient
+		// bestclient-light
 		else if(Col.m_Id == COL_FLAG_FAV)
 		{
 			TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
@@ -327,9 +327,9 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 	s_ListBox.SetActive(!Ui()->IsPopupOpen());
 	s_ListBox.DoStart(ms_ListheaderHeight, NumServers, 1, 3, -1, &View, false);
 
-	// bestclient
+	// bestclient-light
 	bool RevealServerPreview = m_ServerBrowserShouldRevealSelection;
-	// bestclient
+	// bestclient-light
 	if(m_ServerBrowserShouldRevealSelection)
 	{
 		s_ListBox.ScrollToSelected();
@@ -354,14 +354,14 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 	if(vpServerBrowserUiElements.size() < (size_t)NumServers)
 		vpServerBrowserUiElements.resize(NumServers, nullptr);
 
-	// bestclient
+	// bestclient-light
 	bool PreviewShown = false;
-	if(g_Config.m_BcServerMapPreview != 0)
+	if(g_Config.m_BclServerMapPreview != 0)
 		m_ServerMapPreview.Tick();
 	if(m_ServerMapPreview.TakeReveal())
 		RevealServerPreview = true;
 	const float PreviewHeight = m_ServerMapPreview.RowHeight();
-	// bestclient
+	// bestclient-light
 	for(int i = 0; i < NumServers; i++)
 	{
 		const CServerInfo *pItem = ServerBrowser()->SortedGet(i);
@@ -373,9 +373,9 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		}
 		CUIElement *pUiElement = vpServerBrowserUiElements[i];
 
-		// bestclient
+		// bestclient-light
 		const bool AddressSelected = str_comp(pItem->m_aAddress, g_Config.m_UiServerAddress) == 0;
-		const bool PreviewRow = g_Config.m_BcServerMapPreview != 0 && m_ServerMapPreview.ShowsAddress(pItem->m_aAddress);
+		const bool PreviewRow = g_Config.m_BclServerMapPreview != 0 && m_ServerMapPreview.ShowsAddress(pItem->m_aAddress);
 		if(PreviewRow)
 		{
 			if(m_ServerMapPreview.HasMap(pItem) || m_ServerMapPreview.ReadyToLoad())
@@ -386,12 +386,12 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		const bool ShowPreview = PreviewRow && PreviewHeight > 0.5f;
 		if(ShowPreview && AddressSelected)
 			s_ListBox.SuppressNextSelectionHighlight();
-		// bestclient
+		// bestclient-light
 		const CListboxItem ListItem = s_ListBox.DoNextItem(pItem, AddressSelected);
 		if(ListItem.m_Selected)
 			m_SelectedIndex = i;
 
-		// bestclient
+		// bestclient-light
 		CUIRect PreviewRect;
 		const ColorRGBA PreviewFrame(1.0f, 1.0f, 1.0f, s_ListBox.Active() ? 0.5f : 0.33f);
 		if(ShowPreview)
@@ -402,7 +402,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 			Block.Draw(PreviewFrame, IGraphics::CORNER_ALL, 12.0f);
 			PreviewShown = true;
 		}
-		// bestclient
+		// bestclient-light
 
 		if(!ListItem.m_Visible)
 		{
@@ -411,10 +411,10 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 				Ui()->SetActiveItem(nullptr);
 
 			// don't render invisible items
-			// bestclient
+			// bestclient-light
 			if(ShowPreview)
 				m_ServerMapPreview.Render(PreviewRect, PreviewFrame);
-			// bestclient
+			// bestclient-light
 			continue;
 		}
 
@@ -464,7 +464,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 			}
 			else if(Id == COL_NAME)
 			{
-				// bestclient
+				// bestclient-light
 				char aDisplayServerName[sizeof(pItem->m_aName)];
 				const char *pDisplayServerName = CBrowserUtils::GetDisplayName(pItem, aDisplayServerName);
 
@@ -483,7 +483,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 					});
 				if(!Printed)
 					Ui()->DoLabelStreamed(*pUiElement->Rect(UI_ELEM_NAME_1), &Button, pDisplayServerName, FontSize, TEXTALIGN_ML, Props);
-				// bestclient
+				// bestclient-light
 			}
 			else if(Id == COL_GAMETYPE)
 			{
@@ -504,9 +504,9 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 					CUIRect Icon;
 					Button.VMargin(4.0f, &Button);
 					Button.VSplitLeft(Button.h, &Icon, &Button);
-					// bestclient
+					// bestclient-light
 					if((g_Config.m_BrIndicateFinished && pItem->m_HasRank == CServerInfo::RANK_RANKED) || GameClient()->m_EgoFinishedMaps.IsFinishedMap(pItem) || GameClient()->m_LegitFinishedMaps.IsFinishedMap(pItem))
-					// bestclient
+					// bestclient-light
 					{
 						Icon.Margin(2.0f, &Icon);
 						RenderBrowserIcons(*pUiElement->Rect(UI_ELEM_FINISH_ICON), &Icon, TextRender()->DefaultTextColor(), TextRender()->DefaultTextOutlineColor(), FontIcon::FLAG_CHECKERED, TEXTALIGN_MC);
@@ -529,35 +529,35 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 				if(!Printed)
 					Ui()->DoLabelStreamed(*pUiElement->Rect(UI_ELEM_MAP_1), &Button, pItem->m_aMap, FontSize, TEXTALIGN_ML, Props);
 			}
-			// bestclient
-			else if(Id == COL_BESTCLIENT_DEV)
+			// bestclient-light
+			else if(Id == COL_BESTCLIENT_LIGHT_DEV)
 			{
-				const bool HasRegularBestClientPlayers = pItem->m_NumBestClientPlayers > pItem->m_NumBestClientDeveloperPlayers;
-				if(pItem->m_HasBestClientDeveloperPlayers && HasRegularBestClientPlayers)
+				const bool HasRegularBestClientLightPlayers = pItem->m_NumBestClientLightPlayers > pItem->m_NumBestClientLightDeveloperPlayers;
+				if(pItem->m_HasBestClientLightDeveloperPlayers && HasRegularBestClientLightPlayers)
 				{
 					const CUIRect Icon = CenterSquareIcon(Button, 2.0f);
-					BestClientRenderIndicatorIcon(Graphics(), Icon, true, false, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+					BestClientLightRenderIndicatorIcon(Graphics(), Icon, true, false, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 
-					if(pItem->m_NumBestClientDeveloperPlayers > 1)
+					if(pItem->m_NumBestClientLightDeveloperPlayers > 1)
 					{
-						str_format(aTemp, sizeof(aTemp), "%d", pItem->m_NumBestClientDeveloperPlayers);
+						str_format(aTemp, sizeof(aTemp), "%d", pItem->m_NumBestClientLightDeveloperPlayers);
 						TextRender()->TextColor(1.0f, 0.9f, 0.55f, 1.0f);
 						Ui()->DoLabel(&Button, aTemp, 9.0f, TEXTALIGN_MC);
 						TextRender()->TextColor(TextRender()->DefaultTextColor());
 					}
 				}
 			}
-			else if(Id == COL_BESTCLIENT)
+			else if(Id == COL_BESTCLIENT_LIGHT)
 			{
-				if(pItem->m_HasBestClientPlayers)
+				if(pItem->m_HasBestClientLightPlayers)
 				{
-					const bool HasDeveloperPlayers = pItem->m_HasBestClientDeveloperPlayers;
-					const int NumRegularBestClientPlayers = std::max(0, pItem->m_NumBestClientPlayers - pItem->m_NumBestClientDeveloperPlayers);
-					const bool OnlyDevelopers = HasDeveloperPlayers && NumRegularBestClientPlayers == 0;
+					const bool HasDeveloperPlayers = pItem->m_HasBestClientLightDeveloperPlayers;
+					const int NumRegularBestClientLightPlayers = std::max(0, pItem->m_NumBestClientLightPlayers - pItem->m_NumBestClientLightDeveloperPlayers);
+					const bool OnlyDevelopers = HasDeveloperPlayers && NumRegularBestClientLightPlayers == 0;
 					const CUIRect Icon = CenterSquareIcon(Button, 2.0f);
-					BestClientRenderIndicatorIcon(Graphics(), Icon, OnlyDevelopers, false, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+					BestClientLightRenderIndicatorIcon(Graphics(), Icon, OnlyDevelopers, false, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 
-					const int CounterValue = OnlyDevelopers ? pItem->m_NumBestClientDeveloperPlayers : NumRegularBestClientPlayers;
+					const int CounterValue = OnlyDevelopers ? pItem->m_NumBestClientLightDeveloperPlayers : NumRegularBestClientLightPlayers;
 					if(CounterValue > 1)
 					{
 						str_format(aTemp, sizeof(aTemp), "%d", CounterValue);
@@ -567,7 +567,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 					}
 				}
 			}
-			// bestclient
+			// bestclient-light
 			else if(Id == COL_FRIENDS)
 			{
 				if(pItem->m_FriendState != IFriends::FRIEND_NO)
@@ -605,16 +605,16 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 				TextRender()->TextColor(TextRender()->DefaultTextColor());
 			}
 		}
-		// bestclient
+		// bestclient-light
 		if(ShowPreview)
 			m_ServerMapPreview.Render(PreviewRect, PreviewFrame);
-		// bestclient
+		// bestclient-light
 	}
 
-	// bestclient
-	if(g_Config.m_BcServerMapPreview != 0 && !PreviewShown && !m_ServerMapPreview.Expanded() && !m_ServerMapPreview.OpenPending())
+	// bestclient-light
+	if(g_Config.m_BclServerMapPreview != 0 && !PreviewShown && !m_ServerMapPreview.Expanded() && !m_ServerMapPreview.OpenPending())
 		m_ServerMapPreview.Clear();
-	// bestclient
+	// bestclient-light
 
 	const int NewSelected = s_ListBox.DoEnd();
 	if(NewSelected != m_SelectedIndex)
@@ -628,15 +628,15 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 			{
 				str_copy(g_Config.m_UiServerAddress, pItem->m_aAddress);
 				m_ServerBrowserShouldRevealSelection = true;
-				// bestclient
-				if(g_Config.m_BcServerMapPreview != 0)
+				// bestclient-light
+				if(g_Config.m_BclServerMapPreview != 0)
 					m_ServerMapPreview.SwitchTo(pItem->m_aAddress);
-				// bestclient
+				// bestclient-light
 			}
 		}
 	}
-	// bestclient
-	else if(g_Config.m_BcServerMapPreview != 0 && NewSelected >= 0 && (s_ListBox.WasItemSelected() || s_ListBox.WasItemActivated()))
+	// bestclient-light
+	else if(g_Config.m_BclServerMapPreview != 0 && NewSelected >= 0 && (s_ListBox.WasItemSelected() || s_ListBox.WasItemActivated()))
 	{
 		if(s_ListBox.WasItemActivated())
 			m_ServerMapPreview.CancelScheduledOpen();
@@ -645,7 +645,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		else
 			m_ServerMapPreview.SwitchTo(g_Config.m_UiServerAddress);
 	}
-	// bestclient
+	// bestclient-light
 
 	WasListboxItemActivated = s_ListBox.WasItemActivated();
 }
@@ -868,14 +868,14 @@ void CMenus::PopupConfirmSwitchServer()
 	Client()->Connect(m_aNextServer);
 }
 
-// bestclient
-void CMenus::ToggleBestClientServerFilter()
+// bestclient-light
+void CMenus::ToggleBestClientLightServerFilter()
 {
-	g_Config.m_BrFilterBestclient ^= 1;
+	g_Config.m_BrFilterBestclientLight ^= 1;
 	GameClient()->m_ClientIndicator.ReapplyBrowserSnapshot();
 	Client()->ServerBrowserUpdate();
 }
-// bestclient
+// bestclient-light
 
 void CMenus::RenderServerbrowserFilters(CUIRect View)
 {
@@ -904,11 +904,11 @@ void CMenus::RenderServerbrowserFilters(CUIRect View)
 	if(DoButton_CheckBox(&g_Config.m_BrFilterFriends, Localize("Show friends only"), g_Config.m_BrFilterFriends, &Button))
 		g_Config.m_BrFilterFriends ^= 1;
 
-	// bestclient
+	// bestclient-light
 	View.HSplitTop(RowHeight, &Button, &View);
-	if(DoButton_CheckBox(&g_Config.m_BrFilterBestclient, Localize("Show BestClient only"), g_Config.m_BrFilterBestclient, &Button))
-		ToggleBestClientServerFilter();
-	// bestclient
+	if(DoButton_CheckBox(&g_Config.m_BrFilterBestclientLight, Localize("Show BestClient Light only"), g_Config.m_BrFilterBestclientLight, &Button))
+		ToggleBestClientLightServerFilter();
+	// bestclient-light
 
 	View.HSplitTop(RowHeight, &Button, &View);
 	if(DoButton_CheckBox(&g_Config.m_BrFilterPw, Localize("No password"), g_Config.m_BrFilterPw, &Button))
@@ -1051,9 +1051,9 @@ void CMenus::ResetServerbrowserFilters()
 	g_Config.m_BrFilterCountry = 0;
 	g_Config.m_BrFilterCountryIndex = DefaultConfig::BrFilterCountryIndex;
 	g_Config.m_BrFilterPw = 0;
-	// bestclient
-	g_Config.m_BrFilterBestclient = 0;
-	// bestclient
+	// bestclient-light
+	g_Config.m_BrFilterBestclientLight = 0;
+	// bestclient-light
 	g_Config.m_BrFilterGametype[0] = '\0';
 	g_Config.m_BrFilterGametypeStrict = 0;
 	g_Config.m_BrFilterConnectingPlayers = 1;
@@ -1635,8 +1635,8 @@ void CMenus::RenderServerbrowserInfoScoreboard(CUIRect View, const CServerInfo *
 	}
 }
 
-// bestclient
-void CMenus::RenderServerbrowserBestClient(CUIRect View)
+// bestclient-light
+void CMenus::RenderServerbrowserBestClientLight(CUIRect View)
 {
 	const CServerInfo *pSelectedServer = ServerBrowser()->SortedGet(m_SelectedIndex);
 	const float RowHeight = 18.0f;
@@ -1649,15 +1649,15 @@ void CMenus::RenderServerbrowserBestClient(CUIRect View)
 	CUIRect Button, RefreshButton, VersionsButton;
 	View.HSplitTop(RowHeight, &Button, &View);
 	Button.VSplitRight(RowHeight, &Button, &RefreshButton);
-	if(g_Config.m_BcClientIndicatorVersions)
+	if(g_Config.m_BclClientIndicatorVersions)
 	{
 		Button.VSplitRight(5.0f, &Button, nullptr);
 		Button.VSplitRight(80.0f, &Button, &VersionsButton);
 	}
-	if(DoButton_CheckBox(&g_Config.m_BrFilterBestclient, Localize("Show BestClient only"), g_Config.m_BrFilterBestclient, &Button))
-		ToggleBestClientServerFilter();
+	if(DoButton_CheckBox(&g_Config.m_BrFilterBestclientLight, Localize("Show BestClient Light only"), g_Config.m_BrFilterBestclientLight, &Button))
+		ToggleBestClientLightServerFilter();
 
-	if(g_Config.m_BcClientIndicatorVersions)
+	if(g_Config.m_BclClientIndicatorVersions)
 	{
 		static CButtonContainer s_VersionsButtonId;
 		VersionsButton.Draw(s_ShowVersions ? ColorRGBA(0.3f, 0.5f, 0.3f, 0.5f) : ColorRGBA(0.3f, 0.3f, 0.3f, 0.5f), IGraphics::CORNER_ALL, 3.0f);
@@ -1670,22 +1670,22 @@ void CMenus::RenderServerbrowserBestClient(CUIRect View)
 	}
 
 	{
-		static CButtonContainer s_RefreshBestClientButtonId;
+		static CButtonContainer s_RefreshBestClientLightButtonId;
 		const bool Refreshing = GameClient()->m_ClientIndicator.IsBrowserCacheRefreshing();
 		const char *pIcon = Refreshing ? FontIcon::ELLIPSIS : FontIcon::ARROW_ROTATE_RIGHT;
-		if(Ui()->DoButton_FontIcon(&s_RefreshBestClientButtonId, pIcon, 0, &RefreshButton, BUTTONFLAG_LEFT) && !Refreshing)
+		if(Ui()->DoButton_FontIcon(&s_RefreshBestClientLightButtonId, pIcon, 0, &RefreshButton, BUTTONFLAG_LEFT) && !Refreshing)
 			GameClient()->m_ClientIndicator.RefreshBrowserCache(true);
-		GameClient()->m_Tooltips.DoToolTip(&s_RefreshBestClientButtonId, &RefreshButton, Localize("Refresh BestClient list"));
+		GameClient()->m_Tooltips.DoToolTip(&s_RefreshBestClientLightButtonId, &RefreshButton, Localize("Refresh BestClient Light list"));
 	}
 
 	View.HSplitTop(6.0f, nullptr, &View);
 
-	int AllBestClientPlayers = 0;
+	int AllBestClientLightPlayers = 0;
 	for(int i = 0; i < ServerBrowser()->NumSortedServers(); ++i)
-		AllBestClientPlayers += ServerBrowser()->SortedGet(i)->m_NumBestClientPlayers;
+		AllBestClientLightPlayers += ServerBrowser()->SortedGet(i)->m_NumBestClientLightPlayers;
 
 	char aLabel[128];
-	str_format(aLabel, sizeof(aLabel), Localize("All BestClient players: %d"), AllBestClientPlayers);
+	str_format(aLabel, sizeof(aLabel), Localize("All BestClient Light players: %d"), AllBestClientLightPlayers);
 	View.HSplitTop(RowHeight, &Button, &View);
 	Ui()->DoLabel(&Button, aLabel, FontSize, TEXTALIGN_ML);
 
@@ -1722,7 +1722,7 @@ void CMenus::RenderServerbrowserBestClient(CUIRect View)
 
 			for(const auto &PlayerEntry : PlayersOnServer)
 			{
-				Grouped[BestClientStripVersionProofStr(PlayerEntry.second)].push_back({PlayerEntry.first, pServer->m_aAddress});
+				Grouped[BestClientLightStripVersionProofStr(PlayerEntry.second)].push_back({PlayerEntry.first, pServer->m_aAddress});
 			}
 		}
 
@@ -1744,7 +1744,7 @@ void CMenus::RenderServerbrowserBestClient(CUIRect View)
 		if(TotalEntries <= 0)
 		{
 			View.HSplitTop(RowHeight, &Button, &View);
-			Ui()->DoLabel(&Button, Localize("No BestClient users in the current server list"), FontSize, TEXTALIGN_MC);
+			Ui()->DoLabel(&Button, Localize("No BestClient Light users in the current server list"), FontSize, TEXTALIGN_MC);
 			return;
 		}
 
@@ -1811,35 +1811,35 @@ void CMenus::RenderServerbrowserBestClient(CUIRect View)
 		return;
 	}
 
-	str_format(aLabel, sizeof(aLabel), Localize("BestClient players: %d"), pSelectedServer->m_NumBestClientPlayers);
+	str_format(aLabel, sizeof(aLabel), Localize("BestClient Light players: %d"), pSelectedServer->m_NumBestClientLightPlayers);
 	View.HSplitTop(RowHeight, &Button, &View);
 	Ui()->DoLabel(&Button, aLabel, FontSize, TEXTALIGN_ML);
 
 	View.HSplitTop(4.0f, nullptr, &View);
-	if(!pSelectedServer->m_HasBestClientPlayers)
+	if(!pSelectedServer->m_HasBestClientLightPlayers)
 	{
 		View.HSplitTop(RowHeight, &Button, &View);
-		Ui()->DoLabel(&Button, Localize("No BestClient users on the selected server"), FontSize, TEXTALIGN_MC);
+		Ui()->DoLabel(&Button, Localize("No BestClient Light users on the selected server"), FontSize, TEXTALIGN_MC);
 		return;
 	}
 
-	std::vector<int> vBestClientIndexes;
-	vBestClientIndexes.reserve(pSelectedServer->m_vClients.size());
+	std::vector<int> vBestClientLightIndexes;
+	vBestClientLightIndexes.reserve(pSelectedServer->m_vClients.size());
 	for(size_t i = 0; i < pSelectedServer->m_vClients.size(); ++i)
 	{
-		if(pSelectedServer->m_vClients[i].m_BestClient)
-			vBestClientIndexes.push_back((int)i);
+		if(pSelectedServer->m_vClients[i].m_BestClientLight)
+			vBestClientLightIndexes.push_back((int)i);
 	}
 
 	static CListBox s_ListBox;
 	s_ListBox.DoAutoSpacing(2.0f);
 	s_ListBox.SetScrollbarWidth(16.0f);
 	s_ListBox.SetScrollbarMargin(5.0f);
-	s_ListBox.DoStart(26.0f, (int)vBestClientIndexes.size(), 1, 1, -1, &View, false, IGraphics::CORNER_NONE, true);
+	s_ListBox.DoStart(26.0f, (int)vBestClientLightIndexes.size(), 1, 1, -1, &View, false, IGraphics::CORNER_NONE, true);
 
-	for(size_t i = 0; i < vBestClientIndexes.size(); ++i)
+	for(size_t i = 0; i < vBestClientLightIndexes.size(); ++i)
 	{
-		const CServerInfo::CClient &Client = pSelectedServer->m_vClients[vBestClientIndexes[i]];
+		const CServerInfo::CClient &Client = pSelectedServer->m_vClients[vBestClientLightIndexes[i]];
 		const CListboxItem Item = s_ListBox.DoNextItem(&Client);
 		if(!Item.m_Visible)
 			continue;
@@ -1877,9 +1877,9 @@ void CMenus::RenderServerbrowserBestClient(CUIRect View)
 		}
 
 		CUIRect NameText = Name;
-		const float BestClientIconSize = FontSize;
-		const float BestClientIconSpacing = 2.0f;
-		NameText.VSplitRight(BestClientIconSize + BestClientIconSpacing, &NameText, nullptr);
+		const float BestClientLightIconSize = FontSize;
+		const float BestClientLightIconSpacing = 2.0f;
+		NameText.VSplitRight(BestClientLightIconSize + BestClientLightIconSpacing, &NameText, nullptr);
 		CTextCursor NameCursor;
 		NameCursor.SetPosition(vec2(NameText.x, NameText.y));
 		NameCursor.m_FontSize = FontSize;
@@ -1887,18 +1887,18 @@ void CMenus::RenderServerbrowserBestClient(CUIRect View)
 		NameCursor.m_LineWidth = NameText.w;
 		TextRender()->TextEx(&NameCursor, Client.m_aName, -1);
 
-		CUIRect BestClientIcon;
-		BestClientIcon.w = BestClientIconSize;
-		BestClientIcon.h = BestClientIconSize;
-		BestClientIcon.x = std::min(NameCursor.m_X + BestClientIconSpacing, Name.x + Name.w - BestClientIcon.w);
-		BestClientIcon.y = Name.y + (Name.h - BestClientIcon.h) / 2.0f;
-		BestClientRenderIndicatorIcon(Graphics(), BestClientIcon, Client.m_BestClientDeveloper, Client.m_BestClientFake, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+		CUIRect BestClientLightIcon;
+		BestClientLightIcon.w = BestClientLightIconSize;
+		BestClientLightIcon.h = BestClientLightIconSize;
+		BestClientLightIcon.x = std::min(NameCursor.m_X + BestClientLightIconSpacing, Name.x + Name.w - BestClientLightIcon.w);
+		BestClientLightIcon.y = Name.y + (Name.h - BestClientLightIcon.h) / 2.0f;
+		BestClientLightRenderIndicatorIcon(Graphics(), BestClientLightIcon, Client.m_BestClientLightDeveloper, Client.m_BestClientLightFake, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 		Ui()->DoLabel(&Clan, Client.m_aClan, FontSize - 2.0f, TEXTALIGN_ML);
 	}
 
 	s_ListBox.DoEnd();
 }
-// bestclient
+// bestclient-light
 
 void CMenus::RenderServerbrowserFriends(CUIRect View)
 {
@@ -2163,7 +2163,7 @@ void CMenus::RenderServerbrowserFriends(CUIRect View)
 		}
 	}
 
-	// bestclient
+	// bestclient-light
 	{
 		struct SWarBrowserEntry
 		{
@@ -2377,7 +2377,7 @@ void CMenus::RenderServerbrowserFriends(CUIRect View)
 			}
 		}
 	}
-	// bestclient
+	// bestclient-light
 	s_ScrollRegion.End();
 
 	if(m_pRemoveFriend != nullptr)
@@ -2441,21 +2441,21 @@ enum
 {
 	UI_TOOLBOX_PAGE_FILTERS = 0,
 	UI_TOOLBOX_PAGE_INFO,
-	// bestclient
-	UI_TOOLBOX_PAGE_BESTCLIENT,
-	// bestclient
+	// bestclient-light
+	UI_TOOLBOX_PAGE_BESTCLIENT_LIGHT,
+	// bestclient-light
 	UI_TOOLBOX_PAGE_FRIENDS,
 	NUM_UI_TOOLBOX_PAGES,
 };
 
 void CMenus::RenderServerbrowserTabBar(CUIRect TabBar)
 {
-	// bestclient
-	CUIRect FilterTabButton, InfoTabButton, BestClientTabButton, FriendsTabButton;
+	// bestclient-light
+	CUIRect FilterTabButton, InfoTabButton, BestClientLightTabButton, FriendsTabButton;
 	TabBar.VSplitLeft(TabBar.w / 4.0f, &FilterTabButton, &TabBar);
 	TabBar.VSplitLeft(TabBar.w / 3.0f, &InfoTabButton, &TabBar);
-	TabBar.VSplitLeft(TabBar.w / 2.0f, &BestClientTabButton, &FriendsTabButton);
-	// bestclient
+	TabBar.VSplitLeft(TabBar.w / 2.0f, &BestClientLightTabButton, &FriendsTabButton);
+	// bestclient-light
 
 	const ColorRGBA ColorActive = ColorRGBA(0.0f, 0.0f, 0.0f, 0.3f);
 	const ColorRGBA ColorInactive = ColorRGBA(0.0f, 0.0f, 0.0f, 0.15f);
@@ -2483,15 +2483,15 @@ void CMenus::RenderServerbrowserTabBar(CUIRect TabBar)
 	}
 	GameClient()->m_Tooltips.DoToolTip(&s_InfoTabButton, &InfoTabButton, Localize("Server info"));
 
-	// bestclient
-	static CButtonContainer s_BestClientTabButton;
-	if(DoButton_MenuTab(&s_BestClientTabButton, "", g_Config.m_UiToolboxPage == UI_TOOLBOX_PAGE_BESTCLIENT, &BestClientTabButton, IGraphics::CORNER_T, &m_aAnimatorsSmallPage[SMALL_TAB_BROWSER_BESTCLIENT], &ColorInactive, &ColorActive))
+	// bestclient-light
+	static CButtonContainer s_BestClientLightTabButton;
+	if(DoButton_MenuTab(&s_BestClientLightTabButton, "", g_Config.m_UiToolboxPage == UI_TOOLBOX_PAGE_BESTCLIENT_LIGHT, &BestClientLightTabButton, IGraphics::CORNER_T, &m_aAnimatorsSmallPage[SMALL_TAB_BROWSER_BESTCLIENT_LIGHT], &ColorInactive, &ColorActive))
 	{
-		g_Config.m_UiToolboxPage = UI_TOOLBOX_PAGE_BESTCLIENT;
+		g_Config.m_UiToolboxPage = UI_TOOLBOX_PAGE_BESTCLIENT_LIGHT;
 	}
-	RenderCenteredBestClientTabIcon(Graphics(), BestClientTabButton, ColorRGBA(1.0f, 1.0f, 1.0f, 0.95f));
-	GameClient()->m_Tooltips.DoToolTip(&s_BestClientTabButton, &BestClientTabButton, Localize("BestClient"));
-	// bestclient
+	RenderCenteredBestClientLightTabIcon(Graphics(), BestClientLightTabButton, ColorRGBA(1.0f, 1.0f, 1.0f, 0.95f));
+	GameClient()->m_Tooltips.DoToolTip(&s_BestClientLightTabButton, &BestClientLightTabButton, Localize("BestClient Light"));
+	// bestclient-light
 
 	static CButtonContainer s_FriendsTabButton;
 	if(DoButton_MenuTab(&s_FriendsTabButton, FontIcon::HEART, g_Config.m_UiToolboxPage == UI_TOOLBOX_PAGE_FRIENDS, &FriendsTabButton, IGraphics::CORNER_T, &m_aAnimatorsSmallPage[SMALL_TAB_BROWSER_FRIENDS], &ColorInactive, &ColorActive))
@@ -2516,11 +2516,11 @@ void CMenus::RenderServerbrowserToolBox(CUIRect ToolBox)
 	case UI_TOOLBOX_PAGE_INFO:
 		RenderServerbrowserInfo(ToolBox);
 		return;
-	// bestclient
-	case UI_TOOLBOX_PAGE_BESTCLIENT:
-		RenderServerbrowserBestClient(ToolBox);
+	// bestclient-light
+	case UI_TOOLBOX_PAGE_BESTCLIENT_LIGHT:
+		RenderServerbrowserBestClientLight(ToolBox);
 		return;
-	// bestclient
+	// bestclient-light
 	case UI_TOOLBOX_PAGE_FRIENDS:
 		RenderServerbrowserFriends(ToolBox);
 		return;

@@ -11,52 +11,52 @@ namespace
 {
 	float FastModeOffsetTicks()
 	{
-		if(g_Config.m_BcInputs != BC_INPUTS_FAST || g_Config.m_TcFastInputAmount <= 0)
+		if(g_Config.m_BclInputs != BC_INPUTS_FAST || g_Config.m_TcFastInputAmount <= 0)
 			return 0.0f;
 		return g_Config.m_TcFastInputAmount / 20.0f;
 	}
 
 	float BestModeOffsetTicks()
 	{
-		if(g_Config.m_BcInputs != BC_INPUTS_BEST || g_Config.m_BcBestInputAmount <= 0)
+		if(g_Config.m_BclInputs != BC_INPUTS_BEST || g_Config.m_BclBestInputAmount <= 0)
 			return 0.0f;
 
-		float Offset = g_Config.m_BcBestInputAmount / 100.0f;
+		float Offset = g_Config.m_BclBestInputAmount / 100.0f;
 
-		if(g_Config.m_BcBestInputSmoothing > 0)
-			Offset *= 1.0f - (g_Config.m_BcBestInputSmoothing / 200.0f);
+		if(g_Config.m_BclBestInputSmoothing > 0)
+			Offset *= 1.0f - (g_Config.m_BclBestInputSmoothing / 200.0f);
 
-		if(g_Config.m_BcBestInputLatencyComp > 0)
-			Offset *= 1.0f + (g_Config.m_BcBestInputLatencyComp / 100.0f);
+		if(g_Config.m_BclBestInputLatencyComp > 0)
+			Offset *= 1.0f + (g_Config.m_BclBestInputLatencyComp / 100.0f);
 
 		return Offset;
 	}
 
 	float SaikoModeOffsetTicks()
 	{
-		if(g_Config.m_BcInputs != BC_INPUTS_SAIKO || g_Config.m_BcSaikoInputAmount <= 0)
+		if(g_Config.m_BclInputs != BC_INPUTS_SAIKO || g_Config.m_BclSaikoInputAmount <= 0)
 			return 0.0f;
-		return g_Config.m_BcSaikoInputAmount / 100.0f;
+		return g_Config.m_BclSaikoInputAmount / 100.0f;
 	}
 
 	float DeltaModeOffsetTicks()
 	{
-		if(g_Config.m_BcInputs != BC_INPUTS_DELTA || g_Config.m_BcDeltaInputAmount <= 0)
+		if(g_Config.m_BclInputs != BC_INPUTS_DELTA || g_Config.m_BclDeltaInputAmount <= 0)
 			return 0.0f;
-		return g_Config.m_BcDeltaInputAmount / 100.0f;
+		return g_Config.m_BclDeltaInputAmount / 100.0f;
 	}
 
 	float FModeOffsetTicks()
 	{
-		if(g_Config.m_BcInputs != BC_INPUTS_F || g_Config.m_BcFInputAmount <= 0)
+		if(g_Config.m_BclInputs != BC_INPUTS_F || g_Config.m_BclFInputAmount <= 0)
 			return 0.0f;
-		return g_Config.m_BcFInputAmount / 1000.0f;
+		return g_Config.m_BclFInputAmount / 1000.0f;
 	}
 } // namespace
 
-float BcInputs::EffectiveOffsetTicks()
+float BclInputs::EffectiveOffsetTicks()
 {
-	switch(g_Config.m_BcInputs)
+	switch(g_Config.m_BclInputs)
 	{
 	case BC_INPUTS_FAST: return FastModeOffsetTicks();
 	case BC_INPUTS_BEST: return BestModeOffsetTicks();
@@ -67,19 +67,19 @@ float BcInputs::EffectiveOffsetTicks()
 	}
 }
 
-int BcInputs::PredictionTicks(float OffsetTicks)
+int BclInputs::PredictionTicks(float OffsetTicks)
 {
 	if(OffsetTicks <= 0.0f)
 		return 0;
 	return (int)std::ceil(OffsetTicks);
 }
 
-int BcInputs::PredictionTicksOthers(float OffsetTicks)
+int BclInputs::PredictionTicksOthers(float OffsetTicks)
 {
 	return PredictionTicks(OffsetTicks);
 }
 
-void BcInputs::ApplyOffset(float OffsetTicks, int &Tick, float &Intra)
+void BclInputs::ApplyOffset(float OffsetTicks, int &Tick, float &Intra)
 {
 	if(OffsetTicks <= 0.0f)
 		return;
@@ -94,7 +94,7 @@ void BcInputs::ApplyOffset(float OffsetTicks, int &Tick, float &Intra)
 	Intra = CombinedIntra - CarryOverTicks;
 }
 
-float BcInputs::BestInterpolationAmount(float Fraction, float DeltaLength, bool Enable)
+float BclInputs::BestInterpolationAmount(float Fraction, float DeltaLength, bool Enable)
 {
 	if(!Enable)
 		return Fraction;
@@ -102,7 +102,7 @@ float BcInputs::BestInterpolationAmount(float Fraction, float DeltaLength, bool 
 	const float T = std::clamp(Fraction, 0.0f, 1.0f);
 	const float T2 = T * T;
 	const float CubicT = 3.0f * T2 - 2.0f * T2 * T;
-	switch(std::clamp(g_Config.m_BcBestInputInterpolation, 1, 3))
+	switch(std::clamp(g_Config.m_BclBestInputInterpolation, 1, 3))
 	{
 	case 2:
 		return CubicT;
@@ -113,52 +113,52 @@ float BcInputs::BestInterpolationAmount(float Fraction, float DeltaLength, bool 
 	}
 }
 
-vec2 BcInputs::BestInterpolate(vec2 PrevPos, vec2 CurPos, float Fraction, bool Enable)
+vec2 BclInputs::BestInterpolate(vec2 PrevPos, vec2 CurPos, float Fraction, bool Enable)
 {
 	return mix(PrevPos, CurPos, BestInterpolationAmount(Fraction, length(CurPos - PrevPos), Enable));
 }
 
-float BcInputs::BestInterpolate(float PrevPos, float CurPos, float Fraction, bool Enable)
+float BclInputs::BestInterpolate(float PrevPos, float CurPos, float Fraction, bool Enable)
 {
 	return mix(PrevPos, CurPos, BestInterpolationAmount(Fraction, absolute(CurPos - PrevPos), Enable));
 }
 
-bool BcInputs::FastOthers()
+bool BclInputs::FastOthers()
 {
-	return g_Config.m_BcInputs == BC_INPUTS_FAST && g_Config.m_TcFastInputOthers != 0;
+	return g_Config.m_BclInputs == BC_INPUTS_FAST && g_Config.m_TcFastInputOthers != 0;
 }
 
-bool BcInputs::BestOthers()
+bool BclInputs::BestOthers()
 {
-	return g_Config.m_BcInputs == BC_INPUTS_BEST && g_Config.m_BcBestInputOthers != 0;
+	return g_Config.m_BclInputs == BC_INPUTS_BEST && g_Config.m_BclBestInputOthers != 0;
 }
 
-bool BcInputs::SaikoOthers()
+bool BclInputs::SaikoOthers()
 {
-	return g_Config.m_BcInputs == BC_INPUTS_SAIKO && g_Config.m_BcSaikoInputOthers != 0;
+	return g_Config.m_BclInputs == BC_INPUTS_SAIKO && g_Config.m_BclSaikoInputOthers != 0;
 }
 
-bool BcInputs::DeltaOthers()
+bool BclInputs::DeltaOthers()
 {
-	return g_Config.m_BcInputs == BC_INPUTS_DELTA && g_Config.m_BcDeltaInputOthers != 0;
+	return g_Config.m_BclInputs == BC_INPUTS_DELTA && g_Config.m_BclDeltaInputOthers != 0;
 }
 
-bool BcInputs::FOthers()
+bool BclInputs::FOthers()
 {
-	return g_Config.m_BcInputs == BC_INPUTS_F && g_Config.m_BcFInputOthers != 0;
+	return g_Config.m_BclInputs == BC_INPUTS_F && g_Config.m_BclFInputOthers != 0;
 }
 
-bool BcInputs::CloudOthers()
+bool BclInputs::CloudOthers()
 {
-	return g_Config.m_BcInputs == BC_INPUTS_CLOUD && g_Config.m_BcCloudInputOthers != 0;
+	return g_Config.m_BclInputs == BC_INPUTS_CLOUD && g_Config.m_BclCloudInputOthers != 0;
 }
 
-bool BcInputs::AnyOthers()
+bool BclInputs::AnyOthers()
 {
 	return FastOthers() || BestOthers() || SaikoOthers() || DeltaOthers() || FOthers() || CloudOthers();
 }
 
-bool BcInputs::ImmediateOthers()
+bool BclInputs::ImmediateOthers()
 {
 	return BestOthers() || SaikoOthers() || DeltaOthers();
 }

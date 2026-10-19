@@ -18,8 +18,8 @@ using FgfGlow::Whiten;
 static constexpr float FADE_TIME = 0.3f;
 static constexpr float DISK_FLATNESS = 0.28f;
 
-static float HoleSpin() { return g_Config.m_BcHookHoleSpin / 100.0f; }
-static float HoleStreaks() { return g_Config.m_BcHookHoleStreaks / 100.0f; }
+static float HoleSpin() { return g_Config.m_BclHookHoleSpin / 100.0f; }
+static float HoleStreaks() { return g_Config.m_BclHookHoleStreaks / 100.0f; }
 
 void CHookBlackHole::OnInit()
 {
@@ -41,7 +41,7 @@ void CHookBlackHole::OnReset()
 
 CHookBlackHole::CPalette CHookBlackHole::Palette()
 {
-	const ColorHSLA Hsl(g_Config.m_BcHookHoleColor);
+	const ColorHSLA Hsl(g_Config.m_BclHookHoleColor);
 	ColorHSLA DeepHsl = Hsl;
 	DeepHsl.h = std::fmod(DeepHsl.h + 0.95f, 1.0f);
 	DeepHsl.l *= 0.6f;
@@ -251,7 +251,7 @@ void CHookBlackHole::Draw(const CPalette &Palette, float Scale, float Time)
 	if(!AnyHole && !m_Matter.HasAny() && !m_Light.HasAny())
 		return;
 
-	const bool Disk = g_Config.m_BcHookHoleDisk;
+	const bool Disk = g_Config.m_BclHookHoleDisk;
 	Graphics()->QuadsSetRotation(0.0f);
 
 	Graphics()->BlendNormal();
@@ -361,7 +361,7 @@ void CHookBlackHole::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(g_Config.m_BcHookStyle != FGF_HOOK_STYLE_BLACK_HOLE || !g_Config.m_BcHookTip)
+	if(g_Config.m_BclHookStyle != FGF_HOOK_STYLE_BLACK_HOLE || !g_Config.m_BclHookTip)
 	{
 		if(m_WasActive)
 			OnReset();
@@ -370,9 +370,9 @@ void CHookBlackHole::OnRender()
 	m_WasActive = true;
 
 	const CPalette CurrentPalette = Palette();
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
 
-	m_Tracker.Update(GameClient(), Passed, g_Config.m_BcHookChargeTime / 1000.0f, FADE_TIME,
+	m_Tracker.Update(GameClient(), Passed, g_Config.m_BclHookChargeTime / 1000.0f, FADE_TIME,
 		[&](int ClientId, CHookGripTracker::EEvent Event, const CHookGripTracker::CGrip &Grip) {
 			switch(Event)
 			{

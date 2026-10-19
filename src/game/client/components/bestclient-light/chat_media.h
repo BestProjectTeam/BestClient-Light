@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_CHAT_MEDIA_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_CHAT_MEDIA_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CHAT_MEDIA_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CHAT_MEDIA_H
 
 #include <engine/console.h>
 #include <engine/graphics.h>
@@ -9,7 +9,7 @@
 #include <engine/shared/jobs.h>
 
 #include <game/client/component.h>
-#include <game/client/components/bestclient/media_decoder.h>
+#include <game/client/components/bestclient-light/media_decoder.h>
 
 #include <memory>
 #include <optional>

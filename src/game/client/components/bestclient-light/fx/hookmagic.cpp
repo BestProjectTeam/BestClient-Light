@@ -18,8 +18,8 @@ using FgfGlow::Whiten;
 static constexpr float FADE_TIME = 0.35f;
 static constexpr float APPEAR_TIME = 0.45f;
 
-static float MagicSpin() { return g_Config.m_BcHookMagicSpin / 100.0f; }
-static float MagicSparkles() { return g_Config.m_BcHookMagicSparkles / 100.0f; }
+static float MagicSpin() { return g_Config.m_BclHookMagicSpin / 100.0f; }
+static float MagicSparkles() { return g_Config.m_BclHookMagicSparkles / 100.0f; }
 
 static bool s_ShadowPass = false;
 static ColorRGBA s_ShadowColor;
@@ -132,7 +132,7 @@ void CHookMagic::OnReset()
 
 CHookMagic::CPalette CHookMagic::Palette()
 {
-	const ColorHSLA Hsl(g_Config.m_BcHookMagicColor);
+	const ColorHSLA Hsl(g_Config.m_BclHookMagicColor);
 	ColorHSLA AccentHsl = Hsl;
 	AccentHsl.h = std::fmod(AccentHsl.h + 0.1f, 1.0f);
 	AccentHsl.l = std::min(1.0f, AccentHsl.l * 1.1f);
@@ -210,7 +210,7 @@ void CHookMagic::Shatter(int Owner, const CHookGripTracker::CGrip &Grip, const C
 
 	m_Sparks.AddRing(Grip.m_Pos, 0.4f, Radius * 1.8f, Radius * 3.2f, 0.5f * Alpha, Palette.m_Main);
 
-	if(g_Config.m_BcHookMagicRunes)
+	if(g_Config.m_BclHookMagicRunes)
 	{
 		for(int i = 0; i < NUM_RUNES && m_NumFlyingRunes < MAX_FLYING_RUNES; i++)
 		{
@@ -300,7 +300,7 @@ void CHookMagic::DrawCircle(int Owner, const CHookGripTracker::CGrip &Grip, cons
 	DrawArc(Graphics(), Center, Radius, Angle * 0.35f * Spin, OuterRing * 2.0f * pi, Line * 1.2f, Core.WithAlpha(0.9f * Intensity * Pulse));
 	DrawArc(Graphics(), Center, Radius * 0.78f, -Angle * 0.35f * Spin, InnerRing * 2.0f * pi, Line, Main.WithAlpha(0.85f * Intensity));
 
-	if(g_Config.m_BcHookMagicRunes)
+	if(g_Config.m_BclHookMagicRunes)
 	{
 		for(int i = 0; i < NUM_RUNES; i++)
 		{
@@ -465,7 +465,7 @@ void CHookMagic::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(g_Config.m_BcHookStyle != FGF_HOOK_STYLE_MAGIC || !g_Config.m_BcHookTip)
+	if(g_Config.m_BclHookStyle != FGF_HOOK_STYLE_MAGIC || !g_Config.m_BclHookTip)
 	{
 		if(m_WasActive)
 			OnReset();
@@ -474,9 +474,9 @@ void CHookMagic::OnRender()
 	m_WasActive = true;
 
 	const CPalette CurrentPalette = Palette();
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
 
-	m_Tracker.Update(GameClient(), Passed, g_Config.m_BcHookChargeTime / 1000.0f, FADE_TIME,
+	m_Tracker.Update(GameClient(), Passed, g_Config.m_BclHookChargeTime / 1000.0f, FADE_TIME,
 		[&](int ClientId, CHookGripTracker::EEvent Event, const CHookGripTracker::CGrip &Grip) {
 			switch(Event)
 			{

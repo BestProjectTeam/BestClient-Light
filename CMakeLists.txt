@@ -74,28 +74,28 @@ file(APPEND "${DATA_VERSION_FILE}" "TClient ${TCLIENT_VERSION_MAJOR}.${TCLIENT_V
 
 # </TClient>
 
-# <BestClient>
+# <BestClient Light>
 
-file(STRINGS src/game/client/components/bestclient/version.h BESTCLIENT_VERSION_LINE
+file(STRINGS src/game/client/components/bestclient-light/version.h BESTCLIENT_LIGHT_VERSION_LINE
   LIMIT_COUNT 1
-  REGEX "^#define BESTCLIENT_VERSION "
+  REGEX "^#define BESTCLIENT_LIGHT_VERSION "
 )
 
-if(BESTCLIENT_VERSION_LINE MATCHES "([0-9]+)\\.([0-9]+)\\.([0-9]+)")
-  set(BESTCLIENT_VERSION_MAJOR ${CMAKE_MATCH_1})
-  set(BESTCLIENT_VERSION_MINOR ${CMAKE_MATCH_2})
-  set(BESTCLIENT_VERSION_PATCH ${CMAKE_MATCH_3})
-  set(BESTCLIENT_PACKAGE_VERSION "${BESTCLIENT_VERSION_MAJOR}.${BESTCLIENT_VERSION_MINOR}.${BESTCLIENT_VERSION_PATCH}")
-elseif(BESTCLIENT_VERSION_LINE MATCHES "([0-9]+)\\.([0-9]+)")
-  set(BESTCLIENT_VERSION_MAJOR ${CMAKE_MATCH_1})
-  set(BESTCLIENT_VERSION_MINOR ${CMAKE_MATCH_2})
-  set(BESTCLIENT_VERSION_PATCH "0")
-  set(BESTCLIENT_PACKAGE_VERSION "${BESTCLIENT_VERSION_MAJOR}.${BESTCLIENT_VERSION_MINOR}")
+if(BESTCLIENT_LIGHT_VERSION_LINE MATCHES "([0-9]+)\\.([0-9]+)\\.([0-9]+)")
+  set(BESTCLIENT_LIGHT_VERSION_MAJOR ${CMAKE_MATCH_1})
+  set(BESTCLIENT_LIGHT_VERSION_MINOR ${CMAKE_MATCH_2})
+  set(BESTCLIENT_LIGHT_VERSION_PATCH ${CMAKE_MATCH_3})
+  set(BESTCLIENT_LIGHT_PACKAGE_VERSION "${BESTCLIENT_LIGHT_VERSION_MAJOR}.${BESTCLIENT_LIGHT_VERSION_MINOR}.${BESTCLIENT_LIGHT_VERSION_PATCH}")
+elseif(BESTCLIENT_LIGHT_VERSION_LINE MATCHES "([0-9]+)\\.([0-9]+)")
+  set(BESTCLIENT_LIGHT_VERSION_MAJOR ${CMAKE_MATCH_1})
+  set(BESTCLIENT_LIGHT_VERSION_MINOR ${CMAKE_MATCH_2})
+  set(BESTCLIENT_LIGHT_VERSION_PATCH "0")
+  set(BESTCLIENT_LIGHT_PACKAGE_VERSION "${BESTCLIENT_LIGHT_VERSION_MAJOR}.${BESTCLIENT_LIGHT_VERSION_MINOR}")
 else()
-  message(FATAL_ERROR "Couldn't parse BestClient version from src/game/client/components/bestclient/version.h")
+  message(FATAL_ERROR "Couldn't parse BestClient Light version from src/game/client/components/bestclient-light/version.h")
 endif()
 
-# </BestClient>
+# </BestClient Light>
 
 set(ORIGINAL_CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH})
 set(OWN_CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
@@ -178,7 +178,7 @@ option(SERVER "Compile server" ON)
 option(TOOLS "Compile tools" ON)
 option(DOWNLOAD_GTEST "Download and compile GTest" ${AUTO_DEPENDENCIES_DEFAULT})
 option(STEAM "Build the Steam release version" ON)
-option(DISCORD "Enable Discord rich presence support" ON) # bestclient
+option(DISCORD "Enable Discord rich presence support" ON) # bestclient-light
 option(DISCORD_DYNAMIC "Enable discovering Discord rich presence libraries at runtime (Linux only)" OFF)
 option(PREFER_BUNDLED_LIBS "Prefer bundled libraries over system libraries" ${AUTO_DEPENDENCIES_DEFAULT})
 option(DEV "Don't generate stuff necessary for packaging, don't strip absolute paths from debug info, enable additional assertions" OFF)
@@ -660,10 +660,10 @@ if(CLIENT AND VIDEORECORDER)
     message(STATUS "Disabling VIDEORECORDER for MinGW due to incompatible Windows FFmpeg import libraries")
     set(VIDEORECORDER OFF CACHE BOOL "Enable video recording support via FFmpeg" FORCE)
   elseif(TARGET_OS STREQUAL "windows")
-    # Prefer standalone FFmpeg SDK path, keep legacy BestClient path as fallback.
+    # Prefer standalone FFmpeg SDK path, keep legacy BestClient Light path as fallback.
     set(FFMPEG_CUSTOM_ROOTS
       "${PROJECT_SOURCE_DIR}/noxy-libs/ffmpeg-msvc"
-      "${PROJECT_SOURCE_DIR}/bestclient/noxy-libs/ffmpeg-msvc")
+      "${PROJECT_SOURCE_DIR}/bestclient-light/noxy-libs/ffmpeg-msvc")
     foreach(FFMPEG_CUSTOM_ROOT IN LISTS FFMPEG_CUSTOM_ROOTS)
       if(EXISTS "${FFMPEG_CUSTOM_ROOT}/include/libavcodec/avcodec.h" AND
          EXISTS "${FFMPEG_CUSTOM_ROOT}/lib/avformat.lib" AND
@@ -939,7 +939,7 @@ endif()
 if(TARGET_OS STREQUAL "windows")
   set(PLATFORM_CLIENT)
   set(PLATFORM_CLIENT_LIBS opengl32.lib winmm.lib imm32.lib)
-  list(APPEND PLATFORM_CLIENT_LIBS mmdevapi.lib) # bestclient
+  list(APPEND PLATFORM_CLIENT_LIBS mmdevapi.lib) # bestclient-light
   set(PLATFORM_LIBS)
   list(APPEND PLATFORM_LIBS shlwapi.lib) # PathIsRelativeW
   list(APPEND PLATFORM_LIBS version.lib) # GetFileVersionInfoSizeW
@@ -1486,13 +1486,13 @@ set(EXPECTED_DATA
   audio/wp_switch-03.wv
   autoexec_server.cfg
   background_noise.png
-  BestClient/bc_dev_icon.png
-  BestClient/bc_fake_icon.png
-  BestClient/bc_icon.png
-  BestClient/gui_logo.png
-  BestClient/languages/russian.txt
-  BestClient/languages/simplified_chinese.txt
-  BestClient/trollface.png
+  bestclient-light/bc_dev_icon.png
+  bestclient-light/bc_fake_icon.png
+  bestclient-light/bc_icon.png
+  bestclient-light/gui_logo.png
+  bestclient-light/languages/russian.txt
+  bestclient-light/languages/simplified_chinese.txt
+  bestclient-light/trollface.png
   blob.png
   censorlist.txt
   communityicons/none.png
@@ -2567,8 +2567,8 @@ set_src(ENGINE_SHARED GLOB_RECURSE src/engine/shared
   # tidy-alphabetical-start
   assertion_logger.cpp
   assertion_logger.h
-  bestclient_indicator_protocol.cpp
-  bestclient_indicator_protocol.h
+  bestclient-light_indicator_protocol.cpp
+  bestclient-light_indicator_protocol.h
   compression.cpp
   compression.h
   config.cpp
@@ -2576,7 +2576,7 @@ set_src(ENGINE_SHARED GLOB_RECURSE src/engine/shared
   config_domains.h
   config_includes.h
   config_variables.h
-  config_variables_bestclient.h
+  config_variables_bestclient-light.h
   config_variables_tclient.h
   console.cpp
   console.h
@@ -2902,197 +2902,197 @@ if(CLIENT)
     component.h
     components/background.cpp
     components/background.h
-    components/bestclient/bestclient.cpp
-    components/bestclient/bestclient.h
-    components/bestclient/config_presets.cpp
-    components/bestclient/config_presets.h
-    components/bestclient/profile_assets.cpp
-    components/bestclient/profile_assets.h
-    components/bestclient/admin_panel.cpp
-    components/bestclient/admin_panel.h
-    components/bestclient/aspect_ratio.cpp
-    components/bestclient/aspect_ratio.h
-    components/bestclient/gradient.cpp
-    components/bestclient/gradient.h
-    components/bestclient/jelly_tee.cpp
-    components/bestclient/jelly_tee.h
-    components/bestclient/flying_name_plates.cpp
-    components/bestclient/flying_name_plates.h
-    components/bestclient/3d_particles.cpp
-    components/bestclient/3d_particles.h
-    components/bestclient/fast_actions.cpp
-    components/bestclient/fast_actions.h
-    components/bestclient/optimizer.cpp
-    components/bestclient/optimizer.h
-    components/bestclient/process_priority.cpp
-    components/bestclient/process_priority.h
-    components/bestclient/discord_rpc.cpp
-    components/bestclient/discord_rpc.h
-    components/bestclient/media_decoder.cpp
-    components/bestclient/media_decoder.h
-    components/bestclient/chat_media.cpp
-    components/bestclient/chat_media.h
-    components/bestclient/better_preview.cpp
-    components/bestclient/better_preview.h
-    components/bestclient/scroll_bar.cpp
-    components/bestclient/scroll_bar.h
-    components/bestclient/chat_message_actions.cpp
-    components/bestclient/chat_message_actions.h
-    components/bestclient/chat_scroll.cpp
-    components/bestclient/chat_scroll.h
-    components/bestclient/console_scroll.cpp
-    components/bestclient/console_scroll.h
-    components/bestclient/menu_media_background.cpp
-    components/bestclient/menu_media_background.h
-    components/bestclient/server_map_preview.cpp
-    components/bestclient/server_map_preview.h
-    components/bestclient/menus_assets_editor.cpp
-    components/bestclient/menus_bestclient.cpp
-    components/bestclient/menus_games.cpp
-    components/bestclient/motion_blur.h
-    components/bestclient/motion_blur_opengl.h
-    components/bestclient/motion_blur_opengl.inl
-    components/bestclient/motion_blur_vulkan.inl
-    components/bestclient/motion_blur_vulkan_members.inl
-    components/bestclient/motion_blur_vulkan_state.inl
-    components/bestclient/browser_utils.cpp
-    components/bestclient/browser_utils.h
-    components/bestclient/twitch_chat.cpp
-    components/bestclient/twitch_chat.h
-    components/bestclient/translate.cpp
-    components/bestclient/translate.h
-    components/bestclient/chat_qol.cpp
-    components/bestclient/chat_qol.h
-    components/bestclient/camera_extras.cpp
-    components/bestclient/camera_extras.h
-    components/bestclient/camera_demos.cpp
-    components/bestclient/camera_demos.h
-    components/bestclient/demo_tee_editor.cpp
-    components/bestclient/demo_tee_editor.h
-    components/bestclient/hud_extras.cpp
-    components/bestclient/hud_extras.h
-    components/bestclient/corner_indicator.cpp
-    components/bestclient/corner_indicator.h
-    components/bestclient/cursor_trail.cpp
-    components/bestclient/cursor_trail.h
-    components/bestclient/weapon_vfx.cpp
-    components/bestclient/weapon_vfx.h
-    components/bestclient/laser_glow.cpp
-    components/bestclient/rocket_glow.cpp
-    components/bestclient/nuke_vfx.cpp
-    components/bestclient/menus_fx.cpp
-    components/bestclient/fx/components.h
-    components/bestclient/fx/own_tee.h
-    components/bestclient/fx/fgf_glow.cpp
-    components/bestclient/fx/fgf_glow.h
-    components/bestclient/fx/fgf_actions.cpp
-    components/bestclient/fx/fgf_actions.h
-    components/bestclient/fx/fgf_iceward.cpp
-    components/bestclient/fx/fgf_iceward.h
-    components/bestclient/fx/fgf_ki.cpp
-    components/bestclient/fx/fgf_ki.h
-    components/bestclient/fx/fgf_weather.cpp
-    components/bestclient/fx/fgf_weather.h
-    components/bestclient/fx/lightning.cpp
-    components/bestclient/fx/lightning.h
-    components/bestclient/fx/hookgrip.cpp
-    components/bestclient/fx/hookgrip.h
-    components/bestclient/fx/hookrope.cpp
-    components/bestclient/fx/hookrope.h
-    components/bestclient/fx/hookwind.cpp
-    components/bestclient/fx/hookwind.h
-    components/bestclient/fx/hookblackhole.cpp
-    components/bestclient/fx/hookblackhole.h
-    components/bestclient/fx/hookmagic.cpp
-    components/bestclient/fx/hookmagic.h
-    components/bestclient/fx/hookfire.cpp
-    components/bestclient/fx/hookfire.h
-    components/bestclient/fx/hookrainbow.cpp
-    components/bestclient/fx/hookrainbow.h
-    components/bestclient/fx/hooklightning.cpp
-    components/bestclient/fx/hooklightning.h
-    components/bestclient/fx/hooktentacle.cpp
-    components/bestclient/fx/hooktentacle.h
-    components/bestclient/fx/hooktroll.cpp
-    components/bestclient/fx/hooktroll.h
-    components/bestclient/show_points.cpp
-    components/bestclient/show_points.h
-    components/bestclient/clientindicator/browser_cache.cpp
-    components/bestclient/clientindicator/browser_cache.h
-    components/bestclient/clientindicator/client_indicator.cpp
-    components/bestclient/clientindicator/client_indicator.h
-    components/bestclient/clientindicator/client_indicator_sync.h
-    components/bestclient/clientindicator/presence_cache.cpp
-    components/bestclient/clientindicator/presence_cache.h
-    components/bestclient/clientindicator/protocol.h
-    components/bestclient/voice/protocol.h
-    components/bestclient/voice/voice.cpp
-    components/bestclient/voice/voice.h
-    components/bestclient/spec_pause_radio.cpp
-    components/bestclient/spec_pause_radio.h
-    components/bestclient/chat_bubbles.cpp
-    components/bestclient/chat_bubbles.h
-    components/bestclient/physicball.cpp
-    components/bestclient/physicball.h
-    components/bestclient/ui_animations.cpp
-    components/bestclient/ui_animations.h
-    components/bestclient/ui_theme/style.h
-    components/bestclient/ui_theme/settings_nav.cpp
-    components/bestclient/ui_theme/settings_nav.h
-    components/bestclient/settings_search.cpp
-    components/bestclient/settings_search.h
-    components/bestclient/ui_theme/widgets.cpp
-    components/bestclient/ui_theme/widgets.h
-    components/bestclient/gif_bubbles.cpp
-    components/bestclient/gif_bubbles.h
-    components/bestclient/ego_finished_maps.cpp
-    components/bestclient/ego_finished_maps.h
-    components/bestclient/legit_finished_maps.cpp
-    components/bestclient/legit_finished_maps.h
-    components/bestclient/ego_tiles_prediction.cpp
-    components/bestclient/ego_tiles_prediction.h
-    components/bestclient/edgehelper.cpp
-    components/bestclient/edgehelper.h
-    components/bestclient/fast_practice.cpp
-    components/bestclient/fast_practice.h
-    components/bestclient/finish_prediction.cpp
-    components/bestclient/finish_prediction.h
-    components/bestclient/keystrokes.cpp
-    components/bestclient/keystrokes.h
-    components/bestclient/hud_editor.cpp
-    components/bestclient/hud_editor.h
-    components/bestclient/music_player.cpp
-    components/bestclient/music_player.h
-    components/bestclient/music_player_lyrics.cpp
-    components/bestclient/music_player_lyrics.h
-    components/bestclient/quick_binds.cpp
-    components/bestclient/quick_binds.h
-    components/bestclient/rollback_demo.cpp
-    components/bestclient/rollback_demo.h
-    components/bestclient/snap_tap.cpp
-    components/bestclient/snap_tap.h
-    components/bestclient/inputs.cpp # bestclient
-    components/bestclient/inputs.h
-    components/bestclient/cloud_input.cpp
-    components/bestclient/cloud_input.h
-    components/bestclient/automargin.cpp
-    components/bestclient/automargin.h # bestclient
-    components/bestclient/subsystem_runtime.h
-    components/bestclient/updater.cpp
-    components/bestclient/updater.h
-    components/bestclient/version.h
-    components/bestclient/visualizer/analyzer.cpp
-    components/bestclient/visualizer/analyzer.h
-    components/bestclient/visualizer/service.cpp
-    components/bestclient/visualizer/service.h
-    components/bestclient/visualizer/smoother.cpp
-    components/bestclient/visualizer/smoother.h
-    components/bestclient/visualizer/source.h
-    components/bestclient/visualizer/source_passive.cpp
-    components/bestclient/visualizer/source_priority.h
-    components/bestclient/visualizer/source_pulse.cpp
-    components/bestclient/visualizer/source_wasapi.cpp
-    components/bestclient/visualizer/types.h
+    components/bestclient-light/bestclient-light.cpp
+    components/bestclient-light/bestclient-light.h
+    components/bestclient-light/config_presets.cpp
+    components/bestclient-light/config_presets.h
+    components/bestclient-light/profile_assets.cpp
+    components/bestclient-light/profile_assets.h
+    components/bestclient-light/admin_panel.cpp
+    components/bestclient-light/admin_panel.h
+    components/bestclient-light/aspect_ratio.cpp
+    components/bestclient-light/aspect_ratio.h
+    components/bestclient-light/gradient.cpp
+    components/bestclient-light/gradient.h
+    components/bestclient-light/jelly_tee.cpp
+    components/bestclient-light/jelly_tee.h
+    components/bestclient-light/flying_name_plates.cpp
+    components/bestclient-light/flying_name_plates.h
+    components/bestclient-light/3d_particles.cpp
+    components/bestclient-light/3d_particles.h
+    components/bestclient-light/fast_actions.cpp
+    components/bestclient-light/fast_actions.h
+    components/bestclient-light/optimizer.cpp
+    components/bestclient-light/optimizer.h
+    components/bestclient-light/process_priority.cpp
+    components/bestclient-light/process_priority.h
+    components/bestclient-light/discord_rpc.cpp
+    components/bestclient-light/discord_rpc.h
+    components/bestclient-light/media_decoder.cpp
+    components/bestclient-light/media_decoder.h
+    components/bestclient-light/chat_media.cpp
+    components/bestclient-light/chat_media.h
+    components/bestclient-light/better_preview.cpp
+    components/bestclient-light/better_preview.h
+    components/bestclient-light/scroll_bar.cpp
+    components/bestclient-light/scroll_bar.h
+    components/bestclient-light/chat_message_actions.cpp
+    components/bestclient-light/chat_message_actions.h
+    components/bestclient-light/chat_scroll.cpp
+    components/bestclient-light/chat_scroll.h
+    components/bestclient-light/console_scroll.cpp
+    components/bestclient-light/console_scroll.h
+    components/bestclient-light/menu_media_background.cpp
+    components/bestclient-light/menu_media_background.h
+    components/bestclient-light/server_map_preview.cpp
+    components/bestclient-light/server_map_preview.h
+    components/bestclient-light/menus_assets_editor.cpp
+    components/bestclient-light/menus_bestclient-light.cpp
+    components/bestclient-light/menus_games.cpp
+    components/bestclient-light/motion_blur.h
+    components/bestclient-light/motion_blur_opengl.h
+    components/bestclient-light/motion_blur_opengl.inl
+    components/bestclient-light/motion_blur_vulkan.inl
+    components/bestclient-light/motion_blur_vulkan_members.inl
+    components/bestclient-light/motion_blur_vulkan_state.inl
+    components/bestclient-light/browser_utils.cpp
+    components/bestclient-light/browser_utils.h
+    components/bestclient-light/twitch_chat.cpp
+    components/bestclient-light/twitch_chat.h
+    components/bestclient-light/translate.cpp
+    components/bestclient-light/translate.h
+    components/bestclient-light/chat_qol.cpp
+    components/bestclient-light/chat_qol.h
+    components/bestclient-light/camera_extras.cpp
+    components/bestclient-light/camera_extras.h
+    components/bestclient-light/camera_demos.cpp
+    components/bestclient-light/camera_demos.h
+    components/bestclient-light/demo_tee_editor.cpp
+    components/bestclient-light/demo_tee_editor.h
+    components/bestclient-light/hud_extras.cpp
+    components/bestclient-light/hud_extras.h
+    components/bestclient-light/corner_indicator.cpp
+    components/bestclient-light/corner_indicator.h
+    components/bestclient-light/cursor_trail.cpp
+    components/bestclient-light/cursor_trail.h
+    components/bestclient-light/weapon_vfx.cpp
+    components/bestclient-light/weapon_vfx.h
+    components/bestclient-light/laser_glow.cpp
+    components/bestclient-light/rocket_glow.cpp
+    components/bestclient-light/nuke_vfx.cpp
+    components/bestclient-light/menus_fx.cpp
+    components/bestclient-light/fx/components.h
+    components/bestclient-light/fx/own_tee.h
+    components/bestclient-light/fx/fgf_glow.cpp
+    components/bestclient-light/fx/fgf_glow.h
+    components/bestclient-light/fx/fgf_actions.cpp
+    components/bestclient-light/fx/fgf_actions.h
+    components/bestclient-light/fx/fgf_iceward.cpp
+    components/bestclient-light/fx/fgf_iceward.h
+    components/bestclient-light/fx/fgf_ki.cpp
+    components/bestclient-light/fx/fgf_ki.h
+    components/bestclient-light/fx/fgf_weather.cpp
+    components/bestclient-light/fx/fgf_weather.h
+    components/bestclient-light/fx/lightning.cpp
+    components/bestclient-light/fx/lightning.h
+    components/bestclient-light/fx/hookgrip.cpp
+    components/bestclient-light/fx/hookgrip.h
+    components/bestclient-light/fx/hookrope.cpp
+    components/bestclient-light/fx/hookrope.h
+    components/bestclient-light/fx/hookwind.cpp
+    components/bestclient-light/fx/hookwind.h
+    components/bestclient-light/fx/hookblackhole.cpp
+    components/bestclient-light/fx/hookblackhole.h
+    components/bestclient-light/fx/hookmagic.cpp
+    components/bestclient-light/fx/hookmagic.h
+    components/bestclient-light/fx/hookfire.cpp
+    components/bestclient-light/fx/hookfire.h
+    components/bestclient-light/fx/hookrainbow.cpp
+    components/bestclient-light/fx/hookrainbow.h
+    components/bestclient-light/fx/hooklightning.cpp
+    components/bestclient-light/fx/hooklightning.h
+    components/bestclient-light/fx/hooktentacle.cpp
+    components/bestclient-light/fx/hooktentacle.h
+    components/bestclient-light/fx/hooktroll.cpp
+    components/bestclient-light/fx/hooktroll.h
+    components/bestclient-light/show_points.cpp
+    components/bestclient-light/show_points.h
+    components/bestclient-light/clientindicator/browser_cache.cpp
+    components/bestclient-light/clientindicator/browser_cache.h
+    components/bestclient-light/clientindicator/client_indicator.cpp
+    components/bestclient-light/clientindicator/client_indicator.h
+    components/bestclient-light/clientindicator/client_indicator_sync.h
+    components/bestclient-light/clientindicator/presence_cache.cpp
+    components/bestclient-light/clientindicator/presence_cache.h
+    components/bestclient-light/clientindicator/protocol.h
+    components/bestclient-light/voice/protocol.h
+    components/bestclient-light/voice/voice.cpp
+    components/bestclient-light/voice/voice.h
+    components/bestclient-light/spec_pause_radio.cpp
+    components/bestclient-light/spec_pause_radio.h
+    components/bestclient-light/chat_bubbles.cpp
+    components/bestclient-light/chat_bubbles.h
+    components/bestclient-light/physicball.cpp
+    components/bestclient-light/physicball.h
+    components/bestclient-light/ui_animations.cpp
+    components/bestclient-light/ui_animations.h
+    components/bestclient-light/ui_theme/style.h
+    components/bestclient-light/ui_theme/settings_nav.cpp
+    components/bestclient-light/ui_theme/settings_nav.h
+    components/bestclient-light/settings_search.cpp
+    components/bestclient-light/settings_search.h
+    components/bestclient-light/ui_theme/widgets.cpp
+    components/bestclient-light/ui_theme/widgets.h
+    components/bestclient-light/gif_bubbles.cpp
+    components/bestclient-light/gif_bubbles.h
+    components/bestclient-light/ego_finished_maps.cpp
+    components/bestclient-light/ego_finished_maps.h
+    components/bestclient-light/legit_finished_maps.cpp
+    components/bestclient-light/legit_finished_maps.h
+    components/bestclient-light/ego_tiles_prediction.cpp
+    components/bestclient-light/ego_tiles_prediction.h
+    components/bestclient-light/edgehelper.cpp
+    components/bestclient-light/edgehelper.h
+    components/bestclient-light/fast_practice.cpp
+    components/bestclient-light/fast_practice.h
+    components/bestclient-light/finish_prediction.cpp
+    components/bestclient-light/finish_prediction.h
+    components/bestclient-light/keystrokes.cpp
+    components/bestclient-light/keystrokes.h
+    components/bestclient-light/hud_editor.cpp
+    components/bestclient-light/hud_editor.h
+    components/bestclient-light/music_player.cpp
+    components/bestclient-light/music_player.h
+    components/bestclient-light/music_player_lyrics.cpp
+    components/bestclient-light/music_player_lyrics.h
+    components/bestclient-light/quick_binds.cpp
+    components/bestclient-light/quick_binds.h
+    components/bestclient-light/rollback_demo.cpp
+    components/bestclient-light/rollback_demo.h
+    components/bestclient-light/snap_tap.cpp
+    components/bestclient-light/snap_tap.h
+    components/bestclient-light/inputs.cpp # bestclient-light
+    components/bestclient-light/inputs.h
+    components/bestclient-light/cloud_input.cpp
+    components/bestclient-light/cloud_input.h
+    components/bestclient-light/automargin.cpp
+    components/bestclient-light/automargin.h # bestclient-light
+    components/bestclient-light/subsystem_runtime.h
+    components/bestclient-light/updater.cpp
+    components/bestclient-light/updater.h
+    components/bestclient-light/version.h
+    components/bestclient-light/visualizer/analyzer.cpp
+    components/bestclient-light/visualizer/analyzer.h
+    components/bestclient-light/visualizer/service.cpp
+    components/bestclient-light/visualizer/service.h
+    components/bestclient-light/visualizer/smoother.cpp
+    components/bestclient-light/visualizer/smoother.h
+    components/bestclient-light/visualizer/source.h
+    components/bestclient-light/visualizer/source_passive.cpp
+    components/bestclient-light/visualizer/source_priority.h
+    components/bestclient-light/visualizer/source_pulse.cpp
+    components/bestclient-light/visualizer/source_wasapi.cpp
+    components/bestclient-light/visualizer/types.h
     bc_ui_animations.h
     components/binds.cpp
     components/binds.h
@@ -3608,7 +3608,7 @@ if(CLIENT)
 
   if(WIN32)
     set(VERSION_COMPANY "${CLIENT_EXECUTABLE} Team")
-    set(VERSION_PRODUCT_NAME "BestClient")
+    set(VERSION_PRODUCT_NAME "BestClient Light")
     configure_file("other/versioninfo/updater.versioninfo.rc.in" "updater.versioninfo.rc")
     configure_file("other/manifest/updater.manifest.in" "updater.manifest")
     if(NOT MINGW)
@@ -3617,27 +3617,27 @@ if(CLIENT)
       configure_file("other/manifest/updater.rc" "updater.rc" COPYONLY)
       set(UPDATER_MANIFEST "${CMAKE_CURRENT_BINARY_DIR}/updater.rc")
     endif()
-    add_executable(bestclient-updater WIN32
-      src/tools/bestclient_updater.cpp
+    add_executable(bestclient-light-updater WIN32
+      src/tools/bestclient-light_updater.cpp
       other/icons/DDNet.rc
       "${CMAKE_CURRENT_BINARY_DIR}/updater.versioninfo.rc"
       ${UPDATER_MANIFEST}
       ${ZLIB_DEP}
     )
-    target_link_libraries(bestclient-updater shell32 ${ZLIB_LIBRARIES})
-    target_include_directories(bestclient-updater SYSTEM PRIVATE ${ZLIB_INCLUDE_DIRS})
-    set_property(TARGET bestclient-updater PROPERTY OUTPUT_NAME "bestclient-updater")
-    list(APPEND TARGETS_OWN bestclient-updater)
-    list(APPEND TARGETS_LINK bestclient-updater)
+    target_link_libraries(bestclient-light-updater shell32 ${ZLIB_LIBRARIES})
+    target_include_directories(bestclient-light-updater SYSTEM PRIVATE ${ZLIB_INCLUDE_DIRS})
+    set_property(TARGET bestclient-light-updater PROPERTY OUTPUT_NAME "bestclient-light-updater")
+    list(APPEND TARGETS_OWN bestclient-light-updater)
+    list(APPEND TARGETS_LINK bestclient-light-updater)
   elseif(TARGET_OS STREQUAL "linux")
-    add_executable(bestclient-updater
-      src/tools/bestclient_updater_linux.cpp
+    add_executable(bestclient-light-updater
+      src/tools/bestclient-light_updater_linux.cpp
     )
-    target_link_libraries(bestclient-updater ${SDL2_LIBRARIES})
-    target_include_directories(bestclient-updater PRIVATE ${SDL2_INCLUDE_DIRS})
-    set_property(TARGET bestclient-updater PROPERTY OUTPUT_NAME "bestclient-updater")
-    list(APPEND TARGETS_OWN bestclient-updater)
-    list(APPEND TARGETS_LINK bestclient-updater)
+    target_link_libraries(bestclient-light-updater ${SDL2_LIBRARIES})
+    target_include_directories(bestclient-light-updater PRIVATE ${SDL2_INCLUDE_DIRS})
+    set_property(TARGET bestclient-light-updater PROPERTY OUTPUT_NAME "bestclient-light-updater")
+    list(APPEND TARGETS_OWN bestclient-light-updater)
+    list(APPEND TARGETS_LINK bestclient-light-updater)
   endif()
 endif()
 
@@ -3865,10 +3865,10 @@ if(TOOLS)
   set(TARGETS_TOOLS)
   set_src(TOOLS_SRC GLOB src/tools
     # tidy-alphabetical-start
-    bestclient_updater.cpp
-    bestclient_updater_linux.cpp
-    bestclient_updater_linux_font.h
-    bestclient_updater_linux_fs.h
+    bestclient-light_updater.cpp
+    bestclient-light_updater_linux.cpp
+    bestclient-light_updater_linux_font.h
+    bestclient-light_updater_linux_fs.h
     config_common.h
     config_retrieve.cpp
     config_store.cpp
@@ -3897,7 +3897,7 @@ if(TOOLS)
     file(RELATIVE_PATH T "${PROJECT_SOURCE_DIR}/src/tools/" ${ABS_T})
     if(T MATCHES "\\.cpp$")
       string(REGEX REPLACE "\\.cpp$" "" TOOL "${T}")
-      if(TOOL MATCHES "^bestclient_updater(_linux)?$")
+      if(TOOL MATCHES "^bestclient-light_updater(_linux)?$")
         continue()
       endif()
       if(TOOL MATCHES "^map_render$" AND NOT EGL_FOUND)
@@ -4229,7 +4229,7 @@ function(regex_inverted VAR)
   set(${VAR} ${RESULT} PARENT_SCOPE)
 endfunction()
 
-set(CPACK_PACKAGE_NAME "bestclient") # bestclient
+set(CPACK_PACKAGE_NAME "bestclient-light") # bestclient-light
 set(CPACK_GENERATOR TGZ TXZ)
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 if(TARGET_OS STREQUAL "mac")
@@ -4243,10 +4243,10 @@ else()
 endif()
 set(CPACK_COMPONENTS_ALL portable)
 set(CPACK_SOURCE_GENERATOR ZIP TGZ TBZ2 TXZ)
-set(CPACK_PACKAGE_VERSION_MAJOR ${BESTCLIENT_VERSION_MAJOR}) # bestclient
-set(CPACK_PACKAGE_VERSION_MINOR ${BESTCLIENT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${BESTCLIENT_VERSION_PATCH})
-set(CPACK_PACKAGE_VERSION ${BESTCLIENT_PACKAGE_VERSION}) # bestclient
+set(CPACK_PACKAGE_VERSION_MAJOR ${BESTCLIENT_LIGHT_VERSION_MAJOR}) # bestclient-light
+set(CPACK_PACKAGE_VERSION_MINOR ${BESTCLIENT_LIGHT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${BESTCLIENT_LIGHT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION ${BESTCLIENT_LIGHT_PACKAGE_VERSION}) # bestclient-light
 set(CPACK_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
 
 if(TARGET_OS AND TARGET_BITS)
@@ -4345,8 +4345,8 @@ set(CPACK_TARGETS)
 if(TARGET game-client)
   list(APPEND CPACK_TARGETS game-client)
 endif()
-if(TARGET bestclient-updater)
-  list(APPEND CPACK_TARGETS bestclient-updater)
+if(TARGET bestclient-light-updater)
+  list(APPEND CPACK_TARGETS bestclient-light-updater)
 endif()
 if(TARGET game-server)
   list(APPEND CPACK_TARGETS game-server)
@@ -4788,7 +4788,7 @@ foreach(target ${TARGETS_OWN})
     # See https://learn.microsoft.com/en-us/windows/win32/winprog/using-the-windows-headers
     target_compile_definitions(${target} PRIVATE NOMINMAX) # windows.h shouldn't define min/max macros
     target_compile_definitions(${target} PRIVATE WIN32_LEAN_AND_MEAN) # windows.h shouldn't define the name IStorage
-    if(NOT "${target}" STREQUAL "bestclient-updater")
+    if(NOT "${target}" STREQUAL "bestclient-light-updater")
       target_compile_definitions(${target} PRIVATE NOGDI) # wingdi.h shouldn't define the name ERROR
     endif()
     # 0x0501 (Windows XP) is required for mingw to get getaddrinfo to work

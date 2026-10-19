@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#include "bestclient_updater_linux_font.h"
-#include "bestclient_updater_linux_fs.h"
+#include "bestclient-light_updater_linux_font.h"
+#include "bestclient-light_updater_linux_fs.h"
 
 #include <SDL.h>
 
@@ -210,7 +210,7 @@ static int WorkerThreadFn(void *pData)
 	SetPercent(100);
 
 
-	SetStatus("Launching BestClient...");
+	SetStatus("Launching BestClient Light...");
 	usleep(500 * 1000);
 
 	const pid_t Child = fork();
@@ -263,8 +263,8 @@ static void Render(SDL_Renderer *pRenderer)
 
 	{
 		const int Scale = 4;
-		const int W1 = BcFont::TextWidth("BestClient", Scale);
-		BcFont::DrawText(pRenderer, (WND_W - W1) / 2, 14, Scale, "BestClient", C_TITLE);
+		const int W1 = BcFont::TextWidth("BestClient Light", Scale);
+		BcFont::DrawText(pRenderer, (WND_W - W1) / 2, 14, Scale, "BestClient Light", C_TITLE);
 		const int W2 = BcFont::TextWidth("Updater", Scale);
 		BcFont::DrawText(pRenderer, (WND_W - W2) / 2, 48, Scale, "Updater", C_TITLE);
 	}
@@ -317,7 +317,7 @@ int main(int argc, char **argv)
 {
 	if(argc < 5)
 	{
-		fprintf(stderr, "Usage: bestclient-updater <pid> <archive> <install_dir> <exe>\n");
+		fprintf(stderr, "Usage: bestclient-light-updater <pid> <archive> <install_dir> <exe>\n");
 		return 1;
 	}
 
@@ -335,7 +335,7 @@ int main(int argc, char **argv)
 
 	g_pLock = SDL_CreateMutex();
 
-	SDL_Window *pWindow = SDL_CreateWindow("BestClient Updater",
+	SDL_Window *pWindow = SDL_CreateWindow("BestClient Light Updater",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		WND_W, WND_H, SDL_WINDOW_BORDERLESS);
 	if(!pWindow)

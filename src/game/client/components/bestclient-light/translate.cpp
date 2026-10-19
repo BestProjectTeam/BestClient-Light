@@ -626,10 +626,10 @@ std::unique_ptr<ITranslateBackend> CTranslate::CreateBackend(const char *pText, 
 	return nullptr;
 }
 
-const char *CTranslate::IncomingSourceLanguage() const { return g_Config.m_BcTranslateIncomingSource; }
+const char *CTranslate::IncomingSourceLanguage() const { return g_Config.m_BclTranslateIncomingSource; }
 const char *CTranslate::IncomingTargetLanguage() const { return g_Config.m_TcTranslateTarget; }
-const char *CTranslate::OutgoingSourceLanguage() const { return g_Config.m_BcTranslateOutgoingSource; }
-const char *CTranslate::OutgoingTargetLanguage() const { return g_Config.m_BcTranslateOutgoingTarget; }
+const char *CTranslate::OutgoingSourceLanguage() const { return g_Config.m_BclTranslateOutgoingSource; }
+const char *CTranslate::OutgoingTargetLanguage() const { return g_Config.m_BclTranslateOutgoingTarget; }
 
 bool CTranslate::IsIgnoredIncomingLanguage(const char *pLanguage) const
 {
@@ -638,7 +638,7 @@ bool CTranslate::IsIgnoredIncomingLanguage(const char *pLanguage) const
 	if(!aLanguage[0] || str_comp(aLanguage, "auto") == 0)
 		return false;
 
-	const char *pToken = g_Config.m_BcTranslateIncomingIgnoreLanguages;
+	const char *pToken = g_Config.m_BclTranslateIncomingIgnoreLanguages;
 	while(*pToken)
 	{
 		while(*pToken && (*pToken == ';' || *pToken == ',' || *pToken == '|' || isspace((unsigned char)*pToken)))
@@ -713,8 +713,8 @@ void CTranslate::OnConsoleInit()
 		g_Config.m_TcTranslateAutoOutgoing = 1;
 		g_Config.m_TcTranslateOutgoing = 0;
 	}
-	if(g_Config.m_BcTranslateOutgoingTarget[0] == '\0' || (str_comp(g_Config.m_BcTranslateOutgoingTarget, "en") == 0 && str_comp(g_Config.m_TcTranslateOutgoingTarget, "en") != 0))
-		str_copy(g_Config.m_BcTranslateOutgoingTarget, g_Config.m_TcTranslateOutgoingTarget);
+	if(g_Config.m_BclTranslateOutgoingTarget[0] == '\0' || (str_comp(g_Config.m_BclTranslateOutgoingTarget, "en") == 0 && str_comp(g_Config.m_TcTranslateOutgoingTarget, "en") != 0))
+		str_copy(g_Config.m_BclTranslateOutgoingTarget, g_Config.m_TcTranslateOutgoingTarget);
 }
 
 void CTranslate::AutoTranslate(CChat::CLine &Line)
@@ -809,7 +809,7 @@ void CTranslate::OnRender()
 				GameClient()->m_Chat.Echo(aBuf);
 				return true;
 			}
-			if(g_Config.m_BcTranslateOutgoingStripPunctuation)
+			if(g_Config.m_BclTranslateOutgoingStripPunctuation)
 				StripApostrophesFromTranslatedText(Job.m_pTranslateResponse->m_Text);
 			char aText[MAX_CHAT_LENGTH] = "";
 			if(Job.m_aOutgoingPrefix[0])

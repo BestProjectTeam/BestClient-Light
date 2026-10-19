@@ -60,7 +60,7 @@ public:
 	void ResetInput(int Dummy);
 	bool CheckNewInput();
 
-	// bestclient
+	// bestclient-light
 	void InputDebounce(int Dummy, int Input);
 	struct CInputDebounceState
 	{
@@ -70,10 +70,10 @@ public:
 	};
 	CInputDebounceState m_aInputDebounce[NUM_DUMMIES];
 
-	// bestclient
+	// bestclient-light
 
 private:
-	// bestclient
+	// bestclient-light
 	enum
 	{
 		INPUT_LEFT,
@@ -81,7 +81,7 @@ private:
 		INPUT_JUMP,
 		INPUT_HOOK,
 	};
-	// bestclient
+	// bestclient-light
 
 	static void ConKeyInputState(IConsole::IResult *pResult, void *pUserData);
 	static void ConKeyInputCounter(IConsole::IResult *pResult, void *pUserData);

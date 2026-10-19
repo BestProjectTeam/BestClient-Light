@@ -145,8 +145,8 @@ CFgfWeather::CDrop *CFgfWeather::NewDrop()
 
 void CFgfWeather::Splash(vec2 Pos)
 {
-	const float Size = g_Config.m_BcWeatherRainSize / 100.0f;
-	const float Speed = g_Config.m_BcWeatherRainSpeed / 100.0f;
+	const float Size = g_Config.m_BclWeatherRainSize / 100.0f;
+	const float Speed = g_Config.m_BclWeatherRainSpeed / 100.0f;
 	const int Count = 2 + (int)random_float(0.0f, 2.99f);
 	for(int i = 0; i < Count && m_NumSplashes < MAX_SPLASHES; i++)
 	{
@@ -161,15 +161,15 @@ void CFgfWeather::Splash(vec2 Pos)
 
 void CFgfWeather::Spawn(const CScreenRect &View, float Passed, float Time)
 {
-	const float Amount = g_Config.m_BcWeatherAmount / 100.0f;
+	const float Amount = g_Config.m_BclWeatherAmount / 100.0f;
 	const float Width = View.m_BottomRight.x - View.m_TopLeft.x + VIEW_MARGIN * 2.0f;
 	const float Height = View.m_BottomRight.y - View.m_TopLeft.y + VIEW_MARGIN * 2.0f;
 	const float Area = Width / 1400.0f;
 
 	if(m_Kind == FGF_WEATHER_FIREFLIES)
 	{
-		const float Size = g_Config.m_BcWeatherFireflySize / 100.0f;
-		const float Speed = g_Config.m_BcWeatherFireflySpeed / 100.0f;
+		const float Size = g_Config.m_BclWeatherFireflySize / 100.0f;
+		const float Speed = g_Config.m_BclWeatherFireflySpeed / 100.0f;
 		const int Wanted = std::min(MAX_DROPS, (int)(24.0f * Amount * Area * Height / 800.0f));
 		for(int Tries = 0; m_NumDrops < Wanted && Tries < 8; Tries++)
 		{
@@ -188,8 +188,8 @@ void CFgfWeather::Spawn(const CScreenRect &View, float Passed, float Time)
 	}
 
 	const bool Snow = m_Kind == FGF_WEATHER_SNOW;
-	const float Size = (Snow ? g_Config.m_BcWeatherSnowSize : g_Config.m_BcWeatherRainSize) / 100.0f;
-	const float Speed = (Snow ? g_Config.m_BcWeatherSnowSpeed : g_Config.m_BcWeatherRainSpeed) / 100.0f;
+	const float Size = (Snow ? g_Config.m_BclWeatherSnowSize : g_Config.m_BclWeatherRainSize) / 100.0f;
+	const float Speed = (Snow ? g_Config.m_BclWeatherSnowSpeed : g_Config.m_BclWeatherRainSpeed) / 100.0f;
 	const float AverageLife = Snow ? 5.0f : 0.45f;
 	const float Wanted = (Snow ? 110.0f : 170.0f) * Amount * Area * Height / 800.0f;
 	m_SpawnAccumulator += Passed * Wanted / AverageLife;
@@ -225,7 +225,7 @@ void CFgfWeather::Spawn(const CScreenRect &View, float Passed, float Time)
 		}
 		else
 		{
-			const float Tilt = g_Config.m_BcWeatherRainTilt * (pi / 180.0f);
+			const float Tilt = g_Config.m_BclWeatherRainTilt * (pi / 180.0f);
 			const float FallSpeed = random_float(850.0f, 1050.0f) * Speed;
 			pDrop->m_Vel = direction(pi / 2.0f - Tilt) * FallSpeed;
 			pDrop->m_LifeSpan = random_float(0.3f, 0.6f);
@@ -254,12 +254,12 @@ void CFgfWeather::Update(const CScreenRect &View, float Passed, float Time)
 			vec2 Vel = Drop.m_Vel;
 			if(m_Kind == FGF_WEATHER_SNOW)
 			{
-				const float Speed = g_Config.m_BcWeatherSnowSpeed / 100.0f;
+				const float Speed = g_Config.m_BclWeatherSnowSpeed / 100.0f;
 				Vel.x += std::sin(Time * 1.3f + Drop.m_Phase) * 25.0f * Speed;
 			}
 			else if(m_Kind == FGF_WEATHER_FIREFLIES)
 			{
-				const float SpeedScale = g_Config.m_BcWeatherFireflySpeed / 100.0f;
+				const float SpeedScale = g_Config.m_BclWeatherFireflySpeed / 100.0f;
 				const float Turn = std::sin(Time * 0.7f + Drop.m_Phase * 3.0f) * 1.6f;
 				const float Speed = length(Drop.m_Vel);
 				Drop.m_Vel = direction(angle(Drop.m_Vel) + Turn * Passed) * Speed;
@@ -315,11 +315,11 @@ void CFgfWeather::Update(const CScreenRect &View, float Passed, float Time)
 
 static ColorRGBA WeatherColor(int Kind)
 {
-	unsigned Packed = g_Config.m_BcWeatherSnowColor;
+	unsigned Packed = g_Config.m_BclWeatherSnowColor;
 	if(Kind == FGF_WEATHER_RAIN)
-		Packed = g_Config.m_BcWeatherRainColor;
+		Packed = g_Config.m_BclWeatherRainColor;
 	else if(Kind == FGF_WEATHER_FIREFLIES)
-		Packed = g_Config.m_BcWeatherFireflyColor;
+		Packed = g_Config.m_BclWeatherFireflyColor;
 	return color_cast<ColorRGBA>(ColorHSLA(Packed));
 }
 
@@ -355,7 +355,7 @@ void CFgfWeather::Draw(float Time)
 	if(m_Kind == FGF_WEATHER_SNOW)
 	{
 		const IGraphics::CTextureHandle FlakeTexture = GameClient()->m_ExtrasSkin.m_SpriteParticleSnowflake;
-		const bool Sprite = g_Config.m_BcWeatherSnowflakes != 0 && FlakeTexture.IsValid();
+		const bool Sprite = g_Config.m_BclWeatherSnowflakes != 0 && FlakeTexture.IsValid();
 		Graphics()->TextureSet(Sprite ? FlakeTexture : m_GlowTexture);
 		Graphics()->BlendNormal();
 		Graphics()->QuadsBegin();
@@ -412,10 +412,10 @@ void CFgfWeather::AmbientDust()
 	const vec2 Center = GameClient()->m_Camera.m_Center;
 	const CScreenRect View = Graphics()->MapScreenToWorld(Center.x, Center.y, 100.0f, 100.0f, 100.0f,
 		0.0f, 0.0f, Graphics()->ScreenAspect(), GameClient()->m_Camera.m_Zoom);
-	const ColorRGBA Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcAmbientDustColor));
-	const int Amount = round_to_int(6.0f * g_Config.m_BcAmbientDustAmount / 100.0f);
-	const float Size = g_Config.m_BcWeatherDustSize / 100.0f;
-	const float DustSpeed = g_Config.m_BcWeatherDustSpeed / 100.0f;
+	const ColorRGBA Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclAmbientDustColor));
+	const int Amount = round_to_int(6.0f * g_Config.m_BclAmbientDustAmount / 100.0f);
+	const float Size = g_Config.m_BclWeatherDustSize / 100.0f;
+	const float DustSpeed = g_Config.m_BclWeatherDustSpeed / 100.0f;
 
 	for(int i = 0; i < Amount; i++)
 	{
@@ -454,14 +454,14 @@ void CFgfWeather::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(!g_Config.m_BcAtmosphere)
+	if(!g_Config.m_BclAtmosphere)
 	{
 		if(m_NumDrops != 0 || m_NumSplashes != 0)
 			OnReset();
 		return;
 	}
 
-	const int Kind = std::clamp(g_Config.m_BcWeather, 0, (int)FGF_WEATHER_DUST);
+	const int Kind = std::clamp(g_Config.m_BclWeather, 0, (int)FGF_WEATHER_DUST);
 	if(Kind != m_Kind)
 	{
 		m_Kind = Kind;

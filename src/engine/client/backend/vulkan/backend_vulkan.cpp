@@ -22,10 +22,10 @@
 #include <vulkan/vulkan_core.h>
 
 #include <algorithm>
-// bestclient
+// bestclient-light
 #include <cmath>
-#include <game/client/components/bestclient/motion_blur.h>
-// bestclient
+#include <game/client/components/bestclient-light/motion_blur.h>
+// bestclient-light
 #include <array>
 #include <condition_variable>
 #include <cstddef>
@@ -43,10 +43,10 @@
 #include <utility>
 #include <vector>
 
-// bestclient
+// bestclient-light
 static void LogVulkanFailure(const char *pOp, int Result, uint32_t CanvasWidth, uint32_t CanvasHeight, bool Paused, uint32_t SwapWidth, uint32_t SwapHeight)
 {
-	log_error("bestclient", "vulkan %s result=%d fullscreen=%d borderless=%d canvas=%ux%u paused=%d swap=%ux%u", pOp, Result, g_Config.m_GfxFullscreen, g_Config.m_GfxBorderless, CanvasWidth, CanvasHeight, Paused ? 1 : 0, SwapWidth, SwapHeight);
+	log_error("bestclient-light", "vulkan %s result=%d fullscreen=%d borderless=%d canvas=%ux%u paused=%d swap=%ux%u", pOp, Result, g_Config.m_GfxFullscreen, g_Config.m_GfxBorderless, CanvasWidth, CanvasHeight, Paused ? 1 : 0, SwapWidth, SwapHeight);
 }
 
 static const char *VulkanPresentModeName(VkPresentModeKHR Mode)
@@ -90,9 +90,9 @@ static void LogVulkanSwapChain(VkPresentModeKHR PresentMode, VkCompositeAlphaFla
 			DesktopHeight = DesktopMode.h;
 		}
 	}
-	log_info("bestclient", "vulkan swapchain backend=%s present=%s alpha=%s window=%dx%d desktop=%dx%d swap=%ux%u fullscreen=%d borderless=%d vsync=%d", g_Config.m_GfxBackend, VulkanPresentModeName(PresentMode), VulkanCompositeAlphaName(Alpha), WindowWidth, WindowHeight, DesktopWidth, DesktopHeight, SwapWidth, SwapHeight, g_Config.m_GfxFullscreen, g_Config.m_GfxBorderless, g_Config.m_GfxVsync);
+	log_info("bestclient-light", "vulkan swapchain backend=%s present=%s alpha=%s window=%dx%d desktop=%dx%d swap=%ux%u fullscreen=%d borderless=%d vsync=%d", g_Config.m_GfxBackend, VulkanPresentModeName(PresentMode), VulkanCompositeAlphaName(Alpha), WindowWidth, WindowHeight, DesktopWidth, DesktopHeight, SwapWidth, SwapHeight, g_Config.m_GfxFullscreen, g_Config.m_GfxBorderless, g_Config.m_GfxVsync);
 }
-// bestclient
+// bestclient-light
 
 // Set on render worker threads so that memory-allocation recovery (which drives
 // the frame loop and issues queue submit/present) is only ever attempted on the
@@ -915,9 +915,9 @@ class CCommandProcessorFragment_Vulkan : public CCommandProcessorFragment_GLBase
 		VkImageView m_ImgView = VK_NULL_HANDLE;
 	};
 
-	// bestclient
-#include <game/client/components/bestclient/motion_blur_vulkan_members.inl>
-	// bestclient
+	// bestclient-light
+#include <game/client/components/bestclient-light/motion_blur_vulkan_members.inl>
+	// bestclient-light
 
 	/************************
 	 * MEMBER VARIABLES
@@ -1022,9 +1022,9 @@ class CCommandProcessorFragment_Vulkan : public CCommandProcessorFragment_GLBase
 private:
 	std::vector<VkImageView> m_vSwapChainImageViewList;
 	std::vector<SSwapChainMultiSampleImage> m_vSwapChainMultiSamplingImages;
-	// bestclient
-#include <game/client/components/bestclient/motion_blur_vulkan_state.inl>
-	// bestclient
+	// bestclient-light
+#include <game/client/components/bestclient-light/motion_blur_vulkan_state.inl>
+	// bestclient-light
 	std::vector<VkFramebuffer> m_vFramebufferList;
 	std::vector<VkCommandBuffer> m_vMainDrawCommandBuffers;
 
@@ -2381,7 +2381,7 @@ protected:
 			}
 		}
 
-		// bestclient
+		// bestclient-light
 		const bool FrameBlendEnabled = BcMotionBlurEnabled();
 		if(FrameBlendEnabled != m_FrameBlendEnabledLastFrame)
 		{
@@ -2390,14 +2390,14 @@ protected:
 		}
 		if(FrameBlendEnabled && !RenderFrameBlend(CommandBuffer))
 			return false;
-		// bestclient
+		// bestclient-light
 
 		vkCmdEndRenderPass(CommandBuffer);
 
-		// bestclient
+		// bestclient-light
 		if(FrameBlendEnabled)
 			CopyFrameToFrameBlendHistory(CommandBuffer);
-		// bestclient
+		// bestclient-light
 
 		if(vkEndCommandBuffer(CommandBuffer) != VK_SUCCESS)
 		{
@@ -2441,9 +2441,9 @@ protected:
 		VkResult QueueSubmitRes = vkQueueSubmit(m_VKGraphicsQueue, 1, &SubmitInfo, m_vQueueSubmitFences[m_CurImageIndex]);
 		if(QueueSubmitRes != VK_SUCCESS)
 		{
-			// bestclient
+			// bestclient-light
 			LogVulkanFailure("submit", (int)QueueSubmitRes, m_CanvasWidth, m_CanvasHeight, m_RenderingPaused, m_VKSwapImgAndViewportExtent.m_SwapImageViewport.width, m_VKSwapImgAndViewportExtent.m_SwapImageViewport.height);
-			// bestclient
+			// bestclient-light
 			const char *pCritErrorMsg = CheckVulkanCriticalError(QueueSubmitRes);
 			if(pCritErrorMsg != nullptr)
 			{
@@ -2471,9 +2471,9 @@ protected:
 		VkResult QueuePresentRes = vkQueuePresentKHR(m_VKPresentQueue, &PresentInfo);
 		if(QueuePresentRes != VK_SUCCESS && QueuePresentRes != VK_SUBOPTIMAL_KHR)
 		{
-			// bestclient
+			// bestclient-light
 			LogVulkanFailure("present", (int)QueuePresentRes, m_CanvasWidth, m_CanvasHeight, m_RenderingPaused, m_VKSwapImgAndViewportExtent.m_SwapImageViewport.width, m_VKSwapImgAndViewportExtent.m_SwapImageViewport.height);
-			// bestclient
+			// bestclient-light
 			const char *pCritErrorMsg = CheckVulkanCriticalError(QueuePresentRes);
 			if(pCritErrorMsg != nullptr)
 			{
@@ -2500,9 +2500,9 @@ protected:
 		auto AcqResult = vkAcquireNextImageKHR(m_VKDevice, m_VKSwapChain, std::numeric_limits<uint64_t>::max(), m_AcquireImageSemaphore, VK_NULL_HANDLE, &m_CurImageIndex);
 		if(AcqResult != VK_SUCCESS)
 		{
-			// bestclient
+			// bestclient-light
 			LogVulkanFailure("acquire", (int)AcqResult, m_CanvasWidth, m_CanvasHeight, m_RenderingPaused, m_VKSwapImgAndViewportExtent.m_SwapImageViewport.width, m_VKSwapImgAndViewportExtent.m_SwapImageViewport.height);
-			// bestclient
+			// bestclient-light
 			if(AcqResult == VK_ERROR_OUT_OF_DATE_KHR || m_RecreateSwapChain)
 			{
 				m_RecreateSwapChain = false;
@@ -2564,14 +2564,14 @@ protected:
 			return false;
 		}
 
-		// bestclient
+		// bestclient-light
 		if(BcMotionBlurEnabled() && m_LastPresentedSwapChainImageIndex != std::numeric_limits<decltype(m_LastPresentedSwapChainImageIndex)>::max() && m_LastPresentedSwapChainImageIndex != m_CurImageIndex)
 		{
 			auto &HistoryImage = m_vFrameBlendImages[m_LastPresentedSwapChainImageIndex];
 			if(HistoryImage.m_Valid)
 				FrameBlendImageBarrier(CommandBuffer, HistoryImage.m_Image, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		}
-		// bestclient
+		// bestclient-light
 
 		VkRenderPassBeginInfo RenderPassInfo{};
 		RenderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -4429,9 +4429,9 @@ public:
 			return false;
 		}
 
-		// bestclient
+		// bestclient-light
 		LogVulkanSwapChain(PresentMode, SwapInfo.compositeAlpha, SwapInfo.imageExtent.width, SwapInfo.imageExtent.height, m_pWindow);
-		// bestclient
+		// bestclient-light
 
 		return true;
 	}
@@ -4616,9 +4616,9 @@ public:
 		m_vSwapChainMultiSamplingImages.clear();
 	}
 
-	// bestclient
-#include <game/client/components/bestclient/motion_blur_vulkan.inl>
-	// bestclient
+	// bestclient-light
+#include <game/client/components/bestclient-light/motion_blur_vulkan.inl>
+	// bestclient-light
 
 	[[nodiscard]] bool CreateRenderPass(bool ClearAttachments)
 	{
@@ -5543,7 +5543,7 @@ public:
 				}
 			}
 
-			// bestclient
+			// bestclient-light
 			m_vFrameBlendCommandBuffers.resize(m_SwapChainImageCount);
 			AllocInfo.commandPool = m_vCommandPools[0];
 			AllocInfo.commandBufferCount = (uint32_t)m_vFrameBlendCommandBuffers.size();
@@ -5553,7 +5553,7 @@ public:
 				SetError(EGfxErrorType::GFX_ERROR_TYPE_INIT, "Allocating frame blend command buffers failed.");
 				return false;
 			}
-			// bestclient
+			// bestclient-light
 		}
 
 		return true;
@@ -5570,9 +5570,9 @@ public:
 				++Count;
 			}
 
-			// bestclient
+			// bestclient-light
 			vkFreeCommandBuffers(m_VKDevice, m_vCommandPools[0], static_cast<uint32_t>(m_vFrameBlendCommandBuffers.size()), m_vFrameBlendCommandBuffers.data());
-			// bestclient
+			// bestclient-light
 		}
 
 		vkFreeCommandBuffers(m_VKDevice, m_vCommandPools[0], static_cast<uint32_t>(m_vMemoryCommandBuffers.size()), m_vMemoryCommandBuffers.data());
@@ -5581,9 +5581,9 @@ public:
 		m_vvThreadDrawCommandBuffers.clear();
 		m_vvUsedThreadDrawCommandBuffer.clear();
 		m_vHelperThreadDrawCommandBuffers.clear();
-		// bestclient
+		// bestclient-light
 		m_vFrameBlendCommandBuffers.clear();
-		// bestclient
+		// bestclient-light
 
 		m_vMainDrawCommandBuffers.clear();
 		m_vMemoryCommandBuffers.clear();
@@ -5680,9 +5680,9 @@ public:
 
 		DestroyRenderPass();
 
-		// bestclient
+		// bestclient-light
 		DestroyFrameBlendImages();
-		// bestclient
+		// bestclient-light
 
 		DestroyMultiSamplerImageAttachments();
 
@@ -5822,13 +5822,13 @@ public:
 		if(!m_SwapchainCreated)
 			Ret = InitVulkanSwapChain(OldSwapChain);
 
-		// bestclient
+		// bestclient-light
 		if(Ret == 0 && OldSwapChainImageCount == m_SwapChainImageCount)
 		{
 			if(!CreateFrameBlendImages())
 				Ret = -1;
 		}
-		// bestclient
+		// bestclient-light
 
 		if(OldSwapChainImageCount != m_SwapChainImageCount)
 		{
@@ -6422,10 +6422,10 @@ public:
 				return -1;
 		}
 
-		// bestclient
+		// bestclient-light
 		if(!CreateFrameBlendImages())
 			return -1;
-		// bestclient
+		// bestclient-light
 
 		m_vStreamedVertexBuffers.resize(m_ThreadCount);
 		m_vStreamedUniformBuffers.resize(m_ThreadCount);

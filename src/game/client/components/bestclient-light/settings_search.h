@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_SETTINGS_SEARCH_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_SETTINGS_SEARCH_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_SETTINGS_SEARCH_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_SETTINGS_SEARCH_H
 
 #include <game/client/ui_rect.h>
 
@@ -10,7 +10,7 @@ class CGameClient;
 class CUi;
 class IInput;
 
-namespace BestClientSettingsSearch
+namespace BestClientLightSettingsSearch
 {
 
 struct SEntry
@@ -29,6 +29,6 @@ void DrawBlockHighlight(const void *pId, const CUIRect *pRect);
 void SetActiveScrollRegion(CScrollRegion *pRegion);
 void ClearActiveScrollRegion(CScrollRegion *pRegion);
 
-} // namespace BestClientSettingsSearch
+} // namespace BestClientLightSettingsSearch
 
 #endif

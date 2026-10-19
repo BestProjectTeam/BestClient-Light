@@ -188,12 +188,12 @@ bool CBrowserCache::Load(const json_value &Json)
 	{
 		for(const auto &Name : ServerEntry.second)
 		{
-			IServerBrowser::CBestClientPlayerEntry Entry{};
+			IServerBrowser::CBestClientLightPlayerEntry Entry{};
 			str_copy(Entry.m_aServerAddress, ServerEntry.first.c_str(), sizeof(Entry.m_aServerAddress));
 			str_copy(Entry.m_aName, Name.first.c_str(), sizeof(Entry.m_aName));
 			Entry.m_Developer = Name.second.m_Developer;
 			Entry.m_Fake = Name.second.m_Fake;
-			m_PlayerVersionsByServer[ServerEntry.first][Name.first] = Name.second.m_Version.empty() ? "under" : BestClientStripVersionProofStr(Name.second.m_Version);
+			m_PlayerVersionsByServer[ServerEntry.first][Name.first] = Name.second.m_Version.empty() ? "under" : BestClientLightStripVersionProofStr(Name.second.m_Version);
 			m_DeveloperByServer[ServerEntry.first][Name.first] = Name.second.m_Developer;
 			m_FakeByServer[ServerEntry.first][Name.first] = Name.second.m_Fake;
 			m_vPlayers.push_back(Entry);

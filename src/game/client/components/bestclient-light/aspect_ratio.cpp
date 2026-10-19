@@ -21,11 +21,11 @@
 CAspectRatio::CAspectConfig CAspectRatio::ReadConfig()
 {
 	return {
-		g_Config.m_BcCustomAspectRatioMode,
-		g_Config.m_BcCustomAspectRatio,
-		g_Config.m_BcCustomAspectRatioApplyMode,
-		g_Config.m_BcCustomAspectRatioNum,
-		g_Config.m_BcCustomAspectRatioDen,
+		g_Config.m_BclCustomAspectRatioMode,
+		g_Config.m_BclCustomAspectRatio,
+		g_Config.m_BclCustomAspectRatioApplyMode,
+		g_Config.m_BclCustomAspectRatioNum,
+		g_Config.m_BclCustomAspectRatioDen,
 	};
 }
 
@@ -36,11 +36,11 @@ bool CAspectRatio::ConfirmNeeded(const CAspectConfig &Cfg)
 
 void CAspectRatio::ResetToPrevious()
 {
-	g_Config.m_BcCustomAspectRatioMode = m_Prev.m_Mode;
-	g_Config.m_BcCustomAspectRatio = m_Prev.m_Ratio;
-	g_Config.m_BcCustomAspectRatioApplyMode = m_Prev.m_ApplyMode;
-	g_Config.m_BcCustomAspectRatioNum = m_Prev.m_Num;
-	g_Config.m_BcCustomAspectRatioDen = m_Prev.m_Den;
+	g_Config.m_BclCustomAspectRatioMode = m_Prev.m_Mode;
+	g_Config.m_BclCustomAspectRatio = m_Prev.m_Ratio;
+	g_Config.m_BclCustomAspectRatioApplyMode = m_Prev.m_ApplyMode;
+	g_Config.m_BclCustomAspectRatioNum = m_Prev.m_Num;
+	g_Config.m_BclCustomAspectRatioDen = m_Prev.m_Den;
 	m_Last = m_Prev;
 	m_ConfirmActive = false;
 	GameClient()->m_TClient.SetForcedAspect();
@@ -95,12 +95,12 @@ bool CAspectRatio::UseGameNoHudAspect() const
 {
 	const int State = Client()->State();
 	const bool IsActiveGameplay = State == IClient::STATE_ONLINE || State == IClient::STATE_DEMOPLAYBACK;
-	return IsActiveGameplay && !IsAspectBlocked() && g_Config.m_BcCustomAspectRatioApplyMode == 2;
+	return IsActiveGameplay && !IsAspectBlocked() && g_Config.m_BclCustomAspectRatioApplyMode == 2;
 }
 
 bool CAspectRatio::ShouldApplyCustomAspect(bool IsActiveGameplay) const
 {
-	return !IsAspectBlocked() && (g_Config.m_BcCustomAspectRatioApplyMode == 1 || IsActiveGameplay);
+	return !IsAspectBlocked() && (g_Config.m_BclCustomAspectRatioApplyMode == 1 || IsActiveGameplay);
 }
 
 void CAspectRatio::BeginFrame()
@@ -211,7 +211,7 @@ bool CAspectRatio::ConfirmWantsInput() const
 void CAspectRatio::ApplyMenuUiAspect(bool MenuActive)
 {
 	const bool IngameMenu = MenuActive && (Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK);
-	const bool UseWindowAspectForUi = IngameMenu && (IsAspectBlocked() || g_Config.m_BcCustomAspectRatioApplyMode != 1);
+	const bool UseWindowAspectForUi = IngameMenu && (IsAspectBlocked() || g_Config.m_BclCustomAspectRatioApplyMode != 1);
 	m_MenuRestoreGraphicsAspect = !UseWindowAspectForUi;
 	Ui()->SetUseGraphicsScreenAspect(m_MenuRestoreGraphicsAspect);
 }

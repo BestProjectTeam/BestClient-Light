@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <cmath>
 
-static float KiAmount() { return g_Config.m_BcGatheredEnergyAmount / 100.0f; }
+static float KiAmount() { return g_Config.m_BclGatheredEnergyAmount / 100.0f; }
 
 void CFgfKi::OnInit()
 {
@@ -33,7 +33,7 @@ void CFgfKi::OnReset()
 
 ColorRGBA CFgfKi::Color(const CCharge &Charge, float Offset) const
 {
-	if(g_Config.m_BcHookStyle == FGF_HOOK_STYLE_RAINBOW)
+	if(g_Config.m_BclHookStyle == FGF_HOOK_STYLE_RAINBOW)
 		return FgfRainbow(Charge.m_Spin * 0.1f + Offset);
 	return FgfGlow::Whiten(FgfThemeColor(), 0.15f + 0.45f * Charge.m_Level);
 }
@@ -58,7 +58,7 @@ void CFgfKi::Release(int ClientId, vec2 Pos, float Scale)
 	CCharge &Charge = m_aCharges[ClientId];
 	const float Level = Charge.m_Level;
 	Charge.m_NumMotes = 0;
-	if(!g_Config.m_BcGatheredEnergyBurst || Level < 0.05f)
+	if(!g_Config.m_BclGatheredEnergyBurst || Level < 0.05f)
 		return;
 
 	const ColorRGBA Base = Color(Charge, 0.0f);
@@ -81,7 +81,7 @@ void CFgfKi::Release(int ClientId, vec2 Pos, float Scale)
 		pSpark->m_EndSize = 0.6f * Scale;
 		pSpark->m_StartAlpha = 0.9f;
 		pSpark->m_EndAlpha = 0.0f;
-		pSpark->m_Color = g_Config.m_BcHookStyle == FGF_HOOK_STYLE_RAINBOW ? FgfRainbow(i / (float)std::max(Count, 1)) : FgfGlow::Whiten(Base, 0.4f);
+		pSpark->m_Color = g_Config.m_BclHookStyle == FGF_HOOK_STYLE_RAINBOW ? FgfRainbow(i / (float)std::max(Count, 1)) : FgfGlow::Whiten(Base, 0.4f);
 	}
 }
 
@@ -106,7 +106,7 @@ void CFgfKi::Draw(float Scale, float Time)
 		const vec2 Pos = GameClient()->m_aClients[i].m_RenderPos;
 		const float Alpha = GameClient()->IsOtherTeam(i) ? g_Config.m_ClShowOthersAlpha / 100.0f : 1.0f;
 
-		if(g_Config.m_BcGatheredEnergyAura && Charge.m_Level > 0.001f)
+		if(g_Config.m_BclGatheredEnergyAura && Charge.m_Level > 0.001f)
 		{
 			const float Breathe = 1.0f + 0.06f * std::sin(Time * 7.0f + i);
 			const float Size = mix(52.0f, 128.0f, Charge.m_Level) * Breathe * Scale;
@@ -129,7 +129,7 @@ void CFgfKi::Draw(float Scale, float Time)
 			const float Left = 1.0f - Mote.m_Life / Mote.m_LifeSpan;
 			const float Fade = std::min(1.0f, Left * 4.0f);
 			const vec2 At = Pos + direction(Mote.m_Angle) * Mote.m_Radius;
-			const ColorRGBA MoteColor = g_Config.m_BcHookStyle == FGF_HOOK_STYLE_RAINBOW ? FgfRainbow(Mote.m_Hue) : Color(Charge, 0.0f);
+			const ColorRGBA MoteColor = g_Config.m_BclHookStyle == FGF_HOOK_STYLE_RAINBOW ? FgfRainbow(Mote.m_Hue) : Color(Charge, 0.0f);
 			Graphics()->SetColor(MoteColor.WithAlpha(0.85f * Fade * Alpha));
 			const float Size = Mote.m_Size * mix(0.5f, 1.3f, 1.0f - Left);
 			IGraphics::CQuadItem Quad(At.x, At.y, Size, Size);
@@ -138,7 +138,7 @@ void CFgfKi::Draw(float Scale, float Time)
 	}
 	Graphics()->QuadsEnd();
 
-	if(g_Config.m_BcGatheredEnergyAura)
+	if(g_Config.m_BclGatheredEnergyAura)
 	{
 		Graphics()->TextureSet(m_RingTexture);
 		Graphics()->QuadsBegin();
@@ -200,7 +200,7 @@ void CFgfKi::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(!g_Config.m_BcGatheredEnergy)
+	if(!g_Config.m_BclGatheredEnergy)
 	{
 		if(m_WasActive)
 			OnReset();
@@ -208,7 +208,7 @@ void CFgfKi::OnRender()
 	}
 	m_WasActive = true;
 
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
 	const float HookLimit = (float)(SERVER_TICK_SPEED + SERVER_TICK_SPEED / 5);
 
 	for(int i = 0; i < MAX_CLIENTS; i++)

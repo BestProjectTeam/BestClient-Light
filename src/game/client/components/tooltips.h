@@ -1,9 +1,9 @@
 #ifndef GAME_CLIENT_COMPONENTS_TOOLTIPS_H
 #define GAME_CLIENT_COMPONENTS_TOOLTIPS_H
 
-// bestclient
+// bestclient-light
 #include <base/color.h>
-// bestclient
+// bestclient-light
 
 #include <game/client/component.h>
 #include <game/client/ui_rect.h>
@@ -21,10 +21,10 @@ struct CTooltip
 	float m_WidthHint;
 	bool m_OnScreen; // used to know if the tooltip should be rendered.
 	float m_FadeTime = 0.75f;
-	// bestclient
+	// bestclient-light
 	bool m_CustomTextColor = false;
 	ColorRGBA m_TextColor = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
-	// bestclient
+	// bestclient-light
 };
 
 /**
@@ -69,9 +69,9 @@ public:
 	// TClient
 	void SetFadeTime(const void *pId, float Time);
 
-	// bestclient
+	// bestclient-light
 	void SetTextColor(const void *pId, ColorRGBA TextColor);
-	// bestclient
+	// bestclient-light
 };
 
 #endif

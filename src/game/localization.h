@@ -67,8 +67,8 @@ extern CLocalizationDatabase g_Localization;
 
 [[gnu::format_arg(1)]] extern const char *TCLocalize(const char *pStr, const char *pContext = "");
 
-// bestclient
+// bestclient-light
 [[gnu::format_arg(1)]] extern const char *BcLocalize(const char *pStr);
-// bestclient
+// bestclient-light
 
 #endif

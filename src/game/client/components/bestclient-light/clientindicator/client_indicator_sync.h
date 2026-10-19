@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_CLIENTINDICATOR_CLIENT_INDICATOR_SYNC_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_CLIENTINDICATOR_CLIENT_INDICATOR_SYNC_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CLIENTINDICATOR_CLIENT_INDICATOR_SYNC_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CLIENTINDICATOR_CLIENT_INDICATOR_SYNC_H
 
 #include <engine/client/enums.h>
 #include <engine/shared/protocol.h>
@@ -8,7 +8,7 @@
 #include <array>
 #include <vector>
 
-namespace BestClientIndicatorClient
+namespace BestClientLightIndicatorClient
 {
 struct CLocalClientIdSnapshot
 {

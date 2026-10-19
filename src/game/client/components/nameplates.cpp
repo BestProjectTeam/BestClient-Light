@@ -12,9 +12,9 @@
 #include <generated/client_data.h>
 
 #include <game/client/animstate.h>
-#include <game/client/components/bestclient/demo_tee_editor.h> // bestclient
-#include <game/client/components/bestclient/gradient.h> // bestclient
-#include <game/client/components/bestclient/version.h> // bestclient
+#include <game/client/components/bestclient-light/demo_tee_editor.h> // bestclient-light
+#include <game/client/components/bestclient-light/gradient.h> // bestclient-light
+#include <game/client/components/bestclient-light/version.h> // bestclient-light
 #include <game/client/gameclient.h>
 #include <game/client/prediction/entities/character.h>
 
@@ -55,7 +55,7 @@ public:
 	bool m_ShowHookStrongWeakId;
 	int m_HookStrongWeakId;
 	float m_FontSizeHookStrongWeak;
-	// bestclient
+	// bestclient-light
 	bool m_ShowBClientIndicator;
 	float m_FontSizeBClientIndicator;
 	bool m_IsUserBClientIndicator;
@@ -65,7 +65,7 @@ public:
 	float m_FontSizeBClientVersion;
 	char m_aBClientVersion[32];
 	bool m_ShowVoiceTalking;
-	// bestclient
+	// bestclient-light
 };
 
 // Part Types
@@ -103,9 +103,9 @@ protected:
 	STextContainerIndex m_TextContainerIndex;
 	virtual bool UpdateNeeded(CGameClient &This, const CNamePlateData &Data) = 0;
 	virtual void UpdateText(CGameClient &This, const CNamePlateData &Data) = 0;
-	// bestclient
+	// bestclient-light
 	virtual bool SoftUpdate() const { return false; }
-	// bestclient
+	// bestclient-light
 	ColorRGBA m_Color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
 	CNamePlatePartText(CGameClient &This) :
 		CNamePlatePart(This)
@@ -130,10 +130,10 @@ public:
 			// Create text at standard zoom
 			CScreenRect ScreenRect = This.Graphics()->GetScreen();
 			This.Graphics()->MapScreenToInterface(This.m_Camera.m_Center.x, This.m_Camera.m_Center.y);
-			// bestclient
+			// bestclient-light
 			if(!SoftUpdate())
 				This.TextRender()->DeleteTextContainer(m_TextContainerIndex);
-			// bestclient
+			// bestclient-light
 			UpdateText(This, Data);
 			This.Graphics()->MapScreen(ScreenRect);
 		}
@@ -247,7 +247,7 @@ public:
 	CNamePlatePartDirection(CGameClient &This, Direction Dir) :
 		CNamePlatePartIcon(This)
 	{
-		m_Texture = This.ArrowTexture(); // bestclient
+		m_Texture = This.ArrowTexture(); // bestclient-light
 		m_Direction = Dir;
 		switch(m_Direction)
 		{
@@ -365,10 +365,10 @@ class CNamePlatePartName : public CNamePlatePartText
 private:
 	char m_aText[std::max((size_t)MAX_NAME_LENGTH, (size_t)protocol7::MAX_NAME_ARRAY_SIZE)] = "";
 	float m_FontSize = -INFINITY;
-	// bestclient
+	// bestclient-light
 	bool m_Gradient = false;
 	float m_LastPhase = -1.0f;
-	// bestclient
+	// bestclient-light
 
 protected:
 	bool UpdateNeeded(CGameClient &This, const CNamePlateData &Data) override
@@ -385,14 +385,14 @@ protected:
 			else if(This.m_WarList.GetWarData(Data.m_ClientId).m_WarClan)
 				m_Color = This.m_WarList.GetClanColor(Data.m_ClientId).WithAlpha(Data.m_Color.a);
 		}
-		// bestclient
+		// bestclient-light
 		bool NeedsUpdate = m_FontSize != Data.m_FontSize || str_comp(m_aText, Data.m_aName) != 0;
 		bool UseGradient = false;
 		const bool HasWarColor = g_Config.m_TcWarList && (This.m_WarList.GetWarData(Data.m_ClientId).m_WarName || This.m_WarList.GetWarData(Data.m_ClientId).m_WarClan);
-		if(!HasWarColor && g_Config.m_BcNameplateGradient && (!Data.m_InGame || CBcGradient::AppliesTo(Data.m_ClientId, &This)))
+		if(!HasWarColor && g_Config.m_BclNameplateGradient && (!Data.m_InGame || CBcGradient::AppliesTo(Data.m_ClientId, &This)))
 		{
 			UseGradient = true;
-			if(g_Config.m_BcNameplateGradientAnimateSpeed != 0)
+			if(g_Config.m_BclNameplateGradientAnimateSpeed != 0)
 			{
 				const float Phase = CBcGradient::AnimatePhase(This.Client()->GlobalTime());
 				float PhaseDiff = absolute(Phase - m_LastPhase);
@@ -413,23 +413,23 @@ protected:
 		}
 		m_Gradient = UseGradient;
 		return NeedsUpdate;
-		// bestclient
+		// bestclient-light
 	}
-	// bestclient
+	// bestclient-light
 	bool SoftUpdate() const override { return m_Gradient; }
 	void Reset(CGameClient &This) override
 	{
 		CNamePlatePartText::Reset(This);
 		m_LastPhase = -1.0f;
 	}
-	// bestclient
+	// bestclient-light
 	void UpdateText(CGameClient &This, const CNamePlateData &Data) override
 	{
 		m_FontSize = Data.m_FontSize;
 		str_copy(m_aText, Data.m_aName);
 		CTextCursor Cursor;
 		Cursor.m_FontSize = m_FontSize;
-		// bestclient
+		// bestclient-light
 		if(m_Gradient)
 		{
 			const float Phase = CBcGradient::AnimatePhase(This.Client()->GlobalTime());
@@ -448,9 +448,9 @@ protected:
 			m_LastPhase = -1.0f;
 			This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, m_aText);
 		}
-		// bestclient
+		// bestclient-light
 	}
-	// bestclient
+	// bestclient-light
 	void Render(CGameClient &This, vec2 Pos) const override
 	{
 		if(!m_TextContainerIndex.Valid())
@@ -466,7 +466,7 @@ protected:
 			Color, OutlineColor,
 			Pos.x - Size().x / 2.0f, Pos.y - Size().y / 2.0f);
 	}
-	// bestclient
+	// bestclient-light
 
 public:
 	CNamePlatePartName(CGameClient &This) :
@@ -478,10 +478,10 @@ class CNamePlatePartClan : public CNamePlatePartText
 private:
 	char m_aText[std::max((size_t)MAX_CLAN_LENGTH, (size_t)protocol7::MAX_CLAN_ARRAY_SIZE)] = "";
 	float m_FontSize = -INFINITY;
-	// bestclient
+	// bestclient-light
 	bool m_Gradient = false;
 	float m_LastPhase = -1.0f;
-	// bestclient
+	// bestclient-light
 
 protected:
 	bool UpdateNeeded(CGameClient &This, const CNamePlateData &Data) override
@@ -493,14 +493,14 @@ protected:
 		// TClient
 		if(This.m_WarList.GetWarData(Data.m_ClientId).m_WarClan)
 			m_Color = This.m_WarList.GetClanColor(Data.m_ClientId).WithAlpha(Data.m_Color.a);
-		// bestclient
+		// bestclient-light
 		bool NeedsUpdate = m_FontSize != Data.m_FontSizeClan || str_comp(m_aText, Data.m_aClan) != 0;
 		bool UseGradient = false;
 		const bool HasWarClanColor = g_Config.m_TcWarList && This.m_WarList.GetWarData(Data.m_ClientId).m_WarClan;
-		if(!HasWarClanColor && g_Config.m_BcNameplateGradientClan && (!Data.m_InGame || CBcGradient::AppliesTo(Data.m_ClientId, &This)))
+		if(!HasWarClanColor && g_Config.m_BclNameplateGradientClan && (!Data.m_InGame || CBcGradient::AppliesTo(Data.m_ClientId, &This)))
 		{
 			UseGradient = true;
-			if(g_Config.m_BcNameplateGradientAnimateSpeed != 0)
+			if(g_Config.m_BclNameplateGradientAnimateSpeed != 0)
 			{
 				const float Phase = CBcGradient::AnimatePhase(This.Client()->GlobalTime());
 				float PhaseDiff = absolute(Phase - m_LastPhase);
@@ -521,23 +521,23 @@ protected:
 		}
 		m_Gradient = UseGradient;
 		return NeedsUpdate;
-		// bestclient
+		// bestclient-light
 	}
-	// bestclient
+	// bestclient-light
 	bool SoftUpdate() const override { return m_Gradient; }
 	void Reset(CGameClient &This) override
 	{
 		CNamePlatePartText::Reset(This);
 		m_LastPhase = -1.0f;
 	}
-	// bestclient
+	// bestclient-light
 	void UpdateText(CGameClient &This, const CNamePlateData &Data) override
 	{
 		m_FontSize = Data.m_FontSizeClan;
 		str_copy(m_aText, Data.m_aClan);
 		CTextCursor Cursor;
 		Cursor.m_FontSize = m_FontSize;
-		// bestclient
+		// bestclient-light
 		if(m_Gradient)
 		{
 			const float Phase = CBcGradient::AnimatePhase(This.Client()->GlobalTime());
@@ -556,9 +556,9 @@ protected:
 			m_LastPhase = -1.0f;
 			This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, m_aText);
 		}
-		// bestclient
+		// bestclient-light
 	}
-	// bestclient
+	// bestclient-light
 	void Render(CGameClient &This, vec2 Pos) const override
 	{
 		if(!m_TextContainerIndex.Valid())
@@ -574,7 +574,7 @@ protected:
 			Color, OutlineColor,
 			Pos.x - Size().x / 2.0f, Pos.y - Size().y / 2.0f);
 	}
-	// bestclient
+	// bestclient-light
 
 public:
 	CNamePlatePartClan(CGameClient &This) :
@@ -858,7 +858,7 @@ public:
 		CNamePlatePartText(This) {}
 };
 
-// bestclient
+// bestclient-light
 class CNamePlatePartBClientIndicator : public CNamePlatePartIcon
 {
 protected:
@@ -870,7 +870,7 @@ protected:
 			m_Visible = false;
 			return;
 		}
-		m_ShiftOnInvis = !g_Config.m_BcClientIndicatorInNamePlateDynamic;
+		m_ShiftOnInvis = !g_Config.m_BclClientIndicatorInNamePlateDynamic;
 		m_Size = vec2(Data.m_FontSizeBClientIndicator + DEFAULT_PADDING, Data.m_FontSizeBClientIndicator + DEFAULT_PADDING);
 		m_Visible = Data.m_IsUserBClientIndicator;
 		const int ImageId = Data.m_IsUserDeveloperIndicator ? IMAGE_BCDEVICON : (Data.m_IsUserFakeIndicator ? IMAGE_BCFAKEICON : IMAGE_BCICON);
@@ -880,8 +880,8 @@ protected:
 
 	void Render(CGameClient &This, vec2 Pos) const override
 	{
-		Pos.x += (float)g_Config.m_BcNameplateClientIndicatorOffsetX;
-		Pos.y += (float)g_Config.m_BcNameplateClientIndicatorOffsetY;
+		Pos.x += (float)g_Config.m_BclNameplateClientIndicatorOffsetX;
+		Pos.y += (float)g_Config.m_BclNameplateClientIndicatorOffsetY;
 		CNamePlatePartIcon::Render(This, Pos);
 	}
 
@@ -894,7 +894,7 @@ public:
 	}
 };
 
-// bestclient
+// bestclient-light
 class CNamePlatePartVoiceTalking : public CNamePlatePartText
 {
 	float m_FontSize = -INFINITY;
@@ -922,8 +922,8 @@ protected:
 
 	void Render(CGameClient &This, vec2 Pos) const override
 	{
-		Pos.x += (float)g_Config.m_BcNameplateVoiceOffsetX;
-		Pos.y += (float)g_Config.m_BcNameplateVoiceOffsetY;
+		Pos.x += (float)g_Config.m_BclNameplateVoiceOffsetX;
+		Pos.y += (float)g_Config.m_BclNameplateVoiceOffsetY;
 		CNamePlatePartText::Render(This, Pos);
 	}
 
@@ -934,7 +934,7 @@ public:
 		m_Padding = vec2(0.0f, 0.0f);
 	}
 };
-// bestclient
+// bestclient-light
 
 class CNamePlatePartBClientVersion : public CNamePlatePartText
 {
@@ -967,7 +967,7 @@ public:
 	CNamePlatePartBClientVersion(CGameClient &This) :
 		CNamePlatePartText(This) {}
 };
-// bestclient
+// bestclient-light
 
 class CNamePlate
 {
@@ -1011,16 +1011,16 @@ private:
 			AddPart<CNamePlatePartIgnoreMark>(This); // TClient
 			AddPart<CNamePlatePartFriendMark>(This);
 			AddPart<CNamePlatePartClientId>(This, false);
-			// bestclient
+			// bestclient-light
 			AddPart<CNamePlatePartBClientIndicator>(This);
 			AddPart<CNamePlatePartVoiceTalking>(This);
-			// bestclient
+			// bestclient-light
 			AddPart<CNamePlatePartName>(This);
 			AddPart<CNamePlatePartNewLine>(This);
-			// bestclient
+			// bestclient-light
 			AddPart<CNamePlatePartBClientVersion>(This);
 			AddPart<CNamePlatePartNewLine>(This);
-			// bestclient
+			// bestclient-light
 
 			AddPart<CNamePlatePartClan>(This);
 			AddPart<CNamePlatePartNewLine>(This);
@@ -1044,9 +1044,9 @@ private:
 	}
 
 public:
-	// bestclient
+	// bestclient-light
 	bool IsInited() const { return m_Inited; }
-	// bestclient
+	// bestclient-light
 	CNamePlate() = default;
 	CNamePlate(CGameClient &This, const CNamePlateData &Data)
 	{
@@ -1158,12 +1158,12 @@ public:
 
 void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *pPlayerInfo, float Alpha)
 {
-	// bestclient
+	// bestclient-light
 	if(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideNames)
 		return;
 	if(!GameClient()->OptimizerAllowRenderPos(Position))
 		return;
-	// bestclient
+	// bestclient-light
 
 	// Get screen edges to avoid rendering offscreen
 	CScreenRect ScreenRect = Graphics()->GetScreen();
@@ -1184,7 +1184,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 
 	Data.m_ShowName = pPlayerInfo->m_Local ? g_Config.m_ClNamePlatesOwn : g_Config.m_ClNamePlates;
 	str_copy(Data.m_aName, ClientData.m_aName);
-	// bestclient
+	// bestclient-light
 	bool DemoTeeClanOverride = false;
 	if(Client()->State() == IClient::STATE_DEMOPLAYBACK)
 	{
@@ -1198,7 +1198,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 			DemoTeeClanOverride = true;
 		}
 	}
-	// bestclient
+	// bestclient-light
 	Data.m_ShowFriendMark = Data.m_ShowName && g_Config.m_ClNamePlatesFriendMark && GameClient()->m_aClients[pPlayerInfo->m_ClientId].m_Friend;
 	Data.m_ShowClientId = Data.m_ShowName && (g_Config.m_Debug || g_Config.m_ClNamePlatesIds);
 	Data.m_FontSize = 18.0f + 20.0f * g_Config.m_ClNamePlatesSize / 100.0f;
@@ -1208,26 +1208,26 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	Data.m_FontSizeClientId = Data.m_ClientIdSeparateLine ? (18.0f + 20.0f * g_Config.m_ClNamePlatesIdsSize / 100.0f) : Data.m_FontSize;
 
 	Data.m_ShowClan = Data.m_ShowName && g_Config.m_ClNamePlatesClan;
-	// bestclient
+	// bestclient-light
 	if(!DemoTeeClanOverride)
-		// bestclient
+		// bestclient-light
 		str_copy(Data.m_aClan, GameClient()->m_aClients[pPlayerInfo->m_ClientId].m_aClan);
 	Data.m_FontSizeClan = 18.0f + 20.0f * g_Config.m_ClNamePlatesClanSize / 100.0f;
 
 	Data.m_FontSizeHookStrongWeak = 18.0f + 20.0f * g_Config.m_ClNamePlatesStrongSize / 100.0f;
 	Data.m_FontSizeDirection = 18.0f + 20.0f * g_Config.m_ClDirectionSize / 100.0f;
-	// bestclient
-	Data.m_FontSizeBClientIndicator = 18.0f + 20.0f * g_Config.m_BcClientIndicatorInNamePlateSize / 100.0f;
-	// bestclient
+	// bestclient-light
+	Data.m_FontSizeBClientIndicator = 18.0f + 20.0f * g_Config.m_BclClientIndicatorInNamePlateSize / 100.0f;
+	// bestclient-light
 
 	if(g_Config.m_ClNamePlatesAlways == 0)
 		Alpha *= std::clamp(1.0f - std::pow(distance(GameClient()->m_Controls.m_aTargetPos[g_Config.m_ClDummy], Position) / 200.0f, 16.0f), 0.0f, 1.0f);
 	if(OtherTeam)
 		Alpha *= (float)g_Config.m_ClShowOthersAlpha / 100.0f;
-	// bestclient
+	// bestclient-light
 	if(GameClient()->m_FastPractice.Enabled() && !GameClient()->m_Snap.m_SpecInfo.m_Active && !GameClient()->m_FastPractice.IsPracticeParticipant(pPlayerInfo->m_ClientId))
 		Alpha = std::min(Alpha, 0.5f);
-	// bestclient
+	// bestclient-light
 
 	if(Alpha <= 0.001f)
 		return;
@@ -1304,13 +1304,13 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	Data.m_HookStrongWeakState = EHookStrongWeakState::NEUTRAL;
 	Data.m_ShowHookStrongWeakId = false;
 	Data.m_HookStrongWeakId = 0;
-	// bestclient
-	Data.m_ShowBClientIndicator = g_Config.m_BcClientIndicatorInNamePlate &&
-				      (!pPlayerInfo->m_Local || g_Config.m_BcClientIndicatorInNamePlateAboveSelf);
+	// bestclient-light
+	Data.m_ShowBClientIndicator = g_Config.m_BclClientIndicatorInNamePlate &&
+				      (!pPlayerInfo->m_Local || g_Config.m_BclClientIndicatorInNamePlateAboveSelf);
 	Data.m_IsUserBClientIndicator = Data.m_ShowBClientIndicator && GameClient()->m_ClientIndicator.IsPlayerBClient(pPlayerInfo->m_ClientId);
 	Data.m_IsUserDeveloperIndicator = Data.m_ShowBClientIndicator && GameClient()->m_ClientIndicator.IsPlayerDeveloper(pPlayerInfo->m_ClientId);
 	Data.m_IsUserFakeIndicator = Data.m_ShowBClientIndicator && GameClient()->m_ClientIndicator.IsPlayerFakeVersion(pPlayerInfo->m_ClientId);
-	Data.m_ShowVoiceTalking = g_Config.m_BcVoiceChatNameplateIcon != 0 &&
+	Data.m_ShowVoiceTalking = g_Config.m_BclVoiceChatNameplateIcon != 0 &&
 				  GameClient()->m_VoiceChat.IsClientTalking(pPlayerInfo->m_ClientId);
 	Data.m_ShowBClientVersion = false;
 	Data.m_FontSizeBClientVersion = 0.0f;
@@ -1320,7 +1320,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 		Data.m_ShowBClientVersion = GameClient()->m_ClientIndicator.GetPlayerVersionLabel(pPlayerInfo->m_ClientId, Data.m_aBClientVersion, sizeof(Data.m_aBClientVersion));
 		Data.m_FontSizeBClientVersion = std::max(10.0f, Data.m_FontSize * 0.75f);
 	}
-	// bestclient
+	// bestclient-light
 
 	const bool Following = (GameClient()->m_Snap.m_SpecInfo.m_Active && !GameClient()->m_MultiViewActivated && GameClient()->m_Snap.m_SpecInfo.m_SpectatorId != SPEC_FREEVIEW);
 	if(GameClient()->m_Snap.m_LocalClientId != -1 || Following)
@@ -1351,7 +1351,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 		Data.m_ShowClan = true;
 	Data.m_Local = pPlayerInfo->m_Local;
 
-	// bestclient
+	// bestclient-light
 	GameClient()->m_FlyingNamePlates.Update(pPlayerInfo->m_ClientId, Position);
 	const vec2 RenderPos = GameClient()->m_FlyingNamePlates.GetRenderPos(pPlayerInfo->m_ClientId, Position);
 	if(!GameClient()->OptimizerAllowRenderPos(RenderPos))
@@ -1378,7 +1378,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 		NamePlate.Update(*GameClient(), Data);
 	}
 	NamePlate.Render(*GameClient(), RenderPos);
-	// bestclient
+	// bestclient-light
 }
 
 void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
@@ -1388,9 +1388,9 @@ void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
 
 	const float FontSizeDirection = 18.0f + 20.0f * g_Config.m_ClDirectionSize / 100.0f;
 	const float FontSizeHookStrongWeak = 18.0f + 20.0f * g_Config.m_ClNamePlatesStrongSize / 100.0f;
-	// bestclient
-	const float FontSizeBClientIndicator = 18.0f + 20.0f * g_Config.m_BcClientIndicatorInNamePlateSize / 100.0f;
-	// bestclient
+	// bestclient-light
+	const float FontSizeBClientIndicator = 18.0f + 20.0f * g_Config.m_BclClientIndicatorInNamePlateSize / 100.0f;
+	// bestclient-light
 
 	CNamePlateData Data;
 
@@ -1453,23 +1453,23 @@ void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
 	}
 	TeeRenderInfo.m_Size = 64.0f;
 
-	// bestclient
-	Data.m_ShowBClientIndicator = g_Config.m_BcClientIndicatorInNamePlate &&
-				      (Dummy != 0 || g_Config.m_BcClientIndicatorInNamePlateAboveSelf);
+	// bestclient-light
+	Data.m_ShowBClientIndicator = g_Config.m_BclClientIndicatorInNamePlate &&
+				      (Dummy != 0 || g_Config.m_BclClientIndicatorInNamePlateAboveSelf);
 	Data.m_FontSizeBClientIndicator = FontSizeBClientIndicator;
 	Data.m_IsUserBClientIndicator = Data.m_ShowBClientIndicator;
 	Data.m_IsUserDeveloperIndicator = false;
 	Data.m_IsUserFakeIndicator = false;
-	Data.m_ShowVoiceTalking = g_Config.m_BcVoiceChatNameplateIcon != 0;
+	Data.m_ShowVoiceTalking = g_Config.m_BclVoiceChatNameplateIcon != 0;
 	Data.m_ShowBClientVersion = false;
 	Data.m_FontSizeBClientVersion = std::max(10.0f, FontSize * 0.75f);
 	Data.m_aBClientVersion[0] = '\0';
 	if(g_Config.m_IndicatorVersion && Data.m_IsUserBClientIndicator)
 	{
 		Data.m_ShowBClientVersion = true;
-		str_copy(Data.m_aBClientVersion, BESTCLIENT_VERSION, sizeof(Data.m_aBClientVersion));
+		str_copy(Data.m_aBClientVersion, BESTCLIENT_LIGHT_VERSION, sizeof(Data.m_aBClientVersion));
 	}
-	// bestclient
+	// bestclient-light
 
 	CNamePlate NamePlate(*GameClient(), Data);
 	Position.y += NamePlate.Size().y / 2.0f;
@@ -1483,8 +1483,8 @@ void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
 	const vec2 TeePos = Position;
 	RenderTools()->RenderTee(CAnimState::GetIdle(), &TeeRenderInfo, TeeEmote, TeeDirection, Position);
 	Position.y -= (float)g_Config.m_ClNamePlatesOffset;
-	// bestclient
-	if(g_Config.m_BcFlyingNamePlates)
+	// bestclient-light
+	if(g_Config.m_BclFlyingNamePlates)
 	{
 		const vec2 FlyingPos = GameClient()->m_FlyingNamePlates.PreviewPos(Position, TeeDirection);
 		GameClient()->m_FlyingNamePlates.RenderPreviewRope(TeePos, FlyingPos, Data.m_Color);
@@ -1494,7 +1494,7 @@ void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
 	{
 		NamePlate.Render(*GameClient(), Position);
 	}
-	// bestclient
+	// bestclient-light
 	NamePlate.Reset(*GameClient());
 }
 
@@ -1503,12 +1503,12 @@ void CNamePlates::ResetNamePlates()
 	for(CNamePlate &NamePlate : m_pData->m_aNamePlates)
 		NamePlate.Reset(*GameClient());
 	m_pData->ResetState();
-	// bestclient
+	// bestclient-light
 	GameClient()->m_FlyingNamePlates.OnReset();
-	// bestclient
+	// bestclient-light
 }
 
-// bestclient
+// bestclient-light
 float CNamePlates::GetNamePlateOffset(int ClientId) const
 {
 	if(!m_pData || ClientId < 0 || ClientId >= MAX_CLIENTS)
@@ -1520,7 +1520,7 @@ float CNamePlates::GetNamePlateOffset(int ClientId) const
 
 	return NamePlate.Size().y;
 }
-// bestclient
+// bestclient-light
 
 void CNamePlates::OnRender()
 {

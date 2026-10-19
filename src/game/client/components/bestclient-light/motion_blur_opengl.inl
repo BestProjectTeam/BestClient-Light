@@ -1,7 +1,7 @@
 /* Copyright © 2026 BestProject Team */
 #include <cmath>
 
-#include <game/client/components/bestclient/motion_blur.h>
+#include <game/client/components/bestclient-light/motion_blur.h>
 
 void CCommandProcessorFragment_OpenGL3_3::EnsureMotionBlurTexture()
 {
@@ -64,7 +64,7 @@ void CCommandProcessorFragment_OpenGL3_3::RenderMotionBlurGL()
 		return;
 	}
 
-	const float StrengthT = g_Config.m_BcMotionBlurStrength / 95.0f;
+	const float StrengthT = g_Config.m_BclMotionBlurStrength / 95.0f;
 	const float RefAlpha60 = StrengthT * StrengthT * 0.58f;
 	const float FrameTime = BcMotionBlurAdvanceFrameTime(State.m_LastTime);
 	const float BlendAlpha = BcMotionBlurPersistence(RefAlpha60, FrameTime);

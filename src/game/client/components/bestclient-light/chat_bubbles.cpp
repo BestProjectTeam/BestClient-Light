@@ -12,7 +12,7 @@
 #include <engine/shared/protocol.h>
 #include <engine/textrender.h>
 
-#include <game/client/components/bestclient/chat_media.h>
+#include <game/client/components/bestclient-light/chat_media.h>
 #include <game/client/components/chat.h>
 #include <game/client/gameclient.h>
 #include <generated/protocol.h>
@@ -27,9 +27,9 @@ CChat *CChatBubbles::Chat() const
 
 float CChatBubbles::BubbleRounding() const
 {
-	if(g_Config.m_BcChatBubbleRounding > 0)
-		return (float)g_Config.m_BcChatBubbleRounding;
-	return g_Config.m_BcChatBubbleSize / 4.5f;
+	if(g_Config.m_BclChatBubbleRounding > 0)
+		return (float)g_Config.m_BclChatBubbleRounding;
+	return g_Config.m_BclChatBubbleSize / 4.5f;
 }
 
 bool CChatBubbles::LineHighlighted(int ClientId, const char *pLine) const
@@ -62,9 +62,9 @@ void CChatBubbles::OnMessage(int MsgType, void *pRawMsg)
 {
 	if(GameClient()->m_SuppressEvents)
 		return;
-	if(!g_Config.m_BcChatBubbles)
+	if(!g_Config.m_BclChatBubbles)
 		return;
-	if(Client()->State() == IClient::STATE_DEMOPLAYBACK && !g_Config.m_BcChatBubblesDemo)
+	if(Client()->State() == IClient::STATE_DEMOPLAYBACK && !g_Config.m_BclChatBubblesDemo)
 		return;
 
 	if(MsgType == NETMSGTYPE_SV_CHAT)
@@ -80,7 +80,7 @@ void CChatBubbles::UpdateBubbleOffsets(int ClientId, float InputBubbleHeight)
 	if(InputBubbleHeight > 0.0f)
 		Offset += InputBubbleHeight + BcChatBubbleMarginBetween;
 
-	const int FontSize = g_Config.m_BcChatBubbleSize;
+	const int FontSize = g_Config.m_BclChatBubbleSize;
 	for(CBcChatBubble &Bubble : m_aChatBubbles[ClientId])
 	{
 		SChatMediaLine *pMedia = GameClient()->m_ChatMedia.FindReadyMediaForMessage(*Chat(), ClientId, Bubble.m_aText);
@@ -141,10 +141,10 @@ void CChatBubbles::AddBubble(int ClientId, int Team, const char *pText)
 	}
 
 	const bool Highlighted = LineHighlighted(ClientId, pText);
-	if(g_Config.m_BcChatOnlyTagsAndWhispers && !Highlighted && Team < 2)
+	if(g_Config.m_BclChatOnlyTagsAndWhispers && !Highlighted && Team < 2)
 		return;
 
-	const int FontSize = g_Config.m_BcChatBubbleSize;
+	const int FontSize = g_Config.m_BclChatBubbleSize;
 	CTextCursor Cursor;
 
 	const CScreenRect ScreenRect = Graphics()->GetScreen();
@@ -175,7 +175,7 @@ void CChatBubbles::AddBubble(int ClientId, int Team, const char *pText)
 	else
 		Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageColor));
 
-	if(!g_Config.m_BcChatBubblesSelf && ClientId == GameClient()->m_Snap.m_LocalClientId)
+	if(!g_Config.m_BclChatBubblesSelf && ClientId == GameClient()->m_Snap.m_LocalClientId)
 	{
 		Graphics()->MapScreen(ScreenRect);
 		return;
@@ -201,13 +201,13 @@ void CChatBubbles::RenderCurInput(float Y)
 		return;
 	}
 
-	const int FontSize = g_Config.m_BcChatBubbleSize;
+	const int FontSize = g_Config.m_BclChatBubbleSize;
 	const int LocalId = GameClient()->m_Snap.m_LocalClientId;
 	if(LocalId < 0 || LocalId >= MAX_CLIENTS)
 		return;
 
 	vec2 Position = GameClient()->m_aClients[LocalId].m_RenderPos;
-	if(g_Config.m_BcFlyingNamePlates)
+	if(g_Config.m_BclFlyingNamePlates)
 		Position.x = GameClient()->m_FlyingNamePlates.GetRenderPos(LocalId, Position).x;
 	CTextCursor Cursor;
 	STextContainerIndex TextContainerIndex;
@@ -225,7 +225,7 @@ void CChatBubbles::RenderCurInput(float Y)
 	if(TextContainerIndex.Valid())
 	{
 		const STextBoundingBox BoundingBox = TextRender()->GetBoundingBoxTextContainer(TextContainerIndex);
-		Position.x -= BoundingBox.m_W / 2.0f + g_Config.m_BcChatBubbleSize / 15.0f;
+		Position.x -= BoundingBox.m_W / 2.0f + g_Config.m_BclChatBubbleSize / 15.0f;
 		const float InputBubbleHeight = BoundingBox.m_H + FontSize;
 		const float TargetY = Y - InputBubbleHeight;
 		const float Rounding = BubbleRounding();
@@ -233,11 +233,11 @@ void CChatBubbles::RenderCurInput(float Y)
 		ColorRGBA BgColor(0.0f, 0.0f, 0.0f, 0.15f);
 		ColorRGBA TextColor(1.0f, 1.0f, 1.0f, 0.75f);
 		ColorRGBA OutlineColor(0.0f, 0.0f, 0.0f, 0.25f);
-		if(g_Config.m_BcChatBubbleCustomColors)
+		if(g_Config.m_BclChatBubbleCustomColors)
 		{
-			BgColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcChatBubbleBgColor, true)).WithAlpha(0.15f);
-			TextColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcChatBubbleTextColor, true)).WithAlpha(0.75f);
-			OutlineColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcChatBubbleOutlineColor, true)).WithAlpha(0.25f);
+			BgColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleBgColor, true)).WithAlpha(0.15f);
+			TextColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleTextColor, true)).WithAlpha(0.75f);
+			OutlineColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleOutlineColor, true)).WithAlpha(0.25f);
 		}
 
 		Graphics()->DrawRect(Position.x - FontSize / 2.0f, TargetY - FontSize / 2.0f,
@@ -255,7 +255,7 @@ void CChatBubbles::RenderCurInput(float Y)
 
 void CChatBubbles::ExpireBubbles(int ClientId)
 {
-	const float ShowTime = g_Config.m_BcChatBubbleShowTime / 100.0f;
+	const float ShowTime = g_Config.m_BclChatBubbleShowTime / 100.0f;
 	bool RemovedAny = false;
 	for(auto It = m_aChatBubbles[ClientId].begin(); It != m_aChatBubbles[ClientId].end();)
 	{
@@ -279,19 +279,19 @@ void CChatBubbles::RenderChatBubbles(int ClientId)
 {
 	if(!GameClient()->m_Snap.m_aCharacters[ClientId].m_Active)
 		return;
-	if(!g_Config.m_BcChatBubblesSelf && ClientId == GameClient()->m_Snap.m_LocalClientId)
+	if(!g_Config.m_BclChatBubblesSelf && ClientId == GameClient()->m_Snap.m_LocalClientId)
 		return;
-	if(Client()->State() == IClient::STATE_DEMOPLAYBACK && !g_Config.m_BcChatBubblesDemo)
+	if(Client()->State() == IClient::STATE_DEMOPLAYBACK && !g_Config.m_BclChatBubblesDemo)
 		return;
 
-	const int FontSize = g_Config.m_BcChatBubbleSize;
+	const int FontSize = g_Config.m_BclChatBubbleSize;
 	const vec2 TeePos = GameClient()->m_aClients[ClientId].m_RenderPos;
 	if(!GameClient()->OptimizerAllowRenderPos(TeePos))
 		return;
 
 	vec2 Position = TeePos;
 	float BaseY;
-	if(g_Config.m_BcFlyingNamePlates)
+	if(g_Config.m_BclFlyingNamePlates)
 	{
 		const vec2 PlatePos = GameClient()->m_FlyingNamePlates.GetRenderPos(ClientId, TeePos);
 		Position.x = PlatePos.x;
@@ -315,7 +315,7 @@ void CChatBubbles::RenderChatBubbles(int ClientId)
 		if(Alpha <= 0.01f)
 			continue;
 
-		if(g_Config.m_BcChatBubbleAnimation)
+		if(g_Config.m_BclChatBubbleAnimation)
 		{
 			const float Factor = std::clamp(Client()->RenderFrameTime() * 10.0f, 0.0f, 1.0f);
 			Bubble.m_OffsetY += (Bubble.m_TargetOffsetY - Bubble.m_OffsetY) * Factor;
@@ -350,11 +350,11 @@ void CChatBubbles::RenderChatBubbles(int ClientId)
 		ColorRGBA BgColor(0.0f, 0.0f, 0.0f, 0.25f * Alpha);
 		ColorRGBA TextColor = Bubble.m_Color.WithAlpha(Alpha);
 		ColorRGBA OutlineColor(0.0f, 0.0f, 0.0f, 0.5f * Alpha);
-		if(g_Config.m_BcChatBubbleCustomColors)
+		if(g_Config.m_BclChatBubbleCustomColors)
 		{
-			BgColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcChatBubbleBgColor, true)).WithMultipliedAlpha(Alpha);
-			TextColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcChatBubbleTextColor, true)).WithMultipliedAlpha(Alpha);
-			OutlineColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcChatBubbleOutlineColor, true)).WithMultipliedAlpha(Alpha);
+			BgColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleBgColor, true)).WithMultipliedAlpha(Alpha);
+			TextColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleTextColor, true)).WithMultipliedAlpha(Alpha);
+			OutlineColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleOutlineColor, true)).WithMultipliedAlpha(Alpha);
 		}
 
 		IGraphics::CTextureHandle MediaTexture;
@@ -373,7 +373,7 @@ void CChatBubbles::RenderChatBubbles(int ClientId)
 			}
 			const float ContentW = std::max(TextW, MediaPreview);
 			const float ContentH = TextH + (HasMedia ? (TextH > 0.0f ? FontSize * 0.25f : 0.0f) + MediaPreview : 0.0f);
-			const float X = Position.x - (ContentW / 2.0f + g_Config.m_BcChatBubbleSize / 15.0f);
+			const float X = Position.x - (ContentW / 2.0f + g_Config.m_BclChatBubbleSize / 15.0f);
 			const float Y = BaseY - Bubble.m_OffsetY - ContentH - FontSize;
 
 			Graphics()->DrawRect(X - FontSize / 2.0f, Y - FontSize / 2.0f,
@@ -395,9 +395,9 @@ void CChatBubbles::RenderChatBubbles(int ClientId)
 
 float CChatBubbles::GetAlpha(int64_t Time) const
 {
-	const float FadeOutTime = g_Config.m_BcChatBubbleFadeOut / 100.0f;
-	const float FadeInTime = g_Config.m_BcChatBubbleFadeIn / 100.0f;
-	const float ShowTime = g_Config.m_BcChatBubbleShowTime / 100.0f;
+	const float FadeOutTime = g_Config.m_BclChatBubbleFadeOut / 100.0f;
+	const float FadeInTime = g_Config.m_BclChatBubbleFadeIn / 100.0f;
+	const float ShowTime = g_Config.m_BclChatBubbleShowTime / 100.0f;
 
 	const int64_t Now = time_get();
 	const float LineAge = (Now - Time) / (float)time_freq();
@@ -410,13 +410,13 @@ float CChatBubbles::GetAlpha(int64_t Time) const
 
 void CChatBubbles::OnRender()
 {
-	if(m_UseChatBubbles != g_Config.m_BcChatBubbles)
+	if(m_UseChatBubbles != g_Config.m_BclChatBubbles)
 	{
-		m_UseChatBubbles = g_Config.m_BcChatBubbles;
+		m_UseChatBubbles = g_Config.m_BclChatBubbles;
 		Reset();
 	}
 
-	if(!g_Config.m_BcChatBubbles)
+	if(!g_Config.m_BclChatBubbles)
 		return;
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;

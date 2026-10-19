@@ -214,7 +214,7 @@ bool CTwitchChat::ExtractTagValue(const char *pTags, const char *pKey, char *pOu
 void CTwitchChat::Start()
 {
 	char aChannel[MAX_CHANNEL_LENGTH];
-	if(!ParseChannel(g_Config.m_BcTwitchChatNick, aChannel, sizeof(aChannel)))
+	if(!ParseChannel(g_Config.m_BclTwitchChatNick, aChannel, sizeof(aChannel)))
 	{
 		SetState(EState::Error);
 		SetStatus("Invalid Twitch nick");

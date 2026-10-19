@@ -17,16 +17,16 @@
 
 bool CWeaponVfx::TriggerExplosion(vec2 Pos, float Alpha)
 {
-	const bool Glow = g_Config.m_BcRocketGlow && g_Config.m_BcRocketGlowPower > 0;
-	if(!Glow && !g_Config.m_BcMemeNukeExplosion)
+	const bool Glow = g_Config.m_BclRocketGlow && g_Config.m_BclRocketGlowPower > 0;
+	if(!Glow && !g_Config.m_BclMemeNukeExplosion)
 		return false;
 	if(Alpha <= 0.001f || GameClient()->OptimizerDisableParticles() || !GameClient()->OptimizerAllowRenderPos(Pos) ||
 		(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideEffects))
 		return true;
 	const ColorRGBA Color(1.0f, 0.65f, 0.20f, Alpha);
 	if(Glow)
-		RenderExplosion(Pos, Color, g_Config.m_BcRocketGlowMode, (float)g_Config.m_BcRocketGlowPower);
-	if(g_Config.m_BcMemeNukeExplosion)
+		RenderExplosion(Pos, Color, g_Config.m_BclRocketGlowMode, (float)g_Config.m_BclRocketGlowPower);
+	if(g_Config.m_BclMemeNukeExplosion)
 	{
 		const int64_t Now = 1 + (int64_t)(m_EffectTime * 1000.0);
 		int NearbyCount = 0;
@@ -38,7 +38,7 @@ bool CWeaponVfx::TriggerExplosion(vec2 Pos, float Alpha)
 		m_aRecentExplosions[m_RecentExplosionIndex] = {Pos, Now};
 		m_RecentExplosionIndex = (m_RecentExplosionIndex + 1) % MAX_RECENT_EXPLOSIONS;
 		m_NukeAlpha = Alpha;
-		TriggerNukeExplosion(Pos, Color, g_Config.m_BcMemeNukeScale / 100.0f, std::clamp(1 + NearbyCount, 1, 4));
+		TriggerNukeExplosion(Pos, Color, g_Config.m_BclMemeNukeScale / 100.0f, std::clamp(1 + NearbyCount, 1, 4));
 		m_NukeAlpha = 1.0f;
 	}
 	return true;
@@ -46,7 +46,7 @@ bool CWeaponVfx::TriggerExplosion(vec2 Pos, float Alpha)
 
 void CWeaponVfx::AddShake(float Intensity, float Duration, vec2 SourcePos)
 {
-	if(g_Config.m_BcMemeNukeShake <= 0 || !g_Config.m_BcMemeNukeExplosion)
+	if(g_Config.m_BclMemeNukeShake <= 0 || !g_Config.m_BclMemeNukeExplosion)
 		return;
 	const float Dist = distance(GameClient()->m_Camera.m_Center, SourcePos);
 	const float Shake = Intensity * m_NukeAlpha * std::clamp(1.0f - Dist / 3000.0f, 0.20f, 1.0f);
@@ -60,7 +60,7 @@ void CWeaponVfx::AddShake(float Intensity, float Duration, vec2 SourcePos)
 
 void CWeaponVfx::ApplyCameraShake(vec2 &Center)
 {
-	if(!g_Config.m_BcMemeNukeExplosion || g_Config.m_BcMemeNukeShake <= 0 || GameClient()->OptimizerDisableParticles() ||
+	if(!g_Config.m_BclMemeNukeExplosion || g_Config.m_BclMemeNukeShake <= 0 || GameClient()->OptimizerDisableParticles() ||
 		(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideEffects))
 	{
 		m_ShakeTimer = 0.0f;
@@ -71,7 +71,7 @@ void CWeaponVfx::ApplyCameraShake(vec2 &Center)
 	const float Dt = Client()->RenderFrameTime() * GameClient()->GetAnimationPlaybackSpeed();
 	m_ShakeTime += Dt;
 	const float Progress = m_ShakeTimer / std::max(0.001f, m_ShakeDuration);
-	const float Strength = m_ShakeIntensity * Progress * Progress * g_Config.m_BcMemeNukeShake / 100.0f;
+	const float Strength = m_ShakeIntensity * Progress * Progress * g_Config.m_BclMemeNukeShake / 100.0f;
 	const float t = m_ShakeTime * 85.0f;
 	Center += vec2(std::sin(t * 1.37f) * 0.75f + std::cos(t * 2.41f) * 0.45f,
 			  std::cos(t * 1.73f) * 0.75f + std::sin(t * 3.11f) * 0.45f) *
@@ -84,9 +84,9 @@ void CWeaponVfx::RenderExplosion(vec2 Pos, const ColorRGBA &Color, int Mode, flo
 	const float ScaledPower = std::clamp(Power / 50.0f, 0.4f, 2.0f);
 
 	ColorRGBA UserExplosionCol = Color;
-	if(g_Config.m_BcRocketGlowColor != 0)
+	if(g_Config.m_BclRocketGlowColor != 0)
 	{
-		ColorHSLA Hsl(g_Config.m_BcRocketGlowColor);
+		ColorHSLA Hsl(g_Config.m_BclRocketGlowColor);
 		if(Hsl.l < 0.08f)
 			Hsl.l = 0.55f;
 		if(Hsl.s < 0.08f)
@@ -628,7 +628,7 @@ void CWeaponVfx::TriggerNukeExplosion(vec2 Pos, const ColorRGBA &Color, float Ba
 
 void CWeaponVfx::CreateShockwave(vec2 Pos, float MaxRadius, float Duration, const ColorRGBA &Color)
 {
-	const int Mode = std::clamp(g_Config.m_BcRocketGlowMode, 0, 3);
+	const int Mode = std::clamp(g_Config.m_BclRocketGlowMode, 0, 3);
 
 	for(int i = 0; i < MAX_SHOCKWAVES; ++i)
 	{

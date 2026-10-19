@@ -10,12 +10,12 @@
 
 #include <generated/protocol.h>
 
-#include <game/client/components/bestclient/bestclient.h> // bestclient
-#include <game/client/components/hud_layout.h> // bestclient
+#include <game/client/components/bestclient-light/bestclient-light.h> // bestclient-light
+#include <game/client/components/hud_layout.h> // bestclient-light
 #include <game/client/components/scoreboard.h>
 #include <game/client/components/sounds.h>
 #include <game/client/gameclient.h>
-#include <game/client/ui.h> // bestclient
+#include <game/client/ui.h> // bestclient-light
 #include <game/localization.h>
 
 void CVoting::ConCallvote(IConsole::IResult *pResult, void *pUserData)
@@ -340,7 +340,7 @@ void CVoting::OnMessage(int MsgType, void *pRawMsg)
 
 void CVoting::Render(bool ForcePreview)
 {
-	// bestclient
+	// bestclient-light
 	if(!ForcePreview && !HudLayout::IsEnabled(HudLayout::MODULE_VOTES))
 		return;
 	if(!ForcePreview && ((!g_Config.m_ClShowVotesAfterVoting && !GameClient()->m_Scoreboard.IsActive() && TakenChoice()) || !IsVoting()))
@@ -418,10 +418,10 @@ void CVoting::Render(bool ForcePreview)
 	Ui()->DoLabel(&RightColumn, aBuf, 6.0f * Scale, TEXTALIGN_MR);
 
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
-	// bestclient
+	// bestclient-light
 }
 
-// bestclient
+// bestclient-light
 CUIRect CVoting::GetHudRect(float HudWidth, float HudHeight, bool ForcePreview) const
 {
 	if(!ForcePreview && !HudLayout::IsEnabled(HudLayout::MODULE_VOTES))
@@ -443,7 +443,7 @@ CUIRect CVoting::GetHudRect(float HudWidth, float HudHeight, bool ForcePreview) 
 	}
 	return Rect;
 }
-// bestclient
+// bestclient-light
 
 void CVoting::RenderBars(CUIRect Bars) const
 {
@@ -470,7 +470,7 @@ void CVoting::RenderBars(CUIRect Bars) const
 		}
 	}
 
-	// bestclient
-	BestClientRenderVotePercentages(Ui(), TextRender(), Bars, m_Yes, m_No, m_Total);
-	// bestclient
+	// bestclient-light
+	BestClientLightRenderVotePercentages(Ui(), TextRender(), Bars, m_Yes, m_No, m_Total);
+	// bestclient-light
 }

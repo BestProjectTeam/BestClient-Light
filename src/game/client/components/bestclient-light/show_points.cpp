@@ -79,7 +79,7 @@ namespace
 
 bool CShowPoints::Enabled() const
 {
-	return g_Config.m_BcShowPointsInTab != 0;
+	return g_Config.m_BclShowPointsInTab != 0;
 }
 
 int CShowPoints::ProviderIndex(EProvider Provider)

@@ -18,10 +18,10 @@ using FgfGlow::Whiten;
 static constexpr float FADE_TIME = 0.28f;
 static constexpr int COIL_POINTS = 26;
 
-static float TentacleWaves() { return g_Config.m_BcHookTentacleWaves / 100.0f; }
-static float TentacleSlime() { return g_Config.m_BcHookTentacleSlime / 100.0f; }
-static float TentacleThickness() { return g_Config.m_BcHookTentacleThickness / 100.0f; }
-static ColorRGBA TentacleColor() { return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookTentacleColor)); }
+static float TentacleWaves() { return g_Config.m_BclHookTentacleWaves / 100.0f; }
+static float TentacleSlime() { return g_Config.m_BclHookTentacleSlime / 100.0f; }
+static float TentacleThickness() { return g_Config.m_BclHookTentacleThickness / 100.0f; }
+static ColorRGBA TentacleColor() { return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookTentacleColor)); }
 
 float CHookTentacle::Wobble(float Along01, float Phase, float Amount)
 {
@@ -154,7 +154,7 @@ void CHookTentacle::Draw(float Scale, float Time)
 		Graphics()->QuadsEnd();
 	}
 
-	if(g_Config.m_BcHookTentacleSuckers)
+	if(g_Config.m_BclHookTentacleSuckers)
 	{
 		Graphics()->TextureSet(m_DiscTexture);
 		Graphics()->QuadsBegin();
@@ -226,7 +226,7 @@ void CHookTentacle::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(g_Config.m_BcHookStyle != FGF_HOOK_STYLE_TENTACLE || !g_Config.m_BcHookTip)
+	if(g_Config.m_BclHookStyle != FGF_HOOK_STYLE_TENTACLE || !g_Config.m_BclHookTip)
 	{
 		if(m_WasActive)
 			OnReset();
@@ -234,8 +234,8 @@ void CHookTentacle::OnRender()
 	}
 	m_WasActive = true;
 
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	m_Tracker.Update(GameClient(), Passed, g_Config.m_BcHookChargeTime / 1000.0f, FADE_TIME,
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	m_Tracker.Update(GameClient(), Passed, g_Config.m_BclHookChargeTime / 1000.0f, FADE_TIME,
 		[&](int ClientId, CHookGripTracker::EEvent Event, const CHookGripTracker::CGrip &Grip) {
 			switch(Event)
 			{

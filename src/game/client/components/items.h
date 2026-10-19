@@ -28,9 +28,9 @@ public:
 	void OnRender() override;
 	void OnInit() override;
 
-	// bestclient
+	// bestclient-light
 	void RenderLaserData(const CLaserData *pCurrent);
-	// bestclient
+	// bestclient-light
 	void ReconstructSmokeTrail(const CProjectileData *pCurrent, int DestroyTick);
 	void RenderLaser(vec2 From, vec2 Pos, ColorRGBA OuterColor, ColorRGBA InnerColor, float TicksBody, float TicksHead, int Type) const;
 

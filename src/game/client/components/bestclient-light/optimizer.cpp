@@ -20,9 +20,9 @@ void COptimizer::ComputeHalfExtents(float &HalfW, float &HalfH) const
 	if(!m_FpsFog)
 		return;
 
-	if(g_Config.m_BcOptimizerFpsFogMode == 0)
+	if(g_Config.m_BclOptimizerFpsFogMode == 0)
 	{
-		const float Radius = (float)g_Config.m_BcOptimizerFpsFogRadiusTiles * 32.0f;
+		const float Radius = (float)g_Config.m_BclOptimizerFpsFogRadiusTiles * 32.0f;
 		HalfW = Radius;
 		HalfH = Radius;
 		return;
@@ -31,14 +31,14 @@ void COptimizer::ComputeHalfExtents(float &HalfW, float &HalfH) const
 	float Width = 0.0f;
 	float Height = 0.0f;
 	Graphics()->CalcScreenParams(Graphics()->ScreenAspect(), GameClient()->m_Camera.m_Zoom, &Width, &Height);
-	const float Percent = std::clamp(g_Config.m_BcOptimizerFpsFogZoomPercent, 1, 120) / 100.0f;
+	const float Percent = std::clamp(g_Config.m_BclOptimizerFpsFogZoomPercent, 1, 120) / 100.0f;
 	HalfW = Width * Percent * 0.5f;
 	HalfH = Height * Percent * 0.5f;
 }
 
 void COptimizer::SyncHighDetailFromOptimizer()
 {
-	const bool WantDisableHighDetail = m_Enabled && g_Config.m_BcOptimizerDisableHighDetail != 0;
+	const bool WantDisableHighDetail = m_Enabled && g_Config.m_BclOptimizerDisableHighDetail != 0;
 	if(WantDisableHighDetail)
 	{
 		if(g_Config.m_GfxHighDetail)
@@ -56,7 +56,7 @@ void COptimizer::SyncHighDetailFromOptimizer()
 
 void COptimizer::OnOptimizerDisableHighDetailToggled()
 {
-	if(g_Config.m_BcOptimizerDisableHighDetail)
+	if(g_Config.m_BclOptimizerDisableHighDetail)
 	{
 		if(g_Config.m_GfxHighDetail)
 			m_RestoreHighDetailOnRelease = true;
@@ -73,22 +73,22 @@ void COptimizer::OnGfxHighDetailToggled()
 {
 	if(g_Config.m_GfxHighDetail)
 	{
-		g_Config.m_BcOptimizerDisableHighDetail = 0;
+		g_Config.m_BclOptimizerDisableHighDetail = 0;
 		m_RestoreHighDetailOnRelease = false;
 	}
 	else
 	{
-		g_Config.m_BcOptimizerDisableHighDetail = 1;
+		g_Config.m_BclOptimizerDisableHighDetail = 1;
 	}
 }
 
 void COptimizer::RefreshFrame()
 {
-	m_Enabled = g_Config.m_BcOptimizer != 0;
-	m_DisableParticles = m_Enabled && g_Config.m_BcOptimizerDisableParticles != 0;
-	m_DisableQuads = m_Enabled && g_Config.m_BcOptimizerDisableQuads != 0;
-	m_FpsFog = m_Enabled && g_Config.m_BcOptimizerFpsFog != 0;
-	m_CullMapTiles = m_FpsFog && g_Config.m_BcOptimizerFpsFogCullMapTiles != 0;
+	m_Enabled = g_Config.m_BclOptimizer != 0;
+	m_DisableParticles = m_Enabled && g_Config.m_BclOptimizerDisableParticles != 0;
+	m_DisableQuads = m_Enabled && g_Config.m_BclOptimizerDisableQuads != 0;
+	m_FpsFog = m_Enabled && g_Config.m_BclOptimizerFpsFog != 0;
+	m_CullMapTiles = m_FpsFog && g_Config.m_BclOptimizerFpsFogCullMapTiles != 0;
 	m_Center = GameClient()->m_Camera.m_Center;
 
 	SyncHighDetailFromOptimizer();
@@ -111,8 +111,8 @@ void COptimizer::RefreshFrame()
 
 void COptimizer::OnConsoleInit()
 {
-	Console()->Chain("bc_optimizer", ConchainOptimizer, this);
-	Console()->Chain("bc_optimizer_disable_high_detail", ConchainDisableHighDetail, this);
+	Console()->Chain("bcl_optimizer", ConchainOptimizer, this);
+	Console()->Chain("bcl_optimizer_disable_high_detail", ConchainDisableHighDetail, this);
 	Console()->Chain("gfx_high_detail", ConchainGfxHighDetail, this);
 }
 
@@ -120,7 +120,7 @@ void COptimizer::ConchainOptimizer(IConsole::IResult *pResult, void *pUserData, 
 {
 	pfnCallback(pResult, pCallbackUserData);
 	COptimizer *pSelf = (COptimizer *)pUserData;
-	pSelf->m_Enabled = g_Config.m_BcOptimizer != 0;
+	pSelf->m_Enabled = g_Config.m_BclOptimizer != 0;
 	pSelf->SyncHighDetailFromOptimizer();
 }
 
@@ -145,7 +145,7 @@ void COptimizer::RenderFpsFogRect()
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;
 
-	if(!m_FpsFog || g_Config.m_BcOptimizerFpsFogRenderRect == 0)
+	if(!m_FpsFog || g_Config.m_BclOptimizerFpsFogRenderRect == 0)
 		return;
 
 	if(m_HalfW <= 0.0f || m_HalfH <= 0.0f)

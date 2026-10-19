@@ -58,32 +58,32 @@ void CMenus::RenderLanguageSettings(CUIRect MainView)
 bool CMenus::RenderLanguageSelection(CUIRect MainView)
 {
 	static CListBox s_ListBox;
-	static int s_PreviousSelectedLanguage = -2; // bestclient
-	const auto &vLanguages = g_Localization.Languages(); // bestclient
+	static int s_PreviousSelectedLanguage = -2; // bestclient-light
+	const auto &vLanguages = g_Localization.Languages(); // bestclient-light
 
-	int SelectedLanguage = -1; // bestclient
+	int SelectedLanguage = -1; // bestclient-light
 	for(size_t i = 0; i < vLanguages.size(); i++)
 	{
 		if(str_comp(vLanguages[i].m_Filename.c_str(), g_Config.m_ClLanguagefile) == 0)
 		{
 			SelectedLanguage = (int)i;
-			break; // bestclient
+			break; // bestclient-light
 		}
 	}
 
-	if(s_PreviousSelectedLanguage != SelectedLanguage) // bestclient
+	if(s_PreviousSelectedLanguage != SelectedLanguage) // bestclient-light
 	{
 		s_ListBox.ScrollToSelected();
 		s_PreviousSelectedLanguage = SelectedLanguage;
 	}
 
-	const int OldSelected = SelectedLanguage; // bestclient
-	s_ListBox.DoStart(24.0f, vLanguages.size(), 1, 3, SelectedLanguage, &MainView); // bestclient
+	const int OldSelected = SelectedLanguage; // bestclient-light
+	s_ListBox.DoStart(24.0f, vLanguages.size(), 1, 3, SelectedLanguage, &MainView); // bestclient-light
 
-	for(size_t i = 0; i < vLanguages.size(); i++) // bestclient
+	for(size_t i = 0; i < vLanguages.size(); i++) // bestclient-light
 	{
 		const auto &Language = vLanguages[i];
-		const bool IsSelected = SelectedLanguage == (int)i; // bestclient
+		const bool IsSelected = SelectedLanguage == (int)i; // bestclient-light
 		const CListboxItem Item = s_ListBox.DoNextItem(&Language.m_Name, IsSelected);
 		if(!Item.m_Visible)
 			continue;
@@ -97,13 +97,13 @@ bool CMenus::RenderLanguageSelection(CUIRect MainView)
 		Ui()->DoLabel(&Label, Language.m_Name.c_str(), 16.0f, TEXTALIGN_ML);
 	}
 
-	const int NewSelectedLanguage = s_ListBox.DoEnd(); // bestclient
+	const int NewSelectedLanguage = s_ListBox.DoEnd(); // bestclient-light
 
 	if(NewSelectedLanguage >= 0 && NewSelectedLanguage < (int)vLanguages.size() && OldSelected != NewSelectedLanguage)
 	{
 		str_copy(g_Config.m_ClLanguagefile, vLanguages[NewSelectedLanguage].m_Filename.c_str());
 		GameClient()->OnLanguageChange();
-	} // bestclient
+	} // bestclient-light
 
 	return s_ListBox.WasItemActivated();
 }

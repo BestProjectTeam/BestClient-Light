@@ -60,7 +60,7 @@ public:
 
 extern CConfig g_Config;
 
-// bestclient
+// bestclient-light
 enum
 {
 	BC_INPUTS_OFF = 0,
@@ -71,7 +71,7 @@ enum
 	BC_INPUTS_F,
 	BC_INPUTS_CLOUD,
 };
-// bestclient
+// bestclient-light
 
 /**
  * The default values of all config variables in @link CConfig @endlink.
@@ -307,9 +307,9 @@ public:
 
 	void PossibleConfigVariables(const char *pStr, int FlagMask, POSSIBLECFGFUNC pfnCallback, void *pUserData) override;
 
-	// bestclient
+	// bestclient-light
 	void VisitVariables(void (*pfnCallback)(SConfigVariable *pVariable, void *pUserData), void *pUserData) override;
-	// bestclient
+	// bestclient-light
 };
 
 #endif

@@ -34,7 +34,7 @@ namespace
 
 	float DurationScale()
 	{
-		const float Duration = g_Config.m_BcJellyTeeDuration / 100.0f;
+		const float Duration = g_Config.m_BclJellyTeeDuration / 100.0f;
 		return std::pow(std::clamp(Duration, 0.2f, 5.0f), 1.65f);
 	}
 
@@ -68,7 +68,7 @@ void CJellyTee::OnRender()
 
 bool CJellyTee::IsEnabledFor(int ClientId) const
 {
-	if(!g_Config.m_BcJellyTee || ClientId < 0 || ClientId >= MAX_JELLY_CLIENTS)
+	if(!g_Config.m_BclJellyTee || ClientId < 0 || ClientId >= MAX_JELLY_CLIENTS)
 		return false;
 
 	for(const int LocalId : GameClient()->m_aLocalIds)
@@ -84,7 +84,7 @@ bool CJellyTee::IsEnabledFor(int ClientId) const
 			return true;
 	}
 
-	return g_Config.m_BcJellyTeeOthers != 0;
+	return g_Config.m_BclJellyTeeOthers != 0;
 }
 
 CJellyTee::CState *CJellyTee::StateFor(int ClientId)
@@ -211,7 +211,7 @@ SJellyTeeDeform CJellyTee::GetDeform(int ClientId, vec2 PrevVel, vec2 Vel, vec2 
 	if(pState == nullptr)
 		return Deform;
 
-	const bool Disabled = !g_Config.m_BcJellyTee || g_Config.m_BcJellyTeeStrength <= 0;
+	const bool Disabled = !g_Config.m_BclJellyTee || g_Config.m_BclJellyTeeStrength <= 0;
 	if(Disabled || !IsEnabledFor(ClientId))
 	{
 		if(pState->m_Initialized)
@@ -249,7 +249,7 @@ SJellyTeeDeform CJellyTee::GetDeform(int ClientId, vec2 PrevVel, vec2 Vel, vec2 
 		pState->m_Initialized = true;
 	}
 
-	const float Strength = g_Config.m_BcJellyTeeStrength / 100.0f;
+	const float Strength = g_Config.m_BclJellyTeeStrength / 100.0f;
 	const float Duration = DurationScale();
 
 	vec2 ExtraDeformImpulse = vec2(0.0f, 0.0f);

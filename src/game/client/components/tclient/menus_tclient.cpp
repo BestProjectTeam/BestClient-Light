@@ -13,12 +13,12 @@
 #include <engine/updater.h>
 
 #include <game/client/animstate.h>
-// bestclient
-#include <game/client/components/bestclient/bestclient.h>
-// bestclient
-#include <game/client/components/bestclient/profile_assets.h>
-#include <game/client/components/bestclient/ui_animations.h>
-#include <game/client/components/bestclient/ui_theme/style.h>
+// bestclient-light
+#include <game/client/components/bestclient-light/bestclient-light.h>
+// bestclient-light
+#include <game/client/components/bestclient-light/profile_assets.h>
+#include <game/client/components/bestclient-light/ui_animations.h>
+#include <game/client/components/bestclient-light/ui_theme/style.h>
 #include <game/client/components/binds.h>
 #include <game/client/components/chat.h>
 #include <game/client/components/countryflags.h>
@@ -53,7 +53,7 @@ enum
 	NUMBER_OF_TCLIENT_TABS
 };
 
-// bestclient
+// bestclient-light
 static int s_CurTClientSettingsTab = TCLIENT_TAB_SETTINGS;
 
 void CMenus::SetTClientSettingsTab(int Tab)
@@ -67,7 +67,7 @@ int CMenus::GetTClientSettingsTab() const
 {
 	return s_CurTClientSettingsTab;
 }
-// bestclient
+// bestclient-light
 
 typedef struct
 {
@@ -174,15 +174,15 @@ bool CMenus::DoSliderWithScaledValue(const void *pId, int *pOption, const CUIRec
 
 	char aBuf[256];
 	char aValueBuf[64];
-	// bestclient
-	if(BestClientUiTheme::IsNewScrollbar())
+	// bestclient-light
+	if(BestClientLightUiTheme::IsNewScrollbar())
 	{
 		str_format(aValueBuf, sizeof(aValueBuf), "%i%s", Value * Scale, pSuffix);
 		str_copy(aBuf, pStr);
 	}
 	else
 		str_format(aBuf, sizeof(aBuf), "%s: %i%s", pStr, Value * Scale, pSuffix);
-	// bestclient
+	// bestclient-light
 
 	if(NoClampValue)
 	{
@@ -196,9 +196,9 @@ bool CMenus::DoSliderWithScaledValue(const void *pId, int *pOption, const CUIRec
 	const float LabelFontSize = Label.h * CUi::ms_FontmodHeight * 0.8f;
 	Ui()->DoLabel(&Label, aBuf, LabelFontSize, TEXTALIGN_ML);
 
-	// bestclient
-	Value = pScale->ToAbsolute(Ui()->DoScrollbarH(pId, &ScrollBar, pScale->ToRelative(Value, Min, Max), nullptr, BestClientUiTheme::IsNewScrollbar() ? aValueBuf : nullptr), Min, Max);
-	// bestclient
+	// bestclient-light
+	Value = pScale->ToAbsolute(Ui()->DoScrollbarH(pId, &ScrollBar, pScale->ToRelative(Value, Min, Max), nullptr, BestClientLightUiTheme::IsNewScrollbar() ? aValueBuf : nullptr), Min, Max);
+	// bestclient-light
 	if(NoClampValue && ((Value == Min && *pOption < Min) || (Value == Max && *pOption > Max)))
 	{
 		Value = *pOption;
@@ -351,7 +351,7 @@ void CMenus::RenderSettingsTClient(CUIRect MainView)
 		s_Time = (float)rand() / (float)RAND_MAX;
 	}
 
-	// bestclient
+	// bestclient-light
 	static CButtonContainer s_aPageTabs[NUMBER_OF_TCLIENT_TABS] = {};
 	const char *apTabNames[NUMBER_OF_TCLIENT_TABS] = {
 		TCLocalize("Settings"),
@@ -387,7 +387,7 @@ void CMenus::RenderSettingsTClient(CUIRect MainView)
 	}
 
 	int SelectedVisibleIndex = 0;
-	if(!BestClientUiTheme::IsNewTabOption())
+	if(!BestClientLightUiTheme::IsNewTabOption())
 	{
 		CUIRect TabBar, Button;
 		MainView.HSplitTop(LineSize, &TabBar, &MainView);
@@ -428,7 +428,7 @@ void CMenus::RenderSettingsTClient(CUIRect MainView)
 			RenderSettingsTClientInfo(Content);
 	};
 
-	if(BestClientUiTheme::IsNewTabOption())
+	if(BestClientLightUiTheme::IsNewTabOption())
 	{
 		RenderTabContent(s_CurTClientSettingsTab, MainView);
 		return;
@@ -456,7 +456,7 @@ void CMenus::RenderSettingsTClient(CUIRect MainView)
 	RenderTabContent(FromTab, FromView);
 	RenderTabContent(ToTab, ToView);
 	Ui()->ClipDisable();
-	// bestclient
+	// bestclient-light
 }
 
 void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
@@ -489,9 +489,9 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 		Section.x -= Padding * 0.5f;
 		Section.y -= Padding * 0.5f;
 		Section.y -= s_PrevScrollOffset - ScrollOffset;
-		// bestclient
-		BestClientUiTheme::DrawUiBlock(&Section, IGraphics::CORNER_ALL, 10.0f);
-		// bestclient
+		// bestclient-light
+		BestClientLightUiTheme::DrawUiBlock(&Section, IGraphics::CORNER_ALL, 10.0f);
+		// bestclient-light
 	}
 	s_PrevScrollOffset = ScrollOffset;
 	s_SectionBoxes.clear();
@@ -531,9 +531,9 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 	if(FontSelectedOld != FontSelectedNew)
 	{
 		str_copy(g_Config.m_TcCustomFont, s_FontDropDownNames[FontSelectedNew]);
-		// bestclient
-		BestClientApplyMenuFont(TextRender());
-		// bestclient
+		// bestclient-light
+		BestClientLightApplyMenuFont(TextRender());
+		// bestclient-light
 
 		// Attempt to reset all the containers
 		TextRender()->OnPreWindowResize();
@@ -575,10 +575,10 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 	Column.HSplitTop(LineSize, &Button, &Column);
 	Ui()->DoScrollbarOption(&g_Config.m_TcCursorScale, &g_Config.m_TcCursorScale, &Button, TCLocalize("Ingame cursor scale"), 0, 500, &CUi::ms_LinearScrollbarScale, 0, "%");
 
-	// bestclient
+	// bestclient-light
 	Column.HSplitTop(LineSize, &Button, &Column);
 	Ui()->DoScrollbarOption(&g_Config.m_TcTeeScale, &g_Config.m_TcTeeScale, &Button, TCLocalize("Ingame tee scale"), 0, 500, &CUi::ms_LinearScrollbarScale, 0, "%");
-	// bestclient
+	// bestclient-light
 
 	Column.HSplitTop(LineSize, &Button, &Column);
 	if(g_Config.m_TcAnimateWheelTime > 0)
@@ -641,8 +641,8 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 	Column.HSplitTop(MarginExtraSmall, nullptr, &Column);
 	s_SectionBoxes.back().h = Column.y - s_SectionBoxes.back().y;
 
-	// bestclient
-	// bestclient
+	// bestclient-light
+	// bestclient-light
 
 	// ***** Anti Latency Tools ***** //
 	Column.HSplitTop(MarginBetweenSections, nullptr, &Column);
@@ -920,7 +920,7 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 		DoLine_ColorPicker(&s_ClientNotifyWhenLastColor, ColorPickerLineSize, ColorPickerLabelSize, ColorPickerLineSpacing, &NotificationConfig, "", &g_Config.m_TcNotifyWhenLastColor, ColorRGBA(1.0f, 1.0f, 1.0f), false);
 		Column.HSplitTop(LineSize, &Button, &Column);
 		Ui()->DoScrollbarOption(&g_Config.m_TcNotifyWhenLastSize, &g_Config.m_TcNotifyWhenLastSize, &Button, TCLocalize("Font Size"), 1, 50);
-		// bestclient
+		// bestclient-light
 		Column.HSplitTop(LineSize, &Button, &Column);
 		static CButtonContainer s_NotifyLastHudEditorButton;
 		const bool NotifyCanOpenHudEditor = Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK;
@@ -929,11 +929,11 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 			SetActive(false);
 			GameClient()->m_HudEditor.Activate();
 		}
-		// bestclient
+		// bestclient-light
 	}
 	else
 	{
-		Column.HSplitTop(LineSize * 2.0f, nullptr, &Column); // bestclient
+		Column.HSplitTop(LineSize * 2.0f, nullptr, &Column); // bestclient-light
 	}
 
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcShowCenter, TCLocalize("Show screen center lines"), &g_Config.m_TcShowCenter, &Column, LineSize);
@@ -963,7 +963,7 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcShowFrozenHud, TCLocalize("Show frozen tee display"), &g_Config.m_TcShowFrozenHud, &Column, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcShowFrozenHudSkins, TCLocalize("Use skins instead of ninja tees"), &g_Config.m_TcShowFrozenHudSkins, &Column, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcFrozenHudTeamOnly, TCLocalize("Only show after joining a team"), &g_Config.m_TcFrozenHudTeamOnly, &Column, LineSize);
-	// bestclient
+	// bestclient-light
 	{
 		static std::vector<CButtonContainer> s_vButtonContainers = {{}, {}, {}};
 		int Value = g_Config.m_TcFrozenHudExpandDir;
@@ -976,7 +976,7 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 			g_Config.m_TcFrozenHudExpandDir = Value;
 		}
 	}
-	// bestclient
+	// bestclient-light
 
 	Column.HSplitTop(LineSize, &Button, &Column);
 	Ui()->DoScrollbarOption(&g_Config.m_TcFrozenMaxRows, &g_Config.m_TcFrozenMaxRows, &Button, TCLocalize("Max Rows"), 1, 6);
@@ -997,7 +997,7 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 				g_Config.m_TcShowFrozenText = g_Config.m_TcShowFrozenText != 2 ? 2 : 1;
 		}
 	}
-	// bestclient
+	// bestclient-light
 	Column.HSplitTop(LineSize, &Button, &Column);
 	static CButtonContainer s_FrozenHudEditorButton;
 	const bool FrozenCanOpenHudEditor = Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK;
@@ -1006,7 +1006,7 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 		SetActive(false);
 		GameClient()->m_HudEditor.Activate();
 	}
-	// bestclient
+	// bestclient-light
 	s_SectionBoxes.back().h = Column.y - s_SectionBoxes.back().y;
 
 	// ***** Tile Outlines ***** //
@@ -1173,18 +1173,18 @@ void CMenus::RenderSettingsTClientSettings(CUIRect MainView)
 	Column.HSplitTop(LineSize * 2.0f, &Button, &Column);
 	Ui()->DoScrollbarOption(&g_Config.m_TcBgDrawWidth, &g_Config.m_TcBgDrawWidth, &Button, TCLocalize("Width"), 1, 50, &CUi::ms_LinearScrollbarScale, CUi::SCROLLBAR_OPTION_MULTILINE);
 
-	// bestclient
+	// bestclient-light
 	Column.HSplitTop(LineSize * 2.0f, &Button, &Column);
 	Ui()->DoScrollbarOption(&g_Config.m_TcBgDrawEraserSize, &g_Config.m_TcBgDrawEraserSize, &Button, TCLocalize("Eraser size"), 1, 100, &CUi::ms_LinearScrollbarScale, CUi::SCROLLBAR_OPTION_MULTILINE);
-	// bestclient
+	// bestclient-light
 
 	static CButtonContainer s_ReaderButtonDraw, s_ClearButtonDraw;
 	DoLine_KeyReader(Column, s_ReaderButtonDraw, s_ClearButtonDraw, TCLocalize("Draw where mouse is"), "+bg_draw");
 
-	// bestclient
+	// bestclient-light
 	static CButtonContainer s_ReaderButtonErase, s_ClearButtonErase;
 	DoLine_KeyReader(Column, s_ReaderButtonErase, s_ClearButtonErase, TCLocalize("Erase where mouse is"), "+bg_draw_erase");
-	// bestclient
+	// bestclient-light
 
 	s_SectionBoxes.back().h = Column.y - s_SectionBoxes.back().y;
 	Column.HSplitTop(MarginSmall, nullptr, &Column);
@@ -1406,9 +1406,9 @@ void CMenus::RenderSettingsTClientChatBinds(CUIRect MainView)
 		Section.x -= Padding * 0.5f;
 		Section.y -= Padding * 0.5f;
 		Section.y -= s_PrevScrollOffset - ScrollOffset;
-		// bestclient
-		BestClientUiTheme::DrawUiBlock(&Section, IGraphics::CORNER_ALL, 10.0f);
-		// bestclient
+		// bestclient-light
+		BestClientLightUiTheme::DrawUiBlock(&Section, IGraphics::CORNER_ALL, 10.0f);
+		// bestclient-light
 	}
 	s_PrevScrollOffset = ScrollOffset;
 	s_SectionBoxes.clear();
@@ -2480,13 +2480,13 @@ void CMenus::RenderSettingsTClientProfiles(CUIRect MainView)
 			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcProfileName, TCLocalize("Save/Load Name"), &g_Config.m_TcProfileName, &Settings, LineSize);
 			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcProfileClan, TCLocalize("Save/Load Clan"), &g_Config.m_TcProfileClan, &Settings, LineSize);
 			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcProfileFlag, TCLocalize("Save/Load Flag"), &g_Config.m_TcProfileFlag, &Settings, LineSize);
-			// bestclient
+			// bestclient-light
 			{
 				CUIRect AssetsDropDown;
 				Settings.HSplitTop(LineSize, &AssetsDropDown, &Settings);
-				BestClientDoProfileAssetsDropDown(Ui(), this, &AssetsDropDown);
+				BestClientLightDoProfileAssetsDropDown(Ui(), this, &AssetsDropDown);
 			}
-			// bestclient
+			// bestclient-light
 		}
 		{
 			Actions.HSplitTop(30.0f, &Button, &Actions);
@@ -2505,7 +2505,7 @@ void CMenus::RenderSettingsTClientProfiles(CUIRect MainView)
 			static CButtonContainer s_SaveButton;
 			if(DoButton_Menu(&s_SaveButton, TCLocalize("Save"), 0, &Button))
 			{
-				// bestclient
+				// bestclient-light
 				CProfile NewProfile(
 					g_Config.m_TcProfileColors ? CurrentColorBody : -1,
 					g_Config.m_TcProfileColors ? CurrentColorFeet : -1,
@@ -2514,9 +2514,9 @@ void CMenus::RenderSettingsTClientProfiles(CUIRect MainView)
 					g_Config.m_TcProfileSkin ? pCurrentSkinName : "",
 					g_Config.m_TcProfileName ? pCurrentName : "",
 					g_Config.m_TcProfileClan ? pCurrentClan : "");
-				BestClientFillProfileAssets(NewProfile);
+				BestClientLightFillProfileAssets(NewProfile);
 				GameClient()->m_SkinProfiles.m_Profiles.push_back(NewProfile);
-				// bestclient
+				// bestclient-light
 			}
 			Actions.HSplitTop(5.0f, nullptr, &Actions);
 
@@ -2539,7 +2539,7 @@ void CMenus::RenderSettingsTClientProfiles(CUIRect MainView)
 				{
 					if(s_SelectedProfile != -1 && s_SelectedProfile < (int)GameClient()->m_SkinProfiles.m_Profiles.size())
 					{
-						// bestclient
+						// bestclient-light
 						CProfile NewProfile(
 							g_Config.m_TcProfileColors ? CurrentColorBody : -1,
 							g_Config.m_TcProfileColors ? CurrentColorFeet : -1,
@@ -2548,9 +2548,9 @@ void CMenus::RenderSettingsTClientProfiles(CUIRect MainView)
 							g_Config.m_TcProfileSkin ? pCurrentSkinName : "",
 							g_Config.m_TcProfileName ? pCurrentName : "",
 							g_Config.m_TcProfileClan ? pCurrentClan : "");
-						BestClientFillProfileAssets(NewProfile);
+						BestClientLightFillProfileAssets(NewProfile);
 						GameClient()->m_SkinProfiles.m_Profiles[s_SelectedProfile] = NewProfile;
-						// bestclient
+						// bestclient-light
 					}
 				}
 			}
@@ -2737,15 +2737,15 @@ void CMenus::RenderSettingsTClientConfigs(CUIRect MainView)
 		RightRow.y = ApplyBar.y + (ApplyBar.h - LineSize) / 2.0f;
 		const float RightInset = 24.0f;
 		RightRow.VSplitLeft(RightInset, nullptr, &RightRow);
-		CUIRect TopCol1, TopCol23, TopCol2, TopCol3; // bestclient
+		CUIRect TopCol1, TopCol23, TopCol2, TopCol3; // bestclient-light
 		RightRow.VSplitLeft(RightRow.w / 3.0f, &TopCol1, &TopCol23);
 		TopCol23.VSplitMid(&TopCol2, &TopCol3, 0.0f);
 		if(DoButton_CheckBox(&g_Config.m_TcUiShowTClient, Localize("TClient"), g_Config.m_TcUiShowTClient, &TopCol1))
 			g_Config.m_TcUiShowTClient ^= 1;
 		if(DoButton_CheckBox(&g_Config.m_TcUiShowDDNet, Localize("DDNet"), g_Config.m_TcUiShowDDNet, &TopCol2))
 			g_Config.m_TcUiShowDDNet ^= 1;
-		if(DoButton_CheckBox(&g_Config.m_TcUiShowBestClient, Localize("BestClient"), g_Config.m_TcUiShowBestClient, &TopCol3))
-			g_Config.m_TcUiShowBestClient ^= 1; // bestclient
+		if(DoButton_CheckBox(&g_Config.m_TcUiShowBestClientLight, Localize("BestClient Light"), g_Config.m_TcUiShowBestClientLight, &TopCol3))
+			g_Config.m_TcUiShowBestClientLight ^= 1; // bestclient-light
 	}
 
 	const float SearchLabelW = 60.0f;
@@ -2792,9 +2792,9 @@ void CMenus::RenderSettingsTClientConfigs(CUIRect MainView)
 			return g_Config.m_TcUiShowDDNet != 0;
 		if(Domain == ConfigDomain::TCLIENT)
 			return g_Config.m_TcUiShowTClient != 0;
-		if(Domain == ConfigDomain::BESTCLIENT) // bestclient
-			return g_Config.m_TcUiShowBestClient != 0; // bestclient
-		// only show DDNet, TClient and BestClient domains
+		if(Domain == ConfigDomain::BESTCLIENT_LIGHT) // bestclient-light
+			return g_Config.m_TcUiShowBestClientLight != 0; // bestclient-light
+		// only show DDNet, TClient and BestClient Light domains
 		return false;
 	};
 
@@ -2864,7 +2864,7 @@ void CMenus::RenderSettingsTClientConfigs(CUIRect MainView)
 		{
 		case ConfigDomain::DDNET: return "DDNet";
 		case ConfigDomain::TCLIENT: return "TClient";
-		case ConfigDomain::BESTCLIENT: return "BestClient"; // bestclient
+		case ConfigDomain::BESTCLIENT_LIGHT: return "BestClient Light"; // bestclient-light
 		default: return "Other";
 		}
 	};

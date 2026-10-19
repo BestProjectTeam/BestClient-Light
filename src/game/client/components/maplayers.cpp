@@ -63,13 +63,13 @@ void CMapLayers::OnRender()
 	m_Params.m_DebugRenderClusterClips = g_Config.m_DbgRenderClusterClips;
 	m_Params.m_DebugRenderTileClips = g_Config.m_DbgRenderTileClips;
 
-	// bestclient
+	// bestclient-light
 	m_Params.m_FpsFogEnabled = GameClient()->OptimizerFpsFogEnabled();
 	m_Params.m_FpsFogCullMapTiles = GameClient()->m_Optimizer.CullMapTiles();
 	m_Params.m_FpsFogHalfW = GameClient()->m_Optimizer.FogHalfW();
 	m_Params.m_FpsFogHalfH = GameClient()->m_Optimizer.FogHalfH();
 	m_Params.m_DisableMapQuads = GameClient()->m_Optimizer.DisableQuads();
-	// bestclient
+	// bestclient-light
 
 	m_MapRenderer.Render(m_Params);
 }

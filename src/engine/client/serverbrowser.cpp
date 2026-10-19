@@ -413,18 +413,18 @@ bool CServerBrowser::SortCompareNumFriends(int Index1, int Index2) const
 		return pIndex1->m_Info.m_FriendNum > pIndex2->m_Info.m_FriendNum;
 }
 
-// bestclient
-bool CServerBrowser::SortCompareNumBestClientPlayers(int Index1, int Index2) const
+// bestclient-light
+bool CServerBrowser::SortCompareNumBestClientLightPlayers(int Index1, int Index2) const
 {
 	CServerEntry *pIndex1 = m_vpServerlist[Index1];
 	CServerEntry *pIndex2 = m_vpServerlist[Index2];
 
-	if(pIndex1->m_Info.m_NumBestClientPlayers == pIndex2->m_Info.m_NumBestClientPlayers)
+	if(pIndex1->m_Info.m_NumBestClientLightPlayers == pIndex2->m_Info.m_NumBestClientLightPlayers)
 		return pIndex1->m_Info.m_NumFilteredPlayers > pIndex2->m_Info.m_NumFilteredPlayers;
 	else
-		return pIndex1->m_Info.m_NumBestClientPlayers > pIndex2->m_Info.m_NumBestClientPlayers;
+		return pIndex1->m_Info.m_NumBestClientLightPlayers > pIndex2->m_Info.m_NumBestClientLightPlayers;
 }
-// bestclient
+// bestclient-light
 
 bool CServerBrowser::SortCompareNumPlayersAndPing(int Index1, int Index2) const
 {
@@ -619,16 +619,16 @@ void CServerBrowser::Filter()
 		}
 
 		UpdateServerFriends(&Info);
-		// bestclient
-		UpdateServerBestClients(&Info);
-		// bestclient
+		// bestclient-light
+		UpdateServerBestClientLights(&Info);
+		// bestclient-light
 
 		if(!Filtered)
 		{
-			// bestclient
+			// bestclient-light
 			if((!g_Config.m_BrFilterFriends || Info.m_FriendState != IFriends::FRIEND_NO) &&
-				(!g_Config.m_BrFilterBestclient || Info.m_HasBestClientPlayers))
-			// bestclient
+				(!g_Config.m_BrFilterBestclientLight || Info.m_HasBestClientLightPlayers))
+			// bestclient-light
 			{
 				m_NumSortedPlayers += Info.m_NumFilteredPlayers;
 				m_vSortedServerlist.push_back(ServerIndex);
@@ -666,9 +666,9 @@ int CServerBrowser::SortHash() const
 	i |= g_Config.m_BrFilterCountry << 14;
 	i |= g_Config.m_BrFilterConnectingPlayers << 15;
 	i |= g_Config.m_BrFilterLogin << 16;
-	// bestclient
-	i |= g_Config.m_BrFilterBestclient << 17;
-	// bestclient
+	// bestclient-light
+	i |= g_Config.m_BrFilterBestclientLight << 17;
+	// bestclient-light
 	return i;
 }
 
@@ -694,10 +694,10 @@ void CServerBrowser::Sort()
 		std::stable_sort(m_vSortedServerlist.begin(), m_vSortedServerlist.end(), CSortWrap(this, &CServerBrowser::SortCompareMap));
 	else if(g_Config.m_BrSort == IServerBrowser::SORT_NUMFRIENDS)
 		std::stable_sort(m_vSortedServerlist.begin(), m_vSortedServerlist.end(), CSortWrap(this, &CServerBrowser::SortCompareNumFriends));
-	// bestclient
-	else if(g_Config.m_BrSort == IServerBrowser::SORT_NUMBESTCLIENT)
-		std::stable_sort(m_vSortedServerlist.begin(), m_vSortedServerlist.end(), CSortWrap(this, &CServerBrowser::SortCompareNumBestClientPlayers));
-	// bestclient
+	// bestclient-light
+	else if(g_Config.m_BrSort == IServerBrowser::SORT_NUMBESTCLIENT_LIGHT)
+		std::stable_sort(m_vSortedServerlist.begin(), m_vSortedServerlist.end(), CSortWrap(this, &CServerBrowser::SortCompareNumBestClientLightPlayers));
+	// bestclient-light
 	else if(g_Config.m_BrSort == IServerBrowser::SORT_NUMPLAYERS)
 		std::stable_sort(m_vSortedServerlist.begin(), m_vSortedServerlist.end(), CSortWrap(this, &CServerBrowser::SortCompareNumPlayers));
 	else if(g_Config.m_BrSort == IServerBrowser::SORT_GAMETYPE)
@@ -784,9 +784,9 @@ void CServerBrowser::SetInfo(CServerEntry *pEntry, const CServerInfo &Info) cons
 	str_copy(pEntry->m_Info.m_aCommunityCountry, TmpInfo.m_aCommunityCountry);
 	str_copy(pEntry->m_Info.m_aCommunityType, TmpInfo.m_aCommunityType);
 	UpdateServerRank(&pEntry->m_Info);
-	// bestclient
-	UpdateServerBestClients(&pEntry->m_Info);
-	// bestclient
+	// bestclient-light
+	UpdateServerBestClientLights(&pEntry->m_Info);
+	// bestclient-light
 	pEntry->m_Info.m_GametypeColor = CServerInfo::GametypeColor(pEntry->m_Info.m_aGameType);
 
 	if(pEntry->m_Info.m_ClientScoreKind == CServerInfo::CLIENT_SCORE_KIND_UNSPECIFIED)
@@ -898,9 +898,9 @@ CServerBrowser::CServerEntry *CServerBrowser::Add(const NETADDR *pAddrs, int Num
 	pEntry->m_Info.m_HasRank = CServerInfo::RANK_UNAVAILABLE;
 	ServerBrowserFormatAddresses(pEntry->m_Info.m_aAddress, sizeof(pEntry->m_Info.m_aAddress), pEntry->m_Info.m_aAddresses, pEntry->m_Info.m_NumAddresses);
 	UpdateServerCommunity(&pEntry->m_Info);
-	// bestclient
-	UpdateServerBestClients(&pEntry->m_Info);
-	// bestclient
+	// bestclient-light
+	UpdateServerBestClientLights(&pEntry->m_Info);
+	// bestclient-light
 	str_copy(pEntry->m_Info.m_aName, pEntry->m_Info.m_aAddress);
 
 	// check if it's a favorite
@@ -939,9 +939,9 @@ CServerBrowser::CServerEntry *CServerBrowser::ReplaceEntry(CServerEntry *pEntry,
 	pEntry->m_Info.m_HasRank = CServerInfo::RANK_UNAVAILABLE;
 	ServerBrowserFormatAddresses(pEntry->m_Info.m_aAddress, sizeof(pEntry->m_Info.m_aAddress), pEntry->m_Info.m_aAddresses, pEntry->m_Info.m_NumAddresses);
 	UpdateServerCommunity(&pEntry->m_Info);
-	// bestclient
-	UpdateServerBestClients(&pEntry->m_Info);
-	// bestclient
+	// bestclient-light
+	UpdateServerBestClientLights(&pEntry->m_Info);
+	// bestclient-light
 	str_copy(pEntry->m_Info.m_aName, pEntry->m_Info.m_aAddress);
 
 	pEntry->m_Info.m_Favorite = m_pFavorites->IsFavorite(pEntry->m_Info.m_aAddresses, pEntry->m_Info.m_NumAddresses);
@@ -1713,38 +1713,38 @@ void CServerBrowser::UpdateServerFriends(CServerInfo *pInfo) const
 	}
 }
 
-// bestclient
-void CServerBrowser::SetBestClientPlayers(const std::vector<CBestClientPlayerEntry> &vPlayers)
+// bestclient-light
+void CServerBrowser::SetBestClientLightPlayers(const std::vector<CBestClientLightPlayerEntry> &vPlayers)
 {
-	m_BestClientPlayersByServer.clear();
+	m_BestClientLightPlayersByServer.clear();
 	for(const auto &Entry : vPlayers)
 	{
 		if(Entry.m_aServerAddress[0] == '\0' || Entry.m_aName[0] == '\0')
 			continue;
-		auto &Flags = m_BestClientPlayersByServer[Entry.m_aServerAddress][Entry.m_aName];
+		auto &Flags = m_BestClientLightPlayersByServer[Entry.m_aServerAddress][Entry.m_aName];
 		Flags.first = Flags.first || Entry.m_Developer;
 		Flags.second = Flags.second || Entry.m_Fake;
 	}
 
 	for(CServerEntry *pEntry : m_vpServerlist)
 	{
-		UpdateServerBestClients(&pEntry->m_Info);
+		UpdateServerBestClientLights(&pEntry->m_Info);
 	}
 
 	RequestResort();
 }
 
-void CServerBrowser::UpdateServerBestClients(CServerInfo *pInfo) const
+void CServerBrowser::UpdateServerBestClientLights(CServerInfo *pInfo) const
 {
-	pInfo->m_NumBestClientPlayers = 0;
-	pInfo->m_HasBestClientPlayers = false;
-	pInfo->m_NumBestClientDeveloperPlayers = 0;
-	pInfo->m_HasBestClientDeveloperPlayers = false;
+	pInfo->m_NumBestClientLightPlayers = 0;
+	pInfo->m_HasBestClientLightPlayers = false;
+	pInfo->m_NumBestClientLightDeveloperPlayers = 0;
+	pInfo->m_HasBestClientLightDeveloperPlayers = false;
 	for(auto &Client : pInfo->m_vClients)
 	{
-		Client.m_BestClient = false;
-		Client.m_BestClientDeveloper = false;
-		Client.m_BestClientFake = false;
+		Client.m_BestClientLight = false;
+		Client.m_BestClientLightDeveloper = false;
+		Client.m_BestClientLightFake = false;
 	}
 
 	std::vector<const std::unordered_map<std::string, std::pair<bool, bool>> *> vpAddressMatches;
@@ -1753,8 +1753,8 @@ void CServerBrowser::UpdateServerBestClients(CServerInfo *pInfo) const
 	{
 		char aAddress[NETADDR_MAXSTRSIZE];
 		net_addr_str(&pInfo->m_aAddresses[AddressIndex], aAddress, sizeof(aAddress), true);
-		const auto It = m_BestClientPlayersByServer.find(aAddress);
-		if(It != m_BestClientPlayersByServer.end())
+		const auto It = m_BestClientLightPlayersByServer.find(aAddress);
+		if(It != m_BestClientLightPlayersByServer.end())
 			vpAddressMatches.push_back(&It->second);
 	}
 
@@ -1768,22 +1768,22 @@ void CServerBrowser::UpdateServerBestClients(CServerInfo *pInfo) const
 			const auto PlayerIt = pPlayers->find(Client.m_aName);
 			if(PlayerIt == pPlayers->end())
 				continue;
-			Client.m_BestClient = true;
-			Client.m_BestClientDeveloper = Client.m_BestClientDeveloper || PlayerIt->second.first;
-			Client.m_BestClientFake = Client.m_BestClientFake || PlayerIt->second.second;
+			Client.m_BestClientLight = true;
+			Client.m_BestClientLightDeveloper = Client.m_BestClientLightDeveloper || PlayerIt->second.first;
+			Client.m_BestClientLightFake = Client.m_BestClientLightFake || PlayerIt->second.second;
 		}
-		if(Client.m_BestClient)
+		if(Client.m_BestClientLight)
 		{
-			pInfo->m_NumBestClientPlayers++;
-			if(Client.m_BestClientDeveloper)
-				pInfo->m_NumBestClientDeveloperPlayers++;
+			pInfo->m_NumBestClientLightPlayers++;
+			if(Client.m_BestClientLightDeveloper)
+				pInfo->m_NumBestClientLightDeveloperPlayers++;
 		}
 	}
 
-	pInfo->m_HasBestClientPlayers = pInfo->m_NumBestClientPlayers > 0;
-	pInfo->m_HasBestClientDeveloperPlayers = pInfo->m_NumBestClientDeveloperPlayers > 0;
+	pInfo->m_HasBestClientLightPlayers = pInfo->m_NumBestClientLightPlayers > 0;
+	pInfo->m_HasBestClientLightDeveloperPlayers = pInfo->m_NumBestClientLightDeveloperPlayers > 0;
 }
-// bestclient
+// bestclient-light
 
 void CServerBrowser::UpdateServerCommunity(CServerInfo *pInfo) const
 {

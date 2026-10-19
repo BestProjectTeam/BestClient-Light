@@ -876,14 +876,14 @@ bool CVideo::AddStream(COutputStream *pStream, AVFormatContext *pFormatContext, 
 {
 	/* find the encoder */
 	*ppCodec = avcodec_find_encoder(CodecId);
-	// bestclient
+	// bestclient-light
 	if(!*ppCodec && CodecId == AV_CODEC_ID_H264)
 	{
 		*ppCodec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
 		if(*ppCodec)
 			CodecId = AV_CODEC_ID_MPEG4;
 	}
-	// bestclient
+	// bestclient-light
 	if(!(*ppCodec))
 	{
 		log_error("videorecorder", "Could not find encoder for codec '%s'", avcodec_get_name(CodecId));
@@ -983,7 +983,7 @@ bool CVideo::AddStream(COutputStream *pStream, AVFormatContext *pFormatContext, 
 			 * the motion of the chroma plane does not match the luma plane. */
 			pContext->mb_decision = 2;
 		}
-		// bestclient
+		// bestclient-light
 		if(CodecId == AV_CODEC_ID_H264 && pContext->priv_data && av_opt_find(pContext->priv_data, "crf", nullptr, 0, 0))
 		{
 			static const char *s_apPresets[10] = {"ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo"};
@@ -1001,7 +1001,7 @@ bool CVideo::AddStream(COutputStream *pStream, AVFormatContext *pFormatContext, 
 			pContext->bit_rate = BitRate;
 			log_info("videorecorder", "Encoding with %s at %d kbps", (*ppCodec)->name, (int)(BitRate / 1000));
 		}
-		// bestclient
+		// bestclient-light
 		break;
 
 	default:

@@ -14,8 +14,8 @@
 
 static constexpr float FADE_TIME = 0.45f;
 
-static float RainbowSpeed() { return g_Config.m_BcHookRainbowSpeed / 100.0f; }
-static float RainbowGlitter() { return g_Config.m_BcHookRainbowGlitter / 100.0f; }
+static float RainbowSpeed() { return g_Config.m_BclHookRainbowSpeed / 100.0f; }
+static float RainbowGlitter() { return g_Config.m_BclHookRainbowGlitter / 100.0f; }
 
 void CHookRainbow::OnInit()
 {
@@ -202,7 +202,7 @@ void CHookRainbow::Draw(float Scale, float Time)
 		const float Alpha = Grip.m_Fade * Grip.m_Alpha;
 		const float Open = std::min(1.0f, Grip.m_HoldTime / 0.18f);
 
-		if(g_Config.m_BcHookRainbowRays)
+		if(g_Config.m_BclHookRainbowRays)
 		{
 			for(int Ray = 0; Ray < NUM_RAYS; Ray++)
 			{
@@ -252,7 +252,7 @@ void CHookRainbow::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(g_Config.m_BcHookStyle != FGF_HOOK_STYLE_RAINBOW || !g_Config.m_BcHookTip)
+	if(g_Config.m_BclHookStyle != FGF_HOOK_STYLE_RAINBOW || !g_Config.m_BclHookTip)
 	{
 		if(m_WasActive)
 			OnReset();
@@ -260,8 +260,8 @@ void CHookRainbow::OnRender()
 	}
 	m_WasActive = true;
 
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	m_Tracker.Update(GameClient(), Passed, g_Config.m_BcHookChargeTime / 1000.0f, FADE_TIME,
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	m_Tracker.Update(GameClient(), Passed, g_Config.m_BclHookChargeTime / 1000.0f, FADE_TIME,
 		[&](int ClientId, CHookGripTracker::EEvent Event, const CHookGripTracker::CGrip &Grip) {
 			switch(Event)
 			{

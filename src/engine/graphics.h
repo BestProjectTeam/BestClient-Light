@@ -248,10 +248,10 @@ protected:
 	int m_ScreenRefreshRate;
 	float m_ScreenHiDPIScale;
 	ivec2 m_DesktopSize;
-	// bestclient
+	// bestclient-light
 	float m_ScreenAspectOverride = 0.0f;
 	bool m_ScreenAspectOverrideEnabled = true;
-	// bestclient
+	// bestclient-light
 
 public:
 	enum
@@ -281,9 +281,9 @@ public:
 	int ScreenWidth() const { return m_ScreenWidth; }
 	int ScreenHeight() const { return m_ScreenHeight; }
 	vec2 ScreenSize() const { return vec2(m_ScreenWidth, m_ScreenHeight); }
-	// bestclient
+	// bestclient-light
 	float ScreenAspect() const { return m_ScreenAspectOverrideEnabled && m_ScreenAspectOverride > 0.0f ? m_ScreenAspectOverride : (float)ScreenWidth() / (float)ScreenHeight(); }
-	// bestclient
+	// bestclient-light
 	float ScreenHiDPIScale() const { return m_ScreenHiDPIScale; }
 	int WindowWidth() const { return m_ScreenWidth / m_ScreenHiDPIScale; }
 	int WindowHeight() const { return m_ScreenHeight / m_ScreenHiDPIScale; }
@@ -683,11 +683,11 @@ protected:
 public:
 	// TClient
 	virtual void SetForcedAspect(bool Force, bool ApplyCustomAspect = true) = 0;
-	// bestclient
+	// bestclient-light
 	virtual void SetScreenAspectOverrideEnabled(bool Enabled) = 0;
 	virtual void PushPreviewViewport(int X, int Y, int W, int H) = 0;
 	virtual void PopPreviewViewport() = 0;
-	// bestclient
+	// bestclient-light
 };
 
 class IEngineGraphics : public IGraphics

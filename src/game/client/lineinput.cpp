@@ -43,9 +43,9 @@ void CLineInput::SetBuffer(char *pStr, size_t MaxSize, size_t MaxChars)
 		m_CaretPosition = vec2(0.0f, 0.0f);
 		m_MouseSelection.m_Selecting = false;
 		m_Hidden = false;
-		// bestclient
+		// bestclient-light
 		m_HideCursor = false;
-		// bestclient
+		// bestclient-light
 		m_pEmptyText = nullptr;
 		m_WasRendered = false;
 	}
@@ -459,9 +459,9 @@ STextBoundingBox CLineInput::Render(const CUIRect *pRect, float FontSize, int Al
 		Cursor.m_FontSize = FontSize;
 		Cursor.m_LineWidth = LineWidth;
 		Cursor.m_ForceCursorRendering = Changed;
-		// bestclient
+		// bestclient-light
 		Cursor.m_HideCursorQuad = m_HideCursor;
-		// bestclient
+		// bestclient-light
 		Cursor.m_LineSpacing = LineSpacing;
 		Cursor.m_PressMouse.x = m_MouseSelection.m_PressMouse.x;
 		Cursor.m_ReleaseMouse.x = m_MouseSelection.m_ReleaseMouse.x;

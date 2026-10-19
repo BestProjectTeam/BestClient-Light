@@ -1,7 +1,7 @@
 /* Copyright © 2026 BestProject Team */
 #include "hud_layout.h"
 
-#include <game/client/components/bestclient/music_player.h>
+#include <game/client/components/bestclient-light/music_player.h>
 
 #include <base/math.h>
 #include <base/str.h>
@@ -10,9 +10,9 @@
 #include <engine/console.h>
 #include <engine/shared/config.h>
 
-// bestclient
+// bestclient-light
 float GetKeystrokesKeyboardPresetWidthHudPx(int Preset);
-// bestclient
+// bestclient-light
 
 #include <algorithm>
 #include <cstdlib>
@@ -201,10 +201,10 @@ SModuleLayout DynamicDefaultLayout(EModule Module, float HudWidth, float HudHeig
 		Layout.m_Y = 0.0f;
 		break;
 	case MODULE_KEYSTROKES_MOUSE:
-		// bestclient
+		// bestclient-light
 		if(!HasRuntimeOverrideInternal(MODULE_KEYSTROKES_KEYBOARD))
-			Layout.m_X = GetKeystrokesKeyboardPresetWidthHudPx(g_Config.m_BcKeystrokesKeyboardPreset) + 5.0f;
-		// bestclient
+			Layout.m_X = GetKeystrokesKeyboardPresetWidthHudPx(g_Config.m_BclKeystrokesKeyboardPreset) + 5.0f;
+		// bestclient-light
 		Layout.m_Y = 152.0f;
 		break;
 	case MODULE_DUMMY_ACTIONS:
@@ -269,7 +269,7 @@ void ApplyLayout(EModule Module, const SModuleLayout &Layout)
 	gs_aRuntimeModuleLayouts[Module].m_Scale = std::clamp(Layout.m_Scale, 25, 300);
 	gs_aRuntimeModuleLayouts[Module].m_Alpha = std::clamp(Layout.m_Alpha, 0, 100);
 	if(Module == MODULE_CHAT)
-		g_Config.m_BcHudChatScale = gs_aRuntimeModuleLayouts[Module].m_Scale;
+		g_Config.m_BclHudChatScale = gs_aRuntimeModuleLayouts[Module].m_Scale;
 }
 
 void ConHudLayoutSet(IConsole::IResult *pResult, void *pUserData)
@@ -307,9 +307,9 @@ void ConHudLayoutSet(IConsole::IResult *pResult, void *pUserData)
 	Layout.m_Scale = std::clamp(pResult->GetInteger(3), 25, 300);
 	Layout.m_Mode = pResult->GetInteger(4);
 	Layout.m_BackgroundEnabled = pResult->GetInteger(5) != 0;
-	// bestclient
+	// bestclient-light
 	Layout.m_BackgroundColor = (unsigned)str_toulong_base(pResult->GetString(6), 10);
-	// bestclient
+	// bestclient-light
 	if(pResult->NumArguments() > 7)
 		Layout.m_Enabled = pResult->GetInteger(7) != 0;
 	if(pResult->NumArguments() > 8)
@@ -360,15 +360,15 @@ void MigrateFromLegacyConfigs()
 	EnsureRuntimeLayouts();
 
 	const bool MusicPlayerLegacyBcOverride =
-		g_Config.m_BcHudMusicPlayerX != (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_X ||
-		g_Config.m_BcHudMusicPlayerY != (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Y ||
-		g_Config.m_BcHudMusicPlayerScale != gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Scale;
+		g_Config.m_BclHudMusicPlayerX != (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_X ||
+		g_Config.m_BclHudMusicPlayerY != (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Y ||
+		g_Config.m_BclHudMusicPlayerScale != gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Scale;
 	if(MusicPlayerLegacyBcOverride)
 	{
 		gs_MusicPlayerHasLegacySource = true;
-		gs_MusicPlayerLegacyCanvasX = (float)g_Config.m_BcHudMusicPlayerX;
-		gs_MusicPlayerLegacyCanvasY = (float)g_Config.m_BcHudMusicPlayerY;
-		gs_MusicPlayerLegacyScale = g_Config.m_BcHudMusicPlayerScale;
+		gs_MusicPlayerLegacyCanvasX = (float)g_Config.m_BclHudMusicPlayerX;
+		gs_MusicPlayerLegacyCanvasY = (float)g_Config.m_BclHudMusicPlayerY;
+		gs_MusicPlayerLegacyScale = g_Config.m_BclHudMusicPlayerScale;
 	}
 
 	auto MigrateIfDefault = [](EModule Module, float X, float Y, int Scale) {
@@ -381,11 +381,11 @@ void MigrateFromLegacyConfigs()
 		ApplyLayout(Module, Layout);
 	};
 
-	MigrateIfDefault(MODULE_MUSIC_PLAYER, (float)g_Config.m_BcHudMusicPlayerX, (float)g_Config.m_BcHudMusicPlayerY, g_Config.m_BcHudMusicPlayerScale);
-	MigrateIfDefault(MODULE_VOICE_TALKERS, (float)g_Config.m_BcHudVoiceHudX, (float)g_Config.m_BcHudVoiceHudY, g_Config.m_BcHudVoiceHudScale);
-	MigrateIfDefault(MODULE_VOICE_STATUS, (float)g_Config.m_BcHudVoiceMuteIconsX, (float)g_Config.m_BcHudVoiceMuteIconsY, g_Config.m_BcHudVoiceMuteIconsScale);
-	MigrateIfDefault(MODULE_CHAT, (float)g_Config.m_BcHudChatX, (float)g_Config.m_BcHudChatY, g_Config.m_BcHudChatScale);
-	MigrateIfDefault(MODULE_VOTES, (float)g_Config.m_BcHudVotesX, (float)g_Config.m_BcHudVotesY, g_Config.m_BcHudVotesScale);
+	MigrateIfDefault(MODULE_MUSIC_PLAYER, (float)g_Config.m_BclHudMusicPlayerX, (float)g_Config.m_BclHudMusicPlayerY, g_Config.m_BclHudMusicPlayerScale);
+	MigrateIfDefault(MODULE_VOICE_TALKERS, (float)g_Config.m_BclHudVoiceHudX, (float)g_Config.m_BclHudVoiceHudY, g_Config.m_BclHudVoiceHudScale);
+	MigrateIfDefault(MODULE_VOICE_STATUS, (float)g_Config.m_BclHudVoiceMuteIconsX, (float)g_Config.m_BclHudVoiceMuteIconsY, g_Config.m_BclHudVoiceMuteIconsScale);
+	MigrateIfDefault(MODULE_CHAT, (float)g_Config.m_BclHudChatX, (float)g_Config.m_BclHudChatY, g_Config.m_BclHudChatScale);
+	MigrateIfDefault(MODULE_VOTES, (float)g_Config.m_BclHudVotesX, (float)g_Config.m_BclHudVotesY, g_Config.m_BclHudVotesScale);
 
 	if(!HasRuntimeOverrideInternal(MODULE_EDGE_INFO))
 	{
@@ -403,21 +403,21 @@ void MigrateFromLegacyConfigs()
 		ApplyLayout(MODULE_NOTIFY_LAST, Layout);
 	}
 
-	g_Config.m_BcHudMusicPlayerX = (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_X;
-	g_Config.m_BcHudMusicPlayerY = (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Y;
-	g_Config.m_BcHudMusicPlayerScale = gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Scale;
-	g_Config.m_BcHudVoiceHudX = (int)gs_aModuleLayouts[MODULE_VOICE_TALKERS].m_X;
-	g_Config.m_BcHudVoiceHudY = (int)gs_aModuleLayouts[MODULE_VOICE_TALKERS].m_Y;
-	g_Config.m_BcHudVoiceHudScale = gs_aModuleLayouts[MODULE_VOICE_TALKERS].m_Scale;
-	g_Config.m_BcHudVoiceMuteIconsX = (int)gs_aModuleLayouts[MODULE_VOICE_STATUS].m_X;
-	g_Config.m_BcHudVoiceMuteIconsY = (int)gs_aModuleLayouts[MODULE_VOICE_STATUS].m_Y;
-	g_Config.m_BcHudVoiceMuteIconsScale = gs_aModuleLayouts[MODULE_VOICE_STATUS].m_Scale;
-	g_Config.m_BcHudChatX = (int)gs_aModuleLayouts[MODULE_CHAT].m_X;
-	g_Config.m_BcHudChatY = (int)gs_aModuleLayouts[MODULE_CHAT].m_Y;
-	g_Config.m_BcHudChatScale = gs_aModuleLayouts[MODULE_CHAT].m_Scale;
-	g_Config.m_BcHudVotesX = (int)gs_aModuleLayouts[MODULE_VOTES].m_X;
-	g_Config.m_BcHudVotesY = (int)gs_aModuleLayouts[MODULE_VOTES].m_Y;
-	g_Config.m_BcHudVotesScale = gs_aModuleLayouts[MODULE_VOTES].m_Scale;
+	g_Config.m_BclHudMusicPlayerX = (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_X;
+	g_Config.m_BclHudMusicPlayerY = (int)gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Y;
+	g_Config.m_BclHudMusicPlayerScale = gs_aModuleLayouts[MODULE_MUSIC_PLAYER].m_Scale;
+	g_Config.m_BclHudVoiceHudX = (int)gs_aModuleLayouts[MODULE_VOICE_TALKERS].m_X;
+	g_Config.m_BclHudVoiceHudY = (int)gs_aModuleLayouts[MODULE_VOICE_TALKERS].m_Y;
+	g_Config.m_BclHudVoiceHudScale = gs_aModuleLayouts[MODULE_VOICE_TALKERS].m_Scale;
+	g_Config.m_BclHudVoiceMuteIconsX = (int)gs_aModuleLayouts[MODULE_VOICE_STATUS].m_X;
+	g_Config.m_BclHudVoiceMuteIconsY = (int)gs_aModuleLayouts[MODULE_VOICE_STATUS].m_Y;
+	g_Config.m_BclHudVoiceMuteIconsScale = gs_aModuleLayouts[MODULE_VOICE_STATUS].m_Scale;
+	g_Config.m_BclHudChatX = (int)gs_aModuleLayouts[MODULE_CHAT].m_X;
+	g_Config.m_BclHudChatY = (int)gs_aModuleLayouts[MODULE_CHAT].m_Y;
+	g_Config.m_BclHudChatScale = gs_aModuleLayouts[MODULE_CHAT].m_Scale;
+	g_Config.m_BclHudVotesX = (int)gs_aModuleLayouts[MODULE_VOTES].m_X;
+	g_Config.m_BclHudVotesY = (int)gs_aModuleLayouts[MODULE_VOTES].m_Y;
+	g_Config.m_BclHudVotesScale = gs_aModuleLayouts[MODULE_VOTES].m_Scale;
 	g_Config.m_RiEdgeInfoPosX = 50;
 	g_Config.m_RiEdgeInfoPosY = 56;
 	g_Config.m_TcNotifyWhenLastX = 20;
@@ -439,8 +439,8 @@ void TryApplyMusicPlayerLegacyPositionFix(float HudWidth, float HudHeight, IText
 	EnsureLegacyMigrated();
 	if(!gs_MusicPlayerHasLegacySource)
 	{
-		if(g_Config.m_BcHudMusicPlayerLayoutMigrated < 5)
-			g_Config.m_BcHudMusicPlayerLayoutMigrated = 5;
+		if(g_Config.m_BclHudMusicPlayerLayoutMigrated < 5)
+			g_Config.m_BclHudMusicPlayerLayoutMigrated = 5;
 		return;
 	}
 	if(!pTextRender)
@@ -448,7 +448,7 @@ void TryApplyMusicPlayerLegacyPositionFix(float HudWidth, float HudHeight, IText
 
 	EnsureRuntimeLayouts();
 	SModuleLayout Layout = gs_aRuntimeModuleLayouts[MODULE_MUSIC_PLAYER];
-	if(g_Config.m_BcHudMusicPlayerLayoutMigrated >= 5 && absolute(Layout.m_X - gs_MusicPlayerLegacyCanvasX) >= 0.51f)
+	if(g_Config.m_BclHudMusicPlayerLayoutMigrated >= 5 && absolute(Layout.m_X - gs_MusicPlayerLegacyCanvasX) >= 0.51f)
 		return;
 
 	const float Aspect = HudWidth / std::max(HudHeight, 0.001f);
@@ -456,7 +456,7 @@ void TryApplyMusicPlayerLegacyPositionFix(float HudWidth, float HudHeight, IText
 		return;
 
 	bool OffsetReady = false;
-	const float TextScale = std::clamp(g_Config.m_BcMusicPlayerTextScale / 100.0f, 0.7f, 1.5f);
+	const float TextScale = std::clamp(g_Config.m_BclMusicPlayerTextScale / 100.0f, 0.7f, 1.5f);
 	Layout.m_Scale = std::clamp(gs_MusicPlayerLegacyScale, 25, 300);
 	const float Offset = MusicPlayerLegacyHudAnchorOffsetCanvasX(pTextRender, Layout.m_Scale, HudWidth, TextScale, &OffsetReady);
 	if(!OffsetReady)
@@ -465,7 +465,7 @@ void TryApplyMusicPlayerLegacyPositionFix(float HudWidth, float HudHeight, IText
 	Layout.m_X = gs_MusicPlayerLegacyCanvasX + Offset;
 	Layout.m_Y = gs_MusicPlayerLegacyCanvasY;
 	ApplyLayout(MODULE_MUSIC_PLAYER, Layout);
-	g_Config.m_BcHudMusicPlayerLayoutMigrated = 5;
+	g_Config.m_BclHudMusicPlayerLayoutMigrated = 5;
 }
 
 bool IsEditorModule(EModule Module)
@@ -482,16 +482,16 @@ bool IsEditorModule(EModule Module)
 	case MODULE_FROZEN_HUD:
 	case MODULE_NOTIFY_LAST:
 	case MODULE_MUSIC_PLAYER:
-	// bestclient
+	// bestclient-light
 	case MODULE_VOICE_TALKERS:
 	case MODULE_VOICE_STATUS:
-	// bestclient
+	// bestclient-light
 	case MODULE_EDGE_INFO:
-	// bestclient
+	// bestclient-light
 	case MODULE_FINISH_PREDICTION:
 	case MODULE_KEYSTROKES_KEYBOARD:
 	case MODULE_KEYSTROKES_MOUSE:
-	// bestclient
+	// bestclient-light
 		return true;
 	default:
 		return false;
@@ -574,7 +574,7 @@ void SetScale(EModule Module, int Scale)
 	EnsureRuntimeLayouts();
 	gs_aRuntimeModuleLayouts[Module].m_Scale = std::clamp(Scale, 25, 300);
 	if(Module == MODULE_CHAT)
-		g_Config.m_BcHudChatScale = gs_aRuntimeModuleLayouts[Module].m_Scale;
+		g_Config.m_BclHudChatScale = gs_aRuntimeModuleLayouts[Module].m_Scale;
 }
 
 void SetEnabled(EModule Module, bool Enabled)
@@ -619,7 +619,7 @@ void ResetScale(EModule Module)
 	EnsureRuntimeLayouts();
 	gs_aRuntimeModuleLayouts[Module].m_Scale = gs_aModuleLayouts[Module].m_Scale;
 	if(Module == MODULE_CHAT)
-		g_Config.m_BcHudChatScale = gs_aRuntimeModuleLayouts[Module].m_Scale;
+		g_Config.m_BclHudChatScale = gs_aRuntimeModuleLayouts[Module].m_Scale;
 }
 
 void ResetSettings(EModule Module)
@@ -627,7 +627,7 @@ void ResetSettings(EModule Module)
 	EnsureRuntimeLayouts();
 	gs_aRuntimeModuleLayouts[Module] = gs_aModuleLayouts[Module];
 	if(Module == MODULE_CHAT)
-		g_Config.m_BcHudChatScale = gs_aRuntimeModuleLayouts[Module].m_Scale;
+		g_Config.m_BclHudChatScale = gs_aRuntimeModuleLayouts[Module].m_Scale;
 }
 
 void ResetEditableModules()
@@ -675,9 +675,9 @@ void OnConsoleInit(IConsole *pConsole, IConfigManager *pConfigManager)
 	{
 		pConsole->Register(
 			"hud_layout_set",
-			// bestclient
+			// bestclient-light
 			"s[module] f[x] f[y] i[scale] i[mode] i[background_enabled] s[background_color] ?i[enabled] ?i[alpha]",
-			// bestclient
+			// bestclient-light
 			CFGFLAG_CLIENT,
 			ConHudLayoutSet,
 			nullptr,

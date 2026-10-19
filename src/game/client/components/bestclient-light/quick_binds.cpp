@@ -40,8 +40,8 @@ void CQuickBinds::ConToggle45Degrees(IConsole::IResult *pResult, void *pUserData
 			return;
 		pSelf->m_45DegreesEnabled = true;
 		pSelf->GameClient()->Echo(Localize("45° on"));
-		g_Config.m_BcPrevInpMousesens45Degrees = pSelf->m_SmallSensEnabled ? g_Config.m_BcPrevInpMousesensSmallSens : g_Config.m_InpMousesens;
-		g_Config.m_BcPrevMouseMaxDistance45Degrees = g_Config.m_ClMouseMaxDistance;
+		g_Config.m_BclPrevInpMousesens45Degrees = pSelf->m_SmallSensEnabled ? g_Config.m_BclPrevInpMousesensSmallSens : g_Config.m_InpMousesens;
+		g_Config.m_BclPrevMouseMaxDistance45Degrees = g_Config.m_ClMouseMaxDistance;
 		g_Config.m_ClMouseMaxDistance = 2;
 		g_Config.m_InpMousesens = 4;
 	};
@@ -51,11 +51,11 @@ void CQuickBinds::ConToggle45Degrees(IConsole::IResult *pResult, void *pUserData
 			return;
 		pSelf->m_45DegreesEnabled = false;
 		pSelf->GameClient()->Echo(Localize("45° off"));
-		g_Config.m_ClMouseMaxDistance = g_Config.m_BcPrevMouseMaxDistance45Degrees;
-		g_Config.m_InpMousesens = g_Config.m_BcPrevInpMousesens45Degrees;
+		g_Config.m_ClMouseMaxDistance = g_Config.m_BclPrevMouseMaxDistance45Degrees;
+		g_Config.m_InpMousesens = g_Config.m_BclPrevInpMousesens45Degrees;
 	};
 
-	if(!g_Config.m_BcToggle45Degrees && HasStrokeArgument)
+	if(!g_Config.m_BclToggle45Degrees && HasStrokeArgument)
 	{
 		if(pSelf->m_45DegreesStroke && !pSelf->m_45DegreesLastStroke)
 			Enable();
@@ -89,7 +89,7 @@ void CQuickBinds::ConToggleSmallSens(IConsole::IResult *pResult, void *pUserData
 			return;
 		pSelf->m_SmallSensEnabled = true;
 		pSelf->GameClient()->Echo(Localize("small sens on"));
-		g_Config.m_BcPrevInpMousesensSmallSens = pSelf->m_45DegreesEnabled ? g_Config.m_BcPrevInpMousesens45Degrees : g_Config.m_InpMousesens;
+		g_Config.m_BclPrevInpMousesensSmallSens = pSelf->m_45DegreesEnabled ? g_Config.m_BclPrevInpMousesens45Degrees : g_Config.m_InpMousesens;
 		g_Config.m_InpMousesens = 1;
 	};
 
@@ -98,10 +98,10 @@ void CQuickBinds::ConToggleSmallSens(IConsole::IResult *pResult, void *pUserData
 			return;
 		pSelf->m_SmallSensEnabled = false;
 		pSelf->GameClient()->Echo(Localize("small sens off"));
-		g_Config.m_InpMousesens = g_Config.m_BcPrevInpMousesensSmallSens;
+		g_Config.m_InpMousesens = g_Config.m_BclPrevInpMousesensSmallSens;
 	};
 
-	if(!g_Config.m_BcToggleSmallSens && HasStrokeArgument)
+	if(!g_Config.m_BclToggleSmallSens && HasStrokeArgument)
 	{
 		if(pSelf->m_SmallSensStroke && !pSelf->m_SmallSensLastStroke)
 			Enable();

@@ -68,7 +68,7 @@ void HudExtras::RenderPlayerBelowIndicator(CGameClient *pGameClient, IGraphics *
 {
 	static float s_Phase = 0.0f;
 
-	if(!pGameClient || !pGraphics || !pTextRender || !g_Config.m_BcShowhudDummyCoordIndicator)
+	if(!pGameClient || !pGraphics || !pTextRender || !g_Config.m_BclShowhudDummyCoordIndicator)
 	{
 		s_Phase = 0.0f;
 		return;
@@ -135,7 +135,7 @@ bool HudExtras::GetSpectatorCountState(CGameClient *pGameClient, IClient *pClien
 	{
 		State.m_Count = 5;
 		str_copy(State.m_aCountBuf, "5");
-		if(g_Config.m_BcShowSpectatorNames)
+		if(g_Config.m_BclShowSpectatorNames)
 		{
 			str_copy(State.m_aaNameLines[0], "sqwinix");
 			str_copy(State.m_aaNameLines[1], "+4");
@@ -220,7 +220,7 @@ bool HudExtras::GetSpectatorCountState(CGameClient *pGameClient, IClient *pClien
 	if(pClient->GameTick(g_Config.m_ClDummy) < LastSpectatorCountTick + pClient->GameTickSpeed())
 		return false;
 
-	if(g_Config.m_BcShowSpectatorNames && (HasExactSpectatorNames || HasReliableFallbackSpectatorNames) && NumSpectatorIds > 0)
+	if(g_Config.m_BclShowSpectatorNames && (HasExactSpectatorNames || HasReliableFallbackSpectatorNames) && NumSpectatorIds > 0)
 	{
 		const int MaxVisibleNames = 5;
 		const int VisibleNames = std::min(NumSpectatorIds, MaxVisibleNames);

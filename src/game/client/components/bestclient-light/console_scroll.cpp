@@ -6,7 +6,7 @@
 #include <engine/graphics.h>
 #include <engine/input.h>
 
-#include <game/client/components/bestclient/scroll_bar.h>
+#include <game/client/components/bestclient-light/scroll_bar.h>
 #include <game/client/gameclient.h>
 #include <game/client/ui.h>
 
@@ -28,7 +28,7 @@ int CConsoleScroll::TotalBacklogLines(CGameConsole::CInstance &Console)
 float CConsoleScroll::LogLineWidth(const CGameConsole::CInstance &Console)
 {
 	float Width = Console.m_pGameConsole->BcGameClient()->Ui()->Screen()->w - 10.0f;
-	Width -= (BestClientScrollBar::CONSOLE.m_Width + BestClientScrollBar::CONSOLE.m_OuterMargin);
+	Width -= (BestClientLightScrollBar::CONSOLE.m_Width + BestClientLightScrollBar::CONSOLE.m_OuterMargin);
 	return std::max(0.0f, Width);
 }
 
@@ -41,9 +41,9 @@ void CConsoleScroll::Render(CGameConsole &GameConsole, CGameConsole::CInstance *
 	const int MaxScroll = std::max(0, TotalLines - VisibleLines);
 
 	CUIRect ScrollbarRect;
-	ScrollbarRect.x = Screen.w - BestClientScrollBar::CONSOLE.m_Width - BestClientScrollBar::CONSOLE.m_OuterMargin;
+	ScrollbarRect.x = Screen.w - BestClientLightScrollBar::CONSOLE.m_Width - BestClientLightScrollBar::CONSOLE.m_OuterMargin;
 	ScrollbarRect.y = LogTop;
-	ScrollbarRect.w = BestClientScrollBar::CONSOLE.m_Width;
+	ScrollbarRect.w = BestClientLightScrollBar::CONSOLE.m_Width;
 	ScrollbarRect.h = LogHeight;
 
 	const vec2 ScreenSize = vec2(Screen.w, Screen.h);
@@ -51,10 +51,10 @@ void CConsoleScroll::Render(CGameConsole &GameConsole, CGameConsole::CInstance *
 	const vec2 MousePos = GameConsole.m_TouchState.m_PrimaryPressed ? (GameConsole.m_TouchState.m_PrimaryPosition * ScreenSize) : (pClient->Input()->NativeMousePos() / WindowSize * ScreenSize);
 	const bool MouseDown = GameConsole.m_TouchState.m_PrimaryPressed || pClient->Input()->NativeMousePressed(1);
 
-	BestClientScrollBar::SDragState ScrollState;
+	BestClientLightScrollBar::SDragState ScrollState;
 	ScrollState.m_Dragging = pConsole->m_ScrollbarDragging;
 	ScrollState.m_DragOffset = pConsole->m_ScrollbarDragOffset;
-	const int NewLine = BestClientScrollBar::DoVertical(ScrollState, ScrollbarRect, pConsole->m_BacklogCurLine, MaxScroll, MousePos, MouseDown, BestClientScrollBar::CONSOLE);
+	const int NewLine = BestClientLightScrollBar::DoVertical(ScrollState, ScrollbarRect, pConsole->m_BacklogCurLine, MaxScroll, MousePos, MouseDown, BestClientLightScrollBar::CONSOLE);
 	pConsole->m_ScrollbarDragging = ScrollState.m_Dragging;
 	pConsole->m_ScrollbarDragOffset = ScrollState.m_DragOffset;
 

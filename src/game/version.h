@@ -3,7 +3,7 @@
 #ifndef GAME_VERSION_H
 #define GAME_VERSION_H
 
-#include <game/client/components/bestclient/version.h>
+#include <game/client/components/bestclient-light/version.h>
 
 // ddnet
 #define GAME_NAME "DDNet"
@@ -27,13 +27,13 @@ extern const char *GIT_SHORTREV_HASH;
 #define TCLIENT_VERSION "10.9.0"
 #endif
 
-// BestClient
-#ifndef BestClient_VERSION
-#define BestClient_VERSION BESTCLIENT_VERSION
+// BestClient Light
+#ifndef BestClientLight_VERSION
+#define BestClientLight_VERSION BESTCLIENT_LIGHT_VERSION
 #endif
 
 // custom
-#define CLIENT_NAME "BestClient"
-#define CLIENT_RELEASE_VERSION BESTCLIENT_VERSION
+#define CLIENT_NAME "BestClient Light"
+#define CLIENT_RELEASE_VERSION BESTCLIENT_LIGHT_VERSION
 
 #endif

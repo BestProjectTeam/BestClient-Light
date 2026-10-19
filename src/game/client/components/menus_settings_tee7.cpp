@@ -26,7 +26,7 @@
 
 void CMenus::RenderSettingsTee7(CUIRect MainView)
 {
-	CUIRect SkinPreview, NormalSkinPreview, RedTeamSkinPreview, BlueTeamSkinPreview, Buttons, QuickSearch, DirectoryButton, RefreshButton, SaveDeleteButton, TabBars, TabBar, LeftTab, RightTab, InfoRow; // bestclient
+	CUIRect SkinPreview, NormalSkinPreview, RedTeamSkinPreview, BlueTeamSkinPreview, Buttons, QuickSearch, DirectoryButton, RefreshButton, SaveDeleteButton, TabBars, TabBar, LeftTab, RightTab, InfoRow; // bestclient-light
 	MainView.HSplitBottom(20.0f, &MainView, &Buttons);
 	MainView.HSplitBottom(5.0f, &MainView, nullptr);
 	Buttons.VSplitRight(25.0f, &Buttons, &RefreshButton);
@@ -35,7 +35,7 @@ void CMenus::RenderSettingsTee7(CUIRect MainView)
 	Buttons.VSplitLeft(220.0f, &QuickSearch, &Buttons);
 	Buttons.VSplitLeft(10.0f, nullptr, &Buttons);
 	Buttons.VSplitLeft(120.0f, &SaveDeleteButton, &Buttons);
-	MainView.HSplitTop(78.0f, &TabBars, &MainView); // bestclient
+	MainView.HSplitTop(78.0f, &TabBars, &MainView); // bestclient-light
 	MainView.HSplitTop(10.0f, nullptr, &MainView);
 	TabBars.VSplitMid(&TabBars, &SkinPreview, 20.0f);
 
@@ -67,7 +67,7 @@ void CMenus::RenderSettingsTee7(CUIRect MainView)
 	TabBars.HSplitTop(20.0f, &TabBar, &TabBars);
 	TabBar.VSplitMid(&LeftTab, &RightTab);
 
-	TabBars.HSplitTop(8.0f, nullptr, &TabBars); // bestclient
+	TabBars.HSplitTop(8.0f, nullptr, &TabBars); // bestclient-light
 	TabBars.HSplitTop(20.0f, &InfoRow, &TabBars);
 
 	int *pCountry;
@@ -118,7 +118,7 @@ void CMenus::RenderSettingsTee7(CUIRect MainView)
 	const float OldFlagWidth = FlagIcon.w;
 	FlagIcon.w = FlagIcon.h * 2.0f;
 	FlagIcon.x += (OldFlagWidth - FlagIcon.w) / 2.0f;
-	GameClient()->m_CountryFlags.Render(*pCountry, ColorRGBA(1.0f, 1.0f, 1.0f, Ui()->HotItem() == &s_FlagButton ? 1.0f : 0.85f), FlagIcon.x, FlagIcon.y, FlagIcon.w, FlagIcon.h); // bestclient
+	GameClient()->m_CountryFlags.Render(*pCountry, ColorRGBA(1.0f, 1.0f, 1.0f, Ui()->HotItem() == &s_FlagButton ? 1.0f : 0.85f), FlagIcon.x, FlagIcon.y, FlagIcon.w, FlagIcon.h); // bestclient-light
 
 	static CButtonContainer s_BasicTabButton;
 	if(DoButton_MenuTab(&s_BasicTabButton, Localize("Basic"), !m_CustomSkinMenu, &LeftTab, IGraphics::CORNER_L, nullptr, nullptr, nullptr, nullptr, 4.0f))

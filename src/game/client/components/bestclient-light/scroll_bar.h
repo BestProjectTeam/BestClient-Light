@@ -1,12 +1,12 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_SCROLL_BAR_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_SCROLL_BAR_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_SCROLL_BAR_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_SCROLL_BAR_H
 
 #include <base/vmath.h>
 
 #include <game/client/ui_rect.h>
 
-namespace BestClientScrollBar
+namespace BestClientLightScrollBar
 {
 
 struct SDragState
@@ -35,6 +35,6 @@ constexpr SStyle CONSOLE = {18.0f, 5.0f, 5.0f, EHandleStyle::Console};
 int DoVertical(SDragState &State, const CUIRect &ScrollbarRect, int CurLine, int MaxScroll, vec2 MousePos, bool MouseDown, const SStyle &Style);
 float DoVerticalPixels(SDragState &State, const CUIRect &ScrollbarRect, float CurOffset, float MaxOffset, vec2 MousePos, bool MouseDown, const SStyle &Style);
 
-} // namespace BestClientScrollBar
+} // namespace BestClientLightScrollBar
 
 #endif

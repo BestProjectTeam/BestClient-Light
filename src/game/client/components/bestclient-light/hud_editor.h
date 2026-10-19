@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_HUD_EDITOR_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_HUD_EDITOR_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_HUD_EDITOR_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_HUD_EDITOR_H
 
 #include <game/client/component.h>
 #include <game/client/components/hud_layout.h>

@@ -14,7 +14,7 @@
 #include <engine/shared/json.h>
 #include <engine/storage.h>
 
-#include <game/client/components/bestclient/version.h>
+#include <game/client/components/bestclient-light/version.h>
 #include <game/version.h>
 
 #include <algorithm>
@@ -398,7 +398,7 @@ void CUpdater::ParseReleaseTask()
 	const bool Parsed = ParseLatestRelease(pJson, aVersion, sizeof(aVersion), aArchiveName, sizeof(aArchiveName), aArchiveUrl, sizeof(aArchiveUrl));
 	json_value_free(pJson);
 
-	if(!Parsed || CompareVersionStrings(aVersion, BESTCLIENT_VERSION) <= 0)
+	if(!Parsed || CompareVersionStrings(aVersion, BESTCLIENT_LIGHT_VERSION) <= 0)
 	{
 		m_aLatestVersion[0] = '\0';
 		m_aArchiveName[0] = '\0';
@@ -450,9 +450,9 @@ bool CUpdater::LaunchApplyScriptAndQuit()
 	}
 
 #if defined(CONF_FAMILY_WINDOWS)
-	m_pStorage->GetBinaryPathAbsolute("bestclient-updater.exe", aUpdaterPath, sizeof(aUpdaterPath));
+	m_pStorage->GetBinaryPathAbsolute("bestclient-light-updater.exe", aUpdaterPath, sizeof(aUpdaterPath));
 #else
-	m_pStorage->GetBinaryPathAbsolute("bestclient-updater", aUpdaterPath, sizeof(aUpdaterPath));
+	m_pStorage->GetBinaryPathAbsolute("bestclient-light-updater", aUpdaterPath, sizeof(aUpdaterPath));
 #endif
 	m_pStorage->GetBinaryPathAbsolute(PLAT_CLIENT_EXEC, aExePath, sizeof(aExePath));
 	str_copy(aInstallDir, aExePath, sizeof(aInstallDir));
@@ -519,7 +519,7 @@ void CUpdater::ApplyUpdateAndRestart()
 
 void CUpdater::Update()
 {
-	if(g_Config.m_BcAutoUpdate != 0)
+	if(g_Config.m_BclAutoUpdate != 0)
 	{
 		const EUpdaterState State = GetCurrentState();
 		if(State == IUpdater::VERSION_AVAILABLE)

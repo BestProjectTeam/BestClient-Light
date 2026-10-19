@@ -1,7 +1,7 @@
 /* Copyright © 2026 BestProject Team */
 #include "source.h"
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 namespace
@@ -34,4 +34,4 @@ std::unique_ptr<IVisualizerSource> CreatePassiveVisualizerSource()
 	return std::make_unique<CPassiveVisualizerSource>();
 }
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer

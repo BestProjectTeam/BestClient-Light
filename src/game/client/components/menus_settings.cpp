@@ -8,20 +8,20 @@
 
 #include <engine/graphics.h>
 #include <engine/shared/config.h>
-// bestclient
+// bestclient-light
 #include <engine/updater.h>
 #include <SDL.h>
-// bestclient
+// bestclient-light
 
 #include <game/client/components/menu_background.h>
 #include <game/client/gameclient.h>
 #include <game/client/ui.h>
-#include <game/client/ui_listbox.h> // bestclient
-// bestclient
-#include <game/client/components/bestclient/ui_theme/settings_nav.h>
-#include <game/client/components/bestclient/ui_theme/style.h>
-#include <game/client/components/bestclient/settings_search.h>
-// bestclient
+#include <game/client/ui_listbox.h> // bestclient-light
+// bestclient-light
+#include <game/client/components/bestclient-light/ui_theme/settings_nav.h>
+#include <game/client/components/bestclient-light/ui_theme/style.h>
+#include <game/client/components/bestclient-light/settings_search.h>
+// bestclient-light
 #include <game/localization.h>
 
 void CMenus::SetNeedSendInfo()
@@ -32,7 +32,7 @@ void CMenus::SetNeedSendInfo()
 		m_NeedSendinfo = true;
 }
 
-CUi::EPopupMenuFunctionResult CMenus::PopupSettingsCountrySelection(void *pContext, CUIRect View, bool Active) // bestclient
+CUi::EPopupMenuFunctionResult CMenus::PopupSettingsCountrySelection(void *pContext, CUIRect View, bool Active) // bestclient-light
 {
 	SPopupSettingsCountrySelectionContext *pPopupContext = static_cast<SPopupSettingsCountrySelectionContext *>(pContext);
 	CMenus *pMenus = pPopupContext->m_pMenus;
@@ -79,11 +79,11 @@ CUi::EPopupMenuFunctionResult CMenus::PopupSettingsCountrySelection(void *pConte
 	}
 
 	return CUi::POPUP_KEEP_OPEN;
-} // bestclient
+} // bestclient-light
 
 void CMenus::RenderSettings(CUIRect MainView)
 {
-	// bestclient
+	// bestclient-light
 	if(m_AssetsEditorState.m_Open)
 		SDL_ShowCursor(SDL_ENABLE);
 	if(m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0 && !Ui()->IsPopupOpen() && Ui()->ConsumeHotkey(CUi::HOTKEY_ESCAPE))
@@ -93,19 +93,19 @@ void CMenus::RenderSettings(CUIRect MainView)
 		RenderAssetsEditorScreen(*Ui()->Screen());
 		return;
 	}
-	// bestclient
+	// bestclient-light
 
 	// render background
 	CUIRect Button, TabBar, RestartBar;
-	// bestclient
+	// bestclient-light
 	const float TabBarWidth = 120.0f;
-	const bool NavOnLeft = BestClientUiTheme::IsSettingsNavOnLeft();
+	const bool NavOnLeft = BestClientLightUiTheme::IsSettingsNavOnLeft();
 	if(NavOnLeft)
 		MainView.VSplitLeft(TabBarWidth, &TabBar, &MainView);
 	else
 		MainView.VSplitRight(TabBarWidth, &MainView, &TabBar);
-	BestClientUiTheme::DrawUiMainPanel(&MainView, ms_ColorTabbarActive, false, IGraphics::CORNER_B, 10.0f);
-	// bestclient
+	BestClientLightUiTheme::DrawUiMainPanel(&MainView, ms_ColorTabbarActive, false, IGraphics::CORNER_B, 10.0f);
+	// bestclient-light
 	MainView.Margin(20.0f, &MainView);
 
 	const bool NeedRestart = m_NeedRestartGraphics || m_NeedRestartSound || m_NeedRestartUpdate;
@@ -115,28 +115,28 @@ void CMenus::RenderSettings(CUIRect MainView)
 		MainView.HSplitBottom(10.0f, &MainView, nullptr);
 	}
 
-	if(g_Config.m_UiSettingsPage == SETTINGS_LANGUAGE || g_Config.m_UiSettingsPage == SETTINGS_PLAYER) // bestclient
-		g_Config.m_UiSettingsPage = g_Config.m_UiSettingsPage == SETTINGS_LANGUAGE ? SETTINGS_GENERAL : SETTINGS_TEE; // bestclient
+	if(g_Config.m_UiSettingsPage == SETTINGS_LANGUAGE || g_Config.m_UiSettingsPage == SETTINGS_PLAYER) // bestclient-light
+		g_Config.m_UiSettingsPage = g_Config.m_UiSettingsPage == SETTINGS_LANGUAGE ? SETTINGS_GENERAL : SETTINGS_TEE; // bestclient-light
 
 	TabBar.HSplitTop(50.0f, &Button, &TabBar);
-	// bestclient
-	BestClientUiTheme::DrawUiMainPanel(&Button, ms_ColorTabbarActive, false, NavOnLeft ? IGraphics::CORNER_BL : IGraphics::CORNER_BR, 10.0f);
+	// bestclient-light
+	BestClientLightUiTheme::DrawUiMainPanel(&Button, ms_ColorTabbarActive, false, NavOnLeft ? IGraphics::CORNER_BL : IGraphics::CORNER_BR, 10.0f);
 	const bool ExploreLockCorner = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
 	if(!ExploreLockCorner)
 	{
-		BestClientSettingsSearch::Update(Client()->RenderFrameTime());
-		BestClientSettingsSearch::RenderCornerButton(this, Ui(), GameClient(), Input(), Button);
+		BestClientLightSettingsSearch::Update(Client()->RenderFrameTime());
+		BestClientLightSettingsSearch::RenderCornerButton(this, Ui(), GameClient(), Input(), Button);
 	}
-	// bestclient
+	// bestclient-light
 
-	// bestclient
-	if(BestClientUiTheme::IsNewTabOption())
+	// bestclient-light
+	if(BestClientLightUiTheme::IsNewTabOption())
 	{
 		RenderSettingsNavNewStyle(TabBar);
 	}
 	else
 	{
-		// bestclient
+		// bestclient-light
 		const char *apTabs[SETTINGS_LENGTH] = {
 			Localize("Language"),
 			Localize("General"),
@@ -149,7 +149,7 @@ void CMenus::RenderSettings(CUIRect MainView)
 			Localize("DDNet"),
 			Localize("Assets"),
 			TCLocalize("TClient"), // TClient
-			Localize("BestClient"), // bestclient
+			Localize("BestClient Light"), // bestclient-light
 			Localize("Profiles"), // TClient
 			Localize("Configs"), // TClient
 			Localize("Credits")};
@@ -158,29 +158,29 @@ void CMenus::RenderSettings(CUIRect MainView)
 
 		for(int i = 0; i < SETTINGS_LENGTH; i++)
 		{
-			if(i == SETTINGS_LANGUAGE || i == SETTINGS_PLAYER) // bestclient
-				continue; // bestclient
+			if(i == SETTINGS_LANGUAGE || i == SETTINGS_PLAYER) // bestclient-light
+				continue; // bestclient-light
 			TabBar.HSplitTop(10.0f, nullptr, &TabBar);
 			TabBar.HSplitTop(26.0f, &Button, &TabBar);
-			// bestclient
+			// bestclient-light
 			const bool ExploreLock = m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0;
 			const bool AssetsTab = i == SETTINGS_ASSETS;
 			if(DoButton_MenuTab(&s_aTabButtons[i], apTabs[i], g_Config.m_UiSettingsPage == i, &Button, TabCorners, &m_aAnimatorsSettingsTab[i], nullptr, nullptr, nullptr, 10.0f, nullptr, true, IGraphics::CORNER_NONE, -1.0f, ExploreLock && !AssetsTab ? 0.35f : 1.0f) && (!ExploreLock || AssetsTab))
-			// bestclient
+			// bestclient-light
 				g_Config.m_UiSettingsPage = i;
 		}
-		// bestclient
+		// bestclient-light
 	}
-	// bestclient
+	// bestclient-light
 
-	// bestclient
+	// bestclient-light
 	if(m_AssetsEditorState.m_Open && m_AssetsEditorState.m_ExploreSide >= 0 && g_Config.m_UiSettingsPage != SETTINGS_ASSETS)
 		m_AssetsEditorState.m_ExploreSide = -1;
-	if(BestClientUiTheme::IsNewTabOption())
+	if(BestClientLightUiTheme::IsNewTabOption())
 		RenderSettingsContentNewStyle(MainView);
 	else
 		RenderSettingsContentLegacyStyle(MainView);
-	// bestclient
+	// bestclient-light
 
 	if(NeedRestart)
 	{
@@ -189,11 +189,11 @@ void CMenus::RenderSettings(CUIRect MainView)
 		RestartWarning.VSplitRight(10.0f, &RestartWarning, nullptr);
 		if(m_NeedRestartUpdate)
 		{
-			// bestclient
+			// bestclient-light
 			TextRender()->TextColor(0.7f, 1.0f, 0.7f, 1.0f);
-			Ui()->DoLabel(&RestartWarning, Localize("BestClient update downloaded! Restart to apply."), 14.0f, TEXTALIGN_ML);
+			Ui()->DoLabel(&RestartWarning, Localize("BestClient Light update downloaded! Restart to apply."), 14.0f, TEXTALIGN_ML);
 			TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
-			// bestclient
+			// bestclient-light
 		}
 		else
 		{
@@ -204,13 +204,13 @@ void CMenus::RenderSettings(CUIRect MainView)
 		if(DoButton_Menu(&s_RestartButton, Localize("Restart"), 0, &RestartButton))
 		{
 #if defined(CONF_AUTOUPDATE)
-			// bestclient
+			// bestclient-light
 			if(m_NeedRestartUpdate)
 			{
 				Updater()->ApplyUpdateAndRestart();
 			}
 			else
-			// bestclient
+			// bestclient-light
 #endif
 			if(Client()->State() == IClient::STATE_ONLINE || GameClient()->Editor()->HasUnsavedData())
 			{

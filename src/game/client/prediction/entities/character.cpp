@@ -9,7 +9,7 @@
 
 #include <generated/client_data.h>
 
-#include <game/client/components/bestclient/ego_tiles_prediction.h> // bestclient
+#include <game/client/components/bestclient-light/ego_tiles_prediction.h> // bestclient-light
 #include <game/collision.h>
 #include <game/mapitems.h>
 
@@ -1069,7 +1069,7 @@ void CCharacter::HandleTiles(int Index)
 			m_Core.m_Jumps = NewJumps;
 	}
 
-	// bestclient
+	// bestclient-light
 	if(!GameWorld()->m_WorldConfig.m_PredictTeleports)
 		return;
 
@@ -1139,7 +1139,7 @@ void CCharacter::HandleTiles(int Index)
 		}
 		return;
 	}
-	// bestclient
+	// bestclient-light
 }
 
 void CCharacter::HandleTuneLayer()
@@ -1258,10 +1258,10 @@ void CCharacter::DDRacePostCoreTick()
 	int CurrentIndex = Collision()->GetMapIndex(m_Pos);
 	HandleSkippableTiles(CurrentIndex);
 
-	// bestclient
+	// bestclient-light
 	if(GameWorld()->m_pEgoTilesPrediction)
 		GameWorld()->m_pEgoTilesPrediction->HandleCharacter(this);
-	// bestclient
+	// bestclient-light
 
 	// handle Anti-Skip tiles
 	std::vector<int> vIndices = Collision()->GetMapIndices(m_PrevPos, m_Pos);

@@ -61,7 +61,7 @@ void CLightning::ApplyCameraShake(vec2 &Center)
 
 void CLightning::OnNewSnapshot()
 {
-	if(!g_Config.m_BcFreezeLightning || GameClient()->m_SuppressEvents || BcFxSuppressed(GameClient()))
+	if(!g_Config.m_BclFreezeLightning || GameClient()->m_SuppressEvents || BcFxSuppressed(GameClient()))
 		return;
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
@@ -78,14 +78,14 @@ void CLightning::OnNewSnapshot()
 			vec2(Character.m_Cur.m_X, Character.m_Cur.m_Y),
 			Client()->IntraGameTick(g_Config.m_ClDummy));
 		Strike(Pos, GameClient()->IsOtherTeam(i) ? g_Config.m_ClShowOthersAlpha / 100.0f : 1.0f, i == GameClient()->m_Snap.m_LocalClientId);
-		if(i == GameClient()->m_Snap.m_LocalClientId && g_Config.m_BcFreezeLightningShake > 0)
-			AddShake(g_Config.m_BcFreezeLightningShake / 100.0f * 14.0f);
+		if(i == GameClient()->m_Snap.m_LocalClientId && g_Config.m_BclFreezeLightningShake > 0)
+			AddShake(g_Config.m_BclFreezeLightningShake / 100.0f * 14.0f);
 	}
 }
 
 CLightning::CPalette CLightning::Palette()
 {
-	const ColorHSLA Hsl(g_Config.m_BcFreezeLightningColor);
+	const ColorHSLA Hsl(g_Config.m_BclFreezeLightningColor);
 	ColorHSLA DeepHsl = Hsl;
 	DeepHsl.h = std::fmod(DeepHsl.h + 0.07f, 1.0f);
 	DeepHsl.l *= 0.8f;
@@ -135,7 +135,7 @@ void CLightning::Strike(vec2 Target, float Alpha, bool Local)
 	if(m_NumBolts >= MAX_BOLTS)
 		return;
 
-	const float Height = g_Config.m_BcFreezeLightningHeight;
+	const float Height = g_Config.m_BclFreezeLightningHeight;
 	CBolt &Bolt = m_aBolts[m_NumBolts++];
 	Bolt = CBolt{};
 	Bolt.m_Origin = Target + vec2(random_float(-0.3f, 0.3f) * Height, -Height);
@@ -150,7 +150,7 @@ void CLightning::Strike(vec2 Target, float Alpha, bool Local)
 void CLightning::Stroke(CBolt &Bolt, const CPalette &Palette)
 {
 	const int Index = Bolt.m_Strokes++;
-	const float Height = g_Config.m_BcFreezeLightningHeight;
+	const float Height = g_Config.m_BclFreezeLightningHeight;
 	CPath &Channel = Bolt.m_Channel;
 
 	if(Index > 0 && Channel.m_NumPoints > 2)
@@ -161,7 +161,7 @@ void CLightning::Stroke(CBolt &Bolt, const CPalette &Palette)
 	}
 
 	Bolt.m_NumBranches = 0;
-	const int Branches = std::min<int>(MAX_BRANCHES, g_Config.m_BcFreezeLightningBranches);
+	const int Branches = std::min<int>(MAX_BRANCHES, g_Config.m_BclFreezeLightningBranches);
 	const float DownAngle = angle(Bolt.m_Target - Bolt.m_Origin);
 	for(int i = 0; i < Branches && Channel.m_NumPoints > 12; i++)
 	{
@@ -177,13 +177,13 @@ void CLightning::Stroke(CBolt &Bolt, const CPalette &Palette)
 		Bolt.m_NumBranches++;
 	}
 
-	if(g_Config.m_BcFreezeLightningImpact)
+	if(g_Config.m_BclFreezeLightningImpact)
 		Impact(Bolt, Palette, STROKE_POWERS[Index]);
 }
 
 void CLightning::Impact(const CBolt &Bolt, const CPalette &Palette, float Power)
 {
-	const float Thickness = g_Config.m_BcFreezeLightningThickness / 100.0f;
+	const float Thickness = g_Config.m_BclFreezeLightningThickness / 100.0f;
 	const float Alpha = Bolt.m_Alpha;
 
 	m_Glow.AddRing(Bolt.m_Target, 0.5f, 20.0f * Thickness, 220.0f * Thickness * Power, 0.8f * Alpha * Power, Palette.m_Primary);
@@ -266,7 +266,7 @@ void CLightning::DrawBolts(const CPalette &Palette)
 	if(m_NumBolts == 0 && !m_Glow.HasAny())
 		return;
 
-	const float Thickness = g_Config.m_BcFreezeLightningThickness / 100.0f;
+	const float Thickness = g_Config.m_BclFreezeLightningThickness / 100.0f;
 
 	auto DrawBlob = [this](vec2 Pos, float Size, ColorRGBA Color) {
 		Graphics()->SetColor(Color);

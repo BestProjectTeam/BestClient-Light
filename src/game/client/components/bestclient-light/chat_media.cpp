@@ -419,13 +419,13 @@ static bool IsAllowedChatMediaHostByDomainList(const std::string &HostLower, con
 
 static bool IsAllowedChatMediaHost(const std::string &HostLower)
 {
-	if(!g_Config.m_BcChatMediaContentFilter)
+	if(!g_Config.m_BclChatMediaContentFilter)
 		return true;
 	if(HostLower.empty())
 		return false;
 
 	bool HasConfiguredDomains = false;
-	if(IsAllowedChatMediaHostByDomainList(HostLower, g_Config.m_BcChatMediaAllowedDomains, HasConfiguredDomains))
+	if(IsAllowedChatMediaHostByDomainList(HostLower, g_Config.m_BclChatMediaAllowedDomains, HasConfiguredDomains))
 		return true;
 	if(HasConfiguredDomains)
 		return false;
@@ -436,7 +436,7 @@ static bool IsAllowedChatMediaHost(const std::string &HostLower)
 
 static bool IsAllowedChatMediaUrl(const char *pUrl)
 {
-	if(!g_Config.m_BcChatMediaContentFilter)
+	if(!g_Config.m_BclChatMediaContentFilter)
 		return true;
 	if(pUrl == nullptr || pUrl[0] == '\0')
 		return false;
@@ -1527,7 +1527,7 @@ bool CChatMedia::RetryMediaLine(SChatMediaLine &Media)
 
 void CChatMedia::QueueMediaDownload(SChatMediaLine &Media)
 {
-	if(!g_Config.m_BcChatMediaPreview || !AnyMediaAllowed() || Media.m_vMediaCandidates.empty())
+	if(!g_Config.m_BclChatMediaPreview || !AnyMediaAllowed() || Media.m_vMediaCandidates.empty())
 		return;
 	if(Media.m_MediaCandidateIndex < 0 || Media.m_MediaCandidateIndex >= (int)Media.m_vMediaCandidates.size())
 	{
@@ -1617,7 +1617,7 @@ bool CChatMedia::StartMediaDecode(SChatMediaLine &Media, EChatMediaKind MediaKin
 
 bool CChatMedia::AnyMediaAllowed() const
 {
-	return g_Config.m_BcChatMediaPhotos != 0 || g_Config.m_BcChatMediaGifs != 0;
+	return g_Config.m_BclChatMediaPhotos != 0 || g_Config.m_BclChatMediaGifs != 0;
 }
 
 bool CChatMedia::IsMediaKindAllowed(EChatMediaKind Kind) const
@@ -1625,10 +1625,10 @@ bool CChatMedia::IsMediaKindAllowed(EChatMediaKind Kind) const
 	switch(Kind)
 	{
 	case EChatMediaKind::PHOTO:
-		return g_Config.m_BcChatMediaPhotos != 0;
+		return g_Config.m_BclChatMediaPhotos != 0;
 	case EChatMediaKind::ANIMATED:
 	case EChatMediaKind::VIDEO:
-		return g_Config.m_BcChatMediaGifs != 0;
+		return g_Config.m_BclChatMediaGifs != 0;
 	case EChatMediaKind::UNKNOWN:
 	default:
 		return AnyMediaAllowed();
@@ -1652,7 +1652,7 @@ bool CChatMedia::HasAllowedMediaCandidates(const SChatMediaLine &Media) const
 
 bool CChatMedia::ShouldDisplayMediaSlot(const SChatMediaLine &Media) const
 {
-	if(!g_Config.m_BcChatMediaPreview || !AnyMediaAllowed())
+	if(!g_Config.m_BclChatMediaPreview || !AnyMediaAllowed())
 		return false;
 	if((Media.m_MediaState == EChatMediaState::READY || Media.m_MediaState == EChatMediaState::LOADING || Media.m_MediaState == EChatMediaState::DECODING || Media.m_MediaState == EChatMediaState::QUEUED) && Media.m_MediaKind != EChatMediaKind::UNKNOWN)
 		return IsMediaKindAllowed(Media.m_MediaKind);
@@ -1666,7 +1666,7 @@ bool CChatMedia::ShouldHideMediaPreview(const SChatMediaLine &Media) const
 
 bool CChatMedia::ShouldExpandCompactAreaForMedia(CChat &Chat, bool IsScoreBoardOpen, bool ShowLargeArea) const
 {
-	if(IsScoreBoardOpen || ShowLargeArea || !g_Config.m_BcChatMediaPreview || !AnyMediaAllowed())
+	if(IsScoreBoardOpen || ShowLargeArea || !g_Config.m_BclChatMediaPreview || !AnyMediaAllowed())
 		return false;
 	for(int i = 0; i < 3; ++i)
 	{
@@ -1748,7 +1748,7 @@ void CChatMedia::RenderFullscreen(CChat &Chat, float Width, float Height)
 
 void CChatMedia::Update(CChat &Chat)
 {
-	if(!g_Config.m_BcChatMediaPreview || !AnyMediaAllowed())
+	if(!g_Config.m_BclChatMediaPreview || !AnyMediaAllowed())
 		return;
 
 	for(int LineIndex = 0; LineIndex < CChat::MAX_LINES; ++LineIndex)
@@ -2208,8 +2208,8 @@ void ComputeChatMediaPreviewSize(int MediaWidth, int MediaHeight, float MaxPrevi
 
 void CChatMedia::OnConsoleInit()
 {
-	if(str_comp(g_Config.m_BcChatMediaAllowedDomains, "tenor.com; imgur.com; giphy.com") == 0)
-		str_copy(g_Config.m_BcChatMediaAllowedDomains, "tenor.com; imgur.com; giphy.com; gifs.teeworlds.xyz", sizeof(g_Config.m_BcChatMediaAllowedDomains));
+	if(str_comp(g_Config.m_BclChatMediaAllowedDomains, "tenor.com; imgur.com; giphy.com") == 0)
+		str_copy(g_Config.m_BclChatMediaAllowedDomains, "tenor.com; imgur.com; giphy.com; gifs.teeworlds.xyz", sizeof(g_Config.m_BclChatMediaAllowedDomains));
 	Console()->Register("toggle_chat_media_hidden", "", CFGFLAG_CLIENT, ConToggleHideChatMedia, this, "Toggle hidden media mode in chat");
 }
 
@@ -2227,7 +2227,7 @@ void CChatMedia::ConToggleHideChatMedia(IConsole::IResult *pResult, void *pUserD
 void CChatMedia::OnChatLineAdded(CChat &Chat, SChatMediaLine &Media, const char *pText)
 {
 	(void)Chat;
-	if(!g_Config.m_BcChatMediaPreview || !AnyMediaAllowed() || !pText)
+	if(!g_Config.m_BclChatMediaPreview || !AnyMediaAllowed() || !pText)
 		return;
 	std::vector<std::string> vMediaUrls;
 	ExtractMediaUrlsFromText(pText, vMediaUrls);
@@ -2258,7 +2258,7 @@ bool CChatMedia::OnChatInput(CChat &Chat, const IInput::CEvent &Event)
 			return true;
 		}
 	}
-	else if((Event.m_Flags & IInput::FLAG_PRESS) && Event.m_Key == KEY_MOUSE_1 && g_Config.m_BcChatMediaPreview &&
+	else if((Event.m_Flags & IInput::FLAG_PRESS) && Event.m_Key == KEY_MOUSE_1 && g_Config.m_BclChatMediaPreview &&
 		(Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK))
 	{
 		const vec2 MousePos = ChatMousePos();
@@ -2280,7 +2280,7 @@ bool CChatMedia::OnChatInput(CChat &Chat, const IInput::CEvent &Event)
 		}
 	}
 
-	if((Event.m_Flags & IInput::FLAG_PRESS) && Event.m_Key == KEY_MOUSE_1 && g_Config.m_BcChatMediaPreview &&
+	if((Event.m_Flags & IInput::FLAG_PRESS) && Event.m_Key == KEY_MOUSE_1 && g_Config.m_BclChatMediaPreview &&
 		(Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK))
 	{
 		bool HasRetryTargets = false;
@@ -2345,7 +2345,7 @@ void CChatMedia::PrepareLineLayout(SChatMediaLine &Media, int OffsetType, float 
 	const bool HideMediaPreview = ShouldHideMediaPreview(Media);
 	if(ShowMediaSlot && (HideMediaPreview || (Media.m_MediaState == EChatMediaState::READY && Media.m_MediaWidth > 0 && Media.m_MediaHeight > 0 && !Media.m_vMediaFrames.empty())))
 	{
-		const float MaxPreviewWidth = std::min(LineWidth, (float)g_Config.m_BcChatMediaPreviewMaxWidth) * CHAT_MEDIA_PREVIEW_SIZE_SCALE;
+		const float MaxPreviewWidth = std::min(LineWidth, (float)g_Config.m_BclChatMediaPreviewMaxWidth) * CHAT_MEDIA_PREVIEW_SIZE_SCALE;
 		if(MaxPreviewWidth > 0.0f && MaxPreviewHeight > 0.0f)
 		{
 			if(Media.m_MediaState == EChatMediaState::READY && Media.m_MediaWidth > 0 && Media.m_MediaHeight > 0 && !Media.m_vMediaFrames.empty())
@@ -2366,13 +2366,13 @@ void CChatMedia::PrepareLineLayout(SChatMediaLine &Media, int OffsetType, float 
 	}
 	else if(ShowMediaSlot && (Media.m_MediaState == EChatMediaState::QUEUED || Media.m_MediaState == EChatMediaState::LOADING || Media.m_MediaState == EChatMediaState::DECODING))
 	{
-		Media.m_aMediaPreviewWidth[OffsetType] = std::min(LineWidth, (float)g_Config.m_BcChatMediaPreviewMaxWidth) * CHAT_MEDIA_PREVIEW_SIZE_SCALE;
+		Media.m_aMediaPreviewWidth[OffsetType] = std::min(LineWidth, (float)g_Config.m_BclChatMediaPreviewMaxWidth) * CHAT_MEDIA_PREVIEW_SIZE_SCALE;
 		Media.m_aMediaPreviewHeight[OffsetType] = std::max(FontSize * 1.2f, 12.0f) * CHAT_MEDIA_PREVIEW_SIZE_SCALE;
 		TotalHeight += FontSize * 0.4f + Media.m_aMediaPreviewHeight[OffsetType];
 	}
 	else if(ShowMediaSlot && Media.m_MediaState == EChatMediaState::FAILED)
 	{
-		Media.m_aMediaPreviewWidth[OffsetType] = std::min(LineWidth, (float)g_Config.m_BcChatMediaPreviewMaxWidth) * CHAT_MEDIA_PREVIEW_SIZE_SCALE;
+		Media.m_aMediaPreviewWidth[OffsetType] = std::min(LineWidth, (float)g_Config.m_BclChatMediaPreviewMaxWidth) * CHAT_MEDIA_PREVIEW_SIZE_SCALE;
 		Media.m_aMediaPreviewHeight[OffsetType] = std::max(FontSize * 2.1f, 18.0f) * CHAT_MEDIA_PREVIEW_SIZE_SCALE;
 		TotalHeight += FontSize * 0.4f + Media.m_aMediaPreviewHeight[OffsetType];
 	}
@@ -2477,7 +2477,7 @@ void CChatMedia::RenderLinePreview(SChatMediaLine &Media, float PreviewX, float 
 
 SChatMediaLine *CChatMedia::FindReadyMediaForMessage(CChat &Chat, int ClientId, const char *pText)
 {
-	if(!pText || !g_Config.m_BcChatMediaPreview || !AnyMediaAllowed())
+	if(!pText || !g_Config.m_BclChatMediaPreview || !AnyMediaAllowed())
 		return nullptr;
 	for(int i = 0; i < CChat::MAX_LINES; ++i)
 	{

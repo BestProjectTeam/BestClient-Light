@@ -9,8 +9,8 @@
 #include <engine/shared/config.h>
 
 #include <game/client/animstate.h>
-#include <game/client/components/bestclient/bestclient.h>
-#include <game/client/components/bestclient/inputs.h>
+#include <game/client/components/bestclient-light/bestclient-light.h>
+#include <game/client/components/bestclient-light/inputs.h>
 #include <game/client/components/items.h>
 #include <game/client/gameclient.h>
 #include <game/client/laser_data.h>
@@ -1203,7 +1203,7 @@ void CFastPractice::MaybePlayHammerHitEffect(CCharacter *pChar)
 		if(length(pTarget->m_Pos - ProjStartPos) > 0.0f)
 			HitPos = pTarget->m_Pos - normalize(pTarget->m_Pos - ProjStartPos) * pChar->GetProximityRadius() * 0.5f;
 
-		BestClientPlayHammerHit(GameClient(), HitPos, 1.0f, 1.0f, pChar->GetCid());
+		BestClientLightPlayHammerHit(GameClient(), HitPos, 1.0f, 1.0f, pChar->GetCid());
 		break;
 	}
 }
@@ -1519,7 +1519,7 @@ void CFastPractice::PlayCoreEvents(CCharacter *pChar, int Tick)
 	const vec2 Pos = pChar->Core()->m_Pos;
 	const int Events = pChar->Core()->m_TriggeredEvents;
 	if(!GameClient()->m_SuppressEvents && (Events & COREEVENT_AIR_JUMP))
-		BestClientPlayAirJump(GameClient(), ClientId, Pos, 1.0f, 1.0f);
+		BestClientLightPlayAirJump(GameClient(), ClientId, Pos, 1.0f, 1.0f);
 	if(g_Config.m_SndGame && !GameClient()->m_SuppressEvents)
 	{
 		if(Events & COREEVENT_GROUND_JUMP)
@@ -1563,9 +1563,9 @@ void CFastPractice::TickPracticeWorld()
 	const bool CloudInputMode = GameClient()->IsCloudInputMode();
 	const bool Spectating = GameClient()->m_Snap.m_SpecInfo.m_Active ||
 				(GameClient()->m_Snap.m_pLocalInfo && GameClient()->m_Snap.m_pLocalInfo->m_Team == TEAM_SPECTATORS);
-	const float FastInputOffsetTicks = (CloudInputMode || Spectating) ? 0.0f : BcInputs::EffectiveOffsetTicks();
-	const int FastInputTicks = Spectating ? 0 : (CloudInputMode ? GameClient()->m_CloudInput.SelfTickOffset() : BcInputs::PredictionTicks(FastInputOffsetTicks));
-	const int FastInputOthersTicks = Spectating ? 0 : (CloudInputMode ? GameClient()->m_CloudInput.OthersTickOffset() : (BcInputs::AnyOthers() ? BcInputs::PredictionTicksOthers(FastInputOffsetTicks) : 0));
+	const float FastInputOffsetTicks = (CloudInputMode || Spectating) ? 0.0f : BclInputs::EffectiveOffsetTicks();
+	const int FastInputTicks = Spectating ? 0 : (CloudInputMode ? GameClient()->m_CloudInput.SelfTickOffset() : BclInputs::PredictionTicks(FastInputOffsetTicks));
+	const int FastInputOthersTicks = Spectating ? 0 : (CloudInputMode ? GameClient()->m_CloudInput.OthersTickOffset() : (BclInputs::AnyOthers() ? BclInputs::PredictionTicksOthers(FastInputOffsetTicks) : 0));
 	const int FinalTickRegular = Client()->PredGameTick(g_Config.m_ClDummy);
 	const int FinalTickSelf = FinalTickRegular + FastInputTicks;
 	const int FinalTickOthers = FinalTickRegular + FastInputOthersTicks;

@@ -59,14 +59,14 @@ public:
 	bool m_DebugRenderQuadClips;
 	bool m_DebugRenderClusterClips;
 	bool m_DebugRenderTileClips;
-	// bestclient
+	// bestclient-light
 	bool m_FpsFogEnabled = false;
 	bool m_FpsFogCullMapTiles = false;
 	float m_FpsFogHalfW = 0.0f;
 	float m_FpsFogHalfH = 0.0f;
 	bool m_DisableMapQuads = false;
 	bool m_MapPreview = false;
-	// bestclient
+	// bestclient-light
 };
 
 class CRenderLayer : public CRenderComponent

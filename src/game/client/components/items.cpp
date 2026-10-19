@@ -87,10 +87,10 @@ void CItems::RenderProjectile(const CProjectileData *pCurrent, int ItemId, const
 	vec2 Pos = CalcPos(pCurrent->m_StartPos, pCurrent->m_StartVel, Curvature, Speed, Ct);
 	if(!ScreenRect.Inside(Pos))
 		return;
-	// bestclient
+	// bestclient-light
 	if(!GameClient()->OptimizerAllowRenderPos(Pos))
 		return;
-	// bestclient
+	// bestclient-light
 	vec2 PrevPos = CalcPos(pCurrent->m_StartPos, pCurrent->m_StartVel, Curvature, Speed, Ct - 0.001f);
 
 	float Alpha = 1.f;
@@ -105,10 +105,10 @@ void CItems::RenderProjectile(const CProjectileData *pCurrent, int ItemId, const
 	// don't check for validity of the projectile for the current weapon here, so particle effects are rendered for mod compatibility
 	if(CurWeapon == WEAPON_GRENADE)
 	{
-		// bestclient
+		// bestclient-light
 		if(!GameClient()->m_WeaponVfx.RenderRocketTrail(*pCurrent, Ct, Curvature, Speed, Alpha))
 			GameClient()->m_Effects.SmokeTrail(Pos, Vel * -1, Alpha, 0.0f);
-		// bestclient
+		// bestclient-light
 		static float s_Time = 0.0f;
 		static float s_LastLocalTime = LocalTime();
 		s_Time += (LocalTime() - s_LastLocalTime) * GameClient()->GetAnimationPlaybackSpeed();
@@ -139,7 +139,7 @@ void CItems::RenderPickup(const CNetObj_Pickup *pPrev, const CNetObj_Pickup *pCu
 	int QuadOffset = 2;
 	float IntraTick = IsPredicted ? Client()->PredIntraGameTick(g_Config.m_ClDummy) : Client()->IntraGameTick(g_Config.m_ClDummy);
 	vec2 Pos = mix(vec2(pPrev->m_X, pPrev->m_Y), vec2(pCurrent->m_X, pCurrent->m_Y), IntraTick);
-	// bestclient
+	// bestclient-light
 	if(!GameClient()->OptimizerAllowRenderPos(Pos))
 		return;
 	if(pCurrent->m_Type == POWERUP_HEALTH || pCurrent->m_Type == POWERUP_FREEZE)
@@ -147,7 +147,7 @@ void CItems::RenderPickup(const CNetObj_Pickup *pPrev, const CNetObj_Pickup *pCu
 		QuadOffset = m_PickupHealthOffset;
 		Graphics()->TextureSet(GameClient()->m_GameSkin.m_SpritePickupHealth);
 	}
-	// bestclient
+	// bestclient-light
 	else if(pCurrent->m_Type == POWERUP_ARMOR)
 	{
 		QuadOffset = m_PickupArmorOffset;
@@ -248,10 +248,10 @@ void CItems::RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent,
 			Pos = vec2(pCurrent->m_X, pCurrent->m_Y);
 	}
 
-	// bestclient
+	// bestclient-light
 	if(!GameClient()->OptimizerAllowRenderPos(Pos))
 		return;
-	// bestclient
+	// bestclient-light
 
 	float Size = 42.0f;
 	int QuadOffset;
@@ -270,12 +270,12 @@ void CItems::RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent,
 	Graphics()->RenderQuadContainerAsSprite(m_ItemsQuadContainerIndex, QuadOffset, Pos.x, Pos.y - Size * 0.75f);
 }
 
-// bestclient
+// bestclient-light
 void CItems::RenderLaserData(const CLaserData *pCurrent)
 {
 	RenderLaser(pCurrent, false);
 }
-// bestclient
+// bestclient-light
 
 void CItems::RenderLaser(const CLaserData *pCurrent, bool IsPredicted)
 {
@@ -351,20 +351,20 @@ void CItems::RenderLaser(const CLaserData *pCurrent, bool IsPredicted)
 		TicksHead *= (((pCurrent->m_Subtype >> 1) % 3) * 4.0f) + 1;
 		TicksHead *= (pCurrent->m_Subtype & 1) ? -1 : 1;
 	}
-	// bestclient
+	// bestclient-light
 	if(!GameClient()->OptimizerAllowRenderPos((pCurrent->m_From + pCurrent->m_To) * 0.5f))
 		return;
-	// bestclient
+	// bestclient-light
 	RenderLaser(pCurrent->m_From, pCurrent->m_To, OuterColor, InnerColor, Ticks, TicksHead, Type);
 }
 
 void CItems::RenderLaser(vec2 From, vec2 Pos, ColorRGBA OuterColor, ColorRGBA InnerColor, float TicksBody, float TicksHead, int Type) const
 {
 	float Len = distance(Pos, From);
-	// bestclient
+	// bestclient-light
 	if(GameClient()->m_WeaponVfx.RenderWeaponLaser(From, Pos, OuterColor, InnerColor, TicksBody, TicksHead, Type))
 		return;
-	// bestclient
+	// bestclient-light
 
 	if(Len > 0)
 	{
@@ -518,9 +518,9 @@ void CItems::OnRender()
 
 	if(UsePredicted)
 	{
-		// bestclient
+		// bestclient-light
 		CGameWorld &PrevWorld = GameClient()->m_FastPractice.Active() ? GameClient()->m_FastPractice.PracticePrevWorld() : GameClient()->m_PrevPredictedWorld;
-		// bestclient
+		// bestclient-light
 		for(auto *pProj = (CProjectile *)PrevWorld.FindFirst(CGameWorld::ENTTYPE_PROJECTILE); pProj; pProj = (CProjectile *)pProj->NextEntity())
 		{
 			if(!IsSuper && pProj->m_Number > 0 && pProj->m_Number < (int)aSwitchers.size() && !aSwitchers[pProj->m_Number].m_aStatus[SwitcherTeam] && (pProj->m_Explosive ? BlinkingProjEx : BlinkingProj))
@@ -541,7 +541,7 @@ void CItems::OnRender()
 		}
 	}
 
-	// bestclient
+	// bestclient-light
 	if(UsePredicted || GameClient()->m_FastPractice.Active())
 	{
 		CGameWorld &PickupWorld = GameClient()->m_FastPractice.Active() ? GameClient()->m_FastPractice.PracticePrevWorld() : GameClient()->m_PrevPredictedWorld;
@@ -563,7 +563,7 @@ void CItems::OnRender()
 	}
 	if(GameClient()->m_FastPractice.Active() && GameClient()->m_FastPractice.UsingMapDoors())
 		GameClient()->m_FastPractice.RenderMapDoors();
-	// bestclient
+	// bestclient-light
 
 	for(const CSnapEntities &Ent : GameClient()->SnapEntities())
 	{
@@ -606,10 +606,10 @@ void CItems::OnRender()
 
 			if(Inactive && BlinkingPickup)
 				continue;
-			// bestclient
+			// bestclient-light
 			if(GameClient()->m_FastPractice.Active() && GameClient()->m_FastPractice.HasPracticePickup(Data.m_Pos, Data.m_Type, Data.m_Subtype))
 				continue;
-			// bestclient
+			// bestclient-light
 			if(UsePredicted)
 			{
 				auto *pPickup = (CPickup *)GameClient()->m_GameWorld.FindMatch(Item.m_Id, Item.m_Type, pData);
@@ -630,10 +630,10 @@ void CItems::OnRender()
 			}
 
 			CLaserData Data = ExtractLaserInfo(Item.m_Type, pData, &GameClient()->m_GameWorld, pEntEx);
-			// bestclient
+			// bestclient-light
 			if(Data.m_Type == LASERTYPE_DOOR && GameClient()->m_FastPractice.Active() && GameClient()->m_FastPractice.UsingMapDoors())
 				continue;
-			// bestclient
+			// bestclient-light
 			if(!IsLaserInside(Data))
 				continue;
 			bool Inactive = !IsSuper && Data.m_SwitchNumber > 0 && Data.m_SwitchNumber < (int)aSwitchers.size() && !aSwitchers[Data.m_SwitchNumber].m_aStatus[SwitcherTeam];
@@ -758,10 +758,10 @@ void CItems::OnInit()
 
 void CItems::ReconstructSmokeTrail(const CProjectileData *pCurrent, int DestroyTick)
 {
-	// bestclient
-	if(pCurrent->m_Type == WEAPON_GRENADE && g_Config.m_BcRocketGlow && g_Config.m_BcRocketGlowPower > 0)
+	// bestclient-light
+	if(pCurrent->m_Type == WEAPON_GRENADE && g_Config.m_BclRocketGlow && g_Config.m_BclRocketGlowPower > 0)
 		return;
-	// bestclient
+	// bestclient-light
 	bool LocalPlayerInGame = false;
 
 	if(GameClient()->m_Snap.m_pLocalInfo)

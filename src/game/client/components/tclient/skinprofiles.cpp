@@ -4,7 +4,7 @@
 #include <engine/shared/config.h>
 #include <engine/storage.h>
 
-#include <game/client/components/bestclient/profile_assets.h>
+#include <game/client/components/bestclient-light/profile_assets.h>
 #include <game/client/gameclient.h>
 
 static void EscapeParam(char *pDst, const char *pSrc, int Size)
@@ -12,7 +12,7 @@ static void EscapeParam(char *pDst, const char *pSrc, int Size)
 	str_escape(&pDst, pSrc, pDst + Size);
 }
 
-// bestclient
+// bestclient-light
 CProfile::CProfile(int BodyColor, int FeetColor, int CountryFlag, int Emote, const char *pSkinName, const char *pName, const char *pClan,
 	const char *pAssetEntities, const char *pAssetGame, const char *pAssetParticles,
 	const char *pAssetHud, const char *pAssetExtras, const char *pAssetCursor, const char *pAssetArrow,
@@ -35,7 +35,7 @@ CProfile::CProfile(int BodyColor, int FeetColor, int CountryFlag, int Emote, con
 	str_copy(m_AssetEmoticons, pAssetEmoticons);
 	str_copy(m_AssetAudio, pAssetAudio);
 }
-// bestclient
+// bestclient-light
 
 void CSkinProfiles::OnConsoleInit()
 {
@@ -43,25 +43,25 @@ void CSkinProfiles::OnConsoleInit()
 	if(pConfigManager)
 		pConfigManager->RegisterCallback(ConfigSaveCallback, this, ConfigDomain::TCLIENTPROFILES);
 
-	// bestclient
+	// bestclient-light
 	Console()->Register("add_profile", "i[body] i[feet] i[flag] i[emote] s[skin] s[name] s[clan] ?s[entities] ?s[game] ?s[particles] ?s[hud] ?s[extras] ?s[cursor] ?s[arrow] ?s[emoticons] ?s[audio]", CFGFLAG_CLIENT, ConAddProfile, this, "Add a profile");
-	// bestclient
+	// bestclient-light
 }
 
 void CSkinProfiles::ConAddProfile(IConsole::IResult *pResult, void *pUserData)
 {
 	CSkinProfiles *pSelf = (CSkinProfiles *)pUserData;
-	// bestclient
+	// bestclient-light
 	pSelf->AddProfile(
 		pResult->GetInteger(0), pResult->GetInteger(1), pResult->GetInteger(2), pResult->GetInteger(3),
 		pResult->GetString(4), pResult->GetString(5), pResult->GetString(6),
 		pResult->GetString(7), pResult->GetString(8), pResult->GetString(9),
 		pResult->GetString(10), pResult->GetString(11), pResult->GetString(12), pResult->GetString(13),
 		pResult->GetString(14), pResult->GetString(15));
-	// bestclient
+	// bestclient-light
 }
 
-// bestclient
+// bestclient-light
 void CSkinProfiles::AddProfile(int BodyColor, int FeetColor, int CountryFlag, int Emote, const char *pSkinName, const char *pName, const char *pClan,
 	const char *pAssetEntities, const char *pAssetGame, const char *pAssetParticles,
 	const char *pAssetHud, const char *pAssetExtras, const char *pAssetCursor, const char *pAssetArrow,
@@ -74,7 +74,7 @@ void CSkinProfiles::AddProfile(int BodyColor, int FeetColor, int CountryFlag, in
 		pAssetEmoticons, pAssetAudio);
 	m_Profiles.push_back(Profile);
 }
-// bestclient
+// bestclient-light
 
 void CSkinProfiles::ApplyProfile(int Dummy, const CProfile &Profile)
 {
@@ -93,14 +93,14 @@ void CSkinProfiles::ApplyProfile(int Dummy, const CProfile &Profile)
 		str_copy(Dummy ? g_Config.m_ClDummyClan : g_Config.m_PlayerClan, Profile.m_Clan); // TODO m_ClPlayerClan
 	if(g_Config.m_TcProfileFlag && Profile.m_CountryFlag != -2)
 	{
-		// bestclient
+		// bestclient-light
 		const int CountryFlag = in_range(Profile.m_CountryFlag, CountryCode::MINIMUM, CountryCode::MAXIMUM) ? Profile.m_CountryFlag : CountryCode::DEFAULT;
 		(Dummy ? g_Config.m_ClDummyCountry : g_Config.m_PlayerCountry) = CountryFlag;
-		// bestclient
+		// bestclient-light
 	}
-	// bestclient
-	BestClientApplyProfileAssets(GameClient(), Profile);
-	// bestclient
+	// bestclient-light
+	BestClientLightApplyProfileAssets(GameClient(), Profile);
+	// bestclient-light
 	GameClient()->m_Skins.m_SkinList.ForceRefresh(); // Prevent segfault
 	if(Dummy)
 		GameClient()->SendDummyInfo(false);
@@ -111,9 +111,9 @@ void CSkinProfiles::ApplyProfile(int Dummy, const CProfile &Profile)
 void CSkinProfiles::ConfigSaveCallback(IConfigManager *pConfigManager, void *pUserData)
 {
 	CSkinProfiles *pThis = (CSkinProfiles *)pUserData;
-	// bestclient
+	// bestclient-light
 	char aBuf[1024];
-	// bestclient
+	// bestclient-light
 	char aBufTemp[128];
 	char aEscapeBuf[256];
 	for(const CProfile &Profile : pThis->m_Profiles)
@@ -144,7 +144,7 @@ void CSkinProfiles::ConfigSaveCallback(IConfigManager *pConfigManager, void *pUs
 		str_format(aBufTemp, sizeof(aBufTemp), "\"%s\"", aEscapeBuf);
 		str_append(aBuf, aBufTemp, sizeof(aBuf));
 
-		// bestclient
+		// bestclient-light
 		const char *apAssets[] = {
 			Profile.m_AssetEntities, Profile.m_AssetGame,
 			Profile.m_AssetParticles, Profile.m_AssetHud,
@@ -157,7 +157,7 @@ void CSkinProfiles::ConfigSaveCallback(IConfigManager *pConfigManager, void *pUs
 			str_format(aBufTemp, sizeof(aBufTemp), " \"%s\"", aEscapeBuf);
 			str_append(aBuf, aBufTemp, sizeof(aBuf));
 		}
-		// bestclient
+		// bestclient-light
 
 		pConfigManager->WriteLine(aBuf, ConfigDomain::TCLIENTPROFILES);
 	}

@@ -28,7 +28,7 @@
 #include <pulse/simple.h>
 #endif
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 	namespace
@@ -247,7 +247,7 @@ namespace BestClientVisualizer
 				if(!pMainloop)
 					return vTargets;
 
-				pa_context *pContext = pa_context_new(pa_mainloop_get_api(pMainloop), "BestClient music visualizer");
+				pa_context *pContext = pa_context_new(pa_mainloop_get_api(pMainloop), "BestClient Light music visualizer");
 				if(!pContext)
 				{
 					pa_mainloop_free(pMainloop);
@@ -464,7 +464,7 @@ namespace BestClientVisualizer
 						vMonoBuffer.resize(FramesPerRead);
 						Attr.fragsize = (uint32_t)(sizeof(float) * vReadBuffer.size());
 						int Error = 0;
-						pSimple = pa_simple_new(nullptr, "BestClient", PA_STREAM_RECORD, Candidate.m_MonitorSource.c_str(), "music visualizer", &Spec, nullptr, &Attr, &Error);
+						pSimple = pa_simple_new(nullptr, "BestClient Light", PA_STREAM_RECORD, Candidate.m_MonitorSource.c_str(), "music visualizer", &Spec, nullptr, &Attr, &Error);
 						if(!pSimple)
 							continue;
 
@@ -651,4 +651,4 @@ namespace BestClientVisualizer
 #endif
 	}
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer

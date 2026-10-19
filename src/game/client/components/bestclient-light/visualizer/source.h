@@ -1,12 +1,12 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_SOURCE_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_SOURCE_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_SOURCE_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_SOURCE_H
 
 #include "types.h"
 
 #include <memory>
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 class IVisualizerSource
@@ -23,6 +23,6 @@ std::unique_ptr<IVisualizerSource> CreatePulseVisualizerSource();
 std::unique_ptr<IVisualizerSource> CreateWasapiVisualizerSource();
 std::unique_ptr<IVisualizerSource> CreatePassiveVisualizerSource();
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer
 
 #endif

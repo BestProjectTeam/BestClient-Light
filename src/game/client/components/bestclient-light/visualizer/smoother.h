@@ -1,13 +1,13 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_SMOOTHER_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_SMOOTHER_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_SMOOTHER_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_SMOOTHER_H
 
 #include "types.h"
 
 #include <cstdint>
 #include <vector>
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 class CVisualizerSmoother
@@ -29,6 +29,6 @@ public:
 	void Process(const SVisualizerFrame &RawFrame, SVisualizerFrame &OutFrame);
 };
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer
 
 #endif

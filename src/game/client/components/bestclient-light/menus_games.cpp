@@ -90,14 +90,14 @@ namespace
 	}
 }
 
-void CMenus::RenderSettingsBestClientFun(CUIRect MainView)
+void CMenus::RenderSettingsBestClientLightFun(CUIRect MainView)
 {
 	CUIRect BackButton;
 	MainView.HSplitTop(24.0f, &BackButton, &MainView);
 	static CButtonContainer s_BackButton;
 	if(DoButton_MenuTab(&s_BackButton, BcLocalize("Back to Info"), 0, &BackButton, IGraphics::CORNER_ALL, nullptr, nullptr, nullptr, nullptr, 4.0f))
 	{
-		CloseBestClientFun();
+		CloseBestClientLightFun();
 		return;
 	}
 	MainView.HSplitTop(10.0f, nullptr, &MainView);
@@ -2939,7 +2939,7 @@ void CMenus::RenderSettingsBestClientFun(CUIRect MainView)
 				{
 					s_Casino.m_Won = true;
 					s_Casino.m_WinAmount = ActualBet * s_aSym[s_Casino.m_aSymbols[0]].m_Payout;
-					g_Config.m_BcCasinoBalance += s_Casino.m_WinAmount;
+					g_Config.m_BclCasinoBalance += s_Casino.m_WinAmount;
 					s_Casino.m_SpinStreak = 0;
 				}
 				else
@@ -2970,21 +2970,21 @@ void CMenus::RenderSettingsBestClientFun(CUIRect MainView)
 		ClaimRect.VSplitLeft(MARGIN_SMALL, nullptr, &ClaimRect);
 
 		char aBuf[128];
-		str_format(aBuf, sizeof(aBuf), "Balance:  $%d", g_Config.m_BcCasinoBalance);
+		str_format(aBuf, sizeof(aBuf), "Balance:  $%d", g_Config.m_BclCasinoBalance);
 		TextRender()->TextColor(ColorRGBA(0.75f, 1.f, 0.55f, 1.f));
 		Ui()->DoLabel(&BalRect, aBuf, FONT_SIZE, TEXTALIGN_ML);
 		TextRender()->TextColor(TextRender()->DefaultTextColor());
 
 		const int64_t Now = (int64_t)time_timestamp();
 		const int64_t CooldownSec = 60;
-		const int64_t Elapsed = Now - (int64_t)g_Config.m_BcCasinoLastClaim;
+		const int64_t Elapsed = Now - (int64_t)g_Config.m_BclCasinoLastClaim;
 		const bool CanClaim = Elapsed >= CooldownSec;
 		if(CanClaim)
 		{
 			if(DoButton_Menu(&s_ClaimBtn, BcLocalize("Get $200"), 0, &ClaimRect, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 5.f, 0.f, ColorRGBA(0.2f, 0.65f, 0.2f, 0.9f)))
 			{
-				g_Config.m_BcCasinoBalance += 200;
-				g_Config.m_BcCasinoLastClaim = (int)Now;
+				g_Config.m_BclCasinoBalance += 200;
+				g_Config.m_BclCasinoLastClaim = (int)Now;
 			}
 		}
 		else
@@ -3125,7 +3125,7 @@ void CMenus::RenderSettingsBestClientFun(CUIRect MainView)
 		Area.HSplitTop(MARGIN_SMALL, nullptr, &Area);
 		CUIRect SpinBtn;
 		Area.HSplitTop(34.f, &SpinBtn, &Area);
-		const bool NotEnoughFunds = g_Config.m_BcCasinoBalance < ActualBet;
+		const bool NotEnoughFunds = g_Config.m_BclCasinoBalance < ActualBet;
 		if(s_Casino.m_Spinning || NotEnoughFunds)
 		{
 			const char *pLabel = NotEnoughFunds ? BcLocalize("Not enough funds") : BcLocalize("Spinning...");
@@ -3137,7 +3137,7 @@ void CMenus::RenderSettingsBestClientFun(CUIRect MainView)
 			if(DoButton_Menu(&s_SpinBtn, aBuf, 0, &SpinBtn, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 6.f, 0.f, ColorRGBA(0.7f, 0.25f, 0.25f, 0.92f)) ||
 				Input()->KeyPress(KEY_SPACE))
 			{
-				g_Config.m_BcCasinoBalance -= ActualBet;
+				g_Config.m_BclCasinoBalance -= ActualBet;
 				s_Casino.m_Spinning = true;
 				s_Casino.m_SpinTimer = 0.f;
 				s_Casino.m_ShowResult = false;

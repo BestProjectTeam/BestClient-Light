@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_VOICE_VOICE_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_VOICE_VOICE_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VOICE_VOICE_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VOICE_VOICE_H
 
 #include "protocol.h"
 
@@ -156,7 +156,7 @@ private:
 	struct CRemotePeer
 	{
 		OpusDecoder *m_pDecoder = nullptr;
-		CFixedSampleRingBuffer<BestClientVoice::FRAME_SIZE * 8> m_DecodedPcm;
+		CFixedSampleRingBuffer<BestClientLightVoice::FRAME_SIZE * 8> m_DecodedPcm;
 		int64_t m_LastReceiveTick = 0;
 		int64_t m_LastArrivalTick = 0;
 		uint16_t m_LastSequence = 0;
@@ -164,7 +164,7 @@ private:
 		vec2 m_Position = vec2(0.0f, 0.0f);
 		int m_Team = 0;
 		int64_t m_LastVoiceTick = 0;
-		int m_AnnouncedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID;
+		int m_AnnouncedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID;
 		float m_JitterMs = 0.0f;
 		float m_LossEwma = 0.0f;
 		int m_ConsecutiveDecodeFails = 0;
@@ -212,10 +212,10 @@ private:
 	bool m_SecondaryHelloResetPending = false;
 
 	bool m_ChallengeActive = false;
-	uint8_t m_ChallengeNonce[BestClientVoice::CHALLENGE_NONCE_SIZE] = {};
+	uint8_t m_ChallengeNonce[BestClientLightVoice::CHALLENGE_NONCE_SIZE] = {};
 	std::vector<uint8_t> m_PendingHelloPayload;
 	bool m_SecondaryChallengeActive = false;
-	uint8_t m_SecondaryChallengeNonce[BestClientVoice::CHALLENGE_NONCE_SIZE] = {};
+	uint8_t m_SecondaryChallengeNonce[BestClientLightVoice::CHALLENGE_NONCE_SIZE] = {};
 	std::vector<uint8_t> m_SecondaryPendingHelloPayload;
 	ERuntimeState m_RuntimeState = RUNTIME_STOPPED;
 
@@ -225,8 +225,8 @@ private:
 	SDL_AudioSpec m_PlaybackSpec = {};
 	OpusEncoder *m_pEncoder = nullptr;
 
-	CFixedSampleRingBuffer<BestClientVoice::SAMPLE_RATE * 2> m_CapturePcm;
-	CFixedSampleRingBuffer<BestClientVoice::SAMPLE_RATE * 2> m_MicMonitorPcm;
+	CFixedSampleRingBuffer<BestClientLightVoice::SAMPLE_RATE * 2> m_CapturePcm;
+	CFixedSampleRingBuffer<BestClientLightVoice::SAMPLE_RATE * 2> m_MicMonitorPcm;
 	std::unordered_map<uint16_t, CRemotePeer> m_Peers;
 	std::unordered_map<uint16_t, int> m_PeerVolumePercent;
 	std::unordered_set<std::string> m_MutedNameKeys;
@@ -270,16 +270,16 @@ private:
 	std::shared_ptr<IHttpRequest> m_pServerListTask = nullptr;
 	std::string m_AdvertisedRoomKey;
 	std::string m_AdvertisedPlayerName;
-	int m_AdvertisedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID - 1;
+	int m_AdvertisedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID - 1;
 	int m_AdvertisedTeam = std::numeric_limits<int>::min();
 	CUuid m_ClientInstanceId = UUID_ZEROED;
-	uint8_t m_LinkToken[BestClientVoice::LINK_TOKEN_SIZE] = {};
+	uint8_t m_LinkToken[BestClientLightVoice::LINK_TOKEN_SIZE] = {};
 	bool m_HasLinkToken = false;
 	bool m_OfficialRejected = false;
 	int64_t m_LastUnofficialNoticeTick = 0;
 	std::string m_SecondaryAdvertisedRoomKey;
 	std::string m_SecondaryAdvertisedPlayerName;
-	int m_SecondaryAdvertisedGameClientId = BestClientVoice::INVALID_GAME_CLIENT_ID - 1;
+	int m_SecondaryAdvertisedGameClientId = BestClientLightVoice::INVALID_GAME_CLIENT_ID - 1;
 	int m_SecondaryAdvertisedTeam = std::numeric_limits<int>::min();
 	CUuid m_SecondaryClientInstanceId = UUID_ZEROED;
 	float m_EnableYourGroupRevealPhase = 0.0f;

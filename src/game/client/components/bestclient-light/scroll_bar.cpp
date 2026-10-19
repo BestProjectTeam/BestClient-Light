@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace BestClientScrollBar
+namespace BestClientLightScrollBar
 {
 
 static float HandleHeight(const CUIRect &Rail, EHandleStyle Style)
@@ -138,4 +138,4 @@ float DoVerticalPixels(SDragState &State, const CUIRect &ScrollbarRect, float Cu
 	return NewOffset;
 }
 
-} // namespace BestClientScrollBar
+} // namespace BestClientLightScrollBar

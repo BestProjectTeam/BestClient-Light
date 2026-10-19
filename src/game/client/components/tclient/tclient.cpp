@@ -15,9 +15,9 @@
 #include <generated/client_data.h>
 
 #include <game/client/animstate.h>
-#include <game/client/components/bestclient/bestclient.h> // bestclient
+#include <game/client/components/bestclient-light/bestclient-light.h> // bestclient-light
 #include <game/client/components/chat.h>
-#include <game/client/components/hud_layout.h> // bestclient
+#include <game/client/components/hud_layout.h> // bestclient-light
 #include <game/client/gameclient.h>
 #include <game/client/render.h>
 #include <game/client/ui.h>
@@ -102,9 +102,9 @@ void CTClient::ConchainRandomColor(IConsole::IResult *pResult, void *pUserData, 
 
 void CTClient::OnInit()
 {
-	// bestclient
-	BestClientApplyMenuFont(TextRender());
-	// bestclient
+	// bestclient-light
+	BestClientLightApplyMenuFont(TextRender());
+	// bestclient-light
 	m_pGraphics = Kernel()->RequestInterface<IEngineGraphics>();
 	FetchTClientInfo();
 
@@ -190,7 +190,7 @@ void CTClient::OnMessage(int MsgType, void *pRawMsg)
 			return;
 		}
 
-		// bestclient
+		// bestclient-light
 		if(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideChat && g_Config.m_ClFocusModeAutoReply)
 		{
 			char aBuf[256];
@@ -201,7 +201,7 @@ void CTClient::OnMessage(int MsgType, void *pRawMsg)
 			SendNonDuplicateMessage(0, aBuf);
 			return;
 		}
-		// bestclient
+		// bestclient-light
 
 		bool WindowActive = m_pGraphics && m_pGraphics->WindowActive();
 		if(g_Config.m_TcAutoReplyMinimized && !WindowActive && m_pGraphics)
@@ -666,11 +666,11 @@ void CTClient::SetForcedAspect()
 		Force = false;
 	else if(State == CClient::EClientState::STATE_ONLINE && GameClient()->m_GameInfo.m_AllowZoom && !GameClient()->m_Menus.IsActive())
 		Force = false;
-	// bestclient
+	// bestclient-light
 	const bool IsActiveGameplay = State == CClient::EClientState::STATE_ONLINE || State == CClient::EClientState::STATE_DEMOPLAYBACK;
 	const bool ApplyCustomAspect = GameClient()->m_AspectRatio.ShouldApplyCustomAspect(IsActiveGameplay);
 	Graphics()->SetForcedAspect(Force, ApplyCustomAspect);
-	// bestclient
+	// bestclient-light
 }
 
 void CTClient::OnStateChange(int OldState, int NewState)
@@ -772,7 +772,7 @@ static void StripStr(const char *pIn, char *pOut, const char *pEnd)
 
 void CTClient::RenderMiniVoteHud(bool Preview)
 {
-	// bestclient
+	// bestclient-light
 	const float HudHeight = 300.0f;
 	const float HudWidth = HudHeight * Graphics()->ScreenAspect();
 	CUIRect View = GameClient()->m_Voting.GetHudRect(HudWidth, HudHeight, Preview);
@@ -846,7 +846,7 @@ void CTClient::RenderMiniVoteHud(bool Preview)
 	Ui()->DoLabel(&RightColumn, aKey[0] == '\0' ? "no" : aKey, 0.5f * Scale, TEXTALIGN_MR);
 
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
-	// bestclient
+	// bestclient-light
 }
 
 void CTClient::RenderCenterLines()

@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_ANALYZER_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_ANALYZER_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_ANALYZER_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_ANALYZER_H
 
 #include "types.h"
 
@@ -8,7 +8,7 @@
 #include <complex>
 #include <vector>
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 class CVisualizerAnalyzer
@@ -63,6 +63,6 @@ public:
 
 void BuildRenderBars(const SVisualizerFrame &Frame, float *pOutBars, int RequestedBarCount);
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer
 
 #endif

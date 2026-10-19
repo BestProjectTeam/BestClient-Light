@@ -285,7 +285,7 @@ namespace
 
 void CHudEditor::OnConsoleInit()
 {
-	Storage()->CreateFolder("BestClient", IStorage::TYPE_SAVE);
+	Storage()->CreateFolder("bestclient-light", IStorage::TYPE_SAVE);
 	HudLayout::OnConsoleInit(Console(), ConfigManager());
 }
 
@@ -582,7 +582,7 @@ void CHudEditor::CollectModuleVisuals(SModuleVisual *pOut, int &Count) const
 	AddModule(HudLayout::MODULE_EDGE_INFO);
 	AddModule(HudLayout::MODULE_FINISH_PREDICTION);
 	AddModule(HudLayout::MODULE_KEYSTROKES_KEYBOARD);
-	if(g_Config.m_BcKeystrokesStyle != 1)
+	if(g_Config.m_BclKeystrokesStyle != 1)
 		AddModule(HudLayout::MODULE_KEYSTROKES_MOUSE);
 }
 
@@ -871,7 +871,7 @@ void CHudEditor::UpdateResetAnimation()
 	if(m_ResetAnimCount == 0)
 		return;
 
-	const bool AnimEnabled = BCUiAnimations::Enabled() && g_Config.m_BcModuleUiRevealAnimation != 0;
+	const bool AnimEnabled = BCUiAnimations::Enabled() && g_Config.m_BclModuleUiRevealAnimation != 0;
 	const float Dt = Client()->RenderFrameTime();
 	for(int i = 0; i < m_ResetAnimCount; ++i)
 	{
@@ -917,8 +917,8 @@ CUi::EPopupMenuFunctionResult CHudEditor::PopupModuleSettings(void *pContext, CU
 	if(pThis->m_SelectedModule == HudLayout::MODULE_COUNT)
 		return CUi::POPUP_CLOSE_CURRENT;
 
-	if(BCUiAnimations::Enabled() && g_Config.m_BcModuleUiRevealAnimation != 0)
-		BCUiAnimations::UpdatePhase(pThis->m_PopupRevealPhase, 1.0f, pThis->Client()->RenderFrameTime(), BCUiAnimations::MsToSeconds(g_Config.m_BcModuleUiRevealAnimationMs));
+	if(BCUiAnimations::Enabled() && g_Config.m_BclModuleUiRevealAnimation != 0)
+		BCUiAnimations::UpdatePhase(pThis->m_PopupRevealPhase, 1.0f, pThis->Client()->RenderFrameTime(), BCUiAnimations::MsToSeconds(g_Config.m_BclModuleUiRevealAnimationMs));
 	else
 		pThis->m_PopupRevealPhase = 1.0f;
 	const float Phase = BCUiAnimations::EaseOutCubic(pThis->m_PopupRevealPhase);
@@ -1175,7 +1175,7 @@ void CHudEditor::RenderOverlay(vec2 MousePos)
 	GameClient()->m_Hud.RenderLocalTimePreview();
 	GameClient()->m_Hud.RenderFrozenHudPreview();
 	GameClient()->m_Hud.RenderNotifyLastPreview();
-	const bool MusicPlayerHasLiveRect = g_Config.m_BcMusicPlayer != 0 && GameClient()->m_MusicPlayer.HudReservation().m_Visible;
+	const bool MusicPlayerHasLiveRect = g_Config.m_BclMusicPlayer != 0 && GameClient()->m_MusicPlayer.HudReservation().m_Visible;
 	GameClient()->m_MusicPlayer.RenderHudEditor(!MusicPlayerHasLiveRect);
 	GameClient()->m_VoiceChat.RenderHudTalkingIndicator(Width, Height, true);
 	GameClient()->m_VoiceChat.RenderHudMuteStatusIndicator(Width, Height, true);
@@ -1228,8 +1228,8 @@ void CHudEditor::RenderOverlay(vec2 MousePos)
 	Ui()->RenderPopupMenus();
 	if(m_PopupClosing)
 	{
-		if(BCUiAnimations::Enabled() && g_Config.m_BcModuleUiRevealAnimation != 0)
-			BCUiAnimations::UpdatePhase(m_PopupClosePhase, 0.0f, Client()->RenderFrameTime(), BCUiAnimations::MsToSeconds(g_Config.m_BcModuleUiRevealAnimationMs));
+		if(BCUiAnimations::Enabled() && g_Config.m_BclModuleUiRevealAnimation != 0)
+			BCUiAnimations::UpdatePhase(m_PopupClosePhase, 0.0f, Client()->RenderFrameTime(), BCUiAnimations::MsToSeconds(g_Config.m_BclModuleUiRevealAnimationMs));
 		else
 			m_PopupClosePhase = 0.0f;
 		RenderClosingPopupFrame();

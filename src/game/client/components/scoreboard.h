@@ -55,7 +55,7 @@ class CScoreboard : public CComponent
 		CButtonContainer m_EmoticonAction;
 
 		CButtonContainer m_SpectateButton;
-		// bestclient
+		// bestclient-light
 		CButtonContainer m_TeamAction;
 		CButtonContainer m_WarAction;
 		CButtonContainer m_ProfileButton;
@@ -74,7 +74,7 @@ class CScoreboard : public CComponent
 		CButtonContainer m_TeamLockButton;
 		int m_VoiceVolumePreview = -1;
 		bool m_VoiceVolumeDirty = false;
-		// bestclient
+		// bestclient-light
 
 		int m_ClientId;
 		bool m_IsLocal;
@@ -131,11 +131,11 @@ public:
 	bool OnInput(const IInput::CEvent &Event) override;
 
 	bool IsActive() const;
-	// bestclient
+	// bestclient-light
 	bool IsShown() const;
 	void ResetTexts();
 	bool IsMouseUnlocked() const { return IsActive() && m_MouseUnlocked; }
-	// bestclient
+	// bestclient-light
 };
 
 #endif

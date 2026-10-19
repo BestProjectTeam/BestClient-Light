@@ -148,8 +148,8 @@ void CMenus::RenderSettingsDDNet(CUIRect MainView)
 	if(Ui()->DoScrollbarOption(&g_Config.m_ClDefaultZoom, &g_Config.m_ClDefaultZoom, &Button, Localize("Default zoom"), 0, 20))
 		GameClient()->m_Camera.SetZoom(CCamera::ZoomStepsToValue(g_Config.m_ClDefaultZoom - 10), g_Config.m_ClSmoothZoomTime, true);
 
-	Left.HSplitTop(20.0f, &Button, &Left); // bestclient
-	Ui()->DoScrollbarOption(&g_Config.m_ClMouseMaxDistance, &g_Config.m_ClMouseMaxDistance, &Button, Localize("Mouse max distance"), 1, 1000); // bestclient
+	Left.HSplitTop(20.0f, &Button, &Left); // bestclient-light
+	Ui()->DoScrollbarOption(&g_Config.m_ClMouseMaxDistance, &g_Config.m_ClMouseMaxDistance, &Button, Localize("Mouse max distance"), 1, 1000); // bestclient-light
 
 	Right.HSplitTop(20.0f, &Button, &Right);
 	Ui()->DoScrollbarOption(&g_Config.m_ClPredictionMargin, &g_Config.m_ClPredictionMargin, &Button, Localize("Prediction margin"), 1, 300);
@@ -305,13 +305,13 @@ void CMenus::RenderSettingsDDNet(CUIRect MainView)
 	// Updater
 #if defined(CONF_AUTOUPDATE)
 	{
-		// bestclient
+		// bestclient-light
 		IUpdater::EUpdaterState State = Updater()->GetCurrentState();
 
 		char aBuf[256];
 		if(State == IUpdater::VERSION_AVAILABLE)
 		{
-			str_format(aBuf, sizeof(aBuf), Localize("BestClient %s is out!"), Updater()->GetLatestVersionString());
+			str_format(aBuf, sizeof(aBuf), Localize("BestClient Light %s is out!"), Updater()->GetLatestVersionString());
 			UpdaterRect.VSplitLeft(TextRender()->TextWidth(14.0f, aBuf, -1, -1.0f) + 10.0f, &UpdaterRect, &Button);
 			Button.VSplitLeft(100.0f, &Button, nullptr);
 			static CButtonContainer s_ButtonUpdate;
@@ -326,7 +326,7 @@ void CMenus::RenderSettingsDDNet(CUIRect MainView)
 			str_copy(aBuf, Localize("Updating…"));
 		else if(State == IUpdater::NEED_RESTART)
 		{
-			str_copy(aBuf, Localize("BestClient updated!"));
+			str_copy(aBuf, Localize("BestClient Light updated!"));
 			m_NeedRestartUpdate = true;
 		}
 		else
@@ -345,7 +345,7 @@ void CMenus::RenderSettingsDDNet(CUIRect MainView)
 		}
 		Ui()->DoLabel(&UpdaterRect, aBuf, 14.0f, TEXTALIGN_ML);
 		TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
-		// bestclient
+		// bestclient-light
 	}
 #endif
 }

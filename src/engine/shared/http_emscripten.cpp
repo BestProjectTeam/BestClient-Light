@@ -58,10 +58,10 @@ bool CHttpRequestEmscripten::ConfigureAndRun()
 		return false;
 	}
 
-	// bestclient
+	// bestclient-light
 	if(!str_startswith(m_aUrl, "https://") &&
 		((!g_Config.m_HttpAllowInsecure && !m_AllowHttp) || !str_startswith(m_aUrl, "http://")))
-	// bestclient
+	// bestclient-light
 	{
 		log_error("http", "unsupported protocol: %s", m_aUrl);
 		return false;

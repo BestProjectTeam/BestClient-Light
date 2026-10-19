@@ -231,7 +231,7 @@ void CMenus::RenderGame(CUIRect MainView)
 				SetActive(false);
 			}
 		}
-		// bestclient
+		// bestclient-light
 		else
 		{
 			constexpr float NormalPracticeButtonWidth = 120.0f;
@@ -259,7 +259,7 @@ void CMenus::RenderGame(CUIRect MainView)
 					Console()->ExecuteLine("fast_practice_toggle", IConsole::CLIENT_ID_UNSPECIFIED);
 			}
 		}
-		// bestclient
+		// bestclient-light
 	}
 
 	if(GameClient()->m_Snap.m_pLocalInfo && (GameClient()->m_Snap.m_pLocalInfo->m_Team == TEAM_SPECTATORS || Paused || Spec))

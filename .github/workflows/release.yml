@@ -29,7 +29,7 @@ permissions:
   contents: write
 
 env:
-  CLIENT_NAME: BestClient
+  CLIENT_NAME: BestClient Light
 
 jobs:
   build-cmake:
@@ -49,14 +49,14 @@ jobs:
           cmake-init-env: CXXFLAGS="-Werror -Wno-unused-function"
           package-file: "*-linux_x86_64.tar.xz"
           artifact-name: release-linux
-          asset-name: BestClient-linux.tar.xz
+          asset-name: BestClient-Light-linux.tar.xz
         - name: windows
           os: windows-latest
           cmake-args: -A x64 -DTOOLS=OFF -DDOWNLOAD_GTEST=OFF -DVULKAN=ON
           cmake-init-env: CXXFLAGS= LDFLAGS=
           package-file: "*-win64.zip"
           artifact-name: release-windows
-          asset-name: BestClient-windows.zip
+          asset-name: BestClient-Light-windows.zip
         - name: macos
           os: macOS-latest
           # Universal PCH builds split architectures and reject the shared ARM compiler flags.
@@ -64,7 +64,7 @@ jobs:
           cmake-init-env: CXXFLAGS=
           package-file: "*-macos.dmg"
           artifact-name: release-macos
-          asset-name: BestClient-macos.dmg
+          asset-name: BestClient-Light-macos.dmg
 
     steps:
     - uses: actions/checkout@v4
@@ -122,9 +122,9 @@ jobs:
         from pathlib import Path
         code = os.environ["OFFICIAL_CODE"]
         if any(ch in code for ch in ('\0', '\n', '\r', '"', '\\')):
-            raise SystemExit("BESTCLIENT_OFFICIAL_CODE must not contain quotes, backslashes, or newlines")
+            raise SystemExit("BESTCLIENT_LIGHT_OFFICIAL_CODE must not contain quotes, backslashes, or newlines")
         path = Path(os.environ["GITHUB_WORKSPACE"]) / "versioninfo.h"
-        path.write_text(f'#define BESTCLIENT_OFFICIAL_CODE "{code}"\n', encoding="utf-8")
+        path.write_text(f'#define BESTCLIENT_LIGHT_OFFICIAL_CODE "{code}"\n', encoding="utf-8")
         PY
         if [[ "${{ matrix.os }}" == windows-latest ]]; then
           export MSYS_ARG_CONV_EXCL="/FI"
@@ -140,7 +140,7 @@ jobs:
         fi
         cmake --build build-release --config Release --target game-client
         if [[ "${{ matrix.os }}" != "macOS-latest" ]]; then
-          cmake --build build-release --config Release --target bestclient-updater
+          cmake --build build-release --config Release --target bestclient-light-updater
         fi
 
     # Sign when secrets are present. Without a cert the build still ships unsigned —
@@ -161,7 +161,7 @@ jobs:
         if(-not $SignTool) { throw "signtool.exe not found" }
         # Multi-config MSVC builds put binaries under a per-config subdirectory, so locate
         # them instead of hardcoding the layout.
-        $Targets = @("DDNet.exe", "bestclient-updater.exe") | ForEach-Object {
+        $Targets = @("DDNet.exe", "bestclient-light-updater.exe") | ForEach-Object {
           Get-ChildItem -Path build-release -Filter $_ -Recurse -File |
             Select-Object -First 1 -ExpandProperty FullName
         } | Where-Object { $_ }

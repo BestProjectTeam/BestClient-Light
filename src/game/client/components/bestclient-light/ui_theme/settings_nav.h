@@ -1,21 +1,21 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_UI_THEME_SETTINGS_NAV_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_UI_THEME_SETTINGS_NAV_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_UI_THEME_SETTINGS_NAV_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_UI_THEME_SETTINGS_NAV_H
 
-#include <game/client/components/bestclient/ui_animations.h>
-#include <game/client/components/bestclient/ui_theme/style.h>
+#include <game/client/components/bestclient-light/ui_animations.h>
+#include <game/client/components/bestclient-light/ui_theme/style.h>
 
 class CMenus;
 class CUIRect;
 
-namespace BestClientUiTheme
+namespace BestClientLightUiTheme
 {
 
 enum ESettingsNavGroup
 {
 	SETTINGS_NAV_GROUP_DDNET = 0,
 	SETTINGS_NAV_GROUP_TCLIENT,
-	SETTINGS_NAV_GROUP_BESTCLIENT,
+	SETTINGS_NAV_GROUP_BESTCLIENT_LIGHT,
 	SETTINGS_NAV_GROUP_COUNT,
 };
 
@@ -50,11 +50,11 @@ struct SSettingsLeafTarget
 {
 	int m_SettingsPage = 0;
 	int m_TClientTab = 0;
-	int m_BestClientTab = 0;
+	int m_BestClientLightTab = 0;
 };
 
 SSettingsLeafTarget LeafTarget(int Leaf);
-int LeafFromState(int SettingsPage, int TClientTab, int BestClientTab);
+int LeafFromState(int SettingsPage, int TClientTab, int BestClientLightTab);
 int GroupForLeaf(int Leaf);
 bool IsLeafVisible(int Leaf, int TcTabFlags, int BcTabFlags);
 
@@ -63,6 +63,6 @@ void ApplyLeaf(CMenus *pMenus, int Leaf);
 BCUiAnimations::STabSwitch AnimateVerticalLeafSwitch(int SelectedLeaf, float DeltaTime);
 void VerticalLeafContentOffsets(float Progress, int FromLeaf, int ToLeaf, float Height, float &FromOffset, float &ToOffset);
 
-} // namespace BestClientUiTheme
+} // namespace BestClientLightUiTheme
 
 #endif

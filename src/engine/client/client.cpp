@@ -247,19 +247,19 @@ void CClient::SendBClientInfo(int Conn)
 	}
 
 	{
-		CMsgPacker Msg(NETMSG_IAMBESTCLIENT, true);
-		Msg.AddString(BESTCLIENT_VERSION " built on " __DATE__ ", " __TIME__);
+		CMsgPacker Msg(NETMSG_IAMBESTCLIENT_LIGHT, true);
+		Msg.AddString(BESTCLIENT_LIGHT_VERSION " built on " __DATE__ ", " __TIME__);
 		SendMsg(Conn, &Msg, MSGFLAG_VITAL);
 	}
 	{
 		CMsgPacker Msg(NETMSG_IAMTATER, true);
-		Msg.AddString(BESTCLIENT_VERSION " built on " __DATE__ ", " __TIME__);
+		Msg.AddString(BESTCLIENT_LIGHT_VERSION " built on " __DATE__ ", " __TIME__);
 		SendMsg(Conn, &Msg, MSGFLAG_VITAL);
 	}
 	{
 		char aBuf[32];
 		str_format(aBuf, sizeof(aBuf), "%" PRId64, ExeSize);
-		CMsgPacker Msg(NETMSG_BESTCLIENT_EXESIZE, true);
+		CMsgPacker Msg(NETMSG_BESTCLIENT_LIGHT_EXESIZE, true);
 		Msg.AddString(aBuf);
 		SendMsg(Conn, &Msg, MSGFLAG_VITAL);
 	}
@@ -403,13 +403,13 @@ void CClient::SendInput()
 
 		if(Size)
 		{
-			// bestclient
+			// bestclient-light
 			int aSendData[MAX_INPUT_SIZE];
 			dbg_assert(Size <= (int)sizeof(aSendData), "input size exceeds send buffer");
 			mem_copy(aSendData, m_aInputs[i][m_aCurrentInput[i]].m_aData, (size_t)Size);
 			GameClient()->PrepareInputForSend(aSendData, Size, Dummy);
 			mem_copy(m_aInputs[i][m_aCurrentInput[i]].m_aData, aSendData, (size_t)Size);
-			// bestclient
+			// bestclient-light
 
 			// pack input
 			CMsgPacker Msg(NETMSG_INPUT, true);
@@ -505,13 +505,13 @@ void CClient::SetState(EClientState State)
 	if(State == IClient::STATE_ONLINE)
 	{
 		const bool Registered = m_ServerBrowser.IsRegistered(ServerAddress());
-		// bestclient
+		// bestclient-light
 		const char *pMapName = GameClient()->Map()->BaseName();
 		const char *pSkinName = GameClient()->LocalPlayerSkinName();
 		if(pSkinName == nullptr || pSkinName[0] == '\0')
 			pSkinName = g_Config.m_ClPlayerSkin;
 		Discord()->SetGameInfo(m_CurrentServerInfo, pMapName, PlayerName(), pSkinName, true, Registered);
-		// bestclient
+		// bestclient-light
 		Steam()->SetGameInfo(ServerAddress(), GameClient()->Map()->BaseName(), Registered);
 	}
 	else if(OldState == IClient::STATE_ONLINE)
@@ -1630,12 +1630,12 @@ void CClient::ProcessServerInfo(int RawType, NETADDR *pFrom, const void *pData, 
 				GameClient()->Map()->IsLoaded())
 			{
 				SetCurrentServerInfo(Info);
-				// bestclient
+				// bestclient-light
 				const char *pSkinName = GameClient()->LocalPlayerSkinName();
 				if(pSkinName == nullptr || pSkinName[0] == '\0')
 					pSkinName = g_Config.m_ClPlayerSkin;
 				Discord()->UpdateServerInfo(m_CurrentServerInfo, GameClient()->Map()->BaseName(), PlayerName(), pSkinName);
-				// bestclient
+				// bestclient-light
 			}
 
 			bool ValidPong = false;
@@ -3071,19 +3071,19 @@ void CClient::Update()
 					SendInput();
 				}
 
-				// bestclient
+				// bestclient-light
 				const bool HasFastInput =
-					(g_Config.m_BcInputs == BC_INPUTS_FAST && g_Config.m_TcFastInputAmount > 0) ||
-					(g_Config.m_BcInputs == BC_INPUTS_BEST && g_Config.m_BcBestInputAmount > 0) ||
-					(g_Config.m_BcInputs == BC_INPUTS_SAIKO && g_Config.m_BcSaikoInputAmount > 0) ||
-					(g_Config.m_BcInputs == BC_INPUTS_DELTA && g_Config.m_BcDeltaInputAmount > 0) ||
-					(g_Config.m_BcInputs == BC_INPUTS_F && g_Config.m_BcFInputAmount > 0) ||
-					(g_Config.m_BcInputs == BC_INPUTS_CLOUD && g_Config.m_BcCloudInputAmount > 0);
+					(g_Config.m_BclInputs == BC_INPUTS_FAST && g_Config.m_TcFastInputAmount > 0) ||
+					(g_Config.m_BclInputs == BC_INPUTS_BEST && g_Config.m_BclBestInputAmount > 0) ||
+					(g_Config.m_BclInputs == BC_INPUTS_SAIKO && g_Config.m_BclSaikoInputAmount > 0) ||
+					(g_Config.m_BclInputs == BC_INPUTS_DELTA && g_Config.m_BclDeltaInputAmount > 0) ||
+					(g_Config.m_BclInputs == BC_INPUTS_F && g_Config.m_BclFInputAmount > 0) ||
+					(g_Config.m_BclInputs == BC_INPUTS_CLOUD && g_Config.m_BclCloudInputAmount > 0);
 				if(HasFastInput && GameClient()->CheckNewInput())
 				{
 					Repredict = true;
 				}
-				// bestclient
+				// bestclient-light
 			}
 
 			// only do sane predictions
@@ -3234,9 +3234,9 @@ void CClient::Update()
 	// update the server browser
 	m_ServerBrowser.Update();
 
-	// bestclient
-	Discord()->Update(g_Config.m_BcDiscordRPC);
-	// bestclient
+	// bestclient-light
+	Discord()->Update(g_Config.m_BclDiscordRPC);
+	// bestclient-light
 	Steam()->Update();
 	if(Steam()->GetConnectAddress())
 	{
@@ -4204,12 +4204,12 @@ void CClient::SaveReplay(const int Length, const char *pFilename)
 		}
 		else
 		{
-			// bestclient
+			// bestclient-light
 			if(str_startswith(pFilename, "rollback/"))
 				str_format(aFilename, sizeof(aFilename), "demos/%s.demo", pFilename);
 			else
 				str_format(aFilename, sizeof(aFilename), "demos/replays/%s.demo", pFilename);
-			// bestclient
+			// bestclient-light
 			IOHANDLE Handle = m_pStorage->OpenFile(aFilename, IOFLAG_WRITE, IStorage::TYPE_SAVE);
 			if(!Handle)
 			{
@@ -5123,14 +5123,14 @@ int main(int argc, const char **argv)
 		if(MainThreadId != std::this_thread::get_id())
 			return;
 
-		const bool OutOfVram = str_find_nocase(pMsg, "Out of VRAM") != nullptr; // bestclient
+		const bool OutOfVram = str_find_nocase(pMsg, "Out of VRAM") != nullptr; // bestclient-light
 		const bool ResetSkinQuality = OutOfVram && g_Config.m_ClSkinMaxWidth > 1024 && pClient->ConfigManager() != nullptr;
 		if(ResetSkinQuality)
 		{
 			log_error("client", "Out of VRAM with cl_skin_max_width=%d, resetting to 1024", g_Config.m_ClSkinMaxWidth);
 			g_Config.m_ClSkinMaxWidth = 1024;
 			pClient->ConfigManager()->Save();
-		} // bestclient
+		} // bestclient-light
 
 		const char *pGraphicsError = pClient->Graphics() == nullptr ? "" : pClient->Graphics()->GetFatalError();
 		const bool GotGraphicsError = pGraphicsError[0] != '\0';

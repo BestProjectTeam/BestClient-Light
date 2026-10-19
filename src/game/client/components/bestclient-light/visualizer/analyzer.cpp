@@ -35,7 +35,7 @@ constexpr T maximum(T a, T b, T c)
 #include <cmath>
 #include <cstring>
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 namespace
@@ -552,4 +552,4 @@ void BuildRenderBars(const SVisualizerFrame &Frame, float *pOutBars, int Request
 	}
 }
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer

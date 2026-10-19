@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_UI_THEME_STYLE_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_UI_THEME_STYLE_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_UI_THEME_STYLE_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_UI_THEME_STYLE_H
 
 #include <base/color.h>
 #include <base/math.h>
@@ -16,7 +16,7 @@
 #include <cmath>
 #include <vector>
 
-namespace BestClientUiTheme
+namespace BestClientLightUiTheme
 {
 
 enum
@@ -64,37 +64,37 @@ struct CMenuThemeScope
 
 inline bool IsNewStyle()
 {
-	return g_Config.m_BcMenuUiStyle != 0;
+	return g_Config.m_BclMenuUiStyle != 0;
 }
 
 inline bool IsNewCheckbox()
 {
-	return IsNewStyle() && g_Config.m_BcMenuUiNewCheckbox != 0;
+	return IsNewStyle() && g_Config.m_BclMenuUiNewCheckbox != 0;
 }
 
 inline bool IsNewScrollbar()
 {
-	return IsNewStyle() && g_Config.m_BcMenuUiNewScrollbar != 0;
+	return IsNewStyle() && g_Config.m_BclMenuUiNewScrollbar != 0;
 }
 
 inline bool IsNewTabOption()
 {
-	return IsNewStyle() && g_Config.m_BcMenuUiNewTabOption != 0;
+	return IsNewStyle() && g_Config.m_BclMenuUiNewTabOption != 0;
 }
 
 inline bool IsSettingsNavOnLeft()
 {
-	return IsNewTabOption() && g_Config.m_BcMenuUiTabSide == 0;
+	return IsNewTabOption() && g_Config.m_BclMenuUiTabSide == 0;
 }
 
 inline bool IsNewColorPicker()
 {
-	return IsNewStyle() && g_Config.m_BcMenuUiNewColorPicker != 0;
+	return IsNewStyle() && g_Config.m_BclMenuUiNewColorPicker != 0;
 }
 
 inline bool IsUiThemes()
 {
-	return g_Config.m_BcUiThemes != 0 && IsMenuThemeScope();
+	return g_Config.m_BclUiThemes != 0 && IsMenuThemeScope();
 }
 
 inline bool IsCustomUiColor()
@@ -104,7 +104,7 @@ inline bool IsCustomUiColor()
 
 inline bool IsCustomUiBackground()
 {
-	return g_Config.m_BcUiThemes != 0 && g_Config.m_BcCustomUiBackground != 0;
+	return g_Config.m_BclUiThemes != 0 && g_Config.m_BclCustomUiBackground != 0;
 }
 
 inline bool CatOn(int Flag)
@@ -112,102 +112,102 @@ inline bool CatOn(int Flag)
 	return IsCustomUiColor() && Flag != 0;
 }
 
-inline int TextAnimateSpeed() { return g_Config.m_BcCustomUiTextAnimateSpeed; }
-inline int CheckboxAnimateSpeed() { return g_Config.m_BcCustomUiCheckboxAnimateSpeed; }
-inline int ScrollbarAnimateSpeed() { return g_Config.m_BcCustomUiScrollbarAnimateSpeed; }
-inline int ButtonAnimateSpeed() { return g_Config.m_BcCustomUiButtonAnimateSpeed; }
-inline int DropdownAnimateSpeed() { return g_Config.m_BcCustomUiDropdownAnimateSpeed; }
-inline int EditBoxAnimateSpeed() { return g_Config.m_BcCustomUiEditBoxAnimateSpeed; }
-inline int BlockAnimateSpeed() { return g_Config.m_BcCustomUiBlockAnimateSpeed; }
-inline int PanelAnimateSpeed() { return g_Config.m_BcCustomUiMainPanelAnimateSpeed; }
-inline int NavAnimateSpeed() { return g_Config.m_BcCustomUiNavTabAnimateSpeed; }
-inline int BadgeAnimateSpeed() { return g_Config.m_BcCustomUiBadgeAnimateSpeed; }
-inline int BindAnimateSpeed() { return g_Config.m_BcCustomUiBindAnimateSpeed; }
+inline int TextAnimateSpeed() { return g_Config.m_BclCustomUiTextAnimateSpeed; }
+inline int CheckboxAnimateSpeed() { return g_Config.m_BclCustomUiCheckboxAnimateSpeed; }
+inline int ScrollbarAnimateSpeed() { return g_Config.m_BclCustomUiScrollbarAnimateSpeed; }
+inline int ButtonAnimateSpeed() { return g_Config.m_BclCustomUiButtonAnimateSpeed; }
+inline int DropdownAnimateSpeed() { return g_Config.m_BclCustomUiDropdownAnimateSpeed; }
+inline int EditBoxAnimateSpeed() { return g_Config.m_BclCustomUiEditBoxAnimateSpeed; }
+inline int BlockAnimateSpeed() { return g_Config.m_BclCustomUiBlockAnimateSpeed; }
+inline int PanelAnimateSpeed() { return g_Config.m_BclCustomUiMainPanelAnimateSpeed; }
+inline int NavAnimateSpeed() { return g_Config.m_BclCustomUiNavTabAnimateSpeed; }
+inline int BadgeAnimateSpeed() { return g_Config.m_BclCustomUiBadgeAnimateSpeed; }
+inline int BindAnimateSpeed() { return g_Config.m_BclCustomUiBindAnimateSpeed; }
 
 inline int ThemeBlockOpacity()
 {
-	return IsCustomUiColor() ? g_Config.m_BcCustomUiBlockOpacity : 25;
+	return IsCustomUiColor() ? g_Config.m_BclCustomUiBlockOpacity : 25;
 }
 
 inline int ThemePanelOpacity()
 {
-	return g_Config.m_BcCustomUiMainPanelOpacity;
+	return g_Config.m_BclCustomUiMainPanelOpacity;
 }
 
 inline int ThemeNavOpacity()
 {
-	return g_Config.m_BcCustomUiNavTabOpacity;
+	return g_Config.m_BclCustomUiNavTabOpacity;
 }
 
-inline bool IsCustomUiText() { return CatOn(g_Config.m_BcCustomUiText); }
-inline bool IsCustomUiCheckbox() { return CatOn(g_Config.m_BcCustomUiCheckbox); }
-inline bool IsCustomUiScrollbar() { return CatOn(g_Config.m_BcCustomUiScrollbar); }
-inline bool IsCustomUiButton() { return CatOn(g_Config.m_BcCustomUiButton); }
-inline bool IsCustomUiDropdown() { return CatOn(g_Config.m_BcCustomUiDropdown); }
-inline bool IsCustomUiEditBox() { return CatOn(g_Config.m_BcCustomUiEditBox); }
-inline bool IsCustomUiBlock() { return CatOn(g_Config.m_BcCustomUiBlock); }
-inline bool IsCustomUiMainPanel() { return CatOn(g_Config.m_BcCustomUiMainPanel); }
-inline bool IsCustomUiNavTab() { return CatOn(g_Config.m_BcCustomUiNavTab); }
-inline bool IsCustomUiBadge() { return CatOn(g_Config.m_BcCustomUiBadge); }
-inline bool IsCustomUiBind() { return CatOn(g_Config.m_BcCustomUiBind); }
+inline bool IsCustomUiText() { return CatOn(g_Config.m_BclCustomUiText); }
+inline bool IsCustomUiCheckbox() { return CatOn(g_Config.m_BclCustomUiCheckbox); }
+inline bool IsCustomUiScrollbar() { return CatOn(g_Config.m_BclCustomUiScrollbar); }
+inline bool IsCustomUiButton() { return CatOn(g_Config.m_BclCustomUiButton); }
+inline bool IsCustomUiDropdown() { return CatOn(g_Config.m_BclCustomUiDropdown); }
+inline bool IsCustomUiEditBox() { return CatOn(g_Config.m_BclCustomUiEditBox); }
+inline bool IsCustomUiBlock() { return CatOn(g_Config.m_BclCustomUiBlock); }
+inline bool IsCustomUiMainPanel() { return CatOn(g_Config.m_BclCustomUiMainPanel); }
+inline bool IsCustomUiNavTab() { return CatOn(g_Config.m_BclCustomUiNavTab); }
+inline bool IsCustomUiBadge() { return CatOn(g_Config.m_BclCustomUiBadge); }
+inline bool IsCustomUiBind() { return CatOn(g_Config.m_BclCustomUiBind); }
 
-inline bool TextGrad() { return CatOn(g_Config.m_BcCustomUiTextGradient); }
-inline bool CheckboxGrad() { return CatOn(g_Config.m_BcCustomUiCheckboxGradient); }
-inline bool ScrollbarGrad() { return CatOn(g_Config.m_BcCustomUiScrollbarGradient); }
-inline bool ButtonGrad() { return CatOn(g_Config.m_BcCustomUiButtonGradient); }
-inline bool DropdownGrad() { return CatOn(g_Config.m_BcCustomUiDropdownGradient); }
-inline bool EditBoxGrad() { return CatOn(g_Config.m_BcCustomUiEditBoxGradient); }
-inline bool BlockGrad() { return CatOn(g_Config.m_BcCustomUiBlockGradient); }
-inline bool PanelGrad() { return CatOn(g_Config.m_BcCustomUiMainPanelGradient); }
-inline bool NavGrad() { return CatOn(g_Config.m_BcCustomUiNavTabGradient); }
-inline bool BadgeGrad() { return CatOn(g_Config.m_BcCustomUiBadgeGradient); }
-inline bool BindGrad() { return CatOn(g_Config.m_BcCustomUiBindGradient); }
+inline bool TextGrad() { return CatOn(g_Config.m_BclCustomUiTextGradient); }
+inline bool CheckboxGrad() { return CatOn(g_Config.m_BclCustomUiCheckboxGradient); }
+inline bool ScrollbarGrad() { return CatOn(g_Config.m_BclCustomUiScrollbarGradient); }
+inline bool ButtonGrad() { return CatOn(g_Config.m_BclCustomUiButtonGradient); }
+inline bool DropdownGrad() { return CatOn(g_Config.m_BclCustomUiDropdownGradient); }
+inline bool EditBoxGrad() { return CatOn(g_Config.m_BclCustomUiEditBoxGradient); }
+inline bool BlockGrad() { return CatOn(g_Config.m_BclCustomUiBlockGradient); }
+inline bool PanelGrad() { return CatOn(g_Config.m_BclCustomUiMainPanelGradient); }
+inline bool NavGrad() { return CatOn(g_Config.m_BclCustomUiNavTabGradient); }
+inline bool BadgeGrad() { return CatOn(g_Config.m_BclCustomUiBadgeGradient); }
+inline bool BindGrad() { return CatOn(g_Config.m_BclCustomUiBindGradient); }
 
-inline bool TextAccent() { return CatOn(g_Config.m_BcCustomUiTextUseAccent); }
-inline bool CheckboxAccent() { return CatOn(g_Config.m_BcCustomUiCheckboxUseAccent); }
-inline bool ScrollbarAccent() { return CatOn(g_Config.m_BcCustomUiScrollbarUseAccent); }
-inline bool ButtonAccent() { return CatOn(g_Config.m_BcCustomUiButtonUseAccent); }
-inline bool DropdownAccent() { return CatOn(g_Config.m_BcCustomUiDropdownUseAccent); }
-inline bool EditBoxAccent() { return CatOn(g_Config.m_BcCustomUiEditBoxUseAccent); }
-inline bool BlockAccent() { return CatOn(g_Config.m_BcCustomUiBlockUseAccent); }
-inline bool PanelAccent() { return CatOn(g_Config.m_BcCustomUiMainPanelUseAccent); }
-inline bool NavAccent() { return CatOn(g_Config.m_BcCustomUiNavTabUseAccent); }
-inline bool BadgeAccent() { return CatOn(g_Config.m_BcCustomUiBadgeUseAccent); }
-inline bool BindAccent() { return CatOn(g_Config.m_BcCustomUiBindUseAccent); }
+inline bool TextAccent() { return CatOn(g_Config.m_BclCustomUiTextUseAccent); }
+inline bool CheckboxAccent() { return CatOn(g_Config.m_BclCustomUiCheckboxUseAccent); }
+inline bool ScrollbarAccent() { return CatOn(g_Config.m_BclCustomUiScrollbarUseAccent); }
+inline bool ButtonAccent() { return CatOn(g_Config.m_BclCustomUiButtonUseAccent); }
+inline bool DropdownAccent() { return CatOn(g_Config.m_BclCustomUiDropdownUseAccent); }
+inline bool EditBoxAccent() { return CatOn(g_Config.m_BclCustomUiEditBoxUseAccent); }
+inline bool BlockAccent() { return CatOn(g_Config.m_BclCustomUiBlockUseAccent); }
+inline bool PanelAccent() { return CatOn(g_Config.m_BclCustomUiMainPanelUseAccent); }
+inline bool NavAccent() { return CatOn(g_Config.m_BclCustomUiNavTabUseAccent); }
+inline bool BadgeAccent() { return CatOn(g_Config.m_BclCustomUiBadgeUseAccent); }
+inline bool BindAccent() { return CatOn(g_Config.m_BclCustomUiBindUseAccent); }
 
-inline unsigned TextColor() { return g_Config.m_BcCustomUiTextColor; }
-inline unsigned TextGradColor() { return g_Config.m_BcCustomUiTextGradientColor; }
-inline unsigned TextAccentColor() { return g_Config.m_BcCustomUiTextAccentColor; }
-inline unsigned CheckboxColor() { return g_Config.m_BcCustomUiCheckboxColor; }
-inline unsigned CheckboxGradColor() { return g_Config.m_BcCustomUiCheckboxGradientColor; }
-inline unsigned CheckboxAccentColor() { return g_Config.m_BcCustomUiCheckboxAccentColor; }
-inline unsigned ScrollbarColor() { return g_Config.m_BcCustomUiScrollbarColor; }
-inline unsigned ScrollbarGradColor() { return g_Config.m_BcCustomUiScrollbarGradientColor; }
-inline unsigned ScrollbarAccentColor() { return g_Config.m_BcCustomUiScrollbarAccentColor; }
-inline unsigned ButtonColor() { return g_Config.m_BcCustomUiButtonColor; }
-inline unsigned ButtonGradColor() { return g_Config.m_BcCustomUiButtonGradientColor; }
-inline unsigned ButtonAccentColor() { return g_Config.m_BcCustomUiButtonAccentColor; }
-inline unsigned DropdownColor() { return g_Config.m_BcCustomUiDropdownColor; }
-inline unsigned DropdownGradColor() { return g_Config.m_BcCustomUiDropdownGradientColor; }
-inline unsigned DropdownAccentColor() { return g_Config.m_BcCustomUiDropdownAccentColor; }
-inline unsigned EditBoxColor() { return g_Config.m_BcCustomUiEditBoxColor; }
-inline unsigned EditBoxGradColor() { return g_Config.m_BcCustomUiEditBoxGradientColor; }
-inline unsigned EditBoxAccentColor() { return g_Config.m_BcCustomUiEditBoxAccentColor; }
-inline unsigned BlockColor() { return g_Config.m_BcCustomUiBlockColor; }
-inline unsigned BlockGradColor() { return g_Config.m_BcCustomUiBlockGradientColor; }
-inline unsigned BlockAccentColor() { return g_Config.m_BcCustomUiBlockAccentColor; }
-inline unsigned PanelColor() { return g_Config.m_BcCustomUiMainPanelColor; }
-inline unsigned PanelGradColor() { return g_Config.m_BcCustomUiMainPanelGradientColor; }
-inline unsigned PanelAccentColor() { return g_Config.m_BcCustomUiMainPanelAccentColor; }
-inline unsigned NavColor() { return g_Config.m_BcCustomUiNavTabColor; }
-inline unsigned NavGradColor() { return g_Config.m_BcCustomUiNavTabGradientColor; }
-inline unsigned NavAccentColor() { return g_Config.m_BcCustomUiNavTabAccentColor; }
-inline unsigned BadgeColor() { return g_Config.m_BcCustomUiBadgeColor; }
-inline unsigned BadgeGradColor() { return g_Config.m_BcCustomUiBadgeGradientColor; }
-inline unsigned BadgeAccentColor() { return g_Config.m_BcCustomUiBadgeAccentColor; }
-inline unsigned BindColor() { return g_Config.m_BcCustomUiBindColor; }
-inline unsigned BindGradColor() { return g_Config.m_BcCustomUiBindGradientColor; }
-inline unsigned BindAccentColor() { return g_Config.m_BcCustomUiBindAccentColor; }
+inline unsigned TextColor() { return g_Config.m_BclCustomUiTextColor; }
+inline unsigned TextGradColor() { return g_Config.m_BclCustomUiTextGradientColor; }
+inline unsigned TextAccentColor() { return g_Config.m_BclCustomUiTextAccentColor; }
+inline unsigned CheckboxColor() { return g_Config.m_BclCustomUiCheckboxColor; }
+inline unsigned CheckboxGradColor() { return g_Config.m_BclCustomUiCheckboxGradientColor; }
+inline unsigned CheckboxAccentColor() { return g_Config.m_BclCustomUiCheckboxAccentColor; }
+inline unsigned ScrollbarColor() { return g_Config.m_BclCustomUiScrollbarColor; }
+inline unsigned ScrollbarGradColor() { return g_Config.m_BclCustomUiScrollbarGradientColor; }
+inline unsigned ScrollbarAccentColor() { return g_Config.m_BclCustomUiScrollbarAccentColor; }
+inline unsigned ButtonColor() { return g_Config.m_BclCustomUiButtonColor; }
+inline unsigned ButtonGradColor() { return g_Config.m_BclCustomUiButtonGradientColor; }
+inline unsigned ButtonAccentColor() { return g_Config.m_BclCustomUiButtonAccentColor; }
+inline unsigned DropdownColor() { return g_Config.m_BclCustomUiDropdownColor; }
+inline unsigned DropdownGradColor() { return g_Config.m_BclCustomUiDropdownGradientColor; }
+inline unsigned DropdownAccentColor() { return g_Config.m_BclCustomUiDropdownAccentColor; }
+inline unsigned EditBoxColor() { return g_Config.m_BclCustomUiEditBoxColor; }
+inline unsigned EditBoxGradColor() { return g_Config.m_BclCustomUiEditBoxGradientColor; }
+inline unsigned EditBoxAccentColor() { return g_Config.m_BclCustomUiEditBoxAccentColor; }
+inline unsigned BlockColor() { return g_Config.m_BclCustomUiBlockColor; }
+inline unsigned BlockGradColor() { return g_Config.m_BclCustomUiBlockGradientColor; }
+inline unsigned BlockAccentColor() { return g_Config.m_BclCustomUiBlockAccentColor; }
+inline unsigned PanelColor() { return g_Config.m_BclCustomUiMainPanelColor; }
+inline unsigned PanelGradColor() { return g_Config.m_BclCustomUiMainPanelGradientColor; }
+inline unsigned PanelAccentColor() { return g_Config.m_BclCustomUiMainPanelAccentColor; }
+inline unsigned NavColor() { return g_Config.m_BclCustomUiNavTabColor; }
+inline unsigned NavGradColor() { return g_Config.m_BclCustomUiNavTabGradientColor; }
+inline unsigned NavAccentColor() { return g_Config.m_BclCustomUiNavTabAccentColor; }
+inline unsigned BadgeColor() { return g_Config.m_BclCustomUiBadgeColor; }
+inline unsigned BadgeGradColor() { return g_Config.m_BclCustomUiBadgeGradientColor; }
+inline unsigned BadgeAccentColor() { return g_Config.m_BclCustomUiBadgeAccentColor; }
+inline unsigned BindColor() { return g_Config.m_BclCustomUiBindColor; }
+inline unsigned BindGradColor() { return g_Config.m_BclCustomUiBindGradientColor; }
+inline unsigned BindAccentColor() { return g_Config.m_BclCustomUiBindAccentColor; }
 
 inline bool IsCustomUiTextGradient()
 {
@@ -521,15 +521,15 @@ inline unsigned DarkenConfigColor(unsigned ConfigColor, float Factor = 0.65f)
 	return color_cast<ColorHSLA>(ColorRGBA(C.r * Factor, C.g * Factor, C.b * Factor, C.a)).Pack(true);
 }
 
-} // namespace BestClientUiTheme
+} // namespace BestClientLightUiTheme
 
 class IStorage;
-namespace BestClientUiTheme
+namespace BestClientLightUiTheme
 {
 inline constexpr const char *FILE_NAME = "ui_theme.cfg";
 void AppendExport(char *pBuf, int Size, bool SkipDefaults);
 void SaveFile(IStorage *pStorage);
 void LoadFile(IStorage *pStorage);
-} // namespace BestClientUiTheme
+} // namespace BestClientLightUiTheme
 
 #endif

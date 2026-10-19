@@ -1,10 +1,10 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_INPUTS_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_INPUTS_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_INPUTS_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_INPUTS_H
 
 #include <base/vmath.h>
 
-namespace BcInputs
+namespace BclInputs
 {
 	float EffectiveOffsetTicks();
 
@@ -25,6 +25,6 @@ namespace BcInputs
 	bool CloudOthers();
 	bool AnyOthers();
 	bool ImmediateOthers();
-} // namespace BcInputs
+} // namespace BclInputs
 
 #endif

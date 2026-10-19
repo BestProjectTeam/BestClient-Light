@@ -1,5 +1,5 @@
 /* Copyright © 2026 BestProject Team */
-#include "bestclient.h"
+#include "bestclient-light.h"
 
 #include "chat_qol.h"
 
@@ -19,8 +19,8 @@
 #include <generated/client_data.h>
 #include <generated/protocol.h>
 
-#include <game/client/components/bestclient/fx/own_tee.h>
-#include <game/client/components/bestclient/ui_theme/style.h>
+#include <game/client/components/bestclient-light/fx/own_tee.h>
+#include <game/client/components/bestclient-light/ui_theme/style.h>
 #include <game/client/components/mapimages.h>
 #include <game/client/components/sounds.h>
 #include <game/client/components/menus.h>
@@ -34,9 +34,9 @@
 
 static const int FROZEN_SKIN_MAX_DARKEN = 70;
 
-int CBestClient::HudFramesPerSecond(float FrameTimeAverage)
+int CBestClientLight::HudFramesPerSecond(float FrameTimeAverage)
 {
-	if(!g_Config.m_BcDisplayMaxFps)
+	if(!g_Config.m_BclDisplayMaxFps)
 		return round_to_int(1.0f / FrameTimeAverage);
 
 	constexpr float Window = 0.5f;
@@ -52,9 +52,9 @@ int CBestClient::HudFramesPerSecond(float FrameTimeAverage)
 	return m_HudMaxFps;
 }
 
-void CBestClient::UpdateGoresMode()
+void CBestClientLight::UpdateGoresMode()
 {
-	if(!g_Config.m_BcGoresMode || !GameClient()->m_Snap.m_pLocalCharacter)
+	if(!g_Config.m_BclGoresMode || !GameClient()->m_Snap.m_pLocalCharacter)
 	{
 		m_GoresHeavyWeapon = false;
 		return;
@@ -62,18 +62,18 @@ void CBestClient::UpdateGoresMode()
 
 	const int CurWeapon = GameClient()->m_Snap.m_pLocalCharacter->m_Weapon;
 	m_GoresHeavyWeapon = CurWeapon == WEAPON_GRENADE || CurWeapon == WEAPON_LASER || CurWeapon == WEAPON_SHOTGUN;
-	if(g_Config.m_BcGoresModeDisableIfWeapons && m_GoresHeavyWeapon)
+	if(g_Config.m_BclGoresModeDisableIfWeapons && m_GoresHeavyWeapon)
 		return;
 
 	if(CurWeapon == WEAPON_HAMMER)
 		GameClient()->m_Controls.m_aInputData[g_Config.m_ClDummy].m_WantedWeapon = WEAPON_GUN + 1;
 }
 
-void CBestClient::OnGoresFireInput(int Pressed)
+void CBestClientLight::OnGoresFireInput(int Pressed)
 {
-	if(!g_Config.m_BcGoresMode)
+	if(!g_Config.m_BclGoresMode)
 		return;
-	if(g_Config.m_BcGoresModeDisableIfWeapons && m_GoresHeavyWeapon)
+	if(g_Config.m_BclGoresModeDisableIfWeapons && m_GoresHeavyWeapon)
 		return;
 
 	int *pPrevWeapon = &GameClient()->m_Controls.m_aInputData[g_Config.m_ClDummy].m_PrevWeapon;
@@ -83,7 +83,7 @@ void CBestClient::OnGoresFireInput(int Pressed)
 	GameClient()->m_Controls.m_aInputData[g_Config.m_ClDummy].m_WantedWeapon = 0;
 }
 
-bool BestClientShouldMuteOthersHookSound(int SoundId, bool MuteEnabled, bool LocalJustGrabbed)
+bool BestClientLightShouldMuteOthersHookSound(int SoundId, bool MuteEnabled, bool LocalJustGrabbed)
 {
 	if(!MuteEnabled)
 		return false;
@@ -94,38 +94,38 @@ bool BestClientShouldMuteOthersHookSound(int SoundId, bool MuteEnabled, bool Loc
 	return false;
 }
 
-bool BestClientShouldMuteOthersHammerHitSound(bool MuteEnabled, bool IsOtherPlayer)
+bool BestClientLightShouldMuteOthersHammerHitSound(bool MuteEnabled, bool IsOtherPlayer)
 {
 	return MuteEnabled && IsOtherPlayer;
 }
 
-bool BestClientShouldMuteOthersHammerWorldSound(int SoundId, bool MuteEnabled, bool IsOtherPlayer)
+bool BestClientLightShouldMuteOthersHammerWorldSound(int SoundId, bool MuteEnabled, bool IsOtherPlayer)
 {
-	if(!BestClientShouldMuteOthersHammerHitSound(MuteEnabled, IsOtherPlayer))
+	if(!BestClientLightShouldMuteOthersHammerHitSound(MuteEnabled, IsOtherPlayer))
 		return false;
 	return SoundId == SOUND_HAMMER_HIT;
 }
 
-bool BestClientShouldMuteOthersAirJumpSound(bool MuteEnabled, bool IsOtherPlayer)
+bool BestClientLightShouldMuteOthersAirJumpSound(bool MuteEnabled, bool IsOtherPlayer)
 {
 	return MuteEnabled && IsOtherPlayer;
 }
 
-void BestClientPlayAirJump(CGameClient *pGameClient, int ClientId, vec2 Pos, float Alpha, float Volume)
+void BestClientLightPlayAirJump(CGameClient *pGameClient, int ClientId, vec2 Pos, float Alpha, float Volume)
 {
 	const bool OtherPlayer = !BcIsOwnTee(pGameClient, ClientId);
-	if(g_Config.m_BcAirJump && g_Config.m_BcAirJumpHideParticles && !OtherPlayer)
+	if(g_Config.m_BclAirJump && g_Config.m_BclAirJumpHideParticles && !OtherPlayer)
 	{
-		if(g_Config.m_SndGame && !BestClientShouldMuteOthersAirJumpSound(g_Config.m_BcMuteOthersAirJump, OtherPlayer))
+		if(g_Config.m_SndGame && !BestClientLightShouldMuteOthersAirJumpSound(g_Config.m_BclMuteOthersAirJump, OtherPlayer))
 			pGameClient->m_Sounds.PlayAt(CSounds::CHN_WORLD, SOUND_PLAYER_AIRJUMP, Volume, Pos);
 		return;
 	}
 	pGameClient->m_Effects.AirJump(Pos, Alpha, Volume, OtherPlayer);
 }
 
-void BestClientPlayHammerHit(CGameClient *pGameClient, vec2 Pos, float Alpha, float Volume, int ClientId)
+void BestClientLightPlayHammerHit(CGameClient *pGameClient, vec2 Pos, float Alpha, float Volume, int ClientId)
 {
-	if(g_Config.m_BcHammerSlash && g_Config.m_BcHammerHideParticles && BcIsOwnTee(pGameClient, ClientId))
+	if(g_Config.m_BclHammerSlash && g_Config.m_BclHammerHideParticles && BcIsOwnTee(pGameClient, ClientId))
 	{
 		if(g_Config.m_SndGame)
 			pGameClient->m_Sounds.PlayAt(CSounds::CHN_WORLD, SOUND_HAMMER_HIT, Volume, Pos);
@@ -134,28 +134,28 @@ void BestClientPlayHammerHit(CGameClient *pGameClient, vec2 Pos, float Alpha, fl
 	pGameClient->m_Effects.HammerHit(Pos, Alpha, Volume, !BcIsOwnTee(pGameClient, ClientId));
 }
 
-bool BestClientIsLocalHammerHitEvent(vec2 HitPos, bool LocalJustFired, vec2 LocalPos, float Radius)
+bool BestClientLightIsLocalHammerHitEvent(vec2 HitPos, bool LocalJustFired, vec2 LocalPos, float Radius)
 {
 	if(!LocalJustFired)
 		return false;
 	return distance(HitPos, LocalPos) <= Radius;
 }
 
-void BestClientApplyMenuFont(ITextRender *pTextRender)
+void BestClientLightApplyMenuFont(ITextRender *pTextRender)
 {
 	if(!pTextRender)
 		return;
-	if(g_Config.m_BcMenuUiStyle && g_Config.m_BcMenuUiBetterFont)
-		pTextRender->SetCustomFace(BESTCLIENT_BETTER_FONT_FACE);
+	if(g_Config.m_BclMenuUiStyle && g_Config.m_BclMenuUiBetterFont)
+		pTextRender->SetCustomFace(BESTCLIENT_LIGHT_BETTER_FONT_FACE);
 	else
 		pTextRender->SetCustomFace(g_Config.m_TcCustomFont);
 }
 
-void BestClientRefreshMenuFont(CGameClient *pGameClient)
+void BestClientLightRefreshMenuFont(CGameClient *pGameClient)
 {
 	if(!pGameClient)
 		return;
-	BestClientApplyMenuFont(pGameClient->TextRender());
+	BestClientLightApplyMenuFont(pGameClient->TextRender());
 	pGameClient->TextRender()->OnPreWindowResize();
 	pGameClient->OnWindowResize();
 	if(pGameClient->Editor())
@@ -165,43 +165,43 @@ void BestClientRefreshMenuFont(CGameClient *pGameClient)
 	pGameClient->m_MapImages.SetTextureScale(g_Config.m_ClTextEntitiesSize);
 }
 
-void CBestClient::SaveUiThemeFileCallback(IConfigManager *, void *pUserData)
+void CBestClientLight::SaveUiThemeFileCallback(IConfigManager *, void *pUserData)
 {
-	CBestClient *pThis = static_cast<CBestClient *>(pUserData);
-	BestClientUiTheme::SaveFile(pThis->Storage());
+	CBestClientLight *pThis = static_cast<CBestClientLight *>(pUserData);
+	BestClientLightUiTheme::SaveFile(pThis->Storage());
 }
 
-void CBestClient::OnInit()
+void CBestClientLight::OnInit()
 {
 	m_MenuMediaBackground.Init(Graphics(), Storage());
-	BestClientApplyMenuFont(TextRender());
-	BestClientUiTheme::LoadFile(Storage());
+	BestClientLightApplyMenuFont(TextRender());
+	BestClientLightUiTheme::LoadFile(Storage());
 }
 
-void CBestClient::OnConsoleInit()
+void CBestClientLight::OnConsoleInit()
 {
 	IConfigManager *pConfigManager = Kernel()->RequestInterface<IConfigManager>();
 	if(pConfigManager)
-		pConfigManager->RegisterCallback(SaveUiThemeFileCallback, this, ConfigDomain::BESTCLIENT);
+		pConfigManager->RegisterCallback(SaveUiThemeFileCallback, this, ConfigDomain::BESTCLIENT_LIGHT);
 
 	Console()->Register("bc_saves", "", CFGFLAG_CLIENT, [](IConsole::IResult *, void *pUserData) {
-		CBestClient *pThis = static_cast<CBestClient *>(pUserData);
+		CBestClientLight *pThis = static_cast<CBestClientLight *>(pUserData);
 		CChatQoL::ListSavesForCurrentMap(pThis->GameClient()->m_Chat);
 	}, this, "List team saves for the current map in chat");
 }
 
-void CBestClient::OnMapLoad()
+void CBestClientLight::OnMapLoad()
 {
 	CChatQoL::ClearSavesChatOnMapChange(GameClient());
 	m_SavesNotifySchedule = true;
 	m_SavesNotifyDeadline = 0;
 }
 
-void CBestClient::OnUpdate()
+void CBestClientLight::OnUpdate()
 {
 	UpdateFindHours();
 
-	if(!g_Config.m_BcNotifySavesOnMap || Client()->State() == IClient::STATE_DEMOPLAYBACK)
+	if(!g_Config.m_BclNotifySavesOnMap || Client()->State() == IClient::STATE_DEMOPLAYBACK)
 	{
 		m_SavesNotifySchedule = false;
 		m_SavesNotifyDeadline = 0;
@@ -224,7 +224,7 @@ void CBestClient::OnUpdate()
 	}
 }
 
-void CBestClient::OnShutdown()
+void CBestClientLight::OnShutdown()
 {
 	ResetFindHours();
 	m_MenuMediaBackground.Shutdown();
@@ -232,7 +232,7 @@ void CBestClient::OnShutdown()
 	m_SavesNotifyDeadline = 0;
 }
 
-void CBestClient::OnReset()
+void CBestClientLight::OnReset()
 {
 	ResetFindHours();
 	for(int Dummy = 0; Dummy < NUM_DUMMIES; ++Dummy)
@@ -248,7 +248,7 @@ void CBestClient::OnReset()
 		m_SavesNotifyDeadline = 0;
 }
 
-void CBestClient::OnClientNameChanged(int ClientId, const char *pNewName, const char *pNewClan)
+void CBestClientLight::OnClientNameChanged(int ClientId, const char *pNewName, const char *pNewClan)
 {
 	if(Client()->State() == IClient::STATE_DEMOPLAYBACK)
 		return;
@@ -276,7 +276,7 @@ void CBestClient::OnClientNameChanged(int ClientId, const char *pNewName, const 
 	pFoes->AddFriend(pNewName, pNewClan);
 }
 
-void CBestClient::UpdateAutoTeamLock()
+void CBestClientLight::UpdateAutoTeamLock()
 {
 	if(Client()->State() != IClient::STATE_ONLINE)
 	{
@@ -303,7 +303,7 @@ void CBestClient::UpdateAutoTeamLock()
 	const bool TeamCanBeLocked = Team > TEAM_FLOCK && Team < TEAM_SUPER;
 	const bool LastTeamCanBeLocked = m_aAutoTeamLockLastTeam[Dummy] > TEAM_FLOCK && m_aAutoTeamLockLastTeam[Dummy] < TEAM_SUPER;
 
-	if(!g_Config.m_BcAutoTeamLock)
+	if(!g_Config.m_BclAutoTeamLock)
 	{
 		m_aAutoTeamLockLastTeam[Dummy] = Team;
 		m_aAutoTeamLockDeadlineTick[Dummy] = 0;
@@ -313,7 +313,7 @@ void CBestClient::UpdateAutoTeamLock()
 
 	if(TeamCanBeLocked && (!LastTeamCanBeLocked || Team != m_aAutoTeamLockLastTeam[Dummy]))
 	{
-		const int DelayTicks = g_Config.m_BcAutoTeamLockDelay * Client()->GameTickSpeed();
+		const int DelayTicks = g_Config.m_BclAutoTeamLockDelay * Client()->GameTickSpeed();
 		m_aAutoTeamLockDeadlineTick[Dummy] = (int64_t)Client()->GameTick(Dummy) + DelayTicks;
 		m_aAutoTeamLockPending[Dummy] = true;
 	}
@@ -332,7 +332,7 @@ void CBestClient::UpdateAutoTeamLock()
 	m_aAutoTeamLockLastTeam[Dummy] = Team;
 }
 
-void CBestClient::UpdateSpecMovedNotify()
+void CBestClientLight::UpdateSpecMovedNotify()
 {
 	if(Client()->State() != IClient::STATE_ONLINE)
 	{
@@ -382,9 +382,9 @@ void CBestClient::UpdateSpecMovedNotify()
 	}
 }
 
-void CBestClient::RenderSpecMovedNotify()
+void CBestClientLight::RenderSpecMovedNotify()
 {
-	if(!g_Config.m_BcSpecMovedNotify || !GameClient()->m_Snap.m_SpecInfo.m_Active)
+	if(!g_Config.m_BclSpecMovedNotify || !GameClient()->m_Snap.m_SpecInfo.m_Active)
 		return;
 
 	constexpr float Duration = 2.5f;
@@ -408,7 +408,7 @@ void CBestClient::RenderSpecMovedNotify()
 	const float Width = 300.0f * Graphics()->ScreenAspect();
 	constexpr float Height = 300.0f;
 	constexpr float FontSize = 9.0f;
-	const char *pText = g_Config.m_BcSpecMovedNotifyText;
+	const char *pText = g_Config.m_BclSpecMovedNotifyText;
 	if(pText[0] == '\0')
 		pText = "you moved in game";
 	const float TextW = TextRender()->TextWidth(FontSize, pText, -1, -1.0f);
@@ -420,7 +420,7 @@ void CBestClient::RenderSpecMovedNotify()
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
 }
 
-float BestClientTeeRenderSize(const CGameClient *pGameClient, int ClientId)
+float BestClientLightTeeRenderSize(const CGameClient *pGameClient, int ClientId)
 {
 	if(ClientId >= 0)
 	{
@@ -433,9 +433,9 @@ float BestClientTeeRenderSize(const CGameClient *pGameClient, int ClientId)
 	return 64.0f;
 }
 
-void BestClientRenderRealHitbox(IGraphics *pGraphics, CGameClient *pGameClient, int ClientId, vec2 Position)
+void BestClientLightRenderRealHitbox(IGraphics *pGraphics, CGameClient *pGameClient, int ClientId, vec2 Position)
 {
-	if(!pGraphics || !pGameClient || !g_Config.m_BcShowRealHitbox)
+	if(!pGraphics || !pGameClient || !g_Config.m_BclShowRealHitbox)
 		return;
 	if(ClientId < 0 || pGameClient->m_Snap.m_SpecInfo.m_Active)
 		return;
@@ -444,14 +444,14 @@ void BestClientRenderRealHitbox(IGraphics *pGraphics, CGameClient *pGameClient, 
 
 	pGraphics->TextureClear();
 	pGraphics->QuadsBegin();
-	pGraphics->SetColor(color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcShowRealHitboxColor, true)));
+	pGraphics->SetColor(color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclShowRealHitboxColor, true)));
 	pGraphics->DrawCircle(Position.x, Position.y, 2.0f, 12);
 	pGraphics->QuadsEnd();
 }
 
-void BestClientRenderVotePercentages(CUi *pUi, ITextRender *pTextRender, const CUIRect &Bars, int Yes, int No, int Total)
+void BestClientLightRenderVotePercentages(CUi *pUi, ITextRender *pTextRender, const CUIRect &Bars, int Yes, int No, int Total)
 {
-	if(!pUi || !pTextRender || !g_Config.m_BcShowVotePercentage || Total <= 0)
+	if(!pUi || !pTextRender || !g_Config.m_BclShowVotePercentage || Total <= 0)
 		return;
 
 	const int YesPct = (Yes * 100 + Total / 2) / Total;
@@ -469,7 +469,7 @@ void BestClientRenderVotePercentages(CUi *pUi, ITextRender *pTextRender, const C
 	pTextRender->TextColor(pTextRender->DefaultTextColor());
 }
 
-void BestClientRenderIndicatorIcon(IGraphics *pGraphics, const CUIRect &Rect, bool Developer, bool Fake, ColorRGBA Color)
+void BestClientLightRenderIndicatorIcon(IGraphics *pGraphics, const CUIRect &Rect, bool Developer, bool Fake, ColorRGBA Color)
 {
 	if(!pGraphics)
 		return;
@@ -485,16 +485,16 @@ void BestClientRenderIndicatorIcon(IGraphics *pGraphics, const CUIRect &Rect, bo
 	pGraphics->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-bool CBestClient::ApplyFrozenSkin(CTeeRenderInfo &RenderInfo, bool Frozen)
+bool CBestClientLight::ApplyFrozenSkin(CTeeRenderInfo &RenderInfo, bool Frozen)
 {
-	if(!Frozen || g_Config.m_BcFrozenSkin[0] == '\0' || GameClient()->m_GameInfo.m_NoSkinChangeForFrozen)
+	if(!Frozen || g_Config.m_BclFrozenSkin[0] == '\0' || GameClient()->m_GameInfo.m_NoSkinChangeForFrozen)
 		return false;
 
-	const CSkin *pSkin = GameClient()->m_Skins.FindOrNullptr(g_Config.m_BcFrozenSkin);
+	const CSkin *pSkin = GameClient()->m_Skins.FindOrNullptr(g_Config.m_BclFrozenSkin);
 	if(pSkin == nullptr)
 		return false;
 
-	const float Brightness = 1.0f - g_Config.m_BcFrozenSkinDarken / 100.0f;
+	const float Brightness = 1.0f - g_Config.m_BclFrozenSkinDarken / 100.0f;
 	RenderInfo.m_aSixup[g_Config.m_ClDummy].Reset();
 	RenderInfo.Apply(pSkin);
 	RenderInfo.m_CustomColoredSkin = false;
@@ -513,9 +513,9 @@ void CMenus::RenderFrozenSkinSettings(CUIRect &View)
 	CUIRect Label, Button;
 
 	bool UnknownSkin = false;
-	if(g_Config.m_BcFrozenSkin[0] != '\0')
+	if(g_Config.m_BclFrozenSkin[0] != '\0')
 	{
-		const CSkins::CSkinContainer *pSkinContainer = GameClient()->m_Skins.FindContainerOrNullptr(g_Config.m_BcFrozenSkin);
+		const CSkins::CSkinContainer *pSkinContainer = GameClient()->m_Skins.FindContainerOrNullptr(g_Config.m_BclFrozenSkin);
 		UnknownSkin = pSkinContainer == nullptr ||
 			      pSkinContainer->State() == CSkins::CSkinContainer::EState::NOT_FOUND ||
 			      pSkinContainer->State() == CSkins::CSkinContainer::EState::ERROR;
@@ -529,7 +529,7 @@ void CMenus::RenderFrozenSkinSettings(CUIRect &View)
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
 
 	View.HSplitTop(20.0f, &Button, &View);
-	static CLineInput s_FrozenSkinInput(g_Config.m_BcFrozenSkin, sizeof(g_Config.m_BcFrozenSkin));
+	static CLineInput s_FrozenSkinInput(g_Config.m_BclFrozenSkin, sizeof(g_Config.m_BclFrozenSkin));
 	Ui()->DoClearableEditBox(&s_FrozenSkinInput, &Button, 14.0f);
 	GameClient()->m_Tooltips.DoToolTip(&s_FrozenSkinInput, &Button, Localize("Skin to show on frozen players, empty keeps the default behavior"));
 
@@ -541,24 +541,24 @@ void CMenus::RenderFrozenSkinSettings(CUIRect &View)
 
 	char aBuf[64];
 	char aValueBuf[32];
-	// bestclient
-	if(BestClientUiTheme::IsNewScrollbar())
+	// bestclient-light
+	if(BestClientLightUiTheme::IsNewScrollbar())
 	{
-		str_format(aValueBuf, sizeof(aValueBuf), "%d%%", g_Config.m_BcFrozenSkinDarken);
+		str_format(aValueBuf, sizeof(aValueBuf), "%d%%", g_Config.m_BclFrozenSkinDarken);
 		str_copy(aBuf, Localize("Darken"));
 	}
 	else
-		str_format(aBuf, sizeof(aBuf), "%s: %d%%", Localize("Darken"), g_Config.m_BcFrozenSkinDarken);
-	// bestclient
+		str_format(aBuf, sizeof(aBuf), "%s: %d%%", Localize("Darken"), g_Config.m_BclFrozenSkinDarken);
+	// bestclient-light
 
-	g_Config.m_BcFrozenSkinDarken = CUi::ms_LinearScrollbarScale.ToAbsolute(
-		Ui()->DoScrollbarH(&g_Config.m_BcFrozenSkinDarken, &ScrollBar, CUi::ms_LinearScrollbarScale.ToRelative(g_Config.m_BcFrozenSkinDarken, 0, FROZEN_SKIN_MAX_DARKEN), nullptr, BestClientUiTheme::IsNewScrollbar() ? aValueBuf : nullptr),
+	g_Config.m_BclFrozenSkinDarken = CUi::ms_LinearScrollbarScale.ToAbsolute(
+		Ui()->DoScrollbarH(&g_Config.m_BclFrozenSkinDarken, &ScrollBar, CUi::ms_LinearScrollbarScale.ToRelative(g_Config.m_BclFrozenSkinDarken, 0, FROZEN_SKIN_MAX_DARKEN), nullptr, BestClientLightUiTheme::IsNewScrollbar() ? aValueBuf : nullptr),
 		0, FROZEN_SKIN_MAX_DARKEN);
 
 	Ui()->DoLabel(&ValueLabel, aBuf, ValueLabel.h * CUi::ms_FontmodHeight * 0.8f, TEXTALIGN_ML);
 }
 
-void CBestClient::EnsureAudioDefaultPack()
+void CBestClientLight::EnsureAudioDefaultPack()
 {
 	const char *pDefaultDir = "assets/audio/default";
 	if(Storage()->FolderExists(pDefaultDir, IStorage::TYPE_SAVE))
@@ -618,7 +618,7 @@ bool JsonIntField(const json_value *pValue, int *pOut)
 }
 }
 
-void CBestClient::ResetFindHours()
+void CBestClientLight::ResetFindHours()
 {
 	if(m_pFindHoursTask)
 	{
@@ -627,7 +627,7 @@ void CBestClient::ResetFindHours()
 	}
 }
 
-void CBestClient::FetchFindHours(const char *pName)
+void CBestClientLight::FetchFindHours(const char *pName)
 {
 	if(!pName || pName[0] == '\0')
 		return;
@@ -651,7 +651,7 @@ void CBestClient::FetchFindHours(const char *pName)
 	Http()->Run(m_pFindHoursTask);
 }
 
-void CBestClient::UpdateFindHours()
+void CBestClientLight::UpdateFindHours()
 {
 	if(!m_pFindHoursTask || !m_pFindHoursTask->Done())
 		return;
@@ -693,7 +693,7 @@ void CBestClient::UpdateFindHours()
 	GameClient()->Echo(aBuf);
 }
 
-void CBestClient::CopyPlayerSkin(int ClientId)
+void CBestClientLight::CopyPlayerSkin(int ClientId)
 {
 	if(ClientId < 0 || ClientId >= MAX_CLIENTS)
 		return;
@@ -727,7 +727,7 @@ void CBestClient::CopyPlayerSkin(int ClientId)
 	GameClient()->Echo(aBuf);
 }
 
-float BestClientScoreboardPlayerPopupHeight(const CGameClient *pGameClient, bool IsLocal, bool IsSpectatorRow, int ClientId)
+float BestClientLightScoreboardPlayerPopupHeight(const CGameClient *pGameClient, bool IsLocal, bool IsSpectatorRow, int ClientId)
 {
 	constexpr float OuterPopupPadding = 2.0f * (1.0f + 4.0f);
 	constexpr float InnerMargin = 10.0f;
@@ -761,7 +761,7 @@ float BestClientScoreboardPlayerPopupHeight(const CGameClient *pGameClient, bool
 	int ButtonRows = 7;
 	if(!IsSpectatorRow)
 		ButtonRows++;
-	if(!IsLocal && g_Config.m_BcVoiceChatEnable)
+	if(!IsLocal && g_Config.m_BclVoiceChatEnable)
 		ButtonRows += 2;
 	ButtonRows += ExtraButtonRows;
 

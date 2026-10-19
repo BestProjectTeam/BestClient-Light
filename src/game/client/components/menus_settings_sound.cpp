@@ -37,19 +37,19 @@ void CMenus::RenderSettingsSound(CUIRect MainView)
 	if(DoButton_CheckBox(&g_Config.m_SndGame, Localize("Enable game sounds"), g_Config.m_SndGame, &Button))
 		g_Config.m_SndGame ^= 1;
 
-	// bestclient
+	// bestclient-light
 	MainView.HSplitTop(20.0f, &Button, &MainView);
-	if(DoButton_CheckBox(&g_Config.m_BcMuteOthersHook, Localize("Mute hook sounds of other players"), g_Config.m_BcMuteOthersHook, &Button))
-		g_Config.m_BcMuteOthersHook ^= 1;
+	if(DoButton_CheckBox(&g_Config.m_BclMuteOthersHook, Localize("Mute hook sounds of other players"), g_Config.m_BclMuteOthersHook, &Button))
+		g_Config.m_BclMuteOthersHook ^= 1;
 
 	MainView.HSplitTop(20.0f, &Button, &MainView);
-	if(DoButton_CheckBox(&g_Config.m_BcMuteOthersHammer, Localize("Mute hammer sounds of other players"), g_Config.m_BcMuteOthersHammer, &Button))
-		g_Config.m_BcMuteOthersHammer ^= 1;
+	if(DoButton_CheckBox(&g_Config.m_BclMuteOthersHammer, Localize("Mute hammer sounds of other players"), g_Config.m_BclMuteOthersHammer, &Button))
+		g_Config.m_BclMuteOthersHammer ^= 1;
 
 	MainView.HSplitTop(20.0f, &Button, &MainView);
-	if(DoButton_CheckBox(&g_Config.m_BcMuteOthersAirJump, Localize("Mute double jump sounds of other players"), g_Config.m_BcMuteOthersAirJump, &Button))
-		g_Config.m_BcMuteOthersAirJump ^= 1;
-	// bestclient
+	if(DoButton_CheckBox(&g_Config.m_BclMuteOthersAirJump, Localize("Mute double jump sounds of other players"), g_Config.m_BclMuteOthersAirJump, &Button))
+		g_Config.m_BclMuteOthersAirJump ^= 1;
+	// bestclient-light
 
 	MainView.HSplitTop(20.0f, &Button, &MainView);
 	if(DoButton_CheckBox(&g_Config.m_SndGun, Localize("Enable gun sound"), g_Config.m_SndGun, &Button))

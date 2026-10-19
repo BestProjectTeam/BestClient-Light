@@ -187,7 +187,7 @@ public:
 		}
 		else
 		{
-			str_copy(m_Activity.assets.small_text, "BestClient player");
+			str_copy(m_Activity.assets.small_text, "BestClient Light player");
 		}
 
 		str_copy(m_Activity.details, "discord.gg/bestclient");
@@ -294,7 +294,7 @@ public:
 	}
 };
 
-static IDiscord *CreateBestClientDiscordImpl()
+static IDiscord *CreateBestClientLightDiscordImpl()
 {
 	FDiscordCreate pfnDiscordCreate = GetDiscordCreate();
 	if(!pfnDiscordCreate)
@@ -310,13 +310,13 @@ static IDiscord *CreateBestClientDiscordImpl()
 	return pDiscord;
 }
 #else
-static IDiscord *CreateBestClientDiscordImpl()
+static IDiscord *CreateBestClientLightDiscordImpl()
 {
 	return nullptr;
 }
 #endif
 
-IDiscord *CreateBestClientDiscord()
+IDiscord *CreateBestClientLightDiscord()
 {
-	return CreateBestClientDiscordImpl();
+	return CreateBestClientLightDiscordImpl();
 }

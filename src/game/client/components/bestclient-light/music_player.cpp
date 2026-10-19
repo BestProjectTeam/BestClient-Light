@@ -25,7 +25,7 @@
 #include <generated/client_data.h>
 
 #include <game/client/bc_ui_animations.h>
-#include <game/client/components/bestclient/media_decoder.h>
+#include <game/client/components/bestclient-light/media_decoder.h>
 #include <game/client/components/hud_layout.h>
 #include <game/client/gameclient.h>
 #include <game/client/ui.h>
@@ -146,7 +146,7 @@ namespace
 		std::vector<unsigned char> m_vBytes;
 	};
 
-	static std::string MusicVisualizerBinsSummary(const BestClientVisualizer::SVisualizerFrame &Visualizer)
+	static std::string MusicVisualizerBinsSummary(const BestClientLightVisualizer::SVisualizerFrame &Visualizer)
 	{
 		char aBuf[128];
 		str_format(aBuf, sizeof(aBuf), "%.2f,%.2f,%.2f,%.2f",
@@ -172,7 +172,7 @@ namespace
 		bool m_CanNext = false;
 		bool m_HasVisualizer = false;
 		SMusicArt m_Art;
-		BestClientVisualizer::SVisualizerFrame m_Visualizer;
+		BestClientLightVisualizer::SVisualizerFrame m_Visualizer;
 	};
 
 #if (defined(CONF_PLATFORM_LINUX) && BC_MUSICPLAYER_HAS_DBUS) || BC_MUSICPLAYER_HAS_WINRT
@@ -358,8 +358,8 @@ namespace
 #if defined(CONF_PLATFORM_LINUX) && BC_MUSICPLAYER_HAS_DBUS
 	static int MusicServicePriorityScore(std::string_view ServiceId, bool IsCurrentService)
 	{
-		const int Priority = BestClientVisualizer::PlayerSourcePriority(ServiceId);
-		if(Priority <= (int)BestClientVisualizer::EMediaSourcePriority::DISCORD)
+		const int Priority = BestClientLightVisualizer::PlayerSourcePriority(ServiceId);
+		if(Priority <= (int)BestClientLightVisualizer::EMediaSourcePriority::DISCORD)
 			return -100000;
 
 		int Score = Priority;
@@ -656,7 +656,7 @@ namespace
 					const char *pName = nullptr;
 					dbus_message_iter_get_basic(&ArrayIter, &pName);
 					if(pName != nullptr && str_startswith(pName, "org.mpris.MediaPlayer2.") &&
-						!BestClientVisualizer::LooksLikeDiscordPlayer(pName))
+						!BestClientLightVisualizer::LooksLikeDiscordPlayer(pName))
 						vServices.emplace_back(pName);
 					if(!dbus_message_iter_next(&ArrayIter))
 						break;
@@ -1355,12 +1355,12 @@ namespace
 
 	static float MusicPlayerTextScale()
 	{
-		return std::clamp(g_Config.m_BcMusicPlayerTextScale / 100.0f, 0.7f, 1.5f);
+		return std::clamp(g_Config.m_BclMusicPlayerTextScale / 100.0f, 0.7f, 1.5f);
 	}
 
 	static int MusicPlayerVisualizerColumns()
 	{
-		return std::clamp(g_Config.m_BcMusicPlayerVisualizerColumns, 5, 10);
+		return std::clamp(g_Config.m_BclMusicPlayerVisualizerColumns, 5, 10);
 	}
 
 	static float MusicPlayerVisualizerInnerPadX(bool Compact, float Scale, float WidthScale)
@@ -1760,17 +1760,17 @@ namespace
 
 	static bool IsSoftVisualizerRounding()
 	{
-		return g_Config.m_BcMusicPlayerVisualizerRounding >= 100;
+		return g_Config.m_BclMusicPlayerVisualizerRounding >= 100;
 	}
 
 	static bool IsCoverVisualizerColorMode()
 	{
-		return g_Config.m_BcMusicPlayerColorMode == 1;
+		return g_Config.m_BclMusicPlayerColorMode == 1;
 	}
 
 	static bool IsStaticVisualizerColorMode()
 	{
-		return g_Config.m_BcMusicPlayerColorMode == 0;
+		return g_Config.m_BclMusicPlayerColorMode == 0;
 	}
 
 	static SCoverTintResult ExtractCoverTints(const CImageInfo &Image, int BarCount)
@@ -2040,7 +2040,7 @@ namespace
 
 		if(UseStaticColor)
 		{
-			ColorRGBA BarColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcMusicPlayerStaticColor));
+			ColorRGBA BarColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclMusicPlayerStaticColor));
 			const float Luma = BarColor.r * 0.2126f + BarColor.g * 0.7152f + BarColor.b * 0.0722f;
 			if(Luma < 0.50f)
 			{
@@ -2085,16 +2085,16 @@ namespace
 
 	static SMusicPlayerPalette DefaultMusicPlayerPalette()
 	{
-		if(g_Config.m_BcMusicPlayerColorMode == 0)
-			return BuildPaletteFromAccent(color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcMusicPlayerStaticColor)));
+		if(g_Config.m_BclMusicPlayerColorMode == 0)
+			return BuildPaletteFromAccent(color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclMusicPlayerStaticColor)));
 		return SMusicPlayerPalette();
 	}
 
 	static ColorRGBA DefaultMusicPlayerAccent()
 	{
-		if(g_Config.m_BcMusicPlayerColorMode == 0)
-			return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcMusicPlayerStaticColor));
-		return DefaultPreviewAccentForColorMode(g_Config.m_BcMusicPlayerColorMode);
+		if(g_Config.m_BclMusicPlayerColorMode == 0)
+			return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclMusicPlayerStaticColor));
+		return DefaultPreviewAccentForColorMode(g_Config.m_BclMusicPlayerColorMode);
 	}
 
 	static ColorRGBA MusicPlayerPanelColor()
@@ -2176,9 +2176,9 @@ namespace
 	static ColorRGBA SelectMusicPlayerAccent(const SArtworkColorAnalysis &Analysis)
 	{
 		if(IsStaticVisualizerColorMode())
-			return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcMusicPlayerStaticColor));
+			return color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclMusicPlayerStaticColor));
 		if(!Analysis.m_Valid)
-			return DefaultPreviewAccentForColorMode(g_Config.m_BcMusicPlayerColorMode);
+			return DefaultPreviewAccentForColorMode(g_Config.m_BclMusicPlayerColorMode);
 		return Analysis.m_Base;
 	}
 
@@ -2435,7 +2435,7 @@ namespace
 	static SArtCropProfile MusicArtCropProfile(std::string_view ServiceId)
 	{
 		SArtCropProfile Profile;
-		if(BestClientVisualizer::MediaSourceContainsI(ServiceId, "spotify"))
+		if(BestClientLightVisualizer::MediaSourceContainsI(ServiceId, "spotify"))
 		{
 			Profile.m_Left = 0.10f;
 			Profile.m_Right = 0.10f;
@@ -2601,7 +2601,7 @@ struct SVisualizerLevelInput
 	bool m_Valid = false;
 	EMusicPlaybackState m_PlaybackState = EMusicPlaybackState::STOPPED;
 	bool m_HasVisualizer = false;
-	BestClientVisualizer::SVisualizerFrame m_Visualizer;
+	BestClientLightVisualizer::SVisualizerFrame m_Visualizer;
 	int64_t m_DurationMs = 0;
 	int64_t m_PositionMs = 0;
 	std::string m_ServiceId;
@@ -2630,11 +2630,11 @@ void AdvanceVisualizerLevels(std::array<float, MUSIC_PLAYER_MAX_VISUALIZER_BARS>
 	const bool UseRealtimeVisualizer =
 		Snapshot.m_PlaybackState == EMusicPlaybackState::PLAYING &&
 		Snapshot.m_HasVisualizer &&
-		Snapshot.m_Visualizer.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::LIVE;
+		Snapshot.m_Visualizer.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::LIVE;
 	if(UseRealtimeVisualizer)
 	{
 		std::array<float, MUSIC_PLAYER_MAX_VISUALIZER_BARS> aTarget{};
-		BestClientVisualizer::BuildRenderBars(Snapshot.m_Visualizer, aTarget.data(), RequestedBars);
+		BestClientLightVisualizer::BuildRenderBars(Snapshot.m_Visualizer, aTarget.data(), RequestedBars);
 
 		std::array<float, MUSIC_PLAYER_MAX_VISUALIZER_BARS> aShaped{};
 		for(int i = 0; i < RequestedBars; ++i)
@@ -2672,8 +2672,8 @@ void AdvanceVisualizerLevels(std::array<float, MUSIC_PLAYER_MAX_VISUALIZER_BARS>
 		return;
 	}
 
-	const bool BackendConnecting = Snapshot.m_HasVisualizer && Snapshot.m_Visualizer.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::CONNECTING;
-	const bool BackendSilent = Snapshot.m_HasVisualizer && Snapshot.m_Visualizer.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::SILENT;
+	const bool BackendConnecting = Snapshot.m_HasVisualizer && Snapshot.m_Visualizer.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::CONNECTING;
+	const bool BackendSilent = Snapshot.m_HasVisualizer && Snapshot.m_Visualizer.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::SILENT;
 	if(BackendConnecting || BackendSilent)
 	{
 		for(float &Level : aLevels)
@@ -2989,10 +2989,10 @@ public:
 	static constexpr int VISUALIZER_BARS = MUSIC_PLAYER_MAX_VISUALIZER_BARS;
 
 	std::unique_ptr<CNowPlayingProviderThread> m_pProviderThread;
-	std::unique_ptr<BestClientVisualizer::CRealtimeMusicVisualizer> m_pVisualizer;
+	std::unique_ptr<BestClientLightVisualizer::CRealtimeMusicVisualizer> m_pVisualizer;
 	std::unique_ptr<CVisualizerLevelThread> m_pLevelThread;
 	SNowPlayingSnapshot m_Snapshot;
-	BestClientVisualizer::SVisualizerFrame m_VisualizerData;
+	BestClientLightVisualizer::SVisualizerFrame m_VisualizerData;
 	int64_t m_LastSnapshotTick = 0;
 	int64_t m_LastPollTick = 0;
 	int64_t m_LastVisualizerPollTick = 0;
@@ -3035,7 +3035,7 @@ public:
 	bool m_DebugLastProviderValid = false;
 	std::string m_DebugLastProviderTrackKey;
 	EMusicPlaybackState m_DebugLastProviderPlaybackState = EMusicPlaybackState::STOPPED;
-	BestClientVisualizer::EVisualizerBackendStatus m_DebugLastVisualizerBackendStatus = BestClientVisualizer::EVisualizerBackendStatus::FALLBACK;
+	BestClientLightVisualizer::EVisualizerBackendStatus m_DebugLastVisualizerBackendStatus = BestClientLightVisualizer::EVisualizerBackendStatus::FALLBACK;
 	bool m_DebugLastVisualizerSignal = false;
 	int64_t m_DebugNextVisualizerVerboseTick = 0;
 	std::string m_DebugLastRenderPath;
@@ -3054,7 +3054,7 @@ public:
 		m_aCoverBarTint.fill(ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 		m_aVisualizerBarColors.fill(ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 		m_VisualizerData.m_IsPassiveFallback = true;
-		m_VisualizerData.m_BackendStatus = BestClientVisualizer::EVisualizerBackendStatus::FALLBACK;
+		m_VisualizerData.m_BackendStatus = BestClientLightVisualizer::EVisualizerBackendStatus::FALLBACK;
 	}
 
 	void EnsureBackgroundServices()
@@ -3062,7 +3062,7 @@ public:
 		if(!m_pProviderThread)
 			m_pProviderThread = std::make_unique<CNowPlayingProviderThread>();
 		if(!m_pVisualizer)
-			m_pVisualizer = std::make_unique<BestClientVisualizer::CRealtimeMusicVisualizer>();
+			m_pVisualizer = std::make_unique<BestClientLightVisualizer::CRealtimeMusicVisualizer>();
 		if(!m_pLevelThread)
 			m_pLevelThread = std::make_unique<CVisualizerLevelThread>();
 	}
@@ -3080,9 +3080,9 @@ public:
 			m_pProviderThread.reset();
 		}
 		m_pVisualizer.reset();
-		m_VisualizerData = BestClientVisualizer::SVisualizerFrame();
+		m_VisualizerData = BestClientLightVisualizer::SVisualizerFrame();
 		m_VisualizerData.m_IsPassiveFallback = true;
-		m_VisualizerData.m_BackendStatus = BestClientVisualizer::EVisualizerBackendStatus::FALLBACK;
+		m_VisualizerData.m_BackendStatus = BestClientLightVisualizer::EVisualizerBackendStatus::FALLBACK;
 		m_LastPollTick = 0;
 		m_LastVisualizerPollTick = 0;
 	}
@@ -3160,7 +3160,7 @@ public:
 		{
 			MusicPlayerDebugLog(1, "visualizer", "%s: backend=%s signal=%d passive=%d peak=%.4f rms=%.4f bins=%s",
 				pSource,
-				BestClientVisualizer::VisualizerBackendStatusName(m_VisualizerData.m_BackendStatus),
+				BestClientLightVisualizer::VisualizerBackendStatusName(m_VisualizerData.m_BackendStatus),
 				m_VisualizerData.m_HasRealtimeSignal ? 1 : 0,
 				m_VisualizerData.m_IsPassiveFallback ? 1 : 0,
 				m_VisualizerData.m_Peak,
@@ -3172,7 +3172,7 @@ public:
 			m_DebugNextVisualizerVerboseTick = time_get() + time_freq();
 			MusicPlayerDebugLog(2, "visualizer", "%s periodic: backend=%s signal=%d peak=%.4f rms=%.4f bins=%s",
 				pSource,
-				BestClientVisualizer::VisualizerBackendStatusName(m_VisualizerData.m_BackendStatus),
+				BestClientLightVisualizer::VisualizerBackendStatusName(m_VisualizerData.m_BackendStatus),
 				m_VisualizerData.m_HasRealtimeSignal ? 1 : 0,
 				m_VisualizerData.m_Peak,
 				m_VisualizerData.m_Rms,
@@ -3195,7 +3195,7 @@ public:
 				pPath,
 				MusicPlaybackStateName(Snapshot.m_PlaybackState),
 				Snapshot.m_PlaybackState == EMusicPlaybackState::PLAYING ? 1 : 0,
-				BestClientVisualizer::VisualizerBackendStatusName(Snapshot.m_Visualizer.m_BackendStatus),
+				BestClientLightVisualizer::VisualizerBackendStatusName(Snapshot.m_Visualizer.m_BackendStatus),
 				Snapshot.m_Visualizer.m_HasRealtimeSignal ? 1 : 0);
 			m_DebugLastRenderPath = pPath;
 		}
@@ -3264,7 +3264,7 @@ public:
 		if(m_LogoLoadAttempted || pGraphics == nullptr)
 			return;
 		m_LogoLoadAttempted = true;
-		m_LogoTexture = pGraphics->LoadTexture("BestClient/bc_icon.png", IStorage::TYPE_ALL);
+		m_LogoTexture = pGraphics->LoadTexture("bestclient-light/bc_icon.png", IStorage::TYPE_ALL);
 	}
 
 	void ResetLogoTexture(IGraphics *pGraphics)
@@ -3319,7 +3319,7 @@ public:
 	void Reset(IGraphics *pGraphics)
 	{
 		m_Snapshot = SNowPlayingSnapshot();
-		m_VisualizerData = BestClientVisualizer::SVisualizerFrame();
+		m_VisualizerData = BestClientLightVisualizer::SVisualizerFrame();
 		m_LastSnapshotTick = 0;
 		m_LastPollTick = 0;
 		m_LastVisualizerPollTick = 0;
@@ -3577,37 +3577,37 @@ public:
 	void AttachVisualizerData(SNowPlayingSnapshot &Snapshot) const
 	{
 		Snapshot.m_HasVisualizer = false;
-		Snapshot.m_Visualizer = BestClientVisualizer::SVisualizerFrame();
+		Snapshot.m_Visualizer = BestClientLightVisualizer::SVisualizerFrame();
 		if(!m_pVisualizer)
 			return;
 
 		Snapshot.m_HasVisualizer = true;
 		Snapshot.m_Visualizer = m_VisualizerData;
-		if(Snapshot.m_Visualizer.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::LIVE)
+		if(Snapshot.m_Visualizer.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::LIVE)
 			Snapshot.m_Visualizer.m_IsPassiveFallback = false;
 	}
 
 	void RefreshVisualizerData()
 	{
-		m_VisualizerData = BestClientVisualizer::SVisualizerFrame();
+		m_VisualizerData = BestClientLightVisualizer::SVisualizerFrame();
 		if(!m_pVisualizer)
 		{
 			m_VisualizerData.m_IsPassiveFallback = true;
-			m_VisualizerData.m_BackendStatus = BestClientVisualizer::EVisualizerBackendStatus::FALLBACK;
+			m_VisualizerData.m_BackendStatus = BestClientLightVisualizer::EVisualizerBackendStatus::FALLBACK;
 			DebugLogVisualizerState("refresh_disabled");
 			return;
 		}
 
-		BestClientVisualizer::SVisualizerPlaybackHint Hint;
+		BestClientLightVisualizer::SVisualizerPlaybackHint Hint;
 		Hint.m_ServiceId = m_Snapshot.m_ServiceId;
 		Hint.m_Title = m_Snapshot.m_Title;
 		Hint.m_Artist = m_Snapshot.m_Artist;
 		Hint.m_Playing = m_Snapshot.m_PlaybackState == EMusicPlaybackState::PLAYING;
 		m_pVisualizer->SetPlaybackHint(Hint);
 		m_pVisualizer->PollFrame(m_VisualizerData);
-		if(m_VisualizerData.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::LIVE)
+		if(m_VisualizerData.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::LIVE)
 			m_VisualizerData.m_IsPassiveFallback = false;
-		else if(m_VisualizerData.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::FALLBACK || m_VisualizerData.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::UNAVAILABLE)
+		else if(m_VisualizerData.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::FALLBACK || m_VisualizerData.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::UNAVAILABLE)
 			m_VisualizerData.m_IsPassiveFallback = true;
 		DebugLogVisualizerState("refresh");
 	}
@@ -3705,12 +3705,12 @@ public:
 		const bool UseRealtimeVisualizer =
 			Snapshot.m_PlaybackState == EMusicPlaybackState::PLAYING &&
 			Snapshot.m_HasVisualizer &&
-			Snapshot.m_Visualizer.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::LIVE;
+			Snapshot.m_Visualizer.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::LIVE;
 		if(UseRealtimeVisualizer)
 			DebugLogRenderDecision("live", Snapshot);
-		else if(Snapshot.m_HasVisualizer && Snapshot.m_Visualizer.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::SILENT)
+		else if(Snapshot.m_HasVisualizer && Snapshot.m_Visualizer.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::SILENT)
 			DebugLogRenderDecision("silent", Snapshot);
-		else if(Snapshot.m_HasVisualizer && Snapshot.m_Visualizer.m_BackendStatus == BestClientVisualizer::EVisualizerBackendStatus::CONNECTING)
+		else if(Snapshot.m_HasVisualizer && Snapshot.m_Visualizer.m_BackendStatus == BestClientLightVisualizer::EVisualizerBackendStatus::CONNECTING)
 			DebugLogRenderDecision("connecting", Snapshot);
 		else if(Snapshot.m_PlaybackState != EMusicPlaybackState::PLAYING)
 			DebugLogRenderDecision("passive_idle", Snapshot);
@@ -3745,7 +3745,7 @@ public:
 
 	void UpdateHudReservation(CMusicPlayer *pOwner)
 	{
-		if(!HudLayout::IsEnabled(HudLayout::MODULE_MUSIC_PLAYER) || g_Config.m_BcMusicPlayer == 0 || (g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideSongPlayer))
+		if(!HudLayout::IsEnabled(HudLayout::MODULE_MUSIC_PLAYER) || g_Config.m_BclMusicPlayer == 0 || (g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideSongPlayer))
 		{
 			ResetHudState();
 			return;
@@ -3759,7 +3759,7 @@ public:
 		const float CompactScale = std::clamp(Layout.m_Scale / 100.0f, 0.25f, 3.0f);
 		const float CompactWidthScale = Width / std::max(HudLayout::CANVAS_WIDTH, 0.001f);
 		const float MiniTitleFont = 6.0f * CompactScale * TextScale;
-		const bool LyricsEnabled = g_Config.m_BcMusicPlayerShowLyrics != 0;
+		const bool LyricsEnabled = g_Config.m_BclMusicPlayerShowLyrics != 0;
 		const float MiniTextSlotWidthBase = ComputeMiniTextSlotWidth(pOwner->TextRender(), m_Snapshot, GameTimer, MiniTitleFont, CompactScale, CompactWidthScale, false);
 		const float MiniTextSlotWidthLyrics = CMusicPlayerLyrics::LyricsTextSlotWidth(CompactScale, CompactWidthScale);
 		float MiniTextSlotWidth = MiniTextSlotWidthBase;
@@ -3837,7 +3837,7 @@ public:
 		const float LyricsSlotWidth = MiniTextSlotWidthLyrics;
 		const float WidthSpan = std::max(1.0f, LyricsSlotWidth - BaseSlotWidth);
 		const float LyricsWidthPushT = LyricsEnabled ? 1.0f : std::clamp((m_CompactTextSlotWidthAnim - BaseSlotWidth) / WidthSpan, 0.0f, 1.0f);
-		const bool WantLyricsTimer = LyricsEnabled && g_Config.m_BcMusicPlayerShowCurrentTime != 0;
+		const bool WantLyricsTimer = LyricsEnabled && g_Config.m_BclMusicPlayerShowCurrentTime != 0;
 		const float TimerHeightTarget = WantLyricsTimer ? LyricsBelowTimerBlockHeight(Metrics.m_Scale, TextScale) : 0.0f;
 		const float TimerHeightSpeed = TimerHeightTarget > m_LyricsTimerHeightAnim ? 10.0f : 8.0f;
 		m_LyricsTimerHeightAnim = ApproachAnim(m_LyricsTimerHeightAnim, TimerHeightTarget, Delta, TimerHeightSpeed);
@@ -3997,7 +3997,7 @@ CUIRect CMusicPlayer::GetHudEditorRect(bool ForcePreview) const
 	const SGameTimerDisplay GameTimer = BuildGameTimerDisplay(GameClient()->m_Snap.m_pGameInfoObj, Client()->GameTick(g_Config.m_ClDummy), Client()->GameTickSpeed(), true);
 	SNowPlayingSnapshot PreviewSnapshot;
 	PreviewSnapshot.m_Title = "Blinding Lights";
-	const bool LyricsEnabled = g_Config.m_BcMusicPlayerShowLyrics != 0;
+	const bool LyricsEnabled = g_Config.m_BclMusicPlayerShowLyrics != 0;
 	const float MiniTextSlotWidth = ComputeMiniTextSlotWidth(TextRender(), PreviewSnapshot, GameTimer, MiniTitleFont, LayoutScale, LayoutWidthScale, LyricsEnabled);
 	const float PositionTextSlotWidth = ComputeStableMiniPositionTextSlotWidth(TextRender(), MiniTitleFont, LayoutScale, LayoutWidthScale);
 	const SMusicPlayerMetrics Metrics = ComputeMusicPlayerMetrics(Layout, Width, Height, 0.0f, PositionTextSlotWidth, MiniTextSlotWidth, TextScale);
@@ -4013,7 +4013,7 @@ void CMusicPlayer::RenderHudEditor(bool ForcePreview)
 void CMusicPlayer::OnUpdate()
 {
 	EnsureImpl();
-	if(g_Config.m_BcMusicPlayer == 0)
+	if(g_Config.m_BclMusicPlayer == 0)
 	{
 		if(m_pImpl->m_pProviderThread || m_pImpl->m_pVisualizer || m_pImpl->m_pLevelThread || m_pImpl->m_Snapshot.m_Valid)
 		{
@@ -4035,7 +4035,7 @@ void CMusicPlayer::OnUpdate()
 	{
 		const auto Layout = HudLayout::Get(HudLayout::MODULE_MUSIC_PLAYER, HudWidth, HudHeight);
 		const int LayoutScaleInt = (int)Layout.m_Scale;
-		const int TextScaleInt = g_Config.m_BcMusicPlayerTextScale;
+		const int TextScaleInt = g_Config.m_BclMusicPlayerTextScale;
 		const int WindowWidth = Graphics()->WindowWidth();
 
 		if(m_pImpl->m_LastResolvedHudWidth != HudWidth || m_pImpl->m_LastResolvedHudHeight != HudHeight ||
@@ -4058,12 +4058,12 @@ void CMusicPlayer::OnUpdate()
 			HudLayout::SetMusicPlayerResolvedDefaultX((HudWidth - Metrics.m_ExpandedW) * 0.5f + Nudge, HudWidth);
 		}
 	}
-	g_Config.m_BcMusicPlayerColorMode = std::clamp(g_Config.m_BcMusicPlayerColorMode, 0, 1);
-	if(m_pImpl->m_LastAppliedColorMode != g_Config.m_BcMusicPlayerColorMode ||
-		m_pImpl->m_LastAppliedStaticColor != g_Config.m_BcMusicPlayerStaticColor)
+	g_Config.m_BclMusicPlayerColorMode = std::clamp(g_Config.m_BclMusicPlayerColorMode, 0, 1);
+	if(m_pImpl->m_LastAppliedColorMode != g_Config.m_BclMusicPlayerColorMode ||
+		m_pImpl->m_LastAppliedStaticColor != g_Config.m_BclMusicPlayerStaticColor)
 	{
-		m_pImpl->m_LastAppliedColorMode = g_Config.m_BcMusicPlayerColorMode;
-		m_pImpl->m_LastAppliedStaticColor = g_Config.m_BcMusicPlayerStaticColor;
+		m_pImpl->m_LastAppliedColorMode = g_Config.m_BclMusicPlayerColorMode;
+		m_pImpl->m_LastAppliedStaticColor = g_Config.m_BclMusicPlayerStaticColor;
 		m_pImpl->RefreshPaletteForConfig();
 	}
 	const int64_t Now = time_get();
@@ -4100,7 +4100,7 @@ void CMusicPlayer::OnUpdate()
 
 	m_pImpl->UpdateArtwork(this);
 	const bool LyricsAllowed = Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK;
-	if(LyricsAllowed && g_Config.m_BcMusicPlayerShowLyrics != 0 && m_pImpl->m_Snapshot.m_Valid)
+	if(LyricsAllowed && g_Config.m_BclMusicPlayerShowLyrics != 0 && m_pImpl->m_Snapshot.m_Valid)
 	{
 		m_pImpl->m_Lyrics.Update(
 			Http(),
@@ -4136,7 +4136,7 @@ void CMusicPlayer::RenderMusicPlayer(bool ForcePreview)
 		return;
 	if(!ForcePreview && !HudLayout::IsEnabled(HudLayout::MODULE_MUSIC_PLAYER))
 		return;
-	if(!ForcePreview && g_Config.m_BcMusicPlayer == 0)
+	if(!ForcePreview && g_Config.m_BclMusicPlayer == 0)
 		return;
 	if(!ForcePreview && g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideSongPlayer)
 		return;
@@ -4167,7 +4167,7 @@ void CMusicPlayer::RenderMusicPlayer(bool ForcePreview)
 	const float LayoutScale = std::clamp(Layout.m_Scale / 100.0f, 0.25f, 3.0f);
 	const float LayoutWidthScale = Width / std::max(HudLayout::CANVAS_WIDTH, 0.001f);
 	const float MiniTitleFont = 6.0f * LayoutScale * TextScale;
-	const bool LyricsEnabled = !ForcePreview && g_Config.m_BcMusicPlayerShowLyrics != 0;
+	const bool LyricsEnabled = !ForcePreview && g_Config.m_BclMusicPlayerShowLyrics != 0;
 	const float MiniTextSlotWidth = ComputeMiniTextSlotWidth(TextRender(), Snapshot, GameTimer, MiniTitleFont, LayoutScale, LayoutWidthScale, LyricsEnabled);
 	const int NumBars = MusicPlayerVisualizerColumns();
 
@@ -4200,7 +4200,7 @@ void CMusicPlayer::RenderMusicPlayer(bool ForcePreview)
 	const float UiFontScale = UiScreen.h / std::max(Height, 1.0f);
 
 	const SMusicPlayerPalette Palette = ForcePreview ?
-						    BuildPaletteFromAccent(g_Config.m_BcMusicPlayerColorMode == 0 ? color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcMusicPlayerStaticColor)) : DefaultPreviewAccentForColorMode(g_Config.m_BcMusicPlayerColorMode)) :
+						    BuildPaletteFromAccent(g_Config.m_BclMusicPlayerColorMode == 0 ? color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclMusicPlayerStaticColor)) : DefaultPreviewAccentForColorMode(g_Config.m_BclMusicPlayerColorMode)) :
 						    m_pImpl->m_Palette;
 	const bool CoverColorMode = IsCoverVisualizerColorMode();
 	const bool StaticVisualizerColorMode = IsStaticVisualizerColorMode();
@@ -4208,12 +4208,12 @@ void CMusicPlayer::RenderMusicPlayer(bool ForcePreview)
 	PanelColor.a *= ModuleAlpha;
 	ColorRGBA GlowColor = ColorRGBA(0.0f, 0.0f, 0.0f, 0.0f);
 	const float OuterPad = 0.42f * Scale + HoverT * 0.48f * Scale;
-	const float LyricsTimerFooterH = (!ForcePreview && LyricsEnabled) ? m_pImpl->m_LyricsTimerHeightAnim : ((LyricsEnabled && g_Config.m_BcMusicPlayerShowCurrentTime != 0) ? LyricsBelowTimerBlockHeight(Scale, TextScale) : 0.0f);
+	const float LyricsTimerFooterH = (!ForcePreview && LyricsEnabled) ? m_pImpl->m_LyricsTimerHeightAnim : ((LyricsEnabled && g_Config.m_BclMusicPlayerShowCurrentTime != 0) ? LyricsBelowTimerBlockHeight(Scale, TextScale) : 0.0f);
 	const float LyricsTimerTabW = (!ForcePreview && LyricsEnabled) ? m_pImpl->m_LyricsTimerWidthAnim : 0.0f;
 	const bool DrawLyricsTimerTab = LyricsTimerFooterH > 0.05f && (ForcePreview || LyricsTimerTabW > 0.05f);
 	bool LockLyricsTimerAnchor = false;
 	float LyricsTimerAnchorX = 0.0f;
-	if(LyricsEnabled && g_Config.m_BcMusicPlayerShowCurrentTime != 0)
+	if(LyricsEnabled && g_Config.m_BclMusicPlayerShowCurrentTime != 0)
 	{
 		LockLyricsTimerAnchor = true;
 		LyricsTimerAnchorX = MusicPlayerTextColumnCenterX(View, Metrics.m_CompactH, Scale, WidthScale);
@@ -4353,7 +4353,7 @@ void CMusicPlayer::RenderMusicPlayer(bool ForcePreview)
 		const float LaneH = std::max(2.8f * Scale, VisualInnerH);
 		const float LaneY = VisualRect.y + VisualInnerPadY + (VisualInnerH - LaneH) * 0.5f;
 		const float BaseMidY = LaneY + LaneH * 0.5f;
-		const int VisualizerMode = std::clamp(g_Config.m_BcMusicPlayerVisualizerMode, 0, 2);
+		const int VisualizerMode = std::clamp(g_Config.m_BclMusicPlayerVisualizerMode, 0, 2);
 		const bool CenterMode = VisualizerMode == 1;
 		const bool UpMode = VisualizerMode == 2;
 		const bool UseCoverVisualizerColor = CoverColorMode && (m_pImpl->m_HasCoverTint || m_pImpl->m_HasCoverBarTint);

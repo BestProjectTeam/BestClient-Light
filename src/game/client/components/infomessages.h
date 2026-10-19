@@ -27,9 +27,9 @@ class CInfoMessages : public CComponent
 	{
 		EType m_Type;
 		int m_Tick;
-		// bestclient
+		// bestclient-light
 		int64_t m_AppearTime;
-		// bestclient
+		// bestclient-light
 
 		int m_aVictimIds[MAX_KILLMSG_TEAM_MEMBERS];
 		int m_VictimDDTeam;

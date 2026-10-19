@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_CLIENTINDICATOR_BROWSER_CACHE_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_CLIENTINDICATOR_BROWSER_CACHE_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CLIENTINDICATOR_BROWSER_CACHE_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CLIENTINDICATOR_BROWSER_CACHE_H
 
 #include <engine/serverbrowser.h>
 
@@ -12,7 +12,7 @@ typedef struct _json_value json_value;
 
 class CBrowserCache
 {
-	std::vector<IServerBrowser::CBestClientPlayerEntry> m_vPlayers;
+	std::vector<IServerBrowser::CBestClientLightPlayerEntry> m_vPlayers;
 	std::unordered_map<std::string, std::unordered_map<std::string, std::string>> m_PlayerVersionsByServer;
 	std::unordered_map<std::string, std::unordered_map<std::string, bool>> m_DeveloperByServer;
 	std::unordered_map<std::string, std::unordered_map<std::string, bool>> m_FakeByServer;
@@ -26,7 +26,7 @@ public:
 		m_DeveloperByServer.clear();
 		m_FakeByServer.clear();
 	}
-	const std::vector<IServerBrowser::CBestClientPlayerEntry> &Players() const { return m_vPlayers; }
+	const std::vector<IServerBrowser::CBestClientLightPlayerEntry> &Players() const { return m_vPlayers; }
 	bool HasPlayer(const char *pServerAddress, const char *pName, bool *pDeveloper = nullptr, bool *pFake = nullptr) const;
 	bool GetPlayerVersion(const char *pServerAddress, const char *pName, char *pVersion, int VersionSize) const;
 	const std::unordered_map<std::string, std::unordered_map<std::string, std::string>> &PlayerVersionsByServer() const { return m_PlayerVersionsByServer; }

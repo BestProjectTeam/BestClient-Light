@@ -13,14 +13,14 @@
 #include <generated/protocol7.h>
 
 #include <game/client/component.h>
-#include <game/client/components/bestclient/chat_media.h> // bestclient
-#include <game/client/components/hud_layout.h> // bestclient
+#include <game/client/components/bestclient-light/chat_media.h> // bestclient-light
+#include <game/client/components/hud_layout.h> // bestclient-light
 #include <game/client/lineinput.h>
 #include <game/client/render.h>
-#include <game/client/ui.h> // bestclient
-#include <game/client/ui_rect.h> // bestclient
+#include <game/client/ui.h> // bestclient-light
+#include <game/client/ui_rect.h> // bestclient-light
 
-#include <algorithm> // bestclient
+#include <algorithm> // bestclient-light
 
 #include <vector>
 
@@ -66,10 +66,10 @@ class CChat : public CComponent
 		bool m_Friend;
 		bool m_Highlighted;
 		std::optional<ColorRGBA> m_CustomColor;
-		// bestclient
+		// bestclient-light
 		bool m_BcCopyAsLoad = false;
 		bool m_BcSavesChat = false;
-		// bestclient
+		// bestclient-light
 
 		STextContainerIndex m_TextContainerIndex;
 		int m_QuadContainerIndex;
@@ -81,24 +81,24 @@ class CChat : public CComponent
 		int m_TimesRepeated;
 
 		std::shared_ptr<CTranslateResponse> m_pTranslateResponse;
-		// bestclient
+		// bestclient-light
 		SChatMediaLine m_Media;
-		// bestclient
+		// bestclient-light
 	};
 
 	bool m_PrevScoreBoardShowed;
 	bool m_PrevShowChat;
-	// bestclient
+	// bestclient-light
 	float m_PrevHudLayoutX = -10000.0f;
 	float m_PrevHudLayoutY = -10000.0f;
 	int m_PrevHudLayoutScale = -1;
 	bool m_PrevHudLayoutEnabled = true;
 	bool m_PrevModeActive = false;
-	// bestclient
+	// bestclient-light
 
 	CLine m_aLines[MAX_LINES];
 	int m_CurrentLine;
-	// bestclient
+	// bestclient-light
 	float m_BacklogScrollOffset = 0.0f;
 	float m_BacklogScrollOffsetChange = 0.0f;
 	float m_ChatMaxScrollOffset = 0.0f;
@@ -106,7 +106,7 @@ class CChat : public CComponent
 	float m_ScrollbarDragOffset = 0.0f;
 	int m_ActionLineIndex = -1;
 	vec2 m_ActionMenuPos = vec2(0.0f, 0.0f);
-	// bestclient
+	// bestclient-light
 
 	enum
 	{
@@ -131,9 +131,9 @@ class CChat : public CComponent
 	};
 
 	int m_Mode;
-	// bestclient
+	// bestclient-light
 	std::optional<vec2> m_LastMousePos;
-	// bestclient
+	// bestclient-light
 	bool m_Show;
 	bool m_CompletionUsed;
 	int m_CompletionChosen;
@@ -188,7 +188,7 @@ class CChat : public CComponent
 
 	bool m_ServerSupportsCommandInfo;
 
-	// bestclient
+	// bestclient-light
 	CButtonContainer m_TranslateSettingsButton;
 	CButtonContainer m_TranslateSettingsIncomingButton;
 	CButtonContainer m_TranslateSettingsOutgoingButton;
@@ -202,7 +202,7 @@ class CChat : public CComponent
 	CButtonContainer m_TranslateMessageButtonToggle;
 	int m_TranslateMessageHoverLine = -1;
 	int m_TranslateMessagePressedLine = -1;
-	// bestclient
+	// bestclient-light
 
 	static void ConSay(IConsole::IResult *pResult, void *pUserData);
 	static void ConSayTeam(IConsole::IResult *pResult, void *pUserData);
@@ -217,22 +217,22 @@ class CChat : public CComponent
 
 	bool LineShouldHighlight(const char *pLine, const char *pName);
 	void StoreSave(const char *pText);
-	// bestclient
+	// bestclient-light
 	vec2 ChatMousePos() const;
 	void OpenTranslateSettingsPopup();
 	void RenderTranslateSettingsButton(const CUIRect &ButtonRect);
 	static CUi::EPopupMenuFunctionResult PopupTranslateSettings(void *pContext, CUIRect View, bool Active);
-	// bestclient
+	// bestclient-light
 
 	friend class CBindChat;
 	friend class CTranslate;
 	friend class CTClient;
-	// bestclient
+	// bestclient-light
 	friend class CChatBubbles;
 	friend class CChatQoL;
 	friend class CChatMedia;
 	friend class CChatScroll;
-	// bestclient
+	// bestclient-light
 
 public:
 	CChat();
@@ -247,23 +247,23 @@ public:
 	void RegisterCommand(const char *pName, const char *pParams, const char *pHelpText);
 	void UnregisterCommand(const char *pName);
 	void Echo(const char *pString);
-	// bestclient
+	// bestclient-light
 	void AddColoredLine(const char *pLine, ColorRGBA Color, bool PlaySystemSound = false, bool CopyAsLoad = false);
 	CGameClient *BcGameClient() { return GameClient(); }
 	const CGameClient *BcGameClient() const { return GameClient(); }
-	// bestclient
+	// bestclient-light
 
 	void OnWindowResize() override;
 	void OnConsoleInit() override;
 	void OnStateChange(int NewState, int OldState) override;
 	void OnRender() override;
 	void OnPrepareLines(float y);
-	CUIRect GetHudRect(float HudWidth, float HudHeight, bool ForcePreview = false) const; // bestclient
+	CUIRect GetHudRect(float HudWidth, float HudHeight, bool ForcePreview = false) const; // bestclient-light
 	void Reset();
 	void OnRelease() override;
 	void OnMessage(int MsgType, void *pRawMsg) override;
 	bool OnInput(const IInput::CEvent &Event) override;
-	bool OnCursorMove(float x, float y, IInput::ECursorType CursorType) override; // bestclient
+	bool OnCursorMove(float x, float y, IInput::ECursorType CursorType) override; // bestclient-light
 	void OnInit() override;
 
 	void RebuildChat();
@@ -272,14 +272,14 @@ public:
 	void EnsureCoherentFontSize() const;
 	void EnsureCoherentWidth() const;
 
-	// bestclient
+	// bestclient-light
 	float LayoutScaleFactor() const
 	{
 		return std::clamp(HudLayout::Get(HudLayout::MODULE_CHAT, HudLayout::CANVAS_WIDTH, HudLayout::CANVAS_HEIGHT).m_Scale / 100.0f, 0.25f, 3.0f);
 	}
 	float FontSize() const { return (g_Config.m_ClChatFontSize / 10.0f) * LayoutScaleFactor(); }
 	float ChatWidth() const { return g_Config.m_ClChatWidth * LayoutScaleFactor(); }
-	// bestclient
+	// bestclient-light
 	float MessagePaddingX() const { return FontSize() * (5 / 6.f); }
 	float MessagePaddingY() const { return FontSize() * (1 / 6.f); }
 	float MessageTeeSize() const { return FontSize() * (7 / 6.f); }
@@ -300,10 +300,10 @@ public:
 	// between sent messages.
 	//
 	// It uses team or public chat depending on m_Mode.
-	// bestclient
+	// bestclient-light
 	void SendChatQueued(const char *pLine);
 
 	void SendTranslatedChatQueued(int Team, const char *pLine);
-	// bestclient
+	// bestclient-light
 };
 #endif

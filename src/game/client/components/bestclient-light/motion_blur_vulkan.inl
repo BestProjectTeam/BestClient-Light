@@ -165,7 +165,7 @@ void FrameBlendImageBarrier(VkCommandBuffer &CommandBuffer, VkImage Image, VkIma
 	if(!FrameBlendImage.m_Valid)
 		return true;
 
-	const float TotalBlendStrength = (g_Config.m_BcMotionBlurStrength / 95.0f) * 4.0f;
+	const float TotalBlendStrength = (g_Config.m_BclMotionBlurStrength / 95.0f) * 4.0f;
 	if(TotalBlendStrength <= 0.0f)
 		return true;
 	constexpr float MaxBlendAlphaPerPass = 0.85f;

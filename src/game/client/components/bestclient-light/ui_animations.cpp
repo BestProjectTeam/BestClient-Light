@@ -58,7 +58,7 @@ void CBcUiAnimations::SyncTypingBaseline(CLineInput &Input)
 
 void CBcUiAnimations::RefreshTypingAnimation(CLineInput &Input, bool ChatOpen, bool HasComposition)
 {
-	if(!ChatOpen || !BCUiAnimations::Enabled() || g_Config.m_BcChatAnimation == 0 || g_Config.m_BcChatTypingAnimation == 0 || Input.HasSelection() || HasComposition)
+	if(!ChatOpen || !BCUiAnimations::Enabled() || g_Config.m_BclChatAnimation == 0 || g_Config.m_BclChatTypingAnimation == 0 || Input.HasSelection() || HasComposition)
 	{
 		SyncTypingBaseline(Input);
 		return;
@@ -186,11 +186,11 @@ void CBcUiAnimations::RefreshTypingAnimation(CLineInput &Input, bool ChatOpen, b
 
 float CBcUiAnimations::ChatOpenOffsetY(float ScreenHeight, bool ChatOpen) const
 {
-	const bool Enabled = BCUiAnimations::Enabled() && g_Config.m_BcChatAnimation != 0 && g_Config.m_BcChatOpenAnimation != 0 && g_Config.m_BcChatOpenAnimationMs > 0;
+	const bool Enabled = BCUiAnimations::Enabled() && g_Config.m_BclChatAnimation != 0 && g_Config.m_BclChatOpenAnimation != 0 && g_Config.m_BclChatOpenAnimationMs > 0;
 	if(!ChatOpen || !Enabled || m_ChatOpenAnimationStart <= 0)
 		return 0.0f;
 
-	const float Dur = BCUiAnimations::MsToSeconds(g_Config.m_BcChatOpenAnimationMs);
+	const float Dur = BCUiAnimations::MsToSeconds(g_Config.m_BclChatOpenAnimationMs);
 	const float Age = (time_get() - m_ChatOpenAnimationStart) / (float)time_freq();
 	const float Progress = Dur > 0.0f ? std::clamp(Age / Dur, 0.0f, 1.0f) : 1.0f;
 	return ScreenHeight * (1.0f - BCUiAnimations::EaseOutCubic(Progress));
@@ -198,10 +198,10 @@ float CBcUiAnimations::ChatOpenOffsetY(float ScreenHeight, bool ChatOpen) const
 
 float CBcUiAnimations::ChatMessageYOffset(int64_t LineTime, int64_t Now) const
 {
-	if(!BCUiAnimations::Enabled() || g_Config.m_BcChatAnimation == 0 || g_Config.m_BcChatAnimationMs <= 0 || LineTime <= 0)
+	if(!BCUiAnimations::Enabled() || g_Config.m_BclChatAnimation == 0 || g_Config.m_BclChatAnimationMs <= 0 || LineTime <= 0)
 		return 0.0f;
 
-	const float Dur = BCUiAnimations::MsToSeconds(g_Config.m_BcChatAnimationMs);
+	const float Dur = BCUiAnimations::MsToSeconds(g_Config.m_BclChatAnimationMs);
 	const float Age = (Now - LineTime) / (float)time_freq();
 	const float Progress = Dur > 0.0f ? std::clamp(Age / Dur, 0.0f, 1.0f) : 1.0f;
 	return 42.0f * (1.0f - BCUiAnimations::EaseOutCubic(Progress));
@@ -215,10 +215,10 @@ CUIRect CBcUiAnimations::ChatInputClipRect(const CUIRect &ClippingRect, float Sc
 
 STextBoundingBox CBcUiAnimations::RenderChatTypingInput(CLineInput &Input, const CUIRect &InputCursorRect, float FontSize, float MessageMaxWidth, bool Changed)
 {
-	const bool TypingEnabled = BCUiAnimations::Enabled() && g_Config.m_BcChatAnimation != 0 && g_Config.m_BcChatTypingAnimation != 0 && g_Config.m_BcChatTypingAnimationMs > 0;
+	const bool TypingEnabled = BCUiAnimations::Enabled() && g_Config.m_BclChatAnimation != 0 && g_Config.m_BclChatTypingAnimation != 0 && g_Config.m_BclChatTypingAnimationMs > 0;
 	char aDisplayedInputText[MAX_CHAT_LENGTH];
 	str_copy(aDisplayedInputText, Input.GetDisplayedString(), sizeof(aDisplayedInputText));
-	const float TypingAnimDuration = BCUiAnimations::MsToSeconds(g_Config.m_BcChatTypingAnimationMs);
+	const float TypingAnimDuration = BCUiAnimations::MsToSeconds(g_Config.m_BclChatTypingAnimationMs);
 	const bool CaretAnimEnabled = TypingEnabled && TypingAnimDuration > 0.0f;
 	Input.SetHideCursor(CaretAnimEnabled);
 
@@ -348,10 +348,10 @@ STextBoundingBox CBcUiAnimations::RenderChatTypingInput(CLineInput &Input, const
 
 float CBcUiAnimations::KillfeedSlideOffsetX(ITextRender *pTextRender, int64_t AppearTime, int64_t Now, const STextContainerIndex &VictimText, const STextContainerIndex &KillerText, int TeamSize, int FirstVictimId, int KillerId) const
 {
-	if(!BCUiAnimations::Enabled() || g_Config.m_BcKillfeedAnimation == 0 || g_Config.m_BcKillfeedAnimationMs <= 0 || AppearTime <= 0)
+	if(!BCUiAnimations::Enabled() || g_Config.m_BclKillfeedAnimation == 0 || g_Config.m_BclKillfeedAnimationMs <= 0 || AppearTime <= 0)
 		return 0.0f;
 
-	const float Duration = BCUiAnimations::MsToSeconds(g_Config.m_BcKillfeedAnimationMs);
+	const float Duration = BCUiAnimations::MsToSeconds(g_Config.m_BclKillfeedAnimationMs);
 	const float AgeSeconds = (Now - AppearTime) / (float)time_freq();
 	const float AppearProgress = Duration > 0.0f ? std::clamp(AgeSeconds / Duration, 0.0f, 1.0f) : 1.0f;
 	const float AppearEase = BCUiAnimations::EaseInOutQuad(AppearProgress);
@@ -387,7 +387,7 @@ CUIRect CBcUiAnimations::ScaleMenuButtonRect(const CUIRect &Base, float Scale)
 void CBcUiAnimations::UpdateMainMenuButtonScales(const CUIRect *pButtons, int Count, CUi *pUi, float FrameTime)
 {
 	const int UseCount = std::min(Count, MAIN_MENU_BUTTON_COUNT);
-	const bool AnimEnabled = BCUiAnimations::Enabled() && g_Config.m_BcMainMenuAnimation != 0;
+	const bool AnimEnabled = BCUiAnimations::Enabled() && g_Config.m_BclMainMenuAnimation != 0;
 	int HoveredIndex = -1;
 	if(AnimEnabled)
 	{
@@ -404,7 +404,7 @@ void CBcUiAnimations::UpdateMainMenuButtonScales(const CUIRect *pButtons, int Co
 	const bool AnyHovered = HoveredIndex != -1;
 	const float HoverScale = 1.08f;
 	const float OtherScale = 0.94f;
-	const float Speed = (float)g_Config.m_BcMainMenuAnimationSpeed;
+	const float Speed = (float)g_Config.m_BclMainMenuAnimationSpeed;
 	const float Blend = AnimEnabled ? std::clamp(FrameTime * Speed, 0.0f, 1.0f) : 1.0f;
 	for(int i = 0; i < UseCount; ++i)
 	{

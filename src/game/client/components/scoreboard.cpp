@@ -11,17 +11,17 @@
 #include <engine/demo.h>
 #include <engine/font_icons.h>
 #include <engine/graphics.h>
-#include <engine/http.h> // bestclient
-#include <engine/serverbrowser.h> // bestclient
+#include <engine/http.h> // bestclient-light
+#include <engine/serverbrowser.h> // bestclient-light
 #include <engine/shared/config.h>
 #include <engine/textrender.h>
 
-#include <game/client/components/bestclient/bestclient.h> // bestclient
+#include <game/client/components/bestclient-light/bestclient-light.h> // bestclient-light
 #include <generated/client_data7.h>
 #include <generated/protocol.h>
 
 #include <game/client/animstate.h>
-#include <game/client/components/bestclient/gradient.h> // bestclient
+#include <game/client/components/bestclient-light/gradient.h> // bestclient-light
 #include <game/client/components/countryflags.h>
 #include <game/client/components/motd.h>
 #include <game/client/components/statboard.h>
@@ -451,12 +451,12 @@ void CScoreboard::RenderSpectators(CUIRect Spectators)
 								     (Client()->DummyConnected() && GameClient()->m_aLocalIds[1] == pInfo->m_ClientId);
 				m_ScoreboardPopupContext.m_IsSpectating = true;
 
-				// bestclient
+				// bestclient-light
 				m_ScoreboardPopupContext.m_VoiceVolumePreview = -1;
 				m_ScoreboardPopupContext.m_VoiceVolumeDirty = false;
 				Ui()->DoPopupMenu(&m_ScoreboardPopupContext, Ui()->MouseX(), Ui()->MouseY(), 150.0f,
-					BestClientScoreboardPlayerPopupHeight(GameClient(), m_ScoreboardPopupContext.m_IsLocal, true, m_ScoreboardPopupContext.m_ClientId), &m_ScoreboardPopupContext, CScoreboardPopupContext::Render);
-				// bestclient
+					BestClientLightScoreboardPlayerPopupHeight(GameClient(), m_ScoreboardPopupContext.m_IsLocal, true, m_ScoreboardPopupContext.m_ClientId), &m_ScoreboardPopupContext, CScoreboardPopupContext::Render);
+				// bestclient-light
 			}
 
 			if(Ui()->HotItem() == &m_aPlayers[pInfo->m_ClientId].m_PlayerButtonId ||
@@ -561,11 +561,11 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 	const float TeeOffset = ScoreOffset + ScoreLength + MARGIN;
 	const float TeeLength = 60.0f * TeeSizeMod;
 	const float NameOffset = TeeOffset + TeeLength;
-	// bestclient
+	// bestclient-light
 	const bool ShowPoints = GameClient()->m_ShowPoints.ActiveOnCurrentServer();
 	const float PointsLength = ShowPoints ? 50.0f : 0.0f;
 	const float PointsReserve = ShowPoints ? (PointsLength + 15.0f - 2.5f) : 0.0f;
-	// bestclient
+	// bestclient-light
 	const float CountryLength = (LineHeight - Spacing - TeeSizeMod * 5.0f) * 2.0f;
 	const float PingLength = 27.5f;
 	const float PingOffset = Scoreboard.x + Scoreboard.w - PingLength - MARGIN;
@@ -573,17 +573,17 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 
 	float NameLength = (LowScoreboardWidth ? 90.0f : 150.0f) - TeeLength;
 	const float MinMiddleGap = 5.0f; // 2.5 before and after clan
-	const float AvailableMiddle = CountryOffset - NameOffset - PointsReserve; // bestclient
+	const float AvailableMiddle = CountryOffset - NameOffset - PointsReserve; // bestclient-light
 	if(NameLength + MinMiddleGap > AvailableMiddle)
 	{
 		const float Shrinkable = AvailableMiddle - MinMiddleGap;
 		NameLength = std::max(0.0f, Shrinkable * 0.7f);
 	}
 
-	// bestclient
+	// bestclient-light
 	const float PointsOffset = NameOffset + NameLength + (ShowPoints ? 7.5f : 0.0f);
 	const float ClanOffset = ShowPoints ? (PointsOffset + PointsLength + 7.5f) : (NameOffset + NameLength + 2.5f);
-	// bestclient
+	// bestclient-light
 	const float ClanLength = std::max(0.0f, CountryOffset - ClanOffset - 2.5f);
 
 	// render headlines
@@ -598,13 +598,13 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 	m_HeadlinePing.Update(TextRender(), Localize("Ping"), HeadlineFontsize);
 	m_HeadlineScore.Render(TextRender(), vec2(ScoreOffset + ScoreLength - m_HeadlineScore.Width(), HeadlineY), HeadlineColor);
 	m_HeadlineName.Render(TextRender(), vec2(NameOffset, HeadlineY), HeadlineColor);
-	// bestclient
+	// bestclient-light
 	if(ShowPoints)
 	{
 		const char *pPointsLabel = Localize("Points");
 		TextRender()->Text(PointsOffset + (PointsLength - TextRender()->TextWidth(HeadlineFontsize, pPointsLabel)) / 2.0f, HeadlineY, HeadlineFontsize, pPointsLabel);
 	}
-	// bestclient
+	// bestclient-light
 	m_HeadlineClan.Render(TextRender(), vec2(ClanOffset + (ClanLength - m_HeadlineClan.Width()) / 2.0f, HeadlineY), HeadlineColor);
 	m_HeadlinePing.Render(TextRender(), vec2(PingOffset + PingLength - m_HeadlinePing.Width(), HeadlineY), HeadlineColor);
 
@@ -737,12 +737,12 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 									     (Client()->DummyConnected() && GameClient()->m_aLocalIds[1] == pInfo->m_ClientId);
 					m_ScoreboardPopupContext.m_IsSpectating = false;
 
-					// bestclient
+					// bestclient-light
 					m_ScoreboardPopupContext.m_VoiceVolumePreview = -1;
 					m_ScoreboardPopupContext.m_VoiceVolumeDirty = false;
 					Ui()->DoPopupMenu(&m_ScoreboardPopupContext, Ui()->MouseX(), Ui()->MouseY(), 150.0f,
-						BestClientScoreboardPlayerPopupHeight(GameClient(), m_ScoreboardPopupContext.m_IsLocal, false, m_ScoreboardPopupContext.m_ClientId), &m_ScoreboardPopupContext, CScoreboardPopupContext::Render);
-					// bestclient
+						BestClientLightScoreboardPlayerPopupHeight(GameClient(), m_ScoreboardPopupContext.m_IsLocal, false, m_ScoreboardPopupContext.m_ClientId), &m_ScoreboardPopupContext, CScoreboardPopupContext::Render);
+					// bestclient-light
 				}
 
 				if(Ui()->HotItem() == &Player.m_PlayerButtonId ||
@@ -759,11 +759,11 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 			ScorePosition.y = Row.y;
 			ScorePosition.h = Row.h;
 
-			// bestclient
-			const bool ShowClientIndicator = g_Config.m_BcClientIndicatorInScoreboard && pInfo->m_ClientId >= 0 && GameClient()->m_ClientIndicator.IsPlayerBestClient(pInfo->m_ClientId);
+			// bestclient-light
+			const bool ShowClientIndicator = g_Config.m_BclClientIndicatorInScoreboard && pInfo->m_ClientId >= 0 && GameClient()->m_ClientIndicator.IsPlayerBestClientLight(pInfo->m_ClientId);
 			const bool TeamNumberVisible = NumPlayers > 8 && IsFirstDDTeamRow;
 			const bool ShiftIndicatorForTeamTime = ShowClientIndicator && UseTime && TeamNumberVisible;
-			const float IndicatorIconSize = FontSize * (0.8f + 0.3f * g_Config.m_BcClientIndicatorInSoreboardSize / 100.0f);
+			const float IndicatorIconSize = FontSize * (0.8f + 0.3f * g_Config.m_BclClientIndicatorInSoreboardSize / 100.0f);
 			const float IndicatorIconSpacing = 4.0f;
 			float IndicatorIconPosX = 0.0f;
 			if(ShowClientIndicator)
@@ -796,7 +796,7 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 					}
 				}
 			}
-			// bestclient
+			// bestclient-light
 
 			if(Race7)
 			{
@@ -820,7 +820,7 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 				Player.m_Score.Render(TextRender(), vec2(ScoreOffset + ScoreLength - Player.m_Score.Width(), ScorePosition.y + (Row.h - FontSize) / 2.0f), TextColor);
 			}
 
-			// bestclient
+			// bestclient-light
 			if(ShowClientIndicator)
 			{
 				const CUIRect IconRect = {
@@ -828,11 +828,11 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 					Row.y + (Row.h - IndicatorIconSize) / 2.0f,
 					IndicatorIconSize,
 					IndicatorIconSize};
-				BestClientRenderIndicatorIcon(Graphics(), IconRect,
+				BestClientLightRenderIndicatorIcon(Graphics(), IconRect,
 					GameClient()->m_ClientIndicator.IsPlayerDeveloper(pInfo->m_ClientId),
 					GameClient()->m_ClientIndicator.IsPlayerFakeVersion(pInfo->m_ClientId));
 			}
-			// bestclient
+			// bestclient-light
 
 			// CTF flag
 			if(pGameInfoObj && (pGameInfoObj->m_GameFlags & GAMEFLAG_FLAGS) &&
@@ -913,9 +913,9 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 					Player.m_MuteMark.Render(TextRender(), vec2(NameTextOffset, TextY), NameColor);
 					NameTextOffset += Player.m_MuteMark.Width();
 				}
-				// bestclient
+				// bestclient-light
 				const bool HasWarNameColor = pInfo->m_ClientId >= 0 && g_Config.m_TcWarList && g_Config.m_TcWarListScoreboard && GameClient()->m_WarList.GetAnyWar(pInfo->m_ClientId);
-				if(!HasWarNameColor && pInfo->m_ClientId >= 0 && g_Config.m_BcNameplateGradient && CBcGradient::AppliesTo(pInfo->m_ClientId, GameClient()))
+				if(!HasWarNameColor && pInfo->m_ClientId >= 0 && g_Config.m_BclNameplateGradient && CBcGradient::AppliesTo(pInfo->m_ClientId, GameClient()))
 				{
 					const float Phase = CBcGradient::AnimatePhase(Client()->GlobalTime());
 					std::vector<STextColorSplit> vGradientSplits;
@@ -935,7 +935,7 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 					Player.m_Name.Update(TextRender(), aBuf, FontSize, std::max(NameLength - (NameTextOffset - NameOffset), 0.0f), TEXTFLAG_RENDER | TEXTFLAG_ELLIPSIS_AT_END);
 					Player.m_Name.Render(TextRender(), vec2(NameTextOffset, TextY), NameColor);
 				}
-				// bestclient
+				// bestclient-light
 
 				// ready / watching
 				if(Client()->IsSixup() && Client()->m_TranslationContext.m_aClients[pInfo->m_ClientId].m_PlayerFlags7 & protocol7::PLAYERFLAG_READY)
@@ -945,7 +945,7 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 				}
 			}
 
-			// bestclient
+			// bestclient-light
 			if(ShowPoints)
 			{
 				GameClient()->m_ShowPoints.RequestPoints(ClientData.m_aName);
@@ -958,7 +958,7 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 					TextRender()->TextColor(TextColor);
 				}
 			}
-			// bestclient
+			// bestclient-light
 
 			// clan
 			{
@@ -973,10 +973,10 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 					ClanColor = GameClient()->m_WarList.GetClanColor(pInfo->m_ClientId);
 				}
 
-				// bestclient
+				// bestclient-light
 				const bool HasWarClanColor = pInfo->m_ClientId >= 0 && g_Config.m_TcWarList && g_Config.m_TcWarListScoreboard && GameClient()->m_WarList.GetAnyWar(pInfo->m_ClientId);
 				const bool SameClanColor = GameClient()->m_aLocalIds[g_Config.m_ClDummy] >= 0 && ClientData.m_aClan[0] != '\0' && str_comp(ClientData.m_aClan, GameClient()->m_aClients[GameClient()->m_aLocalIds[g_Config.m_ClDummy]].m_aClan) == 0;
-				if(!HasWarClanColor && pInfo->m_ClientId >= 0 && g_Config.m_BcNameplateGradientClan && CBcGradient::AppliesTo(pInfo->m_ClientId, GameClient()))
+				if(!HasWarClanColor && pInfo->m_ClientId >= 0 && g_Config.m_BclNameplateGradientClan && CBcGradient::AppliesTo(pInfo->m_ClientId, GameClient()))
 				{
 					const float Phase = CBcGradient::AnimatePhase(Client()->GlobalTime());
 					std::vector<STextColorSplit> vGradientSplits;
@@ -996,7 +996,7 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 					Player.m_Clan.Update(TextRender(), ClientData.m_aClan, FontSize, ClanLength, TEXTFLAG_RENDER | TEXTFLAG_ELLIPSIS_AT_END);
 					Player.m_Clan.Render(TextRender(), vec2(ClanOffset + (ClanLength - std::min(Player.m_Clan.Width(), ClanLength)) / 2.0f, TextY), ClanColor);
 				}
-				// bestclient
+				// bestclient-light
 			}
 
 			// country flag
@@ -1140,14 +1140,14 @@ void CScoreboard::OnRender()
 		return;
 	}
 
-	// bestclient
+	// bestclient-light
 	if(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideScoreboard)
 	{
 		if(m_MouseUnlocked)
 			LockMouse();
 		return;
 	}
-	// bestclient
+	// bestclient-light
 
 	if(!GameClient()->m_Menus.IsActive() && !GameClient()->m_Chat.IsActive())
 	{
@@ -1163,7 +1163,7 @@ void CScoreboard::OnRender()
 	if(GameClient()->m_Motd.IsActive())
 		GameClient()->m_Motd.Clear();
 
-	const CUIRect GlobalScreen = *Ui()->Screen(); // bestclient
+	const CUIRect GlobalScreen = *Ui()->Screen(); // bestclient-light
 	Ui()->MapScreen();
 
 	const CNetObj_GameInfo *pGameInfoObj = GameClient()->m_Snap.m_pGameInfoObj;
@@ -1181,7 +1181,7 @@ void CScoreboard::OnRender()
 	const float ScoreboardWidthBase = !Teams && NumPlayers <= 16 ? ScoreboardSmallWidth : 750.0f;
 	const float ScoreboardWidth = ScoreboardWidthBase + (ShowPoints ? NumScoreboardColumns * PointsColumnExtra : 0.0f);
 
-	const float UserScale = std::clamp(g_Config.m_BcScoreboardScale / 100.0f, 0.5f, 1.0f);
+	const float UserScale = std::clamp(g_Config.m_BclScoreboardScale / 100.0f, 0.5f, 1.0f);
 	const float HorizontalMargin = 40.0f;
 	const float FitScale = ScoreboardWidth > 0.0f ? GlobalScreen.w / (ScoreboardWidth + HorizontalMargin * 2.0f) : UserScale;
 	const float ScoreboardScale = std::clamp(std::min(UserScale, FitScale), 0.25f, 1.0f);
@@ -1190,7 +1190,7 @@ void CScoreboard::OnRender()
 	const vec2 RealMousePos = Ui()->MousePos();
 	const vec2 WindowSize = vec2(Graphics()->WindowWidth(), Graphics()->WindowHeight());
 	Ui()->SetMousePos(Ui()->UpdatedMousePos() * vec2(Screen.w, Screen.h) / WindowSize);
-	// bestclient
+	// bestclient-light
 
 	CUIRect Scoreboard = {(Screen.w - ScoreboardWidth) / 2.0f, 75.0f, ScoreboardWidth, 355.0f + TitleHeight};
 	CScoreboardRenderState RenderState{};
@@ -1355,9 +1355,9 @@ void CScoreboard::OnRender()
 		Ui()->FinishCheck();
 	}
 
-	// bestclient
+	// bestclient-light
 	Ui()->SetMousePos(RealMousePos);
-	// bestclient
+	// bestclient-light
 }
 
 bool CScoreboard::IsActive() const
@@ -1385,7 +1385,7 @@ bool CScoreboard::IsActive() const
 	return false;
 }
 
-// bestclient
+// bestclient-light
 bool CScoreboard::IsShown() const
 {
 	if(!IsActive())
@@ -1394,7 +1394,7 @@ bool CScoreboard::IsShown() const
 		return false;
 	return true;
 }
-// bestclient
+// bestclient-light
 
 const char *CScoreboard::GetTeamName(int Team) const
 {
@@ -1496,7 +1496,7 @@ CUi::EPopupMenuFunctionResult CScoreboard::CScoreboardPopupContext::Render(void 
 		}
 		pScoreboard->GameClient()->m_Tooltips.DoToolTip(&pPopupContext->m_EmoticonAction, &Action, Client.m_EmoticonIgnore ? Localize("Unmute emoticons") : Localize("Mute emoticons"));
 
-		// bestclient
+		// bestclient-light
 		View.HSplitTop(ItemSpacing * 2, nullptr, &View);
 		View.HSplitTop(ActionSize, &Container, &View);
 		Container.VSplitLeft(ActionSize, &Action, &Container);
@@ -1528,7 +1528,7 @@ CUi::EPopupMenuFunctionResult CScoreboard::CScoreboardPopupContext::Render(void 
 				pScoreboard->GameClient()->m_WarList.AddWarEntryInGame(1, Client.m_aName, "", false);
 		}
 		pScoreboard->GameClient()->m_Tooltips.DoToolTip(&pPopupContext->m_WarAction, &Action, IsInWarList ? Localize("Remove from warlist") : Localize("Add to warlist"));
-		// bestclient
+		// bestclient-light
 	}
 
 	const float ButtonSize = 17.5f;
@@ -1537,10 +1537,10 @@ CUi::EPopupMenuFunctionResult CScoreboard::CScoreboardPopupContext::Render(void 
 	ColorRGBA SpectateButtonColor = ColorRGBA(1.0f, 1.0f, 1.0f, (IsSpectating ? 0.25f : 0.5f) * pUi->ButtonColorMul(&pPopupContext->m_SpectateButton));
 	if(!pPopupContext->m_IsSpectating)
 	{
-		// bestclient
+		// bestclient-light
 		View.HSplitTop(ItemSpacing * 2, nullptr, &View);
 		View.HSplitTop(ButtonSize, &Container, &View);
-		// bestclient
+		// bestclient-light
 		if(pUi->DoButton_PopupMenu(&pPopupContext->m_SpectateButton, Localize("Spectate"), &Container, FontSize, TEXTALIGN_MC, 0.0f, false, true, SpectateButtonColor))
 		{
 			if(IsSpectating)
@@ -1569,7 +1569,7 @@ CUi::EPopupMenuFunctionResult CScoreboard::CScoreboardPopupContext::Render(void 
 		}
 	}
 
-	// bestclient
+	// bestclient-light
 	auto AddTextButton = [&](CButtonContainer *pButton, const char *pLabel, auto &&OnClick) {
 		View.HSplitTop(ItemSpacing * 2, nullptr, &View);
 		View.HSplitTop(ButtonSize, &Container, &View);
@@ -1608,13 +1608,13 @@ CUi::EPopupMenuFunctionResult CScoreboard::CScoreboardPopupContext::Render(void 
 		pScoreboard->Console()->ExecuteLine(aWhisperBuf, IConsole::CLIENT_ID_UNSPECIFIED);
 	});
 	AddTextButton(&pPopupContext->m_CopySkinButton, Localize("Copy Skin"), [&]() {
-		pScoreboard->GameClient()->m_BestClient.CopyPlayerSkin(pPopupContext->m_ClientId);
+		pScoreboard->GameClient()->m_BestClientLight.CopyPlayerSkin(pPopupContext->m_ClientId);
 	});
 	AddTextButton(&pPopupContext->m_VoteKickButton, Localize("Vote Kick"), [&]() {
 		pScoreboard->GameClient()->m_Voting.CallvoteKick(pPopupContext->m_ClientId, "");
 	});
 	AddTextButton(&pPopupContext->m_FindHoursButton, Localize("Find Hours"), [&]() {
-		pScoreboard->GameClient()->m_BestClient.FetchFindHours(Client.m_aName);
+		pScoreboard->GameClient()->m_BestClientLight.FetchFindHours(Client.m_aName);
 	});
 	AddTextButton(&pPopupContext->m_ClipNameButton, Localize("Clip Name"), [&]() {
 		pScoreboard->Input()->SetClipboardText(Client.m_aName);
@@ -1623,7 +1623,7 @@ CUi::EPopupMenuFunctionResult CScoreboard::CScoreboardPopupContext::Render(void 
 		SayNamed("/swap");
 	});
 
-	if(!pPopupContext->m_IsLocal && g_Config.m_BcVoiceChatEnable)
+	if(!pPopupContext->m_IsLocal && g_Config.m_BclVoiceChatEnable)
 	{
 		View.HSplitTop(ItemSpacing * 2, nullptr, &View);
 		View.HSplitTop(ButtonSize, &Container, &View);
@@ -1699,7 +1699,7 @@ CUi::EPopupMenuFunctionResult CScoreboard::CScoreboardPopupContext::Render(void 
 		if(LocalInTeam && LocalTeam == TargetTeam)
 			AddTeamButton(&pPopupContext->m_TeamLockButton, Localize("Lock"), [&]() { pScoreboard->Console()->ExecuteLine("say /lock", IConsole::CLIENT_ID_UNSPECIFIED); });
 	}
-	// bestclient
+	// bestclient-light
 
 	return CUi::POPUP_KEEP_OPEN;
 }

@@ -228,13 +228,13 @@ CRenderLayerGroup::CRenderLayerGroup(int GroupId, CMapItemGroup *pGroup) :
 
 bool CRenderLayerGroup::DoRender(const CRenderLayerParams &Params)
 {
-	// bestclient
+	// bestclient-light
 	if(Params.m_MapPreview)
 	{
 		Graphics()->ClipDisable();
 		return true;
 	}
-	// bestclient
+	// bestclient-light
 	if(!g_Config.m_GfxNoclip || Params.m_RenderType == ERenderType::RENDERTYPE_FULL_DESIGN)
 	{
 		Graphics()->ClipDisable();
@@ -317,7 +317,7 @@ void CRenderLayerTile::RenderTileLayer(const ColorRGBA &Color, const CRenderLaye
 
 	CScreenRect ScreenRect = Graphics()->GetScreen();
 
-	// bestclient
+	// bestclient-light
 	if(Params.m_FpsFogEnabled && Params.m_FpsFogCullMapTiles && Params.m_FpsFogHalfW > 0.0f && Params.m_FpsFogHalfH > 0.0f)
 	{
 		const float CenterX = (ScreenRect.m_TopLeft.x + ScreenRect.m_BottomRight.x) * 0.5f;
@@ -335,7 +335,7 @@ void CRenderLayerTile::RenderTileLayer(const ColorRGBA &Color, const CRenderLaye
 		if(ScreenRect.m_TopLeft.x >= ScreenRect.m_BottomRight.x || ScreenRect.m_TopLeft.y >= ScreenRect.m_BottomRight.y)
 			return;
 	}
-	// bestclient
+	// bestclient-light
 
 	int ScreenRectY0 = std::floor(ScreenRect.m_TopLeft.y / 32);
 	int ScreenRectX0 = std::floor(ScreenRect.m_TopLeft.x / 32);
@@ -1472,10 +1472,10 @@ void CRenderLayerQuads::Render(const CRenderLayerParams &Params)
 
 bool CRenderLayerQuads::DoRender(const CRenderLayerParams &Params)
 {
-	// bestclient
+	// bestclient-light
 	if(Params.m_DisableMapQuads && Params.m_RenderType != ERenderType::RENDERTYPE_FULL_DESIGN)
 		return false;
-	// bestclient
+	// bestclient-light
 
 	// skip rendering anything but entities if we only want to render entities
 	if(Params.m_EntityOverlayVal == 100 && Params.m_RenderType != ERenderType::RENDERTYPE_BACKGROUND_FORCE)

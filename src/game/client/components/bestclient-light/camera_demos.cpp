@@ -75,21 +75,21 @@ void CCameraDemos::UpdateEffects(CGameClient *pGameClient, float DeltaTime, floa
 
 	const float IntraTick = pGameClient->Client()->IntraGameTick(g_Config.m_ClDummy);
 
-	if(g_Config.m_BcCameraDrift)
+	if(g_Config.m_BclCameraDrift)
 	{
 		const float CurrentVelocity = pTrackedCharacter->m_VelX / 256.0f;
 		const float PreviousVelocity = pPrevTrackedCharacter->m_VelX / 256.0f;
 		const float HorizontalVelocity = mix(PreviousVelocity, CurrentVelocity, IntraTick);
 		const float VelocityFactor = absolute(HorizontalVelocity);
 		float DriftDirection = HorizontalVelocity < 0.0f ? -1.0f : HorizontalVelocity > 0.0f ? 1.0f : 0.0f;
-		if(g_Config.m_BcCameraDriftReverse)
+		if(g_Config.m_BclCameraDriftReverse)
 			DriftDirection *= -1.0f;
 
 		const float DriftMultiplier = 1.0f + VelocityFactor / 10.0f;
-		const float DriftAmount = VelocityFactor * (g_Config.m_BcCameraDriftAmount / 50.0f) * DriftMultiplier;
+		const float DriftAmount = VelocityFactor * (g_Config.m_BclCameraDriftAmount / 50.0f) * DriftMultiplier;
 		s_DriftTargetOffset = vec2(DriftDirection * DriftAmount, 0.0f);
 
-		const float SmoothFactor = (1.0f - g_Config.m_BcCameraDriftSmoothness / 100.0f) * 10.0f;
+		const float SmoothFactor = (1.0f - g_Config.m_BclCameraDriftSmoothness / 100.0f) * 10.0f;
 		s_DriftCurrentOffset += (s_DriftTargetOffset - s_DriftCurrentOffset) * std::min(DeltaTime * SmoothFactor, 1.0f);
 	}
 	else
@@ -99,19 +99,19 @@ void CCameraDemos::UpdateEffects(CGameClient *pGameClient, float DeltaTime, floa
 	}
 
 	s_DynamicFovTarget = 1.0f;
-	if(g_Config.m_BcDynamicFov)
+	if(g_Config.m_BclDynamicFov)
 	{
 		const vec2 CurrentVelocity = vec2(pTrackedCharacter->m_VelX, pTrackedCharacter->m_VelY) / 256.0f;
 		const vec2 PreviousVelocity = vec2(pPrevTrackedCharacter->m_VelX, pPrevTrackedCharacter->m_VelY) / 256.0f;
 		const float VelocityFactor = length(mix(PreviousVelocity, CurrentVelocity, IntraTick));
 		const float DynamicFovMultiplier = 1.0f + VelocityFactor / 10.0f;
-		const float DynamicFovAmount = VelocityFactor * (g_Config.m_BcDynamicFovAmount / 50.0f) * DynamicFovMultiplier;
+		const float DynamicFovAmount = VelocityFactor * (g_Config.m_BclDynamicFovAmount / 50.0f) * DynamicFovMultiplier;
 		s_DynamicFovTarget = std::clamp(1.0f + DynamicFovAmount / 500.0f, 1.0f, 5.0f);
 	}
 
-	if(g_Config.m_BcDynamicFov && g_Config.m_BcDynamicFovSmoothness > 0)
+	if(g_Config.m_BclDynamicFov && g_Config.m_BclDynamicFovSmoothness > 0)
 	{
-		const float SmoothFactor = (1.0f - g_Config.m_BcDynamicFovSmoothness / 100.0f) * 15.0f + 0.5f;
+		const float SmoothFactor = (1.0f - g_Config.m_BclDynamicFovSmoothness / 100.0f) * 15.0f + 0.5f;
 		s_DynamicFovCurrent += (s_DynamicFovTarget - s_DynamicFovCurrent) * std::min(DeltaTime * SmoothFactor, 1.0f);
 	}
 	else
@@ -132,7 +132,7 @@ vec2 CCameraDemos::DriftOffset(bool DemoPlayback)
 
 void CCameraDemos::ApplyFreeviewNumpad(IInput *pInput, float FrameTime, bool &ForceFreeview, vec2 &ForceFreeviewPos, vec2 &Center)
 {
-	if(!g_Config.m_BcFreeviewNumpad)
+	if(!g_Config.m_BclFreeviewNumpad)
 	{
 		s_FreeviewVelocity = vec2(0.0f, 0.0f);
 		return;
@@ -143,8 +143,8 @@ void CCameraDemos::ApplyFreeviewNumpad(IInput *pInput, float FrameTime, bool &Fo
 		FrameTime = 1.0f / (float)std::max(g_Config.m_ClVideoRecorderFPS, 1);
 #endif
 
-	const float SmoothFreeviewSpeed = (float)g_Config.m_BcFreeviewSpeed;
-	const float SmoothFreeviewAcceleration = g_Config.m_BcFreeviewSmoothness / 10.0f;
+	const float SmoothFreeviewSpeed = (float)g_Config.m_BclFreeviewSpeed;
+	const float SmoothFreeviewAcceleration = g_Config.m_BclFreeviewSmoothness / 10.0f;
 	vec2 FreeviewMove = vec2(0.0f, 0.0f);
 	if(pInput->KeyIsPressed(KEY_KP_4))
 		FreeviewMove.x -= 1.0f;

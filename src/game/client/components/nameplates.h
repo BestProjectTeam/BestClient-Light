@@ -18,9 +18,9 @@ public:
 	void RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *pPlayerInfo, float Alpha);
 	void RenderNamePlatePreview(vec2 Position, int Dummy);
 	void ResetNamePlates();
-	// bestclient
+	// bestclient-light
 	float GetNamePlateOffset(int ClientId) const;
-	// bestclient
+	// bestclient-light
 	int Sizeof() const override { return sizeof(*this); }
 	void OnWindowResize() override;
 	void OnRender() override;

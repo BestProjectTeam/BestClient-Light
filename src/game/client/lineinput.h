@@ -72,9 +72,9 @@ private:
 	size_t m_LastCompositionCursorPos;
 
 	bool m_Hidden;
-	// bestclient
+	// bestclient-light
 	bool m_HideCursor;
-	// bestclient
+	// bestclient-light
 	const char *m_pEmptyText;
 	FClipboardLineCallback m_pfnClipboardLineCallback;
 	FDisplayTextCallback m_pfnDisplayTextCallback;
@@ -169,9 +169,9 @@ public:
 	bool IsHidden() const { return m_Hidden; }
 	void SetHidden(bool Hidden) { m_Hidden = Hidden; }
 
-	// bestclient
+	// bestclient-light
 	void SetHideCursor(bool Hide) { m_HideCursor = Hide; }
-	// bestclient
+	// bestclient-light
 
 	const char *GetEmptyText() const { return m_pEmptyText; }
 	void SetEmptyText(const char *pText) { m_pEmptyText = pText; }
@@ -200,9 +200,9 @@ public:
 	const void *GetClearButtonId() const { return &m_ClearButtonId; }
 
 	bool IsActive() const { return GetActiveInput() == this; }
-	// bestclient
+	// bestclient-light
 	static EInputPriority GetActiveInputPriority() { return ms_ActiveInputPriority; }
-	// bestclient
+	// bestclient-light
 	void Activate(EInputPriority Priority);
 	void Deactivate() const;
 };

@@ -5,7 +5,7 @@
 #include "binds.h"
 #include "camera.h"
 #include "controls.h"
-#include "hud_layout.h" // bestclient
+#include "hud_layout.h" // bestclient-light
 #include "voting.h"
 
 #include <base/color.h>
@@ -20,10 +20,10 @@
 #include <generated/protocol.h>
 
 #include <game/client/animstate.h>
-#include <game/client/components/bestclient/corner_indicator.h> // bestclient
-#include <game/client/components/bestclient/cursor_trail.h> // bestclient
-#include <game/client/components/bestclient/gradient.h> // bestclient
-#include <game/client/components/bestclient/hud_extras.h> // bestclient
+#include <game/client/components/bestclient-light/corner_indicator.h> // bestclient-light
+#include <game/client/components/bestclient-light/cursor_trail.h> // bestclient-light
+#include <game/client/components/bestclient-light/gradient.h> // bestclient-light
+#include <game/client/components/bestclient-light/hud_extras.h> // bestclient-light
 #include <game/client/components/scoreboard.h>
 #include <game/client/components/skins.h>
 #include <game/client/gameclient.h>
@@ -37,7 +37,7 @@
 
 namespace
 {
-	// bestclient
+	// bestclient-light
 	CUIRect PushHudRectFromMusicPlayer(CGameClient *pGameClient, CUIRect Rect, float HudWidth, float HudHeight, bool ForcePreview)
 	{
 		if(ForcePreview || pGameClient == nullptr || Rect.w <= 0.0f || Rect.h <= 0.0f)
@@ -65,7 +65,7 @@ namespace
 	{
 		return std::clamp(g_Config.m_TcFrozenHudExpandDir, (int)FROZEN_HUD_EXPAND_RIGHT, (int)FROZEN_HUD_EXPAND_CENTER);
 	}
-	// bestclient
+	// bestclient-light
 }
 
 CHud::CHud()
@@ -170,11 +170,11 @@ void CHud::OnInit()
 
 void CHud::RenderGameTimer()
 {
-	// bestclient
-	const bool MusicPlayerOccupiesTimerSlot = g_Config.m_BcMusicPlayer != 0 && !(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideSongPlayer);
+	// bestclient-light
+	const bool MusicPlayerOccupiesTimerSlot = g_Config.m_BclMusicPlayer != 0 && !(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideSongPlayer);
 	if(MusicPlayerOccupiesTimerSlot)
 		return;
-	// bestclient
+	// bestclient-light
 
 	float Half = m_Width / 2.0f;
 
@@ -244,14 +244,14 @@ void CHud::RenderSuddenDeath()
 
 void CHud::RenderScoreHud(bool ForcePreview)
 {
-	// bestclient
+	// bestclient-light
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_SCORE))
 		return;
 	if(!ForcePreview && !g_Config.m_ClShowhudScore)
 		return;
 	if(!ForcePreview && GameClient()->m_Snap.m_pGameInfoObj && (GameClient()->m_Snap.m_pGameInfoObj->m_GameStateFlags & GAMESTATEFLAG_GAMEOVER))
 		return;
-	// bestclient
+	// bestclient-light
 
 	const CUIRect Rect = GetScoreHudRect(ForcePreview);
 	if(Rect.w <= 0.0f || Rect.h <= 0.0f)
@@ -280,7 +280,7 @@ void CHud::RenderScoreHud(bool ForcePreview)
 		CTextCursor Cursor;
 		Cursor.SetPosition(vec2(X, Y));
 		Cursor.m_FontSize = Size;
-		if(Id >= 0 && Id < MAX_CLIENTS && g_Config.m_BcNameplateGradient && CBcGradient::AppliesTo(Id, GameClient()))
+		if(Id >= 0 && Id < MAX_CLIENTS && g_Config.m_BclNameplateGradient && CBcGradient::AppliesTo(Id, GameClient()))
 		{
 			const float Phase = CBcGradient::AnimatePhase(Client()->GlobalTime());
 			const std::vector<STextColorSplit> vGradientSplits = CBcGradient::BuildAnimatedTextSplits(pName, Id, GameClient(), Phase);
@@ -493,7 +493,7 @@ void CHud::RenderScoreHud(bool ForcePreview)
 	}
 }
 
-// bestclient
+// bestclient-light
 CUIRect CHud::GetScoreHudRect(bool ForcePreview) const
 {
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_SCORE))
@@ -516,7 +516,7 @@ CUIRect CHud::GetScoreHudRect(bool ForcePreview) const
 	const auto ClampedRect = HudLayout::ClampRectToScreen(RawRect, m_Width, m_Height);
 	return PushHudRectFromMusicPlayer(GameClient(), {ClampedRect.m_X, ClampedRect.m_Y, ClampedRect.m_W, ClampedRect.m_H}, m_Width, m_Height, ForcePreview);
 }
-// bestclient
+// bestclient-light
 
 void CHud::RenderWarmupTimer()
 {
@@ -556,9 +556,9 @@ void CHud::RenderTextInfo()
 	if(Showfps)
 	{
 		char aBuf[16];
-		// bestclient
-		const int FramesPerSecond = GameClient()->m_BestClient.HudFramesPerSecond(Client()->FrameTimeAverage());
-		// bestclient
+		// bestclient-light
+		const int FramesPerSecond = GameClient()->m_BestClientLight.HudFramesPerSecond(Client()->FrameTimeAverage());
+		// bestclient-light
 		str_format(aBuf, sizeof(aBuf), "%d", FramesPerSecond);
 
 		if(FramesPerSecond != m_LastFps || m_Width != m_LastFpsWidth || !m_FPSTextContainerIndex.Valid())
@@ -590,7 +590,7 @@ void CHud::RenderTextInfo()
 		TextRender()->Text(m_Width - 10 - TextRender()->TextWidth(12, aBuf, -1, -1.0f), Showfps ? 20 : 5, 12, aBuf, -1.0f);
 	}
 
-	// bestclient
+	// bestclient-light
 	if(GameClient()->m_FastPractice.Enabled())
 	{
 		constexpr const char *pLine1 = "practice mode";
@@ -606,7 +606,7 @@ void CHud::RenderTextInfo()
 		TextRender()->Text(Line1X, 34.0f, Line1Size, pLine1, -1.0f);
 		TextRender()->Text(Line2X, 45.0f, Line2Size, pLine2, -1.0f);
 	}
-	// bestclient
+	// bestclient-light
 
 	if(g_Config.m_TcMiniDebug)
 	{
@@ -660,7 +660,7 @@ void CHud::RenderTextInfo()
 		Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, m_aCursorOffset[CurWeapon], m_Width / 2.0f, m_Height / 2.0f, 0.36f, 0.36f);
 	}
 	// render team in freeze text and last notify
-	// bestclient
+	// bestclient-light
 	if(g_Config.m_TcShowFrozenText > 0 && GameClient()->m_GameInfo.m_EntitiesDDRace)
 	{
 		int NumInTeam = 0;
@@ -676,7 +676,7 @@ void CHud::RenderTextInfo()
 		const CUIRect TextRect = PushHudRectFromMusicPlayer(GameClient(), {m_Width / 2.0f - TextWidth / 2.0f, 12.0f, TextWidth, 10.0f}, m_Width, m_Height, false);
 		TextRender()->Text(TextRect.x, TextRect.y, 10.0f, aBuf);
 	}
-	// bestclient
+	// bestclient-light
 }
 
 void CHud::RenderConnectionWarning()
@@ -715,12 +715,12 @@ void CHud::RenderCursor()
 	if(Scale <= 0.0f)
 		return;
 
-	// bestclient
+	// bestclient-light
 	GameClient()->m_AspectRatio.BeginCursorGameAspect();
 	const auto EndCursorGameAspect = [&]() {
 		GameClient()->m_AspectRatio.EndCursorGameAspect();
 	};
-	// bestclient
+	// bestclient-light
 
 	int CurWeapon = 0;
 	vec2 TargetPos;
@@ -741,9 +741,9 @@ void CHud::RenderCursor()
 		// Render spec cursor
 		if(!g_Config.m_ClSpecCursor || !GameClient()->m_CursorInfo.IsAvailable())
 		{
-			// bestclient
+			// bestclient-light
 			EndCursorGameAspect();
-			// bestclient
+			// bestclient-light
 			return;
 		}
 
@@ -751,9 +751,9 @@ void CHud::RenderCursor()
 
 		if(!RenderSpecCursor)
 		{
-			// bestclient
+			// bestclient-light
 			EndCursorGameAspect();
-			// bestclient
+			// bestclient-light
 			return;
 		}
 
@@ -772,17 +772,17 @@ void CHud::RenderCursor()
 			Alpha /= 2.0f;
 	}
 
-	// bestclient
+	// bestclient-light
 	GameClient()->m_CursorTrail.Render(TargetPos, Scale, Alpha, CurWeapon, m_HudQuadContainerIndex, m_aCursorOffset);
-	// bestclient
+	// bestclient-light
 
 	Graphics()->SetColor(1.0f, 1.0f, 1.0f, Alpha);
 	Graphics()->TextureSet(GameClient()->m_GameSkin.m_aSpriteWeaponCursors[CurWeapon]);
 	Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, m_aCursorOffset[CurWeapon], TargetPos.x, TargetPos.y, Scale, Scale);
 
-	// bestclient
+	// bestclient-light
 	EndCursorGameAspect();
-	// bestclient
+	// bestclient-light
 }
 
 void CHud::PrepareAmmoHealthAndArmorQuads()
@@ -1378,7 +1378,7 @@ void CHud::RenderNinjaBarPos(const float x, float y, const float Width, const fl
 	Graphics()->WrapNormal();
 }
 
-// bestclient
+// bestclient-light
 void CHud::RenderSpectatorCount(bool ForcePreview)
 {
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_SPECTATOR_COUNT))
@@ -1475,14 +1475,14 @@ CUIRect CHud::GetSpectatorCountRect(bool ForcePreview)
 	const auto ClampedRect = HudLayout::ClampRectToScreen(RawRect, m_Width, m_Height);
 	return PushHudRectFromMusicPlayer(GameClient(), {ClampedRect.m_X, ClampedRect.m_Y, ClampedRect.m_W, ClampedRect.m_H}, m_Width, m_Height, ForcePreview);
 }
-// bestclient
+// bestclient-light
 
 void CHud::RenderDummyActions(bool ForcePreview)
 {
-	// bestclient
+	// bestclient-light
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_DUMMY_ACTIONS))
 		return;
-	// bestclient
+	// bestclient-light
 	if(!ForcePreview)
 	{
 		if(!g_Config.m_ClShowhudDummyActions || (GameClient()->m_Snap.m_pGameInfoObj && (GameClient()->m_Snap.m_pGameInfoObj->m_GameStateFlags & GAMESTATEFLAG_GAMEOVER)) || !Client()->DummyConnected())
@@ -1493,7 +1493,7 @@ void CHud::RenderDummyActions(bool ForcePreview)
 	if(Rect.w <= 0.0f || Rect.h <= 0.0f)
 		return;
 
-	// bestclient
+	// bestclient-light
 	const auto Layout = HudLayout::Get(HudLayout::MODULE_DUMMY_ACTIONS, m_Width, m_Height);
 	const float Scale = std::clamp(Layout.m_Scale / 100.0f, 0.25f, 3.0f);
 	const float ModuleAlpha = HudLayout::AlphaFactor(HudLayout::MODULE_DUMMY_ACTIONS);
@@ -1514,7 +1514,7 @@ void CHud::RenderDummyActions(bool ForcePreview)
 	Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, m_DummyCopyOffset, x, y);
 }
 
-// bestclient
+// bestclient-light
 CUIRect CHud::GetDummyActionsRect(bool ForcePreview) const
 {
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_DUMMY_ACTIONS))
@@ -1558,7 +1558,7 @@ CUIRect CHud::GetDummyActionsRect(bool ForcePreview) const
 	const auto ClampedRect = HudLayout::ClampRectToScreen(RawRect, m_Width, m_Height);
 	return PushHudRectFromMusicPlayer(GameClient(), {ClampedRect.m_X, ClampedRect.m_Y, ClampedRect.m_W, ClampedRect.m_H}, m_Width, m_Height, ForcePreview);
 }
-// bestclient
+// bestclient-light
 
 inline int CHud::GetDigitsIndex(int Value, int Max)
 {
@@ -1580,16 +1580,16 @@ inline int CHud::GetDigitsIndex(int Value, int Max)
 
 inline float CHud::GetMovementInformationBoxHeight() const
 {
-	// bestclient
-	const bool ShowCheckpoint = g_Config.m_BcShowCorrectCheckpoint != 0;
-	// bestclient
+	// bestclient-light
+	const bool ShowCheckpoint = g_Config.m_BclShowCorrectCheckpoint != 0;
+	// bestclient-light
 	if(GameClient()->m_Snap.m_SpecInfo.m_Active && (GameClient()->m_Snap.m_SpecInfo.m_SpectatorId == SPEC_FREEVIEW || (GameClient()->m_Snap.m_SpecInfo.m_SpectatorId >= 0 && GameClient()->m_Snap.m_SpecInfo.m_SpectatorId < MAX_CLIENTS && GameClient()->m_aClients[GameClient()->m_Snap.m_SpecInfo.m_SpectatorId].m_SpecCharPresent)))
 	{
 		float BoxHeight = g_Config.m_ClShowhudPlayerPosition ? 3.0f * MOVEMENT_INFORMATION_LINE_HEIGHT + 2.0f : 0.0f;
-		// bestclient
+		// bestclient-light
 		if(ShowCheckpoint)
 			BoxHeight += MOVEMENT_INFORMATION_LINE_HEIGHT + (BoxHeight <= 0.0f ? 2.0f : 0.0f);
-		// bestclient
+		// bestclient-light
 		return BoxHeight;
 	}
 
@@ -1610,10 +1610,10 @@ inline float CHud::GetMovementInformationBoxHeight() const
 
 	if(ShowPos || ShowSpeed || ShowAngle)
 		BoxHeight += 2.0f;
-	// bestclient
+	// bestclient-light
 	if(ShowCheckpoint)
 		BoxHeight += MOVEMENT_INFORMATION_LINE_HEIGHT + (BoxHeight <= 0.0f ? 2.0f : 0.0f);
-	// bestclient
+	// bestclient-light
 	return BoxHeight;
 }
 
@@ -1699,7 +1699,7 @@ CHud::CMovementInformation CHud::GetMovementInformation(int ClientId, int Conn) 
 
 void CHud::RenderMovementInformation(bool ForcePreview)
 {
-	// bestclient
+	// bestclient-light
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_MOVEMENT_INFO))
 		return;
 	const CUIRect Rect = GetMovementInformationRect(ForcePreview);
@@ -1708,13 +1708,13 @@ void CHud::RenderMovementInformation(bool ForcePreview)
 	const auto Layout = HudLayout::Get(HudLayout::MODULE_MOVEMENT_INFO, m_Width, m_Height);
 	const float Scale = std::clamp(Layout.m_Scale / 100.0f, 0.25f, 3.0f);
 	const float ModuleAlpha = HudLayout::AlphaFactor(HudLayout::MODULE_MOVEMENT_INFO);
-	// bestclient
+	// bestclient-light
 
 	const int ClientId = GameClient()->m_Snap.m_SpecInfo.m_Active ? GameClient()->m_Snap.m_SpecInfo.m_SpectatorId : GameClient()->m_Snap.m_LocalClientId;
 	const bool PosOnly = !ForcePreview && (ClientId == SPEC_FREEVIEW || (ClientId >= 0 && ClientId < MAX_CLIENTS && GameClient()->m_aClients[ClientId].m_SpecCharPresent));
-	// bestclient
-	const bool ShowCheckpoint = g_Config.m_BcShowCorrectCheckpoint != 0;
-	// bestclient
+	// bestclient-light
+	const bool ShowCheckpoint = g_Config.m_BclShowCorrectCheckpoint != 0;
+	// bestclient-light
 	if(!ForcePreview && !g_Config.m_ClShowhudPlayerPosition && (PosOnly || (!g_Config.m_ClShowhudPlayerSpeed && !g_Config.m_ClShowhudPlayerAngle)) && !ShowCheckpoint)
 	{
 		return;
@@ -1723,7 +1723,7 @@ void CHud::RenderMovementInformation(bool ForcePreview)
 	const float Fontsize = 6.0f * Scale;
 	const float LineHeight = MOVEMENT_INFORMATION_LINE_HEIGHT * Scale;
 
-	// bestclient
+	// bestclient-light
 	const int Corners = HudLayout::BackgroundCorners(IGraphics::CORNER_ALL, Rect.x, Rect.y, Rect.w, Rect.h, m_Width, m_Height);
 	if(Layout.m_BackgroundEnabled)
 		Graphics()->DrawRect(Rect.x, Rect.y, Rect.w, Rect.h, color_cast<ColorRGBA>(ColorHSLA(Layout.m_BackgroundColor, true)).WithMultipliedAlpha(ModuleAlpha), Corners, 5.0f * Scale);
@@ -1733,7 +1733,7 @@ void CHud::RenderMovementInformation(bool ForcePreview)
 	const float StartX = Rect.x;
 	const float RightX = Rect.x + Rect.w - 2.0f * Scale;
 	(void)StartX;
-	// bestclient
+	// bestclient-light
 
 	bool HasDummyInfo = false;
 	CMovementInformation DummyInfo{};
@@ -1841,7 +1841,7 @@ void CHud::RenderMovementInformation(bool ForcePreview)
 		}
 	}
 
-	// bestclient
+	// bestclient-light
 	auto RenderCheckpoint = [&]() {
 		if(!ShowCheckpoint)
 			return;
@@ -1860,13 +1860,13 @@ void CHud::RenderMovementInformation(bool ForcePreview)
 		}
 		y += LineHeight;
 	};
-	// bestclient
+	// bestclient-light
 
 	if(PosOnly)
 	{
-		// bestclient
+		// bestclient-light
 		RenderCheckpoint();
-		// bestclient
+		// bestclient-light
 		return;
 	}
 
@@ -1927,9 +1927,9 @@ void CHud::RenderMovementInformation(bool ForcePreview)
 		}
 	}
 
-	// bestclient
+	// bestclient-light
 	RenderCheckpoint();
-	// bestclient
+	// bestclient-light
 }
 
 void CHud::RenderSpectatorHud()
@@ -1986,7 +1986,7 @@ void CHud::RenderSpectatorHud()
 
 void CHud::RenderLocalTime(bool ForcePreview)
 {
-	// bestclient
+	// bestclient-light
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_LOCAL_TIME))
 		return;
 	if(!ForcePreview && !g_Config.m_ClShowLocalTimeAlways && !GameClient()->m_Scoreboard.IsActive())
@@ -2008,10 +2008,10 @@ void CHud::RenderLocalTime(bool ForcePreview)
 	if(Layout.m_BackgroundEnabled)
 		Graphics()->DrawRect(Rect.x, Rect.y, Rect.w, Rect.h, color_cast<ColorRGBA>(ColorHSLA(Layout.m_BackgroundColor, true)).WithMultipliedAlpha(ModuleAlpha), Corners, 3.75f * Scale);
 	TextRender()->Text(Rect.x + Padding, Rect.y + (Rect.h - FontSize) / 2.f, FontSize, aTimeStr, -1.0f);
-	// bestclient
+	// bestclient-light
 }
 
-// bestclient
+// bestclient-light
 CUIRect CHud::GetLocalTimeRect(bool ForcePreview) const
 {
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_LOCAL_TIME))
@@ -2032,9 +2032,9 @@ CUIRect CHud::GetLocalTimeRect(bool ForcePreview) const
 	const float Width = std::round(TextRender()->TextBoundingBox(FontSize, aTimeStr).m_W);
 	return PushHudRectFromMusicPlayer(GameClient(), {x - Width - Padding * 3.0f, y, Width + Padding * 2.0f, 12.5f * Scale}, m_Width, m_Height, ForcePreview);
 }
-// bestclient
+// bestclient-light
 
-// bestclient
+// bestclient-light
 CUIRect CHud::GetMovementInformationRect(bool ForcePreview) const
 {
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_MOVEMENT_INFO))
@@ -2042,7 +2042,7 @@ CUIRect CHud::GetMovementInformationRect(bool ForcePreview) const
 
 	const int ClientId = GameClient()->m_Snap.m_SpecInfo.m_Active ? GameClient()->m_Snap.m_SpecInfo.m_SpectatorId : GameClient()->m_Snap.m_LocalClientId;
 	const bool PosOnly = !ForcePreview && (ClientId == SPEC_FREEVIEW || (ClientId >= 0 && ClientId < MAX_CLIENTS && GameClient()->m_aClients[ClientId].m_SpecCharPresent));
-	const bool ShowCheckpoint = g_Config.m_BcShowCorrectCheckpoint != 0;
+	const bool ShowCheckpoint = g_Config.m_BclShowCorrectCheckpoint != 0;
 	if(!ForcePreview && !g_Config.m_ClShowhudPlayerPosition && (PosOnly || (!g_Config.m_ClShowhudPlayerSpeed && !g_Config.m_ClShowhudPlayerAngle)) && !ShowCheckpoint)
 		return {0.0f, 0.0f, 0.0f, 0.0f};
 
@@ -2078,9 +2078,9 @@ CUIRect CHud::GetMovementInformationRect(bool ForcePreview) const
 	const auto ClampedRect = HudLayout::ClampRectToScreen(RawRect, m_Width, m_Height);
 	return PushHudRectFromMusicPlayer(GameClient(), {ClampedRect.m_X, ClampedRect.m_Y, ClampedRect.m_W, ClampedRect.m_H}, m_Width, m_Height, ForcePreview);
 }
-// bestclient
+// bestclient-light
 
-// bestclient
+// bestclient-light
 void CHud::GetFrozenTeamCounts(int &NumInTeam, int &NumFrozen, int &LocalTeamId, int *pNumUnfreezing) const
 {
 	NumInTeam = 0;
@@ -2111,9 +2111,9 @@ void CHud::GetFrozenTeamCounts(int &NumInTeam, int &NumFrozen, int &LocalTeamId,
 		}
 	}
 }
-// bestclient
+// bestclient-light
 
-// bestclient
+// bestclient-light
 CUIRect CHud::GetNotifyLastRect(bool ForcePreview) const
 {
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_NOTIFY_LAST))
@@ -2144,9 +2144,9 @@ CUIRect CHud::GetNotifyLastRect(bool ForcePreview) const
 	Rect.y = std::clamp(Rect.y, 0.0f, std::max(0.0f, m_Height - Rect.h));
 	return PushHudRectFromMusicPlayer(GameClient(), Rect, m_Width, m_Height, ForcePreview);
 }
-// bestclient
+// bestclient-light
 
-// bestclient
+// bestclient-light
 void CHud::RenderNotifyLast(bool ForcePreview)
 {
 	const CUIRect Rect = GetNotifyLastRect(ForcePreview);
@@ -2162,9 +2162,9 @@ void CHud::RenderNotifyLast(bool ForcePreview)
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
 	(void)Layout;
 }
-// bestclient
+// bestclient-light
 
-// bestclient
+// bestclient-light
 CUIRect CHud::GetFrozenHudRect(bool ForcePreview) const
 {
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_FROZEN_HUD))
@@ -2201,9 +2201,9 @@ CUIRect CHud::GetFrozenHudRect(bool ForcePreview) const
 	Rect.y = std::clamp(Rect.y, 0.0f, std::max(0.0f, m_Height - Rect.h));
 	return PushHudRectFromMusicPlayer(GameClient(), Rect, m_Width, m_Height, ForcePreview);
 }
-// bestclient
+// bestclient-light
 
-// bestclient
+// bestclient-light
 void CHud::RenderFrozenHud(bool ForcePreview)
 {
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_FROZEN_HUD))
@@ -2308,7 +2308,7 @@ void CHud::RenderFrozenHud(bool ForcePreview)
 		}
 	}
 }
-// bestclient
+// bestclient-light
 
 void CHud::OnNewSnapshot()
 {
@@ -2366,16 +2366,16 @@ void CHud::OnRender()
 
 	m_Width = 300.0f * Graphics()->ScreenAspect();
 	m_Height = 300.0f;
-	// bestclient
+	// bestclient-light
 	if(m_LastHudWidth >= 0.0f && absolute(m_LastHudWidth - m_Width) > 0.01f)
 		ResetHudContainers();
 	m_LastHudWidth = m_Width;
-	// bestclient
+	// bestclient-light
 	Graphics()->MapScreenToSize(m_Width, m_Height);
 
-	// bestclient
+	// bestclient-light
 	const bool HudEditorActive = GameClient()->m_HudEditor.IsActive();
-	// bestclient
+	// bestclient-light
 
 #if defined(CONF_VIDEORECORDER)
 	if((IVideo::Current() && g_Config.m_ClVideoShowhud) || (!IVideo::Current() && g_Config.m_ClShowhud))
@@ -2383,7 +2383,7 @@ void CHud::OnRender()
 	if(g_Config.m_ClShowhud)
 #endif
 	{
-		// bestclient
+		// bestclient-light
 		const bool FocusModeActive = g_Config.m_ClFocusMode;
 		const bool HideHudInFocusMode = g_Config.m_ClFocusModeHideHud;
 		const bool HideUIInFocusMode = g_Config.m_ClFocusModeHideUI;
@@ -2393,7 +2393,7 @@ void CHud::OnRender()
 			RenderCursor();
 			return;
 		}
-		// bestclient
+		// bestclient-light
 
 		if(GameClient()->m_Snap.m_pLocalCharacter && !GameClient()->m_Snap.m_SpecInfo.m_Active && !(GameClient()->m_Snap.m_pGameInfoObj->m_GameStateFlags & GAMESTATEFLAG_GAMEOVER))
 		{
@@ -2405,12 +2405,12 @@ void CHud::OnRender()
 			{
 				RenderPlayerState(GameClient()->m_Snap.m_LocalClientId);
 			}
-			// bestclient
+			// bestclient-light
 			if(!HudEditorActive && !(FocusModeActive && HideUIInFocusMode))
 				RenderSpectatorCount();
 			if(!HudEditorActive)
 				RenderMovementInformation();
-			// bestclient
+			// bestclient-light
 			RenderDDRaceEffects();
 		}
 		else if(GameClient()->m_Snap.m_SpecInfo.m_Active)
@@ -2428,10 +2428,10 @@ void CHud::OnRender()
 			{
 				RenderPlayerState(SpectatorId);
 			}
-			// bestclient
+			// bestclient-light
 			if(!HudEditorActive)
 				RenderMovementInformation();
-			// bestclient
+			// bestclient-light
 			RenderSpectatorHud();
 		}
 
@@ -2439,7 +2439,7 @@ void CHud::OnRender()
 			RenderGameTimer();
 		RenderPauseNotification();
 		RenderSuddenDeath();
-		// bestclient
+		// bestclient-light
 		if(!HudEditorActive)
 		{
 			RenderScoreHud();
@@ -2451,26 +2451,26 @@ void CHud::OnRender()
 				RenderLocalTime();
 			GameClient()->m_Voting.Render();
 		}
-		// bestclient
+		// bestclient-light
 		CornerIndicator::Render(GameClient());
-		// bestclient
+		// bestclient-light
 		RenderWarmupTimer();
 		RenderTextInfo();
 		GameClient()->m_TClient.RenderCenterLines();
 		if(Client()->State() != IClient::STATE_DEMOPLAYBACK)
 			RenderConnectionWarning();
 		RenderTeambalanceWarning();
-		// bestclient
+		// bestclient-light
 		GameClient()->m_VoiceChat.RenderHudMuteStatusIndicator(m_Width, m_Height);
 		GameClient()->m_VoiceChat.RenderHudTalkingIndicator(m_Width, m_Height);
-		// bestclient
+		// bestclient-light
 		if(g_Config.m_ClShowRecord)
 			RenderRecord();
 	}
-	// bestclient
-	GameClient()->m_BestClient.RenderSpecMovedNotify();
+	// bestclient-light
+	GameClient()->m_BestClientLight.RenderSpecMovedNotify();
 	HudExtras::RenderPlayerBelowIndicator(GameClient(), Graphics(), TextRender(), m_Width, m_Height, Client()->RenderFrameTime());
-	// bestclient
+	// bestclient-light
 	RenderCursor();
 }
 

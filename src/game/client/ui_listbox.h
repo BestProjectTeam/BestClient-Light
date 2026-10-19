@@ -36,9 +36,9 @@ private:
 	float m_ScrollbarMargin;
 	bool m_HasHeader;
 	bool m_Active;
-	// bestclient
+	// bestclient-light
 	bool m_SuppressSelectionHighlight;
-	// bestclient
+	// bestclient-light
 
 protected:
 	CListboxItem DoNextRow();
@@ -53,10 +53,10 @@ public:
 	void DoStart(float RowHeight, int NumItems, int ItemsPerRow, int RowsPerScroll, int SelectedIndex, const CUIRect *pRect = nullptr, bool Background = true, int BackgroundCorners = IGraphics::CORNER_ALL, bool ForceShowScrollbar = false);
 	void ScrollToSelected() { m_ListBoxUpdateScroll = true; }
 	CListboxItem DoNextItem(const void *pId, bool Selected = false, float CornerRadius = 5.0f);
-	// bestclient
+	// bestclient-light
 	CUIRect DoExtraRow(float Height, bool ScrollHere = false);
 	void SuppressNextSelectionHighlight() { m_SuppressSelectionHighlight = true; }
-	// bestclient
+	// bestclient-light
 	CListboxItem DoSubheader();
 	int DoEnd();
 

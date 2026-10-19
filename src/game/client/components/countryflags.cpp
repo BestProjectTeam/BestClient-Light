@@ -166,10 +166,10 @@ size_t CCountryFlags::Num() const
 
 const CCountryFlags::CCountryFlag &CCountryFlags::GetByCountryCode(int CountryCode) const
 {
-	// bestclient
+	// bestclient-light
 	if(!in_range(CountryCode, CountryCode::MINIMUM, CountryCode::MAXIMUM))
 		CountryCode = CountryCode::DEFAULT;
-	// bestclient
+	// bestclient-light
 	return GetByIndex(m_aCountryCodeToIndexTable[CountryCode - CountryCode::MINIMUM]);
 }
 

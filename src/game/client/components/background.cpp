@@ -7,9 +7,9 @@
 
 #include <game/client/components/mapimages.h>
 #include <game/client/components/maplayers.h>
-// bestclient
-#include <game/client/components/bestclient/menu_media_background.h>
-// bestclient
+// bestclient-light
+#include <game/client/components/bestclient-light/menu_media_background.h>
+// bestclient-light
 #include <game/client/gameclient.h>
 #include <game/layers.h>
 #include <game/localization.h>
@@ -96,13 +96,13 @@ void CBackground::OnMapLoad()
 
 void CBackground::OnRender()
 {
-	// bestclient
+	// bestclient-light
 	if(Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK)
 	{
-		CMenuMediaBackground &MediaBackground = GameClient()->m_BestClient.MenuMediaBackground();
-		MediaBackground.SyncFromConfig(g_Config.m_BcGameMediaBackground, g_Config.m_BcMenuMediaBackgroundPath);
+		CMenuMediaBackground &MediaBackground = GameClient()->m_BestClientLight.MenuMediaBackground();
+		MediaBackground.SyncFromConfig(g_Config.m_BclGameMediaBackground, g_Config.m_BclMenuMediaBackgroundPath);
 		MediaBackground.Update();
-		if(g_Config.m_BcGameMediaBackground && g_Config.m_ClOverlayEntities > 0)
+		if(g_Config.m_BclGameMediaBackground && g_Config.m_ClOverlayEntities > 0)
 		{
 			float ViewWidth = 0.0f;
 			float ViewHeight = 0.0f;
@@ -113,7 +113,7 @@ void CBackground::OnRender()
 			RenderContext.m_CameraCenterY = GetCurCamera()->m_Center.y;
 			RenderContext.m_ViewWidth = ViewWidth;
 			RenderContext.m_ViewHeight = ViewHeight;
-			RenderContext.m_WorldOffset = (float)g_Config.m_BcGameMediaBackgroundOffset / 100.0f;
+			RenderContext.m_WorldOffset = (float)g_Config.m_BclGameMediaBackgroundOffset / 100.0f;
 			if(GameClient()->Layers() != nullptr && GameClient()->Layers()->GameLayer() != nullptr)
 			{
 				RenderContext.m_MapWidth = GameClient()->Layers()->GameLayer()->m_Width * 32.0f;
@@ -123,7 +123,7 @@ void CBackground::OnRender()
 			MediaBackground.Render(ViewWidth, ViewHeight, &RenderContext);
 		}
 	}
-	// bestclient
+	// bestclient-light
 
 	if(g_Config.m_ClOverlayEntities != 100)
 		return;

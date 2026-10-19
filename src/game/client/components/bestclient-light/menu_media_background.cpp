@@ -665,7 +665,7 @@ void CMenuMediaBackground::SyncFromConfig(int Enabled, const char *pPath)
 
 void CMenuMediaBackground::ReloadFromConfig()
 {
-	ReloadFromConfig(g_Config.m_BcMenuMediaBackground, g_Config.m_BcMenuMediaBackgroundPath);
+	ReloadFromConfig(g_Config.m_BclMenuMediaBackground, g_Config.m_BclMenuMediaBackgroundPath);
 }
 
 void CMenuMediaBackground::Update()

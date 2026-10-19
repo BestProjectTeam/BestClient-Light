@@ -14,7 +14,7 @@
 
 #include <game/client/components/camera.h>
 #include <game/client/components/chat.h>
-#include <game/client/components/bestclient/chat_qol.h> // bestclient
+#include <game/client/components/bestclient-light/chat_qol.h> // bestclient-light
 #include <game/client/components/menus.h>
 #include <game/client/components/scoreboard.h>
 #include <game/client/gameclient.h>
@@ -54,9 +54,9 @@ void CControls::ResetInput(int Dummy)
 
 	m_aInputDirectionLeft[Dummy] = 0;
 	m_aInputDirectionRight[Dummy] = 0;
-	// bestclient
+	// bestclient-light
 	GameClient()->m_SnapTap.Reset(Dummy);
-	// bestclient
+	// bestclient-light
 }
 
 void CControls::OnPlayerDeath()
@@ -80,7 +80,7 @@ void CControls::ConKeyInputState(IConsole::IResult *pResult, void *pUserData)
 
 	int *pVariable = pState->m_apVariables[g_Config.m_ClDummy];
 	const int Value = pResult->GetInteger(0);
-	if(!Value && *pVariable && g_Config.m_BcInputDebounce && pState->m_Input >= 0)
+	if(!Value && *pVariable && g_Config.m_BclInputDebounce && pState->m_Input >= 0)
 		pState->m_pControls->InputDebounce(g_Config.m_ClDummy, pState->m_Input);
 	*pVariable = Value;
 }
@@ -109,8 +109,8 @@ void CControls::ConKeyInputCounter(IConsole::IResult *pResult, void *pUserData)
 		(*pVariable)++;
 	*pVariable &= INPUT_STATE_MASK;
 	if(pVariable == &pState->m_pControls->m_aInputData[g_Config.m_ClDummy].m_Fire)
-		pState->m_pControls->GameClient()->m_BestClient.OnGoresFireInput(pResult->GetInteger(0));
-	// bestclient
+		pState->m_pControls->GameClient()->m_BestClientLight.OnGoresFireInput(pResult->GetInteger(0));
+	// bestclient-light
 }
 
 struct CInputSet
@@ -212,9 +212,9 @@ int CControls::SnapInput(int *pData)
 	const int UnlatchedJump = m_aInputData[g_Config.m_ClDummy].m_Jump;
 	const int UnlatchedHook = m_aInputData[g_Config.m_ClDummy].m_Hook;
 
-	// bestclient
-	GameClient()->m_BestClient.UpdateGoresMode();
-	// bestclient
+	// bestclient-light
+	GameClient()->m_BestClientLight.UpdateGoresMode();
+	// bestclient-light
 
 	// update player state
 	if(GameClient()->m_Chat.IsActive())
@@ -251,9 +251,9 @@ int CControls::SnapInput(int *pData)
 		for(auto &InputData : m_aInputData)
 			InputData.m_PlayerFlags &= ~PLAYERFLAG_CHATTING;
 
-	// bestclient
-	CChatQoL::ApplySilentTyping(m_aInputData, NUM_DUMMIES, g_Config.m_BcSilentTyping != 0);
-	// bestclient
+	// bestclient-light
+	CChatQoL::ApplySilentTyping(m_aInputData, NUM_DUMMIES, g_Config.m_BclSilentTyping != 0);
+	// bestclient-light
 
 	if(g_Config.m_TcNameplatePingCircle)
 		for(auto &InputData : m_aInputData)
@@ -316,7 +316,7 @@ int CControls::SnapInput(int *pData)
 			m_aInputData[g_Config.m_ClDummy].m_TargetX = 1;
 
 		// set direction
-		// bestclient
+		// bestclient-light
 		const bool LeftPressed = m_aInputDirectionLeft[g_Config.m_ClDummy] != 0;
 		const bool RightPressed = m_aInputDirectionRight[g_Config.m_ClDummy] != 0;
 		m_aInputData[g_Config.m_ClDummy].m_Direction = GameClient()->m_SnapTap.ResolveMovementDirection(g_Config.m_ClDummy, LeftPressed, RightPressed, true);
@@ -327,7 +327,7 @@ int CControls::SnapInput(int *pData)
 			m_aInputData[g_Config.m_ClDummy].m_Jump = DebounceState.m_Jump > 0;
 		if(DebounceState.m_Hook)
 			m_aInputData[g_Config.m_ClDummy].m_Hook = DebounceState.m_Hook > 0;
-		// bestclient
+		// bestclient-light
 
 		// dummy copy moves
 		if(g_Config.m_ClDummyCopyMoves)
@@ -394,10 +394,10 @@ int CControls::SnapInput(int *pData)
 		Send = Send || m_aInputData[g_Config.m_ClDummy].m_PrevWeapon != m_aLastData[g_Config.m_ClDummy].m_PrevWeapon;
 		Send = Send || time_get() > m_LastSendTime + time_freq() / 25; // send at least 25 Hz
 		Send = Send || (GameClient()->m_Snap.m_pLocalCharacter && GameClient()->m_Snap.m_pLocalCharacter->m_Weapon == WEAPON_NINJA && (m_aInputData[g_Config.m_ClDummy].m_Direction || m_aInputData[g_Config.m_ClDummy].m_Jump || m_aInputData[g_Config.m_ClDummy].m_Hook));
-		// bestclient
+		// bestclient-light
 		if(GameClient()->m_FastPractice.Enabled())
 			Send = true;
-		// bestclient
+		// bestclient-light
 	}
 
 	// copy and return size
@@ -569,8 +569,8 @@ float CControls::GetMaxMouseDistance() const
 
 bool CControls::CheckNewInput()
 {
-	// bestclient
-	if(g_Config.m_BcInputs == BC_INPUTS_SAIKO && g_Config.m_BcSaikoInputAmount > 0)
+	// bestclient-light
+	if(g_Config.m_BclInputs == BC_INPUTS_SAIKO && g_Config.m_BclSaikoInputAmount > 0)
 	{
 		CNetObj_PlayerInput TestInput = m_aInputData[g_Config.m_ClDummy];
 		const bool LeftPressed = m_aInputDirectionLeft[g_Config.m_ClDummy] != 0;
@@ -606,7 +606,7 @@ bool CControls::CheckNewInput()
 		m_aFastInput[g_Config.m_ClDummy] = TestInput;
 		return NewInput;
 	}
-	// bestclient
+	// bestclient-light
 
 	bool NewInput[2] = {};
 	for(int Dummy = 0; Dummy < NUM_DUMMIES; Dummy++)
@@ -614,7 +614,7 @@ bool CControls::CheckNewInput()
 		CNetObj_PlayerInput TestInput = m_aInputData[Dummy];
 		if(Dummy == g_Config.m_ClDummy)
 		{
-			// bestclient
+			// bestclient-light
 			const bool LeftPressed = m_aInputDirectionLeft[Dummy] != 0;
 			const bool RightPressed = m_aInputDirectionRight[Dummy] != 0;
 			TestInput.m_Direction = GameClient()->m_SnapTap.ResolveMovementDirection(Dummy, LeftPressed, RightPressed, false);
@@ -622,7 +622,7 @@ bool CControls::CheckNewInput()
 			if(TestInput.m_Direction == 0 && DebounceState.m_Direction) TestInput.m_Direction = DebounceState.m_Direction;
 			if(DebounceState.m_Jump) TestInput.m_Jump = DebounceState.m_Jump > 0;
 			if(DebounceState.m_Hook) TestInput.m_Hook = DebounceState.m_Hook > 0;
-			// bestclient
+			// bestclient-light
 		}
 
 		if(m_aFastInput[Dummy].m_Direction != TestInput.m_Direction)

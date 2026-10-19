@@ -16,13 +16,13 @@ void CBrowserUtils::OnUpdate()
 {
 	const bool BrowserPageActive = GameClient()->m_Menus.IsServerBrowserPageActive();
 
-	if(BrowserPageActive && g_Config.m_BcAutoServerListRefresh)
+	if(BrowserPageActive && g_Config.m_BclAutoServerListRefresh)
 	{
 		const bool BrowserBusy = ServerBrowser()->IsRefreshing() || ServerBrowser()->IsGettingServerlist();
 		if(!BrowserBusy)
 		{
 			const int64_t Now = time_get();
-			const int64_t RefreshInterval = (int64_t)g_Config.m_BcAutoServerListRefreshSeconds * time_freq();
+			const int64_t RefreshInterval = (int64_t)g_Config.m_BclAutoServerListRefreshSeconds * time_freq();
 			if(m_LastServerBrowserRefreshTick == 0)
 				m_LastServerBrowserRefreshTick = Now;
 			else if(RefreshInterval > 0 && Now - m_LastServerBrowserRefreshTick >= RefreshInterval)
@@ -40,7 +40,7 @@ void CBrowserUtils::OnUpdate()
 
 const char *CBrowserUtils::GetDisplayName(const CServerInfo *pInfo, char *pBuffer, size_t BufferSize)
 {
-	if(!g_Config.m_BcUseShortKogServerName)
+	if(!g_Config.m_BclUseShortKogServerName)
 		return pInfo->m_aName;
 
 	const bool IsKog = str_find_nocase(pInfo->m_aGameType, "gores") && str_find_nocase(pInfo->m_aName, "kog");

@@ -32,8 +32,8 @@
 #define PLAT_CLIENT_EXEC CLIENT_EXEC PLAT_EXT
 #define PLAT_SERVER_EXEC SERVER_EXEC PLAT_EXT
 
-// bestclient
-#include <game/client/components/bestclient/updater.h>
-// bestclient
+// bestclient-light
+#include <game/client/components/bestclient-light/updater.h>
+// bestclient-light
 
 #endif

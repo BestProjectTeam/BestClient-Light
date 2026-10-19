@@ -103,7 +103,7 @@ struct AUDIOCLIENT_ACTIVATION_PARAMS
 #define BC_VISUALIZER_HAS_WASAPI 0
 #endif
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 namespace
@@ -344,7 +344,7 @@ class CWasapiVisualizerSource final : public IVisualizerSource
 			"discordcanary.exe",
 			"discordptb.exe",
 			"ddnet.exe",
-			"bestclient.exe",
+			"bestclient-light.exe",
 			"tclient.exe",
 			"steam.exe",
 			"steamservice.exe",
@@ -1127,4 +1127,4 @@ std::unique_ptr<IVisualizerSource> CreateWasapiVisualizerSource()
 #endif
 }
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer

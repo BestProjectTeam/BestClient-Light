@@ -107,7 +107,7 @@ void CFinishPrediction::OnReset()
 
 void CFinishPrediction::OnNewSnapshot()
 {
-	if(g_Config.m_BcFinishPrediction != 0)
+	if(g_Config.m_BclFinishPrediction != 0)
 		EnsurePathData();
 }
 
@@ -172,7 +172,7 @@ void CFinishPrediction::MarkJumpableFreezeWalls()
 {
 	const int MapSize = m_MapWidth * m_MapHeight;
 	m_vFreezeJumpable.assign(MapSize, 0);
-	if(g_Config.m_BcFinishPredictionConsiderFreezeWalls == 0 || MapSize <= 0)
+	if(g_Config.m_BclFinishPredictionConsiderFreezeWalls == 0 || MapSize <= 0)
 		return;
 
 	static const ivec2 s_aDirs4[] = {
@@ -321,7 +321,7 @@ bool CFinishPrediction::RebuildPathData()
 	m_MapHeight = 0;
 	m_PathReady = false;
 	m_PathBuildAttempted = true;
-	m_PathBuiltWithFreezeWalls = g_Config.m_BcFinishPredictionConsiderFreezeWalls != 0;
+	m_PathBuiltWithFreezeWalls = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
 	m_PathRebuildPending = false;
 	m_CachedStateValid = false;
 
@@ -389,7 +389,7 @@ bool CFinishPrediction::RebuildPathData()
 		{{-1, 1}, 14},
 		{{-1, -1}, 14},
 	};
-	const bool PreferJumpableFreeze = g_Config.m_BcFinishPredictionConsiderFreezeWalls != 0;
+	const bool PreferJumpableFreeze = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
 	while(!PriorityQueue.empty())
 	{
 		const auto [CurDist, Index] = PriorityQueue.top();
@@ -441,7 +441,7 @@ bool CFinishPrediction::EnsurePathData()
 	if(!Collision() || Collision()->GetWidth() <= 0 || Collision()->GetHeight() <= 0)
 		return false;
 
-	const bool WantFreezeWalls = g_Config.m_BcFinishPredictionConsiderFreezeWalls != 0;
+	const bool WantFreezeWalls = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
 	const int Width = Collision()->GetWidth();
 	const int Height = Collision()->GetHeight();
 	if(m_PathRebuildPending || m_MapWidth != Width || m_MapHeight != Height || m_PathBuiltWithFreezeWalls != WantFreezeWalls)
@@ -672,7 +672,7 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 		return true;
 	}
 
-	if(g_Config.m_BcFinishPrediction == 0)
+	if(g_Config.m_BclFinishPrediction == 0)
 	{
 		ResetState();
 		m_TrackedClientId = -1;
@@ -776,7 +776,7 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 
 	if(RaceStartTick < 0)
 	{
-		if(g_Config.m_BcFinishPredictionShowAlways == 0)
+		if(g_Config.m_BclFinishPredictionShowAlways == 0)
 			return CacheState(false);
 
 		State.m_CurrentTimeMs = 0;
@@ -801,7 +801,7 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 	if(RaceFinished)
 	{
 		ResetState(false);
-		if(g_Config.m_BcFinishPredictionShowAlways == 0)
+		if(g_Config.m_BclFinishPredictionShowAlways == 0)
 			return CacheState(false);
 		State.m_Progress = 1.0f;
 		State.m_CurrentTimeMs = 0;
@@ -812,7 +812,7 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 
 	if(!EnsurePathData())
 	{
-		if(g_Config.m_BcFinishPredictionShowAlways == 0)
+		if(g_Config.m_BclFinishPredictionShowAlways == 0)
 			return CacheState(false);
 		State.m_HasPredictedTime = false;
 		State.m_Progress = 0.0f;
@@ -955,9 +955,9 @@ CUIRect CFinishPrediction::GetRect(bool ForcePreview) const
 	const float PaddingY = 4.0f * Scale;
 	const float Gap = 1.5f * Scale;
 	const bool ShowName = State.m_ShowPlayerName && State.m_aPlayerName[0] != '\0';
-	const bool ShowTime = g_Config.m_BcFinishPredictionShowTime != 0;
-	const bool ShowPercentage = g_Config.m_BcFinishPredictionShowPercentage != 0;
-	const bool ShowMillis = g_Config.m_BcFinishPredictionShowMillis != 0;
+	const bool ShowTime = g_Config.m_BclFinishPredictionShowTime != 0;
+	const bool ShowPercentage = g_Config.m_BclFinishPredictionShowPercentage != 0;
+	const bool ShowMillis = g_Config.m_BclFinishPredictionShowMillis != 0;
 	if(!ShowName && !ShowTime && !ShowPercentage)
 		return {};
 
@@ -990,7 +990,7 @@ void CFinishPrediction::Render(bool ForcePreview)
 {
 	if(!ForcePreview && !HudLayout::IsEnabled(HudLayout::MODULE_FINISH_PREDICTION))
 		return;
-	if(!ForcePreview && g_Config.m_BcFinishPrediction == 0)
+	if(!ForcePreview && g_Config.m_BclFinishPrediction == 0)
 		return;
 
 	const float HudHeight = HudLayout::CANVAS_HEIGHT;
@@ -1017,10 +1017,10 @@ void CFinishPrediction::Render(bool ForcePreview)
 	const ColorRGBA BackgroundColor = color_cast<ColorRGBA>(ColorHSLA(Layout.m_BackgroundColor, true)).WithMultipliedAlpha(ModuleAlpha);
 	const int Corners = HudLayout::BackgroundCorners(IGraphics::CORNER_ALL, Rect.x, Rect.y, Rect.w, Rect.h, HudWidth, HudHeight);
 	const bool ShowName = State.m_ShowPlayerName && State.m_aPlayerName[0] != '\0';
-	const bool ShowTime = g_Config.m_BcFinishPredictionShowTime != 0;
-	const bool ShowRemaining = g_Config.m_BcFinishPredictionTimeMode == 0;
-	const bool ShowPercentage = g_Config.m_BcFinishPredictionShowPercentage != 0;
-	const bool ShowMillis = g_Config.m_BcFinishPredictionShowMillis != 0;
+	const bool ShowTime = g_Config.m_BclFinishPredictionShowTime != 0;
+	const bool ShowRemaining = g_Config.m_BclFinishPredictionTimeMode == 0;
+	const bool ShowPercentage = g_Config.m_BclFinishPredictionShowPercentage != 0;
+	const bool ShowMillis = g_Config.m_BclFinishPredictionShowMillis != 0;
 
 	if(Layout.m_BackgroundEnabled)
 		Graphics()->DrawRect(Rect.x, Rect.y, Rect.w, Rect.h, BackgroundColor, Corners, 5.0f * Scale);

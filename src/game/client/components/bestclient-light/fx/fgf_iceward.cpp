@@ -29,7 +29,7 @@ namespace
 	}
 }
 
-static float WardSparks() { return g_Config.m_BcFreezePullSparks / 100.0f; }
+static float WardSparks() { return g_Config.m_BclFreezePullSparks / 100.0f; }
 
 void CFgfIceWard::OnInit()
 {
@@ -159,7 +159,7 @@ void CFgfIceWard::Gather(int ClientId, vec2 Pos, float Reach)
 	Num = 0;
 	Ward.m_Push = vec2(0.0f, 0.0f);
 
-	const int MaxStrands = std::clamp(g_Config.m_BcFreezePullStrands, 1, MAX_STRANDS);
+	const int MaxStrands = std::clamp(g_Config.m_BclFreezePullStrands, 1, MAX_STRANDS);
 	if(UseTileCache(ClientId, Pos, Reach))
 	{
 		const CScan &Scan = m_aScans[ClientId];
@@ -273,7 +273,7 @@ void CFgfIceWard::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(!g_Config.m_BcFreezePull)
+	if(!g_Config.m_BclFreezePull)
 	{
 		if(m_WasActive)
 			OnReset();
@@ -281,8 +281,8 @@ void CFgfIceWard::OnRender()
 	}
 	m_WasActive = true;
 
-	const float Reach = (float)g_Config.m_BcFreezePullRange;
-	const ColorRGBA Color = g_Config.m_BcFreezePullHookColor ? FgfThemeColor() : color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcFreezePullColor));
+	const float Reach = (float)g_Config.m_BclFreezePullRange;
+	const ColorRGBA Color = g_Config.m_BclFreezePullHookColor ? FgfThemeColor() : color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclFreezePullColor));
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
@@ -375,7 +375,7 @@ void CFgfIceWard::OnRender()
 		const vec2 Pos = GameClient()->m_aClients[i].m_RenderPos;
 		const float Alpha = GameClient()->IsOtherTeam(i) ? g_Config.m_ClShowOthersAlpha / 100.0f : 1.0f;
 		DrawStrands(i, Pos, Alpha, Color, Time);
-		if(g_Config.m_BcFreezePullShield)
+		if(g_Config.m_BclFreezePullShield)
 			DrawShield(i, Pos, Alpha, Color, Time);
 	}
 	Graphics()->QuadsEnd();

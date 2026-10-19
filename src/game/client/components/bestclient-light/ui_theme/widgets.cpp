@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-namespace BestClientUiTheme
+namespace BestClientLightUiTheme
 {
 
 void DrawCheckBoxChecked(const CUIRect *pBox, float ColorMul)
@@ -92,4 +92,4 @@ float DoScrollbarH(CUi *pUi, const void *pId, const CUIRect *pRect, float Curren
 	return ReturnValue;
 }
 
-} // namespace BestClientUiTheme
+} // namespace BestClientLightUiTheme

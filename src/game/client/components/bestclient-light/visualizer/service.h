@@ -1,12 +1,12 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_SERVICE_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_VISUALIZER_SERVICE_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_SERVICE_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_VISUALIZER_SERVICE_H
 
 #include "types.h"
 
 #include <memory>
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 class IVisualizerSource;
@@ -27,6 +27,6 @@ public:
 	bool PollFrame(SVisualizerFrame &OutFrame);
 };
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer
 
 #endif

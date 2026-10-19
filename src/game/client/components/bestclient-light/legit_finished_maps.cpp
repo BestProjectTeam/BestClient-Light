@@ -55,7 +55,7 @@ bool ParseFinishedMaps(const json_value *pRoot, std::unordered_set<std::string> 
 
 bool CLegitFinishedMaps::Enabled() const
 {
-	return g_Config.m_BcShowFinishedMapOnLegit != 0;
+	return g_Config.m_BclShowFinishedMapOnLegit != 0;
 }
 
 bool CLegitFinishedMaps::IsFinishedMap(const CServerInfo *pServer) const

@@ -1,17 +1,17 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_UI_THEME_WIDGETS_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_UI_THEME_WIDGETS_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_UI_THEME_WIDGETS_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_UI_THEME_WIDGETS_H
 
 #include <algorithm>
 
 #include <base/color.h>
 
-#include <game/client/components/bestclient/ui_theme/style.h>
+#include <game/client/components/bestclient-light/ui_theme/style.h>
 #include <game/client/ui_rect.h>
 
 class CUi;
 
-namespace BestClientUiTheme
+namespace BestClientLightUiTheme
 {
 
 inline ColorRGBA SliderValueColor()
@@ -71,6 +71,6 @@ void DrawCheckBoxChecked(const CUIRect *pBox, float ColorMul);
 
 float DoScrollbarH(CUi *pUi, const void *pId, const CUIRect *pRect, float Current, const char *pValueText);
 
-} // namespace BestClientUiTheme
+} // namespace BestClientLightUiTheme
 
 #endif

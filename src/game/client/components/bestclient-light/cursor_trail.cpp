@@ -34,7 +34,7 @@ void CCursorTrail::Reload()
 	if(!m_Texture.IsNullTexture())
 		Graphics()->UnloadTexture(&m_Texture);
 	m_Texture = IGraphics::CTextureHandle();
-	str_copy(m_aPath, g_Config.m_BcCursorTrailTrailImage, sizeof(m_aPath));
+	str_copy(m_aPath, g_Config.m_BclCursorTrailTrailImage, sizeof(m_aPath));
 	if(m_aPath[0] != '\0')
 		m_Texture = Graphics()->LoadTexture(m_aPath, IStorage::TYPE_ALL);
 }
@@ -44,7 +44,7 @@ void CCursorTrail::Render(vec2 TrailTargetPos, float Scale, float Alpha, int Cur
 	vec2 PlayerPos{};
 	bool HasPlayerPos = false;
 	int AnchorSource = -1;
-	if(g_Config.m_BcCursorTrailDisableMovement && Client()->State() != IClient::STATE_DEMOPLAYBACK)
+	if(g_Config.m_BclCursorTrailDisableMovement && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 	{
 		if(GameClient()->m_Snap.m_SpecInfo.m_Active && GameClient()->m_Snap.m_SpecInfo.m_SpectatorId != SPEC_FREEVIEW)
 		{
@@ -94,50 +94,50 @@ void CCursorTrail::Render(vec2 TrailTargetPos, float Scale, float Alpha, int Cur
 		m_AnchorSource = -1;
 	}
 
-	if(str_comp(m_aPath, g_Config.m_BcCursorTrailTrailImage) != 0)
+	if(str_comp(m_aPath, g_Config.m_BclCursorTrailTrailImage) != 0)
 		Reload();
-	if(m_Mode != g_Config.m_BcCursorTrailMode || m_Frames != g_Config.m_BcCursorTrailNumberOfFrames || m_DisableMovement != g_Config.m_BcCursorTrailDisableMovement)
+	if(m_Mode != g_Config.m_BclCursorTrailMode || m_Frames != g_Config.m_BclCursorTrailNumberOfFrames || m_DisableMovement != g_Config.m_BclCursorTrailDisableMovement)
 	{
 		m_vPoints.clear();
 		m_SampleTime = 0.0f;
-		m_Mode = g_Config.m_BcCursorTrailMode;
-		m_Frames = g_Config.m_BcCursorTrailNumberOfFrames;
-		m_DisableMovement = g_Config.m_BcCursorTrailDisableMovement;
+		m_Mode = g_Config.m_BclCursorTrailMode;
+		m_Frames = g_Config.m_BclCursorTrailNumberOfFrames;
+		m_DisableMovement = g_Config.m_BclCursorTrailDisableMovement;
 	}
-	if(!g_Config.m_BcCursorTrail)
-	{
-		m_vPoints.clear();
-		m_SampleTime = 0.0f;
-	}
-	else if(g_Config.m_BcCursorTrailMode == 1 && (g_Config.m_BcCursorTrailTrailImage[0] == '\0' || m_Texture.IsNullTexture()))
+	if(!g_Config.m_BclCursorTrail)
 	{
 		m_vPoints.clear();
 		m_SampleTime = 0.0f;
 	}
-	else if(g_Config.m_BcCursorTrailMode == 0 || (g_Config.m_BcCursorTrailTrailImage[0] != '\0' && !m_Texture.IsNullTexture()))
+	else if(g_Config.m_BclCursorTrailMode == 1 && (g_Config.m_BclCursorTrailTrailImage[0] == '\0' || m_Texture.IsNullTexture()))
 	{
-		const float TrailSize = Scale * g_Config.m_BcCursorTrailTrailSize / 100.0f;
+		m_vPoints.clear();
+		m_SampleTime = 0.0f;
+	}
+	else if(g_Config.m_BclCursorTrailMode == 0 || (g_Config.m_BclCursorTrailTrailImage[0] != '\0' && !m_Texture.IsNullTexture()))
+	{
+		const float TrailSize = Scale * g_Config.m_BclCursorTrailTrailSize / 100.0f;
 		for(SCursorTrailPoint &Point : m_vPoints)
 			Point.m_Age += Client()->RenderFrameTime();
 		constexpr float Lifetime = 0.2f;
 		m_vPoints.erase(std::remove_if(m_vPoints.begin(), m_vPoints.end(), [](const SCursorTrailPoint &Point) { return Point.m_Age >= Lifetime; }), m_vPoints.end());
 		m_SampleTime += Client()->RenderFrameTime();
-		const float SampleInterval = 1.0f / g_Config.m_BcCursorTrailSamplingFps;
+		const float SampleInterval = 1.0f / g_Config.m_BclCursorTrailSamplingFps;
 		if(m_SampleTime >= SampleInterval && (m_vPoints.empty() || m_vPoints.front().m_Pos != TrailTargetPos))
 		{
 			m_vPoints.insert(m_vPoints.begin(), {TrailTargetPos, 0.0f});
 			m_SampleTime = 0.0f;
 		}
-		while((int)m_vPoints.size() > g_Config.m_BcCursorTrailNumberOfFrames)
+		while((int)m_vPoints.size() > g_Config.m_BclCursorTrailNumberOfFrames)
 			m_vPoints.pop_back();
 
-		const float TrailAlphaMultiplier = g_Config.m_BcCursorTrailOpacity / 100.0f;
+		const float TrailAlphaMultiplier = g_Config.m_BclCursorTrailOpacity / 100.0f;
 		for(int i = (int)m_vPoints.size() - 1; i >= 0; --i)
 		{
 			const SCursorTrailPoint &Point = m_vPoints[i];
 			const float TrailAlpha = Alpha * TrailAlphaMultiplier * (1.0f - Point.m_Age / Lifetime);
 			const vec2 &Position = Point.m_Pos;
-			if(g_Config.m_BcCursorTrailMode == 0)
+			if(g_Config.m_BclCursorTrailMode == 0)
 			{
 				Graphics()->SetColor(1.0f, 1.0f, 1.0f, TrailAlpha);
 				Graphics()->TextureSet(GameClient()->m_GameSkin.m_aSpriteWeaponCursors[CurWeapon]);

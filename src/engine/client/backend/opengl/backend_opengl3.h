@@ -12,9 +12,9 @@
 
 #include "backend_opengl.h"
 
-// bestclient
-#include <game/client/components/bestclient/motion_blur_opengl.h>
-// bestclient
+// bestclient-light
+#include <game/client/components/bestclient-light/motion_blur_opengl.h>
+// bestclient-light
 
 class CGLSLPrimitiveExProgram;
 class CGLSLQuadProgram;
@@ -83,12 +83,12 @@ protected:
 	void UploadStreamBufferData(EPrimitiveType PrimitiveType, const void *pVertices, size_t VertSize, unsigned int PrimitiveCount, bool AsTex3D = false);
 	void RenderText(const CCommandBuffer::SState &State, int DrawNum, int TextTextureIndex, int TextOutlineTextureIndex, int TextureSize, const ColorRGBA &TextColor, const ColorRGBA &TextOutlineColor);
 
-	// bestclient
+	// bestclient-light
 	SBcMotionBlurOpenGLState m_MotionBlur;
 	void EnsureMotionBlurTexture();
 	void DestroyMotionBlurTexture();
 	void RenderMotionBlurGL();
-	// bestclient
+	// bestclient-light
 
 	void TextureUpdate(int Slot, int X, int Y, int Width, int Height, int GLFormat, uint8_t *pTexData);
 	void TextureCreate(int Slot, int Width, int Height, int GLFormat, int GLStoreFormat, int Flags, uint8_t *pTexData);
@@ -104,9 +104,9 @@ protected:
 	void Cmd_Clear(const CCommandBuffer::SCommand_Clear *pCommand) override;
 	void Cmd_Render(const CCommandBuffer::SCommand_Render *pCommand) override;
 	void Cmd_RenderTex3D(const CCommandBuffer::SCommand_RenderTex3D *pCommand) override;
-	// bestclient
+	// bestclient-light
 	void Cmd_BeforeSwap() override;
-	// bestclient
+	// bestclient-light
 
 	void Cmd_CreateBufferObject(const CCommandBuffer::SCommand_CreateBufferObject *pCommand) override;
 	void Cmd_RecreateBufferObject(const CCommandBuffer::SCommand_RecreateBufferObject *pCommand) override;

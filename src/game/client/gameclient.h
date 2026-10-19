@@ -29,51 +29,51 @@
 
 // components
 #include "components/background.h"
-#include "components/bestclient/3d_particles.h" // bestclient
-#include "components/bestclient/admin_panel.h" // bestclient
-#include "components/bestclient/aspect_ratio.h" // bestclient
-#include "components/bestclient/bestclient.h" // bestclient
-#include "components/bestclient/browser_utils.h" // bestclient
-#include "components/bestclient/config_presets.h" // bestclient
-#include "components/bestclient/demo_tee_editor.h" // bestclient
-#include "components/bestclient/edgehelper.h" // bestclient
-#include "components/bestclient/ego_finished_maps.h" // bestclient
-#include "components/bestclient/legit_finished_maps.h" // bestclient
-#include "components/bestclient/ego_tiles_prediction.h" // bestclient
-#include "components/bestclient/fast_actions.h" // bestclient
-#include "components/bestclient/fast_practice.h" // bestclient
-#include "components/bestclient/finish_prediction.h" // bestclient
-#include "components/bestclient/flying_name_plates.h" // bestclient
-#include "components/bestclient/gradient.h" // bestclient
-#include "components/bestclient/jelly_tee.h" // bestclient
-#include "components/bestclient/keystrokes.h" // bestclient
-#include "components/bestclient/music_player.h" // bestclient
-#include "components/bestclient/optimizer.h" // bestclient
-#include "components/bestclient/process_priority.h" // bestclient
-#include "components/bestclient/quick_binds.h" // bestclient
-#include "components/bestclient/rollback_demo.h" // bestclient
-#include "components/bestclient/snap_tap.h" // bestclient
-// bestclient
-#include "components/bestclient/fx/components.h"
-#include "components/bestclient/weapon_vfx.h"
-// bestclient
-#include "components/bestclient/automargin.h" // bestclient
-#include "components/bestclient/chat_bubbles.h" // bestclient
-#include "components/bestclient/chat_media.h" // bestclient
-#include "components/bestclient/clientindicator/client_indicator.h" // bestclient
-#include "components/bestclient/cloud_input.h" // bestclient
-#include "components/bestclient/cursor_trail.h" // bestclient
-#include "components/bestclient/gif_bubbles.h" // bestclient
-#include "components/bestclient/hud_editor.h" // bestclient
-#include "components/bestclient/physicball.h" // bestclient
-#include "components/bestclient/show_points.h" // bestclient
-#include "components/bestclient/spec_pause_radio.h" // bestclient
-#include "components/bestclient/twitch_chat.h" // bestclient
-#include "components/bestclient/ui_animations.h" // bestclient
-#include "components/bestclient/voice/voice.h" // bestclient
-// bestclient
-#include "components/bestclient/translate.h" // bestclient
-// bestclient
+#include "components/bestclient-light/3d_particles.h" // bestclient-light
+#include "components/bestclient-light/admin_panel.h" // bestclient-light
+#include "components/bestclient-light/aspect_ratio.h" // bestclient-light
+#include "components/bestclient-light/bestclient-light.h" // bestclient-light
+#include "components/bestclient-light/browser_utils.h" // bestclient-light
+#include "components/bestclient-light/config_presets.h" // bestclient-light
+#include "components/bestclient-light/demo_tee_editor.h" // bestclient-light
+#include "components/bestclient-light/edgehelper.h" // bestclient-light
+#include "components/bestclient-light/ego_finished_maps.h" // bestclient-light
+#include "components/bestclient-light/legit_finished_maps.h" // bestclient-light
+#include "components/bestclient-light/ego_tiles_prediction.h" // bestclient-light
+#include "components/bestclient-light/fast_actions.h" // bestclient-light
+#include "components/bestclient-light/fast_practice.h" // bestclient-light
+#include "components/bestclient-light/finish_prediction.h" // bestclient-light
+#include "components/bestclient-light/flying_name_plates.h" // bestclient-light
+#include "components/bestclient-light/gradient.h" // bestclient-light
+#include "components/bestclient-light/jelly_tee.h" // bestclient-light
+#include "components/bestclient-light/keystrokes.h" // bestclient-light
+#include "components/bestclient-light/music_player.h" // bestclient-light
+#include "components/bestclient-light/optimizer.h" // bestclient-light
+#include "components/bestclient-light/process_priority.h" // bestclient-light
+#include "components/bestclient-light/quick_binds.h" // bestclient-light
+#include "components/bestclient-light/rollback_demo.h" // bestclient-light
+#include "components/bestclient-light/snap_tap.h" // bestclient-light
+// bestclient-light
+#include "components/bestclient-light/fx/components.h"
+#include "components/bestclient-light/weapon_vfx.h"
+// bestclient-light
+#include "components/bestclient-light/automargin.h" // bestclient-light
+#include "components/bestclient-light/chat_bubbles.h" // bestclient-light
+#include "components/bestclient-light/chat_media.h" // bestclient-light
+#include "components/bestclient-light/clientindicator/client_indicator.h" // bestclient-light
+#include "components/bestclient-light/cloud_input.h" // bestclient-light
+#include "components/bestclient-light/cursor_trail.h" // bestclient-light
+#include "components/bestclient-light/gif_bubbles.h" // bestclient-light
+#include "components/bestclient-light/hud_editor.h" // bestclient-light
+#include "components/bestclient-light/physicball.h" // bestclient-light
+#include "components/bestclient-light/show_points.h" // bestclient-light
+#include "components/bestclient-light/spec_pause_radio.h" // bestclient-light
+#include "components/bestclient-light/twitch_chat.h" // bestclient-light
+#include "components/bestclient-light/ui_animations.h" // bestclient-light
+#include "components/bestclient-light/voice/voice.h" // bestclient-light
+// bestclient-light
+#include "components/bestclient-light/translate.h" // bestclient-light
+// bestclient-light
 #include "components/binds.h"
 #include "components/broadcast.h"
 #include "components/camera.h"
@@ -215,8 +215,8 @@ class CGameClient : public IGameClient
 {
 public:
 	friend class CTClient;
-	friend class CFastPractice; // bestclient
-	friend class CDemoTeeEditor; // bestclient
+	friend class CFastPractice; // bestclient-light
+	friend class CDemoTeeEditor; // bestclient-light
 
 	// all components
 	CInfoMessages m_InfoMessages;
@@ -235,38 +235,38 @@ public:
 	CCountryFlags m_CountryFlags;
 	CFlow m_Flow;
 	CHud m_Hud;
-	CBestClient m_BestClient; // bestclient
-	CBcConfigPresets m_BcConfigPresets; // bestclient
-	CEgoTilesPrediction m_EgoTilesPrediction; // bestclient
-	CSpecPauseRadio m_SpecPauseRadio; // bestclient
-	CShowPoints m_ShowPoints; // bestclient
-	CClientIndicator m_ClientIndicator; // bestclient
-	CVoiceChat m_VoiceChat; // bestclient
-	CAdminPanel m_AdminPanel; // bestclient
-	CAspectRatio m_AspectRatio; // bestclient
-	C3DParticles m_3DParticles; // bestclient
-	CJellyTee m_JellyTee; // bestclient
-	CBcGradient m_BcGradient; // bestclient
-	CFlyingNamePlates m_FlyingNamePlates; // bestclient
-	CQuickBinds m_QuickBinds; // bestclient
-	CRollbackDemo m_RollbackDemo; // bestclient
-	CFastActions m_FastActions; // bestclient
-	CSnapTap m_SnapTap; // bestclient
-	CCloudInput m_CloudInput; // bestclient
-	CFastPractice m_FastPractice; // bestclient
-	CDemoTeeEditor m_DemoTeeEditor; // bestclient
-	CBcAutoMargin m_BcAutoMargin; // bestclient
-	COptimizer m_Optimizer; // bestclient
-	CProcessPriority m_ProcessPriority; // bestclient
-	CMusicPlayer m_MusicPlayer; // bestclient
-	CBrowserUtils m_BrowserUtils; // bestclient
-	CTwitchChat m_TwitchChat; // bestclient
-	CEgoFinishedMaps m_EgoFinishedMaps; // bestclient
-	CLegitFinishedMaps m_LegitFinishedMaps; // bestclient
-	CEdgeHelper m_EdgeHelper; // bestclient
-	CFinishPrediction m_FinishPrediction; // bestclient
-	CKeystrokes m_Keystrokes; // bestclient
-	// bestclient
+	CBestClientLight m_BestClientLight; // bestclient-light
+	CBcConfigPresets m_BcConfigPresets; // bestclient-light
+	CEgoTilesPrediction m_EgoTilesPrediction; // bestclient-light
+	CSpecPauseRadio m_SpecPauseRadio; // bestclient-light
+	CShowPoints m_ShowPoints; // bestclient-light
+	CClientIndicator m_ClientIndicator; // bestclient-light
+	CVoiceChat m_VoiceChat; // bestclient-light
+	CAdminPanel m_AdminPanel; // bestclient-light
+	CAspectRatio m_AspectRatio; // bestclient-light
+	C3DParticles m_3DParticles; // bestclient-light
+	CJellyTee m_JellyTee; // bestclient-light
+	CBcGradient m_BcGradient; // bestclient-light
+	CFlyingNamePlates m_FlyingNamePlates; // bestclient-light
+	CQuickBinds m_QuickBinds; // bestclient-light
+	CRollbackDemo m_RollbackDemo; // bestclient-light
+	CFastActions m_FastActions; // bestclient-light
+	CSnapTap m_SnapTap; // bestclient-light
+	CCloudInput m_CloudInput; // bestclient-light
+	CFastPractice m_FastPractice; // bestclient-light
+	CDemoTeeEditor m_DemoTeeEditor; // bestclient-light
+	CBcAutoMargin m_BclAutoMargin; // bestclient-light
+	COptimizer m_Optimizer; // bestclient-light
+	CProcessPriority m_ProcessPriority; // bestclient-light
+	CMusicPlayer m_MusicPlayer; // bestclient-light
+	CBrowserUtils m_BrowserUtils; // bestclient-light
+	CTwitchChat m_TwitchChat; // bestclient-light
+	CEgoFinishedMaps m_EgoFinishedMaps; // bestclient-light
+	CLegitFinishedMaps m_LegitFinishedMaps; // bestclient-light
+	CEdgeHelper m_EdgeHelper; // bestclient-light
+	CFinishPrediction m_FinishPrediction; // bestclient-light
+	CKeystrokes m_Keystrokes; // bestclient-light
+	// bestclient-light
 	CWeaponVfx m_WeaponVfx;
 	CFgfWeather m_FgfWeather;
 	CLightning m_Lightning;
@@ -282,14 +282,14 @@ public:
 	CFgfActions m_FgfActions;
 	CFgfKi m_FgfKi;
 	CFgfIceWard m_FgfIceWard;
-	// bestclient
-	CHudEditor m_HudEditor; // bestclient
-	CChatBubbles m_ChatBubbles; // bestclient
-	CPhysicBalls m_PhysicBalls; // bestclient
-	CChatMedia m_ChatMedia; // bestclient
-	CCursorTrail m_CursorTrail; // bestclient
-	CBcUiAnimations m_BcUiAnimations; // bestclient
-	CGifBubbles m_GifBubbles; // bestclient
+	// bestclient-light
+	CHudEditor m_HudEditor; // bestclient-light
+	CChatBubbles m_ChatBubbles; // bestclient-light
+	CPhysicBalls m_PhysicBalls; // bestclient-light
+	CChatMedia m_ChatMedia; // bestclient-light
+	CCursorTrail m_CursorTrail; // bestclient-light
+	CBcUiAnimations m_BcUiAnimations; // bestclient-light
+	CGifBubbles m_GifBubbles; // bestclient-light
 	CImportantAlert m_ImportantAlert;
 	CDebugHud m_DebugHud;
 	CControls m_Controls;
@@ -329,9 +329,9 @@ public:
 	CStatusBar m_StatusBar;
 	CBindChat m_BindChat;
 	CBindWheel m_BindWheel;
-	// bestclient
-	CTranslate m_Translate; // bestclient
-	// bestclient
+	// bestclient-light
+	CTranslate m_Translate; // bestclient-light
+	// bestclient-light
 	CBgDraw m_BgDraw;
 	CTClient m_TClient;
 	CTrails m_Trails;
@@ -417,7 +417,7 @@ private:
 	static void ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainSpecialDummyInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainRefreshSkins(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
-	static void ConchainRefreshSkinMaxWidth(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData); // bestclient
+	static void ConchainRefreshSkinMaxWidth(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData); // bestclient-light
 	static void ConchainRefreshEventSkins(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainSpecialDummy(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
@@ -519,10 +519,10 @@ public:
 		const CNetObj_SpectatorInfo *m_pSpectatorInfo;
 		const CNetObj_SpectatorInfo *m_pPrevSpectatorInfo;
 		const CNetObj_SpectatorCount *m_pSpectatorCount;
-		// bestclient
+		// bestclient-light
 		bool m_aSpectatorWatchers[MAX_CLIENTS];
 		int m_NumSpectatorWatchers;
-		// bestclient
+		// bestclient-light
 		int m_NumFlags;
 		const CNetObj_Flag *m_apFlags[CSnapshot::MAX_ITEMS];
 		const CNetObj_Flag *m_apPrevFlags[CSnapshot::MAX_ITEMS];
@@ -807,7 +807,7 @@ public:
 	void OnActivateEditor() override;
 	void OnDummySwap() override;
 	int OnSnapInput(int *pData, bool Dummy, bool Force) override;
-	void PrepareInputForSend(int *pData, int Size, bool Dummy) override; // bestclient
+	void PrepareInputForSend(int *pData, int Size, bool Dummy) override; // bestclient-light
 	void OnShutdown() override;
 	void OnEnterGame() override;
 	void OnRconType(bool UsernameReq) override;
@@ -854,27 +854,27 @@ public:
 	bool GotWantedSkin7(bool Dummy);
 	void SendInfo(bool Start);
 	void SendDummyInfo(bool Start) override;
-	void SendKill(); // bestclient
+	void SendKill(); // bestclient-light
 	void SendReadyChange7(); // NOLINT(readability-make-member-function-const)
 
 	void ApplyPreInputs(int Tick, bool Direct, CGameWorld &GameWorld);
 	bool GetDummyFastInput(CNetObj_PlayerInput &DummyFastInput, const CNetObj_PlayerInput *pDummyInputData, const class CCharacter *pDummyChar, int LocalTee, int DummyTee) const;
-	bool IsCloudInputMode() const; // bestclient
-	bool IsFastInputLocalClient(int ClientId) const; // bestclient
+	bool IsCloudInputMode() const; // bestclient-light
+	bool IsFastInputLocalClient(int ClientId) const; // bestclient-light
 
 	int m_aNextChangeInfo[NUM_DUMMIES];
 
 	// DDRace
 
 	int m_aLocalIds[NUM_DUMMIES];
-	int m_PredictedDummyId = -1; // bestclient
+	int m_PredictedDummyId = -1; // bestclient-light
 	CNetObj_PlayerInput m_DummyInput;
 	CNetObj_PlayerInput m_HammerInput;
 	unsigned int m_DummyFire;
 	bool m_ReceivedDDNetPlayer;
 	bool m_ReceivedDDNetPlayerFinishTimes;
 	bool m_ReceivedDDNetPlayerFinishTimesMillis;
-	bool m_ReceivedPreInput = false; // bestclient
+	bool m_ReceivedPreInput = false; // bestclient-light
 
 	CTeamsCore m_Teams;
 
@@ -890,12 +890,12 @@ public:
 	bool IsDemoPlaybackPaused() const;
 	float GetAnimationPlaybackSpeed() const;
 
-	// bestclient
+	// bestclient-light
 	bool OptimizerDisableParticles() const { return m_Optimizer.DisableParticles(); }
 	bool OptimizerFpsFogEnabled() const { return m_Optimizer.FpsFogEnabled(); }
 	void OptimizerFpsFogHalfExtents(float &HalfW, float &HalfH) const { m_Optimizer.FpsFogHalfExtents(HalfW, HalfH); }
 	bool OptimizerAllowRenderPos(vec2 WorldPos) const { return m_Optimizer.AllowRenderPos(WorldPos); }
-	// bestclient
+	// bestclient-light
 
 	int AntiPingPlayers() const;
 	bool AntiPingGrenade() const;
@@ -928,9 +928,9 @@ public:
 	int SwitchStateTeam() const;
 	bool IsLocalCharSuper() const;
 	bool CanDisplayWarning() const override;
-	// bestclient
+	// bestclient-light
 	const char *LocalPlayerSkinName() const override;
-	// bestclient
+	// bestclient-light
 
 	IMap *Map() override { return m_pMap.get(); }
 	const IMap *Map() const override { return m_pMap.get(); }

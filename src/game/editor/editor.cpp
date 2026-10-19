@@ -4353,10 +4353,10 @@ void CEditor::RenderIngameEntities(const CLayerGroup &Group, const CLayerTiles &
 				}
 				else if(Index == ENTITY_HEALTH_1)
 				{
-					// bestclient
+					// bestclient-light
 					Graphics()->TextureSet(pGameClient->m_GameSkin.m_SpritePickupHealth);
 					Graphics()->GetSpriteScale(SPRITE_PICKUP_HEALTH, Scale.x, Scale.y);
-					// bestclient
+					// bestclient-light
 					VisualSize = 64;
 				}
 				else if(Index == ENTITY_WEAPON_SHOTGUN)

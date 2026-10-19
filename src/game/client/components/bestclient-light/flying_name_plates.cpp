@@ -78,7 +78,7 @@ void CFlyingNamePlates::Update(int ClientId, vec2 Position)
 		return;
 
 	const vec2 DefaultRenderPos = Position - vec2(0.0f, (float)g_Config.m_ClNamePlatesOffset);
-	if(!g_Config.m_BcFlyingNamePlates)
+	if(!g_Config.m_BclFlyingNamePlates)
 	{
 		FlyingState.m_CurrentPos = DefaultRenderPos;
 		FlyingState.m_PrevPlayerPos = Position;
@@ -99,24 +99,24 @@ void CFlyingNamePlates::Update(int ClientId, vec2 Position)
 		if(Speed > 0.001f)
 		{
 			const float DragScale = std::clamp(Speed / 1200.0f, 0.0f, 1.0f);
-			DragOffset = normalize(PlayerVelocity) * ((float)g_Config.m_BcFlyingNamePlatesDrag * DragScale);
+			DragOffset = normalize(PlayerVelocity) * ((float)g_Config.m_BclFlyingNamePlatesDrag * DragScale);
 		}
 	}
 
-	const vec2 TargetPos = DefaultRenderPos - vec2(0.0f, (float)g_Config.m_BcFlyingNamePlatesLift) - DragOffset;
+	const vec2 TargetPos = DefaultRenderPos - vec2(0.0f, (float)g_Config.m_BclFlyingNamePlatesLift) - DragOffset;
 	if(ResetState)
 	{
 		FlyingState.m_CurrentPos = TargetPos;
 	}
 	else
 	{
-		const float FollowSpeed = 2.5f + (float)g_Config.m_BcFlyingNamePlatesFollow * 0.25f;
+		const float FollowSpeed = 2.5f + (float)g_Config.m_BclFlyingNamePlatesFollow * 0.25f;
 		FlyingState.m_CurrentPos += (TargetPos - FlyingState.m_CurrentPos) * std::min(Delta * FollowSpeed, 1.0f);
 
 		const vec2 Anchor = AnchorPos(Position);
 		const vec2 RopeDelta = FlyingState.m_CurrentPos - Anchor;
 		const float RopeLen = length(RopeDelta);
-		const float MaxRopeLen = std::max(24.0f, (float)g_Config.m_ClNamePlatesOffset + (float)g_Config.m_BcFlyingNamePlatesLift + (float)g_Config.m_BcFlyingNamePlatesDrag * 1.2f);
+		const float MaxRopeLen = std::max(24.0f, (float)g_Config.m_ClNamePlatesOffset + (float)g_Config.m_BclFlyingNamePlatesLift + (float)g_Config.m_BclFlyingNamePlatesDrag * 1.2f);
 		if(RopeLen > MaxRopeLen && RopeLen > 0.001f)
 			FlyingState.m_CurrentPos = Anchor + RopeDelta * (MaxRopeLen / RopeLen);
 	}
@@ -130,9 +130,9 @@ void CFlyingNamePlates::RenderRopeGame(vec2 Position, const CNetObj_PlayerInfo *
 {
 	if(!pPlayerInfo)
 		return;
-	if(!g_Config.m_BcFlyingNamePlates)
+	if(!g_Config.m_BclFlyingNamePlates)
 		return;
-	if(g_Config.m_BcFlyingNamePlatesHideLine)
+	if(g_Config.m_BclFlyingNamePlatesHideLine)
 		return;
 	if(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideNames)
 		return;
@@ -153,7 +153,7 @@ vec2 CFlyingNamePlates::GetRenderPos(int ClientId, vec2 TeePos) const
 	const vec2 DefaultRenderPos = TeePos - vec2(0.0f, (float)g_Config.m_ClNamePlatesOffset);
 	if(ClientId < 0 || ClientId >= MAX_CLIENTS)
 		return DefaultRenderPos;
-	if(!g_Config.m_BcFlyingNamePlates)
+	if(!g_Config.m_BclFlyingNamePlates)
 		return DefaultRenderPos;
 	const auto &FlyingState = m_aStates[ClientId];
 	if(!FlyingState.m_Initialized)
@@ -163,12 +163,12 @@ vec2 CFlyingNamePlates::GetRenderPos(int ClientId, vec2 TeePos) const
 
 vec2 CFlyingNamePlates::PreviewPos(vec2 NamePlateBasePos, vec2 TeeDirection) const
 {
-	return NamePlateBasePos - vec2(0.0f, (float)g_Config.m_BcFlyingNamePlatesLift) - TeeDirection * ((float)g_Config.m_BcFlyingNamePlatesDrag * 0.35f);
+	return NamePlateBasePos - vec2(0.0f, (float)g_Config.m_BclFlyingNamePlatesLift) - TeeDirection * ((float)g_Config.m_BclFlyingNamePlatesDrag * 0.35f);
 }
 
 void CFlyingNamePlates::RenderPreviewRope(vec2 TeePos, vec2 FlyingPos, ColorRGBA Color) const
 {
-	if(g_Config.m_BcFlyingNamePlatesHideLine)
+	if(g_Config.m_BclFlyingNamePlatesHideLine)
 		return;
 	RenderLine(*GameClient(), AnchorPos(TeePos), FlyingPos, Color);
 }

@@ -84,7 +84,7 @@ CFastActions::CFastActions()
 void CFastActions::ConFaExecuteHover(IConsole::IResult *pResult, void *pUserData)
 {
 	CFastActions *pThis = (CFastActions *)pUserData;
-	if(!g_Config.m_BcFastActions)
+	if(!g_Config.m_BclFastActions)
 		return;
 	pThis->ExecuteHoveredBind();
 }
@@ -92,7 +92,7 @@ void CFastActions::ConFaExecuteHover(IConsole::IResult *pResult, void *pUserData
 void CFastActions::ConOpenFa(IConsole::IResult *pResult, void *pUserData)
 {
 	CFastActions *pThis = (CFastActions *)pUserData;
-	if(!g_Config.m_BcFastActions)
+	if(!g_Config.m_BclFastActions)
 	{
 		pThis->m_Active = false;
 		pThis->m_SelectedBind = -1;
@@ -232,7 +232,7 @@ void CFastActions::OnConsoleInit()
 
 	IConfigManager *pConfigManager = Kernel()->RequestInterface<IConfigManager>();
 	if(pConfigManager)
-		pConfigManager->RegisterCallback(ConfigSaveCallback, this, ConfigDomain::BESTCLIENT);
+		pConfigManager->RegisterCallback(ConfigSaveCallback, this, ConfigDomain::BESTCLIENT_LIGHT);
 
 	Console()->Register("+fa", "", CFGFLAG_CLIENT, ConOpenFa, this, "Open Fast Actions selector");
 	Console()->Register("+fa_execute_hover", "", CFGFLAG_CLIENT, ConFaExecuteHover, this, "Execute hovered Fast Actions bind");
@@ -259,7 +259,7 @@ void CFastActions::OnRelease()
 
 bool CFastActions::OnInput(const IInput::CEvent &Event)
 {
-	if(!g_Config.m_BcFastActions)
+	if(!g_Config.m_BclFastActions)
 	{
 		m_Active = false;
 		m_SelectedBind = -1;
@@ -287,7 +287,7 @@ bool CFastActions::OnInput(const IInput::CEvent &Event)
 
 void CFastActions::OnRender()
 {
-	if(!g_Config.m_BcFastActions)
+	if(!g_Config.m_BclFastActions)
 	{
 		m_Active = false;
 		m_SelectedBind = -1;
@@ -377,7 +377,7 @@ void CFastActions::OnRender()
 
 void CFastActions::ExecuteBind(int Bind)
 {
-	if(!g_Config.m_BcFastActions)
+	if(!g_Config.m_BclFastActions)
 		return;
 
 	if(Bind >= 0 && Bind < FAST_ACTIONS_FIXED_SLOTS && m_vBinds[Bind].m_aCommand[0] != '\0')
@@ -403,7 +403,7 @@ void CFastActions::ExecuteBind(int Bind)
 
 void CFastActions::ExecuteHoveredBind()
 {
-	if(!g_Config.m_BcFastActions)
+	if(!g_Config.m_BclFastActions)
 		return;
 
 	if(m_SelectedBind >= 0)
@@ -432,6 +432,6 @@ void CFastActions::ConfigSaveCallback(IConfigManager *pConfigManager, void *pUse
 		pDst = aBuf + str_length(aBuf);
 		str_escape(&pDst, Bind.m_aCommand, pEnd);
 		str_append(aBuf, "\"");
-		pConfigManager->WriteLine(aBuf, ConfigDomain::BESTCLIENT);
+		pConfigManager->WriteLine(aBuf, ConfigDomain::BESTCLIENT_LIGHT);
 	}
 }

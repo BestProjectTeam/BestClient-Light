@@ -297,8 +297,8 @@ static void CheckMetrics(CSkin::CSkinMetricVariable &Metrics, const uint8_t *pIm
 
 bool CSkins::LoadSkinData(const char *pName, CSkinLoadData &Data) const
 {
-	const int DivX = g_pData->m_aSprites[SPRITE_TEE_BODY].m_pSet->m_Gridx; // bestclient
-	const int DivY = g_pData->m_aSprites[SPRITE_TEE_BODY].m_pSet->m_Gridy; // bestclient
+	const int DivX = g_pData->m_aSprites[SPRITE_TEE_BODY].m_pSet->m_Gridx; // bestclient-light
+	const int DivY = g_pData->m_aSprites[SPRITE_TEE_BODY].m_pSet->m_Gridy; // bestclient-light
 	if(!Graphics()->CheckImageDivisibility(pName, Data.m_Info, DivX, DivY, true))
 	{
 		log_error("skins", "Skin failed image divisibility: %s", pName);
@@ -311,7 +311,7 @@ bool CSkins::LoadSkinData(const char *pName, CSkinLoadData &Data) const
 		Data.m_Info.Free();
 		return false;
 	}
-	// Downscale oversized skins before uploading dozens of sprite textures to the GPU. // bestclient
+	// Downscale oversized skins before uploading dozens of sprite textures to the GPU. // bestclient-light
 	const size_t MaxWidth = (size_t)g_Config.m_ClSkinMaxWidth;
 	if(Data.m_Info.m_Width > MaxWidth && DivX > 0 && DivY > 0)
 	{
@@ -325,7 +325,7 @@ bool CSkins::LoadSkinData(const char *pName, CSkinLoadData &Data) const
 				pName, Data.m_Info.m_Width, Data.m_Info.m_Height, NewWidth, NewHeight, MaxWidth);
 			ResizeImage(Data.m_Info, NewWidth, NewHeight);
 		}
-	} // bestclient
+	} // bestclient-light
 
 	const size_t BodyWidth = g_pData->m_aSprites[SPRITE_TEE_BODY].m_W * (Data.m_Info.m_Width / (size_t)DivX);
 	const size_t BodyHeight = g_pData->m_aSprites[SPRITE_TEE_BODY].m_H * (Data.m_Info.m_Height / (size_t)DivY);

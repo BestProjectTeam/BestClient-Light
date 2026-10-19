@@ -59,7 +59,7 @@ public:
 	void ResetTClientInfoTask();
 	bool NeedUpdate();
 
-	void RenderMiniVoteHud(bool Preview = false); // bestclient
+	void RenderMiniVoteHud(bool Preview = false); // bestclient-light
 	void RenderCenterLines();
 	void RenderCtfFlag(vec2 Pos, float Alpha);
 

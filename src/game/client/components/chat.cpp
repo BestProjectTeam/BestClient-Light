@@ -11,7 +11,7 @@
 
 #include <engine/editor.h>
 #include <engine/external/regex.h>
-#include <engine/font_icons.h> // bestclient
+#include <engine/font_icons.h> // bestclient-light
 #include <engine/graphics.h>
 #include <engine/keys.h>
 #include <engine/shared/config.h>
@@ -22,20 +22,20 @@
 #include <generated/protocol7.h>
 
 #include <game/client/animstate.h>
-#include <game/client/components/bestclient/chat_qol.h> // bestclient
-#include <game/client/components/bestclient/chat_scroll.h> // bestclient
+#include <game/client/components/bestclient-light/chat_qol.h> // bestclient-light
+#include <game/client/components/bestclient-light/chat_scroll.h> // bestclient-light
 #include <game/client/components/censor.h>
-#include <game/client/components/hud_layout.h> // bestclient
+#include <game/client/components/hud_layout.h> // bestclient-light
 #include <game/client/components/scoreboard.h>
 #include <game/client/components/skins.h>
 #include <game/client/components/sounds.h>
 #include <game/client/components/tclient/colored_parts.h>
 #include <game/client/gameclient.h>
-#include <game/client/ui_scrollregion.h> // bestclient
+#include <game/client/ui_scrollregion.h> // bestclient-light
 #include <game/localization.h>
 
-#include <algorithm> // bestclient
-#include <string> // bestclient
+#include <algorithm> // bestclient-light
+#include <string> // bestclient-light
 
 char CChat::ms_aDisplayText[MAX_CHAT_LENGTH] = "";
 
@@ -57,12 +57,12 @@ void CChat::CLine::Reset(CChat &This)
 	m_TimesRepeated = 0;
 	m_pManagedTeeRenderInfo = nullptr;
 	m_pTranslateResponse = nullptr;
-	// bestclient
+	// bestclient-light
 	m_CustomColor = std::nullopt;
 	m_BcCopyAsLoad = false;
 	m_BcSavesChat = false;
 	This.GameClient()->m_ChatMedia.ResetLine(m_Media, This.Graphics());
-	// bestclient
+	// bestclient-light
 }
 
 CChat::CChat()
@@ -138,13 +138,13 @@ void CChat::ClearLines()
 		Line.Reset(*this);
 	m_PrevScoreBoardShowed = false;
 	m_PrevShowChat = false;
-	// bestclient
+	// bestclient-light
 	m_PrevHudLayoutX = -10000.0f;
 	m_PrevHudLayoutY = -10000.0f;
 	m_PrevHudLayoutScale = -1;
 	m_PrevHudLayoutEnabled = true;
 	CChatScroll::Reset(*this);
-	// bestclient
+	// bestclient-light
 }
 
 void CChat::OnWindowResize()
@@ -171,9 +171,9 @@ void CChat::Reset()
 	m_ServerSupportsCommandInfo = false;
 	m_ServerCommandsNeedSorting = false;
 	m_aCurrentInputText[0] = '\0';
-	// bestclient
+	// bestclient-light
 	GameClient()->m_BcUiAnimations.OnChatReset();
-	// bestclient
+	// bestclient-light
 	DisableMode();
 	m_vServerCommands.clear();
 	std::fill(std::begin(m_aLastSoundPlayed), std::end(m_aLastSoundPlayed), 0);
@@ -256,7 +256,7 @@ void CChat::Echo(const char *pString)
 	AddLine(CLIENT_MSG, 0, pString);
 }
 
-// bestclient
+// bestclient-light
 void CChat::AddColoredLine(const char *pLine, ColorRGBA Color, bool PlaySystemSound, bool CopyAsLoad)
 {
 	if(!pLine || pLine[0] == '\0')
@@ -291,7 +291,7 @@ void CChat::AddColoredLine(const char *pLine, ColorRGBA Color, bool PlaySystemSo
 		}
 	}
 }
-// bestclient
+// bestclient-light
 
 void CChat::OnConsoleInit()
 {
@@ -311,7 +311,7 @@ void CChat::OnInit()
 	Console()->Chain("cl_chat_width", ConchainChatWidth, this);
 }
 
-// bestclient
+// bestclient-light
 vec2 CChat::ChatMousePos() const
 {
 	const float Height = 300.0f;
@@ -405,8 +405,8 @@ CUi::EPopupMenuFunctionResult CChat::PopupTranslateSettings(void *pContext, CUIR
 	const float FontSize = 11.0f;
 	CUIRect Row;
 	View.HSplitTop(RowHeight, &Row, &View);
-	if(pChat->GameClient()->m_Menus.DoButton_CheckBox(&pChat->m_TranslateMessageButtonToggle, Localize("Message button"), g_Config.m_BcTranslateMessageButton, &Row))
-		g_Config.m_BcTranslateMessageButton ^= 1;
+	if(pChat->GameClient()->m_Menus.DoButton_CheckBox(&pChat->m_TranslateMessageButtonToggle, Localize("Message button"), g_Config.m_BclTranslateMessageButton, &Row))
+		g_Config.m_BclTranslateMessageButton ^= 1;
 	View.HSplitTop(Gap, nullptr, &View);
 
 	auto RenderLanguagePair = [&](char *pSource, size_t SourceSize, char *pTarget, size_t TargetSize, CUi::SDropDownState &SourceState, CUi::SDropDownState &TargetState) {
@@ -425,19 +425,19 @@ CUi::EPopupMenuFunctionResult CChat::PopupTranslateSettings(void *pContext, CUIR
 			str_copy(pTarget, Backend.m_vLanguages[NewTargetIndex].m_pCode, TargetSize);
 	};
 
-	RenderLanguagePair(g_Config.m_BcTranslateIncomingSource, sizeof(g_Config.m_BcTranslateIncomingSource),
+	RenderLanguagePair(g_Config.m_BclTranslateIncomingSource, sizeof(g_Config.m_BclTranslateIncomingSource),
 		g_Config.m_TcTranslateTarget, sizeof(g_Config.m_TcTranslateTarget), s_IncomingSourceState, s_IncomingTargetState);
 	View.HSplitTop(Gap, nullptr, &View);
 	View.HSplitTop(RowHeight, &Row, &View);
 	if(pChat->GameClient()->m_Menus.DoButton_CheckBox(&pChat->m_TranslateSettingsOutgoingButton, Localize("Yours"), g_Config.m_TcTranslateAutoOutgoing, &Row))
 		g_Config.m_TcTranslateAutoOutgoing ^= 1;
 	View.HSplitTop(Gap, nullptr, &View);
-	RenderLanguagePair(g_Config.m_BcTranslateOutgoingSource, sizeof(g_Config.m_BcTranslateOutgoingSource),
-		g_Config.m_BcTranslateOutgoingTarget, sizeof(g_Config.m_BcTranslateOutgoingTarget), s_OutgoingSourceState, s_OutgoingTargetState);
+	RenderLanguagePair(g_Config.m_BclTranslateOutgoingSource, sizeof(g_Config.m_BclTranslateOutgoingSource),
+		g_Config.m_BclTranslateOutgoingTarget, sizeof(g_Config.m_BclTranslateOutgoingTarget), s_OutgoingSourceState, s_OutgoingTargetState);
 	View.HSplitTop(Gap, nullptr, &View);
 	View.HSplitTop(RowHeight, &Row, &View);
-	if(pChat->GameClient()->m_Menus.DoButton_CheckBox(&pChat->m_TranslateSettingsPunctuationButton, Localize("Remove apostrophes"), g_Config.m_BcTranslateOutgoingStripPunctuation, &Row))
-		g_Config.m_BcTranslateOutgoingStripPunctuation ^= 1;
+	if(pChat->GameClient()->m_Menus.DoButton_CheckBox(&pChat->m_TranslateSettingsPunctuationButton, Localize("Remove apostrophes"), g_Config.m_BclTranslateOutgoingStripPunctuation, &Row))
+		g_Config.m_BclTranslateOutgoingStripPunctuation ^= 1;
 	View.HSplitTop(Gap, nullptr, &View);
 	const STranslateBackendInfo &BackendConfig = g_aTranslateBackends[BackendIndex];
 	if(BackendConfig.m_NeedsEndpointConfig)
@@ -498,21 +498,21 @@ void CChat::RenderTranslateSettingsButton(const CUIRect &ButtonRect)
 		Ui()->SetHotItem(&m_TranslateSettingsButton);
 	GameClient()->m_Tooltips.DoToolTip(&m_TranslateSettingsButton, &ButtonRect, Localize("Chat translate settings"));
 }
-// bestclient
+// bestclient-light
 
 bool CChat::OnInput(const IInput::CEvent &Event)
 {
-	// bestclient
+	// bestclient-light
 	if(GameClient()->m_ChatMedia.OnChatInput(*this, Event))
 		return true;
 	if(CChatScroll::OnInput(*this, Event))
 		return true;
-	// bestclient
+	// bestclient-light
 
 	if(m_Mode == MODE_NONE)
 		return false;
 
-	// bestclient
+	// bestclient-light
 	if((Event.m_Flags & IInput::FLAG_PRESS) && Event.m_Key == KEY_ESCAPE && Ui()->IsPopupOpen())
 	{
 		Ui()->ClosePopupMenus();
@@ -563,7 +563,7 @@ bool CChat::OnInput(const IInput::CEvent &Event)
 			}
 		}
 	}
-	// bestclient
+	// bestclient-light
 
 	if(Event.m_Flags & IInput::FLAG_PRESS && Event.m_Key == KEY_ESCAPE)
 	{
@@ -586,20 +586,20 @@ bool CChat::OnInput(const IInput::CEvent &Event)
 
 		if(GameClient()->m_BindChat.ChatDoBinds(m_Input.GetString()))
 			; // Do nothing as bindchat was executed
-		// bestclient
+		// bestclient-light
 		else if(CChatQoL::TryHandleBangCommand(*this, m_Input.GetString()))
 			;
-		// bestclient
+		// bestclient-light
 		else if(GameClient()->m_TClient.ChatDoSpecId(m_Input.GetString()))
 			; // Do nothing as specid was executed
 		else
 		{
-			// bestclient
+			// bestclient-light
 			const char *pLine = m_Input.GetString();
 			char aConvertedLine[MAX_CHAT_LENGTH];
 			if(CChatQoL::TryConvertWrongLayoutSlashCommand(*this, pLine, aConvertedLine, sizeof(aConvertedLine)))
 				pLine = aConvertedLine;
-			// bestclient
+			// bestclient-light
 			if(GameClient()->m_Translate.ChatDoTranslateOutgoing(m_Mode == MODE_TEAM ? 1 : 0, pLine))
 				; // Do nothing as outgoing translate was queued
 			else
@@ -658,11 +658,11 @@ bool CChat::OnInput(const IInput::CEvent &Event)
 		if(GameClient()->m_BindChat.ChatDoAutocomplete(ShiftPressed))
 		{
 		}
-		// bestclient
+		// bestclient-light
 		else if(CChatQoL::TryBangCommandAutocomplete(*this))
 		{
 		}
-		// bestclient
+		// bestclient-light
 		else if(m_aCompletionBuffer[0] == '/' && !m_vServerCommands.empty())
 		{
 			CCommand *pCompletionCommand = nullptr;
@@ -855,9 +855,9 @@ bool CChat::OnInput(const IInput::CEvent &Event)
 		}
 	}
 
-	// bestclient
+	// bestclient-light
 	GameClient()->m_BcUiAnimations.RefreshTypingAnimation(m_Input, m_Mode != MODE_NONE, Input()->HasComposition());
-	// bestclient
+	// bestclient-light
 	return true;
 }
 
@@ -875,17 +875,17 @@ void CChat::EnableMode(int Team)
 
 		m_CompletionChosen = -1;
 		m_CompletionUsed = false;
-		// bestclient
+		// bestclient-light
 		GameClient()->m_BcUiAnimations.OnChatEnable();
-		// bestclient
+		// bestclient-light
 		m_Input.Activate(EInputPriority::CHAT);
-		// bestclient
+		// bestclient-light
 		GameClient()->m_BcUiAnimations.SyncTypingBaseline(m_Input);
 		const vec2 WindowSize(std::max(1.0f, (float)Graphics()->WindowWidth()), std::max(1.0f, (float)Graphics()->WindowHeight()));
 		m_LastMousePos = Ui()->UpdatedMousePos() * vec2(Ui()->Screen()->w, Ui()->Screen()->h) / WindowSize;
 		const vec2 CenterPos = Ui()->Screen()->Center() / vec2(Ui()->Screen()->w, Ui()->Screen()->h) * WindowSize;
 		Ui()->OnCursorMove(CenterPos.x - Ui()->UpdatedMousePos().x, CenterPos.y - Ui()->UpdatedMousePos().y);
-		// bestclient
+		// bestclient-light
 	}
 }
 
@@ -893,19 +893,19 @@ void CChat::DisableMode()
 {
 	if(m_Mode != MODE_NONE)
 	{
-		// bestclient
+		// bestclient-light
 		Ui()->ClosePopupMenu(&m_TranslateSettingsPopupId, true);
 		m_TranslateButtonPressed = false;
 		m_TranslateMessageHoverLine = -1;
 		m_TranslateMessagePressedLine = -1;
-		// bestclient
+		// bestclient-light
 		m_Mode = MODE_NONE;
-		// bestclient
+		// bestclient-light
 		GameClient()->m_BcUiAnimations.OnChatDisable();
 		CChatScroll::OnDisableMode(*this);
-		// bestclient
+		// bestclient-light
 		m_Input.Deactivate();
-		// bestclient
+		// bestclient-light
 		if(m_LastMousePos.has_value())
 		{
 			const vec2 WindowSize(std::max(1.0f, (float)Graphics()->WindowWidth()), std::max(1.0f, (float)Graphics()->WindowHeight()));
@@ -913,11 +913,11 @@ void CChat::DisableMode()
 			Ui()->OnCursorMove(RestorePos.x - Ui()->UpdatedMousePos().x, RestorePos.y - Ui()->UpdatedMousePos().y);
 		}
 		m_LastMousePos = std::nullopt;
-		// bestclient
+		// bestclient-light
 	}
 }
 
-// bestclient
+// bestclient-light
 bool CChat::OnCursorMove(float x, float y, IInput::ECursorType CursorType)
 {
 	if(m_Mode == MODE_NONE)
@@ -926,7 +926,7 @@ bool CChat::OnCursorMove(float x, float y, IInput::ECursorType CursorType)
 	Ui()->OnCursorMove(x, y);
 	return true;
 }
-// bestclient
+// bestclient-light
 
 void CChat::OnMessage(int MsgType, void *pRawMsg)
 {
@@ -1140,7 +1140,7 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 	if(ClientId == CLIENT_MSG)
 		CustomColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageClientColor));
 
-	// bestclient
+	// bestclient-light
 	if(Client()->State() != IClient::STATE_DEMOPLAYBACK)
 	{
 		if(ClientId >= 0 && ClientId != GameClient()->m_aLocalIds[0] && ClientId != GameClient()->m_aLocalIds[1])
@@ -1158,9 +1158,9 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 		Highlighted |= GameClient()->m_Snap.m_LocalClientId >= 0 && LineShouldHighlight(pLine, GameClient()->m_aClients[GameClient()->m_Snap.m_LocalClientId].m_aName);
 	}
 
-	if(g_Config.m_BcChatOnlyTagsAndWhispers && !Highlighted && Team < 2)
+	if(g_Config.m_BclChatOnlyTagsAndWhispers && !Highlighted && Team < 2)
 		return;
-	// bestclient
+	// bestclient-light
 
 	CLine &PreviousLine = m_aLines[m_CurrentLine];
 
@@ -1187,9 +1187,9 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 
 	m_CurrentLine = (m_CurrentLine + 1) % MAX_LINES;
 
-	// bestclient
+	// bestclient-light
 	CChatScroll::OnLineAdded(*this);
-	// bestclient
+	// bestclient-light
 
 	CLine &CurrentLine = m_aLines[m_CurrentLine];
 	CurrentLine.Reset(*this);
@@ -1206,9 +1206,9 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 	CurrentLine.m_Highlighted = Highlighted;
 
 	str_copy(CurrentLine.m_aText, pLine);
-	// bestclient
+	// bestclient-light
 	GameClient()->m_ChatMedia.OnChatLineAdded(*this, CurrentLine.m_Media, CurrentLine.m_aText);
-	// bestclient
+	// bestclient-light
 
 	if(CurrentLine.m_ClientId == SERVER_MSG)
 	{
@@ -1335,7 +1335,7 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 
 void CChat::OnPrepareLines(float y)
 {
-	// bestclient
+	// bestclient-light
 	static bool s_QuadScrollAnchorFixed = false;
 	if(!s_QuadScrollAnchorFixed)
 	{
@@ -1346,7 +1346,7 @@ void CChat::OnPrepareLines(float y)
 		}
 		s_QuadScrollAnchorFixed = true;
 	}
-	// bestclient
+	// bestclient-light
 	const float Height = HudLayout::CANVAS_HEIGHT;
 	const float Width = Height * Graphics()->ScreenAspect();
 	const auto Layout = HudLayout::Get(HudLayout::MODULE_CHAT, Width, Height);
@@ -1367,7 +1367,7 @@ void CChat::OnPrepareLines(float y)
 	m_PrevHudLayoutScale = Layout.m_Scale;
 	m_PrevHudLayoutEnabled = LayoutEnabled;
 	m_PrevModeActive = ModeActive;
-	// bestclient
+	// bestclient-light
 
 	const int TeeSize = MessageTeeSize();
 	float RealMsgPaddingX = MessagePaddingX();
@@ -1382,11 +1382,11 @@ void CChat::OnPrepareLines(float y)
 	}
 
 	int64_t Now = time();
-	// bestclient
+	// bestclient-light
 	float LineWidth = (IsScoreBoardOpen ? std::max(85.0f * LayoutScale, FontSize * 85.0f / 6.0f) : ChatWidth()) - (RealMsgPaddingX * 1.5f) - RealMsgPaddingTee;
-	// bestclient
+	// bestclient-light
 
-	// bestclient
+	// bestclient-light
 	float HeightLimit;
 	if(IsScoreBoardOpen)
 		HeightLimit = y - 93.0f * LayoutScale;
@@ -1396,19 +1396,19 @@ void CChat::OnPrepareLines(float y)
 		HeightLimit = GameClient()->m_ChatMedia.CompactMediaHeightLimit(y);
 	else
 		HeightLimit = y - 73.0f * LayoutScale;
-	// bestclient
+	// bestclient-light
 	float Begin = x;
 	float TextBegin = Begin + RealMsgPaddingX / 2.0f;
 	int OffsetType = IsScoreBoardOpen ? 1 : 0;
 
 	float LineY = y + m_BacklogScrollOffset;
 	bool AllowTopClip = true;
-	for(int i = 0; i < MAX_LINES; i++) // bestclient
+	for(int i = 0; i < MAX_LINES; i++) // bestclient-light
 	{
 		CLine &Line = m_aLines[((m_CurrentLine - i) + MAX_LINES) % MAX_LINES];
 		if(!Line.m_Initialized)
 			break;
-		// bestclient
+		// bestclient-light
 		if(Now > Line.m_Time + 16 * time_freq() && !m_PrevShowChat && !GameClient()->m_HudEditor.IsActive())
 			break;
 		if(Line.m_BcSavesChat && Line.m_aText[0] == '\0')
@@ -1417,7 +1417,7 @@ void CChat::OnPrepareLines(float y)
 			Line.m_aYOffset[1] = 0.0f;
 			continue;
 		}
-		// bestclient
+		// bestclient-light
 
 		const float LineH = Line.m_aYOffset[OffsetType] >= 0.0f ? Line.m_aYOffset[OffsetType] : FontSize + RealMsgPaddingY;
 		LineY -= LineH;
@@ -1425,7 +1425,7 @@ void CChat::OnPrepareLines(float y)
 			break;
 		AllowTopClip = false;
 
-		if(Line.m_TextContainerIndex.Valid() && Line.m_aYOffset[OffsetType] >= 0.0f && !ForceRecreate) // bestclient
+		if(Line.m_TextContainerIndex.Valid() && Line.m_aYOffset[OffsetType] >= 0.0f && !ForceRecreate) // bestclient-light
 			continue;
 
 		TextRender()->DeleteTextContainer(Line.m_TextContainerIndex);
@@ -1444,7 +1444,7 @@ void CChat::OnPrepareLines(float y)
 			str_format(aCount, sizeof(aCount), " [%d]", Line.m_TimesRepeated + 1);
 
 		const char *pText = Line.m_aText;
-		// bestclient
+		// bestclient-light
 		bool TextHiddenByStreamer = false;
 		if(Config()->m_ClStreamerMode && Line.m_ClientId == SERVER_MSG)
 		{
@@ -1464,12 +1464,12 @@ void CChat::OnPrepareLines(float y)
 				pText = "Team successfully saved by ***. Use '/load *** *** ***' to continue";
 			}
 		}
-		// bestclient
+		// bestclient-light
 
-		// bestclient
+		// bestclient-light
 		std::string VisibleTextStorage = GameClient()->m_ChatMedia.BuildVisibleMessageText(Line.m_Media, pText, false);
 		pText = VisibleTextStorage.c_str();
-		// bestclient
+		// bestclient-light
 
 		const CColoredParts ColoredParts(pText, Line.m_ClientId == CLIENT_MSG);
 		if(!ColoredParts.Colors().empty() && ColoredParts.Colors()[0].m_Index == 0)
@@ -1480,7 +1480,7 @@ void CChat::OnPrepareLines(float y)
 		const char *pTranslatedText = nullptr;
 		if(Line.m_pTranslateResponse != nullptr && Line.m_pTranslateResponse->m_Shown && Line.m_pTranslateResponse->m_Text[0])
 		{
-			// bestclient
+			// bestclient-light
 			if(TextHiddenByStreamer)
 			{
 				pTranslatedError = TCLocalize("Translated text hidden due to streamer mode");
@@ -1494,7 +1494,7 @@ void CChat::OnPrepareLines(float y)
 				pTranslatedText = Line.m_pTranslateResponse->m_Text;
 			}
 		}
-		// bestclient
+		// bestclient-light
 
 		// the position the text was created
 		Line.m_TextYOffset = LineY + RealMsgPaddingY / 2.0f;
@@ -1584,10 +1584,10 @@ void CChat::OnPrepareLines(float y)
 
 		if(pTranslatedText)
 		{
-			// bestclient
+			// bestclient-light
 			AppendCursor.m_LineCount = 1;
 			AppendCursor.m_Y = AppendCursor.m_StartY;
-			// bestclient
+			// bestclient-light
 			TextRender()->CreateOrAppendTextContainer(Line.m_TextContainerIndex, &AppendCursor, pTranslatedText);
 		}
 		else if(pTranslatedError)
@@ -1639,9 +1639,9 @@ void CChat::OnRender()
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;
 
-	// bestclient
+	// bestclient-light
 	GameClient()->m_ChatMedia.Update(*this);
-	// bestclient
+	// bestclient-light
 
 	// send pending chat messages
 	if(m_PendingChatCounter > 0 && m_LastChatSend + time_freq() < time())
@@ -1661,9 +1661,9 @@ void CChat::OnRender()
 	const float Height = 300.0f;
 	const float Width = Height * Graphics()->ScreenAspect();
 	Graphics()->MapScreenToSize(Width, Height);
-	m_TranslateButtonRectValid = false; // bestclient
+	m_TranslateButtonRectValid = false; // bestclient-light
 
-	// bestclient
+	// bestclient-light
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_CHAT) && m_Mode == MODE_NONE)
 		return;
 	const auto ChatLayout = HudLayout::Get(HudLayout::MODULE_CHAT, Width, Height);
@@ -1672,24 +1672,24 @@ void CChat::OnRender()
 	float y = ChatLayout.m_Y;
 	const float ModuleAlpha = HudLayout::AlphaFactor(HudLayout::MODULE_CHAT);
 	const bool EditorPreview = GameClient()->m_HudEditor.IsActive();
-	// bestclient
+	// bestclient-light
 
 	float ScaledFontSize = FontSize() * (8.0f / 6.0f);
-	// bestclient
+	// bestclient-light
 	const float ChatOpenOffsetY = GameClient()->m_BcUiAnimations.ChatOpenOffsetY(Height, m_Mode != MODE_NONE);
-	// bestclient
+	// bestclient-light
 	if(m_Mode != MODE_NONE)
 	{
 		// render chat input
 		CTextCursor InputCursor;
-		// bestclient
+		// bestclient-light
 		InputCursor.SetPosition(vec2(x, y + ChatOpenOffsetY));
-		// bestclient
+		// bestclient-light
 		InputCursor.m_FontSize = ScaledFontSize;
-		// bestclient
+		// bestclient-light
 		InputCursor.m_LineWidth = ChatWidth() - 190.0f * LayoutScale;
 		InputCursor.m_LineWidth = std::max(InputCursor.m_LineWidth, 190.0f * LayoutScale);
-		// bestclient
+		// bestclient-light
 
 		if(m_Mode == MODE_ALL)
 			TextRender()->TextEx(&InputCursor, Localize("All"));
@@ -1704,15 +1704,15 @@ void CChat::OnRender()
 		const CUIRect ClippingRect = {InputCursor.m_X, InputCursor.m_Y, MessageMaxWidth, 2.25f * InputCursor.m_FontSize};
 		const float XScale = Graphics()->ScreenWidth() / Width;
 		const float YScale = Graphics()->ScreenHeight() / Height;
-		// bestclient
+		// bestclient-light
 		const CUIRect ChatInputClipRect = GameClient()->m_BcUiAnimations.ChatInputClipRect(ClippingRect, Width);
 		Graphics()->ClipEnable((int)(ChatInputClipRect.x * XScale), (int)(ChatInputClipRect.y * YScale), (int)(ChatInputClipRect.w * XScale), (int)(ChatInputClipRect.h * YScale));
-		// bestclient
+		// bestclient-light
 
 		float ScrollOffset = m_Input.GetScrollOffset();
 		float ScrollOffsetChange = m_Input.GetScrollOffsetChange();
 
-		// bestclient
+		// bestclient-light
 		if(m_TranslateSettingsInputActive && Ui()->IsPopupOpen(&m_TranslateSettingsPopupId))
 			m_Input.Deactivate();
 		else
@@ -1720,14 +1720,14 @@ void CChat::OnRender()
 			m_TranslateSettingsInputActive = false;
 			m_Input.Activate(EInputPriority::CHAT);
 		}
-		// bestclient
+		// bestclient-light
 		const CUIRect InputCursorRect = {InputCursor.m_X, InputCursor.m_Y - ScrollOffset, 0.0f, 0.0f};
 		const bool WasChanged = m_Input.WasChanged();
 		const bool WasCursorChanged = m_Input.WasCursorChanged();
 		const bool Changed = WasChanged || WasCursorChanged;
-		// bestclient
+		// bestclient-light
 		const STextBoundingBox BoundingBox = GameClient()->m_BcUiAnimations.RenderChatTypingInput(m_Input, InputCursorRect, InputCursor.m_FontSize, MessageMaxWidth, Changed);
-		// bestclient
+		// bestclient-light
 
 		Graphics()->ClipDisable();
 
@@ -1759,16 +1759,16 @@ void CChat::OnRender()
 				}
 			}
 		}
-		// bestclient
+		// bestclient-light
 		else if(m_Input.GetString()[0] == '!' && m_Input.GetString()[1] != '\0')
 		{
 			InputCursor.m_X = InputCursor.m_X + TextRender()->TextWidth(InputCursor.m_FontSize, m_Input.GetString(), -1, InputCursor.m_LineWidth);
 			InputCursor.m_Y = m_Input.GetCaretPosition().y;
 			CChatQoL::TryRenderBangCommandHint(GameClient(), m_Input.GetString(), &InputCursor, TextRender());
 		}
-		// bestclient
+		// bestclient-light
 
-		// bestclient
+		// bestclient-light
 		const float TranslateButtonSize = std::max(24.0f, InputCursor.m_FontSize * 1.75f);
 		const float TranslateButtonGap = 4.0f;
 		const float UiScale = Ui()->Screen()->h / Height;
@@ -1786,26 +1786,26 @@ void CChat::OnRender()
 		Ui()->MapScreen();
 		RenderTranslateSettingsButton(m_TranslateButtonUiRect);
 		Graphics()->MapScreenToSize(Width, Height);
-		// bestclient
+		// bestclient-light
 	}
 
-	// bestclient
+	// bestclient-light
 #if defined(CONF_VIDEORECORDER)
 	if(!EditorPreview && !((g_Config.m_ClShowChat && !IVideo::Current()) || (g_Config.m_ClVideoShowChat && IVideo::Current())))
 #else
 	if(!EditorPreview && !g_Config.m_ClShowChat)
 #endif
 		return;
-	// bestclient
+	// bestclient-light
 
-	// bestclient
+	// bestclient-light
 	if(!EditorPreview && g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideChat)
 		return;
-	// bestclient
+	// bestclient-light
 
 	y -= ScaledFontSize;
 
-	// bestclient
+	// bestclient-light
 	bool IsScoreBoardOpen = GameClient()->m_Scoreboard.IsShown() && (Graphics()->ScreenAspect() > 1.7f);
 	const bool ShowLargeArea = EditorPreview || m_Show || (m_Mode != MODE_NONE && g_Config.m_ClShowChat == 1) || g_Config.m_ClShowChat == 2;
 	int64_t Now = time();
@@ -1819,9 +1819,9 @@ void CChat::OnRender()
 	else
 		HeightLimit = y - 73.0f * LayoutScale;
 
-	// bestclient
+	// bestclient-light
 	const bool ChatInteractionActive = m_Mode != MODE_NONE && !Ui()->IsPopupOpen();
-	// bestclient
+	// bestclient-light
 	int OffsetType = IsScoreBoardOpen ? 1 : 0;
 	float RealMsgPaddingX = MessagePaddingX();
 	float RealMsgPaddingY = MessagePaddingY();
@@ -1841,17 +1841,17 @@ void CChat::OnRender()
 	const bool ForceRecreate = IsScoreBoardOpen != m_PrevScoreBoardShowed || ShowLargeArea != m_PrevShowChat || ModeActive != m_PrevModeActive || LayoutChanged;
 	CChatScroll::MeasureHeights(*this, TextBegin, MeasureFontSize, LineWidth, RealMsgPaddingY, RealMsgPaddingTee, OffsetType, IsScoreBoardOpen, ForceRecreate);
 	CChatScroll::UpdateScrollbar(*this, x, y, Width, Height, HeightLimit, OffsetType, MeasureFontSize, RealMsgPaddingY, ChatInteractionActive);
-	// bestclient
+	// bestclient-light
 
 	OnPrepareLines(y);
 
-	// bestclient
+	// bestclient-light
 	CChatScroll::SActionFrame ActionFrame = CChatScroll::BeginActions(*this);
 	m_TranslateMessageHoverLine = -1;
 	float RenderY = y + m_BacklogScrollOffset;
 	bool AllowTopClip = true;
-	// bestclient
-	for(int i = 0; i < MAX_LINES; i++) // bestclient
+	// bestclient-light
+	for(int i = 0; i < MAX_LINES; i++) // bestclient-light
 	{
 		CLine &Line = m_aLines[((m_CurrentLine - i) + MAX_LINES) % MAX_LINES];
 		if(!Line.m_Initialized)
@@ -1859,7 +1859,7 @@ void CChat::OnRender()
 		if(Now > Line.m_Time + 16 * time_freq() && !m_PrevShowChat)
 			break;
 
-		// bestclient
+		// bestclient-light
 		if(Line.m_BcSavesChat && Line.m_aText[0] == '\0')
 			continue;
 		const float LineH = Line.m_aYOffset[OffsetType] >= 0.0f ? Line.m_aYOffset[OffsetType] : MeasureFontSize + RealMsgPaddingY;
@@ -1874,7 +1874,7 @@ void CChat::OnRender()
 		const float LineW = ChatWidth();
 		const int ArrayIndex = ((m_CurrentLine - i) + MAX_LINES) % MAX_LINES;
 		CChatScroll::NoteLineHover(ActionFrame, *this, ArrayIndex, x, LineW, LineRenderY, LineH, ChatInteractionActive);
-		if(g_Config.m_BcTranslateMessageButton && ChatInteractionActive && Line.m_ClientId >= 0 && Line.m_aName[0] != '\0' && Line.m_aText[0] != '\0')
+		if(g_Config.m_BclTranslateMessageButton && ChatInteractionActive && Line.m_ClientId >= 0 && Line.m_aName[0] != '\0' && Line.m_aText[0] != '\0')
 		{
 			bool OwnMessage = false;
 			for(const int LocalId : GameClient()->m_aLocalIds)
@@ -1911,7 +1911,7 @@ void CChat::OnRender()
 				Graphics()->MapScreenToSize(Width, Height);
 			}
 		}
-		// bestclient
+		// bestclient-light
 
 		if(!g_Config.m_ClChatOld)
 		{
@@ -1923,10 +1923,10 @@ void CChat::OnRender()
 			}
 		}
 
-		// bestclient
+		// bestclient-light
 		if(CChatScroll::ShouldHighlight(ActionFrame, *this, ArrayIndex))
 			CChatScroll::DrawHighlight(*this, x, LineRenderY, LineW, LineH, Blend * ModuleAlpha);
-		// bestclient
+		// bestclient-light
 
 		if(Line.m_TextContainerIndex.Valid())
 		{
@@ -1952,27 +1952,27 @@ void CChat::OnRender()
 			TextRender()->RenderTextContainer(Line.m_TextContainerIndex, TextColor, TextOutlineColor, 0, (LineRenderY + RealMsgPaddingY / 2.0f) - Line.m_TextYOffset);
 		}
 
-		// bestclient
+		// bestclient-light
 		{
 			const float PreviewX = x + RealMsgPaddingX / 2.0f;
 			const float PreviewY = LineRenderY + RealMsgPaddingY / 2.0f + Line.m_Media.m_aTextHeight[OffsetType] + FontSize() * 0.4f;
 			GameClient()->m_ChatMedia.RenderLinePreview(Line.m_Media, PreviewX, PreviewY, Blend, FontSize(), OffsetType);
 		}
-		// bestclient
+		// bestclient-light
 	}
 
-	// bestclient
+	// bestclient-light
 	CChatScroll::EndActions(*this, ActionFrame, ModuleAlpha);
 	GameClient()->m_ChatMedia.RenderFullscreen(*this, Width, Height);
 
-	// bestclient
+	// bestclient-light
 	if(m_Mode != MODE_NONE && Ui()->IsPopupOpen(&m_TranslateSettingsPopupId))
 	{
 		Ui()->MapScreen();
 		Ui()->RenderPopupMenus();
 		Graphics()->MapScreenToSize(Width, Height);
 	}
-	// bestclient
+	// bestclient-light
 
 	if(m_Mode != MODE_NONE)
 	{
@@ -1981,10 +1981,10 @@ void CChat::OnRender()
 		const vec2 UiMousePos = Ui()->UpdatedMousePos() * vec2(Ui()->Screen()->w, Ui()->Screen()->h) / WindowSize;
 		RenderTools()->RenderCursor(UiMousePos * UiToChatScale, 12.0f);
 	}
-	// bestclient
+	// bestclient-light
 }
 
-// bestclient
+// bestclient-light
 CUIRect CChat::GetHudRect(float HudWidth, float HudHeight, bool ForcePreview) const
 {
 	if(!ForcePreview && !HudLayout::IsEnabled(HudLayout::MODULE_CHAT))
@@ -2002,12 +2002,12 @@ CUIRect CChat::GetHudRect(float HudWidth, float HudHeight, bool ForcePreview) co
 	if(ForcePreview || m_Mode != MODE_NONE)
 	{
 		const float ScaledFontSize = FontSize() * (8.0f / 6.0f);
-		// bestclient
+		// bestclient-light
 		const float TranslateButtonWidth = std::max(24.0f, ScaledFontSize * 1.75f) + 4.0f;
 		VisibleWidth = std::max(VisibleWidth, std::max(ChatWidth() - 190.0f * Scale, 190.0f * Scale) + TranslateButtonWidth);
 		ExtraTop = ScaledFontSize;
 		ExtraBottom = std::max(2.25f * ScaledFontSize, std::max(ScaledFontSize + 4.0f, 16.0f));
-		// bestclient
+		// bestclient-light
 	}
 
 	CUIRect Rect = {Layout.m_X, Layout.m_Y - VisibleHeight - ExtraTop, VisibleWidth, VisibleHeight + ExtraTop + ExtraBottom};
@@ -2015,7 +2015,7 @@ CUIRect CChat::GetHudRect(float HudWidth, float HudHeight, bool ForcePreview) co
 	Rect.y = std::clamp(Rect.y, 0.0f, std::max(0.0f, HudHeight - Rect.h));
 	return Rect;
 }
-// bestclient
+// bestclient-light
 
 void CChat::EnsureCoherentFontSize() const
 {
@@ -2045,12 +2045,12 @@ void CChat::SendChat(int Team, const char *pLine)
 	if(*str_utf8_skip_whitespaces(pLine) == '\0')
 		return;
 
-	// bestclient
+	// bestclient-light
 	if(GameClient()->m_FastPractice.ConsumePracticeChatCommand(Team, pLine))
 		return;
 	if(GameClient()->m_VoiceChat.TryHandleChatCommand(pLine))
 		return;
-	// bestclient
+	// bestclient-light
 
 	m_LastChatSend = time();
 
@@ -2076,11 +2076,11 @@ void CChat::SendChatQueued(const char *pLine)
 	if(!pLine || str_length(pLine) < 1)
 		return;
 
-	// bestclient
+	// bestclient-light
 	char aConvertedLine[MAX_CHAT_LENGTH];
 	if(CChatQoL::TryConvertWrongLayoutSlashCommand(*this, pLine, aConvertedLine, sizeof(aConvertedLine)))
 		pLine = aConvertedLine;
-	// bestclient
+	// bestclient-light
 
 	bool AddEntry = false;
 
@@ -2104,7 +2104,7 @@ void CChat::SendChatQueued(const char *pLine)
 	}
 }
 
-// bestclient
+// bestclient-light
 void CChat::SendTranslatedChatQueued(int Team, const char *pLine)
 {
 	if(!pLine || *str_utf8_skip_whitespaces(pLine) == '\0')
@@ -2130,4 +2130,4 @@ void CChat::SendTranslatedChatQueued(int Team, const char *pLine)
 		str_copy(pEntry->m_aText, pLine, Length + 1);
 	}
 }
-// bestclient
+// bestclient-light

@@ -14,16 +14,16 @@ public:
 	virtual void Update(bool Enabled) = 0;
 
 	virtual void ClearGameInfo() = 0;
-	// bestclient
+	// bestclient-light
 	virtual void SetGameInfo(const CServerInfo &ServerInfo, const char *pMapName, const char *pPlayerName, const char *pSkinName, bool ShowMap, bool Registered) = 0;
 	virtual void UpdateServerInfo(const CServerInfo &ServerInfo, const char *pMapName, const char *pPlayerName, const char *pSkinName) = 0;
-	// bestclient
+	// bestclient-light
 	virtual void UpdatePlayerCount(int Count) = 0;
 };
 
-// bestclient
-IDiscord *CreateBestClientDiscord();
-// bestclient
+// bestclient-light
+IDiscord *CreateBestClientLightDiscord();
+// bestclient-light
 IDiscord *CreateDiscord();
 
 #endif // ENGINE_DISCORD_H

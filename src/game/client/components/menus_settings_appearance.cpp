@@ -182,9 +182,9 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_ClChatTeamColors, Localize("Show names in chat in team colors"), &g_Config.m_ClChatTeamColors, &LeftView, LineSize);
 		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_ClShowChatFriends, Localize("Show only chat messages from friends"), &g_Config.m_ClShowChatFriends, &LeftView, LineSize);
 		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_ClShowChatTeamMembersOnly, Localize("Show only chat messages from team members"), &g_Config.m_ClShowChatTeamMembersOnly, &LeftView, LineSize);
-		// bestclient
-		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BcChatOnlyTagsAndWhispers, Localize("Show only tags and private messages"), &g_Config.m_BcChatOnlyTagsAndWhispers, &LeftView, LineSize);
-		// bestclient
+		// bestclient-light
+		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclChatOnlyTagsAndWhispers, Localize("Show only tags and private messages"), &g_Config.m_BclChatOnlyTagsAndWhispers, &LeftView, LineSize);
+		// bestclient-light
 
 		if(DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_ClChatOld, Localize("Use old chat style"), &g_Config.m_ClChatOld, &LeftView, LineSize))
 			GameClient()->m_Chat.RebuildChat();
@@ -297,9 +297,9 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 			PREVIEW_FRIEND,
 			PREVIEW_SPAMMER,
 			PREVIEW_CLIENT,
-			// bestclient
+			// bestclient-light
 			PREVIEW_WHISPER
-			// bestclient
+			// bestclient-light
 		};
 		auto &&SetPreviewLine = [](int Index, int ClientId, const char *pName, const char *pText, int Flag, int Repeats) {
 			SPreviewLine *pLine;
@@ -432,20 +432,20 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 			SetPreviewLine(PREVIEW_FRIEND, 8, "Friend", "Hello there", FLAG_FRIEND, 0);
 			SetPreviewLine(PREVIEW_SPAMMER, 9, "Spammer", "Hey fools, I'm spamming here!", 0, 5);
 			SetPreviewLine(PREVIEW_CLIENT, -1, "— ", "Echo command executed", FLAG_CLIENT, 0);
-			// bestclient
+			// bestclient-light
 			SetPreviewLine(PREVIEW_WHISPER, 10, "← Random Tee", "This is a private message", FLAG_HIGHLIGHT, 0);
-			// bestclient
+			// bestclient-light
 		}
 
 		SetLineSkin(1, GameClient()->m_Skins.Find("pinky"));
 		SetLineSkin(2, GameClient()->m_Skins.Find("default"));
 		SetLineSkin(3, GameClient()->m_Skins.Find("cammostripes"));
 		SetLineSkin(4, GameClient()->m_Skins.Find("beast"));
-		// bestclient
+		// bestclient-light
 		SetLineSkin(PREVIEW_WHISPER, GameClient()->m_Skins.Find("default"));
 
-		const bool ShowOnlyTagsAndWhispers = g_Config.m_BcChatOnlyTagsAndWhispers != 0;
-		// bestclient
+		const bool ShowOnlyTagsAndWhispers = g_Config.m_BclChatOnlyTagsAndWhispers != 0;
+		// bestclient-light
 
 		// Backgrounds first
 		if(!g_Config.m_ClChatOld)
@@ -463,7 +463,7 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 				return Size.y;
 			};
 
-			// bestclient
+			// bestclient-light
 			if(ShowOnlyTagsAndWhispers)
 			{
 				TempY += RenderMessageBackground(PREVIEW_HIGHLIGHT);
@@ -494,12 +494,12 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 				if(g_Config.m_TcShowChatClient)
 					TempY += RenderMessageBackground(PREVIEW_CLIENT);
 			}
-			// bestclient
+			// bestclient-light
 
 			Graphics()->QuadsEnd();
 		}
 
-		// bestclient
+		// bestclient-light
 		if(ShowOnlyTagsAndWhispers)
 		{
 			if(!g_Config.m_ClChatOld)
@@ -549,7 +549,7 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 			if(g_Config.m_TcShowChatClient)
 				RenderPreview(PREVIEW_CLIENT, X, Y);
 		}
-		// bestclient
+		// bestclient-light
 
 		TextRender()->TextColor(TextRender()->DefaultTextColor());
 	}

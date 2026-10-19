@@ -16,10 +16,10 @@
 #include <engine/keys.h>
 #include <engine/shared/config.h>
 
-#include <game/client/components/bestclient/gradient.h> // bestclient
-#include <game/client/components/bestclient/settings_search.h> // bestclient
-#include <game/client/components/bestclient/ui_theme/style.h> // bestclient
-#include <game/client/components/bestclient/ui_theme/widgets.h> // bestclient
+#include <game/client/components/bestclient-light/gradient.h> // bestclient-light
+#include <game/client/components/bestclient-light/settings_search.h> // bestclient-light
+#include <game/client/components/bestclient-light/ui_theme/style.h> // bestclient-light
+#include <game/client/components/bestclient-light/ui_theme/widgets.h> // bestclient-light
 #include <game/localization.h>
 
 #include <limits>
@@ -58,9 +58,9 @@ void CUIElement::SUIElementRect::Reset()
 	m_TextOutlineColor = ColorRGBA(-1, -1, -1, -1);
 	m_QuadColor = ColorRGBA(-1, -1, -1, -1);
 	m_ReadCursorGlyphCount = -1;
-	// bestclient
+	// bestclient-light
 	m_GradientPhaseBucket = -1;
-	// bestclient
+	// bestclient-light
 }
 
 void CUIElement::SUIElementRect::Draw(const CUIRect *pRect, ColorRGBA Color, int Corners, float Rounding)
@@ -113,7 +113,7 @@ IGraphics *CUIElementBase::Graphics() const { return ms_pUi->Graphics(); }
 IInput *CUIElementBase::Input() const { return ms_pUi->Input(); }
 ITextRender *CUIElementBase::TextRender() const { return ms_pUi->TextRender(); }
 
-// bestclient
+// bestclient-light
 float CUi::EffectiveScreenAspect() const
 {
 	if(m_UseGraphicsScreenAspect)
@@ -124,7 +124,7 @@ float CUi::EffectiveScreenAspect() const
 		return Graphics()->ScreenAspect();
 	return (float)Graphics()->ScreenWidth() / (float)ScreenHeight;
 }
-// bestclient
+// bestclient-light
 
 void CUi::Init(IKernel *pKernel)
 {
@@ -204,7 +204,7 @@ void CUi::OnCursorMove(float X, float Y)
 
 void CUi::Update()
 {
-	// bestclient
+	// bestclient-light
 	const int UiScale = std::clamp(g_Config.m_UiScale, 50, 110);
 	const int ScreenWidth = Graphics()->ScreenWidth();
 	const int ScreenHeight = Graphics()->ScreenHeight();
@@ -227,7 +227,7 @@ void CUi::Update()
 		m_LastScreenHeight = ScreenHeight;
 		m_LastScreenAspect = ScreenAspect;
 	}
-	// bestclient
+	// bestclient-light
 
 	const vec2 WindowSize = vec2(Graphics()->WindowWidth(), Graphics()->WindowHeight());
 	const CUIRect *pScreen = Screen();
@@ -296,11 +296,11 @@ void CUi::Update()
 	if(Enabled())
 	{
 		CLineInput *pActiveInput = CLineInput::GetActiveInput();
-		// bestclient
+		// bestclient-light
 		if(pActiveInput && m_pLastActiveItem && pActiveInput != m_pLastActiveItem &&
 			CLineInput::GetActiveInputPriority() <= EInputPriority::UI)
 			pActiveInput->Deactivate();
-		// bestclient
+		// bestclient-light
 	}
 	else
 	{
@@ -500,11 +500,11 @@ float CUi::ButtonColorMul(const void *pId)
 
 const CUIRect *CUi::Screen()
 {
-	// bestclient
+	// bestclient-light
 	const float Scale = std::clamp(g_Config.m_UiScale / 100.0f, 0.5f, 1.1f);
 	m_Screen.h = 600.0f / Scale;
 	m_Screen.w = EffectiveScreenAspect() * m_Screen.h;
-	// bestclient
+	// bestclient-light
 	return &m_Screen;
 }
 
@@ -674,9 +674,9 @@ int CUi::DoDraggableButtonLogic(const void *pId, int Checked, const CUIRect *pRe
 bool CUi::DoDoubleClickLogic(const void *pId)
 {
 	if(m_DoubleClickState.m_pLastClickedId == pId &&
-		// bestclient
+		// bestclient-light
 		Client()->GlobalTime() - m_DoubleClickState.m_LastClickTime < ms_DoubleClickTime &&
-		// bestclient
+		// bestclient-light
 		distance(m_DoubleClickState.m_LastClickPos, MousePos()) <= 32.0f * Screen()->h / Graphics()->ScreenHeight())
 	{
 		m_DoubleClickState.m_pLastClickedId = nullptr;
@@ -873,18 +873,18 @@ CLabelResult CUi::DoLabel(const CUIRect *pRect, const char *pText, float Size, i
 	Cursor.m_Flags |= Flags;
 	Cursor.m_vColorSplits = LabelProps.m_vColorSplits;
 	Cursor.m_LineWidth = (float)LabelProps.m_MaxWidth;
-	// bestclient
+	// bestclient-light
 	const ColorRGBA PrevTextColor = TextRender()->GetTextColor();
-	const bool UiTextGradient = BestClientUiTheme::IsCustomUiTextGradient() && Cursor.m_vColorSplits.empty();
+	const bool UiTextGradient = BestClientLightUiTheme::IsCustomUiTextGradient() && Cursor.m_vColorSplits.empty();
 	if(UiTextGradient)
-		Cursor.m_vColorSplits = BestClientUiTheme::BuildUiTextGradientSplits(pText);
-	const ColorRGBA TintedTextColor = BestClientUiTheme::UiText(PrevTextColor);
+		Cursor.m_vColorSplits = BestClientLightUiTheme::BuildUiTextGradientSplits(pText);
+	const ColorRGBA TintedTextColor = BestClientLightUiTheme::UiText(PrevTextColor);
 	if(!UiTextGradient && TintedTextColor != PrevTextColor)
 		TextRender()->TextColor(TintedTextColor);
 	TextRender()->TextEx(&Cursor, pText, -1);
 	if(!UiTextGradient && TintedTextColor != PrevTextColor)
 		TextRender()->TextColor(PrevTextColor);
-	// bestclient
+	// bestclient-light
 	return CLabelResult{.m_Truncated = Cursor.m_Truncated};
 }
 
@@ -908,15 +908,15 @@ void CUi::DoLabel(CUIElement::SUIElementRect &RectEl, const CUIRect *pRect, cons
 
 	RectEl.m_TextColor = TextRender()->GetTextColor();
 	RectEl.m_TextOutlineColor = TextRender()->GetTextOutlineColor();
-	// bestclient
-	if(BestClientUiTheme::IsCustomUiTextGradient() && LabelProps.m_vColorSplits.empty())
-		Cursor.m_vColorSplits = BestClientUiTheme::BuildUiTextGradientSplits(pText);
+	// bestclient-light
+	if(BestClientLightUiTheme::IsCustomUiTextGradient() && LabelProps.m_vColorSplits.empty())
+		Cursor.m_vColorSplits = BestClientLightUiTheme::BuildUiTextGradientSplits(pText);
 	else
 	{
 		Cursor.m_vColorSplits = LabelProps.m_vColorSplits;
-		TextRender()->TextColor(BestClientUiTheme::UiText(TextRender()->DefaultTextColor()));
+		TextRender()->TextColor(BestClientLightUiTheme::UiText(TextRender()->DefaultTextColor()));
 	}
-	// bestclient
+	// bestclient-light
 	TextRender()->TextOutlineColor(TextRender()->DefaultTextOutlineColor());
 	TextRender()->CreateTextContainer(RectEl.m_UITextContainer, &Cursor, pText, StrLen);
 	TextRender()->TextColor(RectEl.m_TextColor);
@@ -929,16 +929,16 @@ void CUi::DoLabelStreamed(CUIElement::SUIElementRect &RectEl, const CUIRect *pRe
 	const int ReadCursorGlyphCount = pReadCursor == nullptr ? -1 : pReadCursor->m_GlyphCount;
 	bool NeedsRecreate = false;
 	bool ColorChanged = RectEl.m_TextColor != TextRender()->GetTextColor() || RectEl.m_TextOutlineColor != TextRender()->GetTextOutlineColor();
-	// bestclient
+	// bestclient-light
 	int GradientPhaseBucket = -1;
-	if(g_Config.m_BcNameplateGradientEverything || BestClientUiTheme::IsCustomUiTextGradient())
+	if(g_Config.m_BclNameplateGradientEverything || BestClientLightUiTheme::IsCustomUiTextGradient())
 	{
-		const float Phase = BestClientUiTheme::IsCustomUiTextGradient() ? BestClientUiTheme::UiGradientPhase(BestClientUiTheme::TextAnimateSpeed()) : CBcGradient::AnimatePhase(Client()->GlobalTime());
+		const float Phase = BestClientLightUiTheme::IsCustomUiTextGradient() ? BestClientLightUiTheme::UiGradientPhase(BestClientLightUiTheme::TextAnimateSpeed()) : CBcGradient::AnimatePhase(Client()->GlobalTime());
 		GradientPhaseBucket = (int)(Phase * 64.0f) % 64;
 		if(RectEl.m_GradientPhaseBucket != GradientPhaseBucket)
 			NeedsRecreate = true;
 	}
-	// bestclient
+	// bestclient-light
 	if((!RectEl.m_UITextContainer.Valid() && pText[0] != '\0' && StrLen != 0) || RectEl.m_Width != pRect->w || RectEl.m_Height != pRect->h || ColorChanged || RectEl.m_ReadCursorGlyphCount != ReadCursorGlyphCount)
 	{
 		NeedsRecreate = true;
@@ -958,9 +958,9 @@ void CUi::DoLabelStreamed(CUIElement::SUIElementRect &RectEl, const CUIRect *pRe
 	}
 	RectEl.m_X = pRect->x;
 	RectEl.m_Y = pRect->y;
-	// bestclient
+	// bestclient-light
 	RectEl.m_GradientPhaseBucket = GradientPhaseBucket;
-	// bestclient
+	// bestclient-light
 	if(NeedsRecreate)
 	{
 		TextRender()->DeleteTextContainer(RectEl.m_UITextContainer);
@@ -1084,10 +1084,10 @@ bool CUi::DoEditBox(CLineInput *pLineInput, const CUIRect *pRect, float FontSize
 	}
 
 	// Render
-	// bestclient
+	// bestclient-light
 	const bool EditAccent = Active || HotItem() == pLineInput;
-	BestClientUiTheme::DrawUiEditBox(pRect, ms_LightButtonColorFunction.GetColor(Active, HotItem() == pLineInput), EditAccent, Corners, 3.0f);
-	// bestclient
+	BestClientLightUiTheme::DrawUiEditBox(pRect, ms_LightButtonColorFunction.GetColor(Active, HotItem() == pLineInput), EditAccent, Corners, 3.0f);
+	// bestclient-light
 	ClipEnable(pRect);
 	Textbox.x -= ScrollOffset;
 	const STextBoundingBox BoundingBox = pLineInput->Render(&Textbox, FontSize, TEXTALIGN_ML, Changed || CursorChanged, -1.0f, 0.0f, vColorSplits);
@@ -1118,9 +1118,9 @@ bool CUi::DoClearableEditBox(CLineInput *pLineInput, const CUIRect *pRect, float
 
 	bool ReturnValue = DoEditBox(pLineInput, &EditBox, FontSize, Corners & ~IGraphics::CORNER_R, vColorSplits);
 
-	// bestclient
-	BestClientUiTheme::DrawUiButton(&ClearButton, ColorRGBA(1.0f, 1.0f, 1.0f, 0.33f * ButtonColorMul(pLineInput->GetClearButtonId())), false, Corners & ~IGraphics::CORNER_L, 3.0f);
-	// bestclient
+	// bestclient-light
+	BestClientLightUiTheme::DrawUiButton(&ClearButton, ColorRGBA(1.0f, 1.0f, 1.0f, 0.33f * ButtonColorMul(pLineInput->GetClearButtonId())), false, Corners & ~IGraphics::CORNER_L, 3.0f);
+	// bestclient-light
 	TextRender()->SetRenderFlags(ETextRenderFlags::TEXT_RENDER_FLAG_ONLY_ADVANCE_WIDTH | ETextRenderFlags::TEXT_RENDER_FLAG_NO_X_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_Y_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_OVERSIZE);
 	DoLabel(&ClearButton, "×", ClearButton.h * CUi::ms_FontmodHeight * 0.8f, TEXTALIGN_MC);
 	TextRender()->SetRenderFlags(0);
@@ -1164,19 +1164,19 @@ int CUi::DoButton_Menu(CUIElement &UIElement, const CButtonContainer *pId, const
 		Text.VSplitRight(pRect->h * 0.75f, &Text, &DropDownIcon);
 	}
 
-	// bestclient
+	// bestclient-light
 	const bool UseLiveGradient = Props.m_ShowDropDownIcon
-		? BestClientUiTheme::IsCustomUiDropdown() && BestClientUiTheme::DropdownGrad()
-		: BestClientUiTheme::IsCustomUiButton() && BestClientUiTheme::ButtonGrad();
+		? BestClientLightUiTheme::IsCustomUiDropdown() && BestClientLightUiTheme::DropdownGrad()
+		: BestClientLightUiTheme::IsCustomUiButton() && BestClientLightUiTheme::ButtonGrad();
 	if(UseLiveGradient)
 	{
 		const bool Accent = CheckActiveItem(pId) || HotItem() == pId || Props.m_Checked;
 		ColorRGBA Color = Props.m_Color;
 		Color.a *= ButtonColorMul(pId);
 		if(Props.m_ShowDropDownIcon)
-			BestClientUiTheme::DrawUiDropdown(pRect, Color, Accent, Props.m_Corners, Props.m_Rounding);
+			BestClientLightUiTheme::DrawUiDropdown(pRect, Color, Accent, Props.m_Corners, Props.m_Rounding);
 		else
-			BestClientUiTheme::DrawUiButton(pRect, Color, Accent, Props.m_Corners, Props.m_Rounding);
+			BestClientLightUiTheme::DrawUiButton(pRect, Color, Accent, Props.m_Corners, Props.m_Rounding);
 		if(Props.m_ShowDropDownIcon)
 		{
 			TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
@@ -1193,13 +1193,13 @@ int CUi::DoButton_Menu(CUIElement &UIElement, const CButtonContainer *pId, const
 			TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
 		return DoButtonLogic(pId, Props.m_Checked, pRect, Props.m_Flags);
 	}
-	// bestclient
+	// bestclient-light
 
-	// bestclient
-	const ColorRGBA TintedIdle = Props.m_ShowDropDownIcon ? BestClientUiTheme::UiDropdown(Props.m_Color, false) : BestClientUiTheme::UiButton(Props.m_Color, false);
-	const ColorRGBA TintedAccent = Props.m_ShowDropDownIcon ? BestClientUiTheme::UiDropdown(Props.m_Color, true) : BestClientUiTheme::UiButton(Props.m_Color, true);
+	// bestclient-light
+	const ColorRGBA TintedIdle = Props.m_ShowDropDownIcon ? BestClientLightUiTheme::UiDropdown(Props.m_Color, false) : BestClientLightUiTheme::UiButton(Props.m_Color, false);
+	const ColorRGBA TintedAccent = Props.m_ShowDropDownIcon ? BestClientLightUiTheme::UiDropdown(Props.m_Color, true) : BestClientLightUiTheme::UiButton(Props.m_Color, true);
 	const bool CustomUiColorChanged = UIElement.AreRectsInit() && (UIElement.Rect(0)->m_QuadColor != TintedIdle || UIElement.Rect(1)->m_QuadColor != TintedAccent);
-	// bestclient
+	// bestclient-light
 	if(!UIElement.AreRectsInit() || Props.m_HintRequiresStringCheck || Props.m_HintCanChangePositionOrSize || !UIElement.Rect(0)->m_UITextContainer.Valid() || CustomUiColorChanged)
 	{
 		bool NeedsRecalc = !UIElement.AreRectsInit() || !UIElement.Rect(0)->m_UITextContainer.Valid() || CustomUiColorChanged;
@@ -1235,9 +1235,9 @@ int CUi::DoButton_Menu(CUIElement &UIElement, const CButtonContainer *pId, const
 
 			for(int i = 0; i < 3; ++i)
 			{
-				// bestclient
+				// bestclient-light
 				ColorRGBA Color = (i < 2) ? TintedAccent : TintedIdle;
-				// bestclient
+				// bestclient-light
 				if(i == 0)
 					Color.a *= ButtonColorMulActive();
 				else if(i == 1)
@@ -1255,12 +1255,12 @@ int CUi::DoButton_Menu(CUIElement &UIElement, const CButtonContainer *pId, const
 				NewRect.m_Height = pRect->h;
 				NewRect.m_Rounding = Props.m_Rounding;
 				NewRect.m_Corners = Props.m_Corners;
-				// bestclient
+				// bestclient-light
 				if(i == 0)
 					NewRect.m_QuadColor = TintedIdle;
 				else if(i == 1)
 					NewRect.m_QuadColor = TintedAccent;
-				// bestclient
+				// bestclient-light
 				if(i == 0)
 				{
 					if(pText == nullptr)
@@ -1292,7 +1292,7 @@ int CUi::DoButton_Menu(CUIElement &UIElement, const CButtonContainer *pId, const
 		TextRender()->SetRenderFlags(0);
 		TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
 	}
-	ColorRGBA ColorText(BestClientUiTheme::UiText(TextRender()->DefaultTextColor())); // bestclient
+	ColorRGBA ColorText(BestClientLightUiTheme::UiText(TextRender()->DefaultTextColor())); // bestclient-light
 	ColorRGBA ColorTextOutline(TextRender()->DefaultTextOutlineColor());
 	if(UIElement.Rect(0)->m_UITextContainer.Valid())
 		TextRender()->RenderTextContainer(UIElement.Rect(0)->m_UITextContainer, ColorText, ColorTextOutline);
@@ -1327,15 +1327,15 @@ void CUi::DrawButton_FontIcon(const char *pText, const CUIRect *pRect, ColorRGBA
 
 int CUi::DoButton_FontIcon(CButtonContainer *pButtonContainer, const char *pText, int Checked, const CUIRect *pRect, const unsigned Flags, int Corners, bool Enabled, const std::optional<ColorRGBA> ButtonColor)
 {
-	// bestclient
-	DrawButton_FontIcon(pText, pRect, ButtonColor.value_or(BestClientUiTheme::UiButton((Checked ? 0.1f : 0.5f) * ButtonColorMul(pButtonContainer))), Corners, Enabled);
-	// bestclient
+	// bestclient-light
+	DrawButton_FontIcon(pText, pRect, ButtonColor.value_or(BestClientLightUiTheme::UiButton((Checked ? 0.1f : 0.5f) * ButtonColorMul(pButtonContainer))), Corners, Enabled);
+	// bestclient-light
 	return DoButtonLogic(pButtonContainer, Checked, pRect, Flags);
 }
 
 int CUi::DoButton_PopupMenu(CButtonContainer *pButtonContainer, const char *pText, const CUIRect *pRect, float Size, int Align, float Padding, bool TransparentInactive, bool Enabled, const std::optional<ColorRGBA> ButtonColor)
 {
-	// bestclient
+	// bestclient-light
 	if(!TransparentInactive || CheckActiveItem(pButtonContainer) || HotItem() == pButtonContainer)
 	{
 		const float Alpha = 0.5f * ButtonColorMul(pButtonContainer);
@@ -1344,12 +1344,12 @@ int CUi::DoButton_PopupMenu(CButtonContainer *pButtonContainer, const char *pTex
 			pRect->Draw(*ButtonColor, IGraphics::CORNER_ALL, 3.0f);
 		else if(!Enabled)
 			pRect->Draw(ColorRGBA(0.0f, 0.0f, 0.0f, 0.4f), IGraphics::CORNER_ALL, 3.0f);
-		else if(BestClientUiTheme::IsCustomUiDropdown())
-			BestClientUiTheme::DrawUiDropdown(pRect, ColorRGBA(1.0f, 1.0f, 1.0f, Alpha), Accent, IGraphics::CORNER_ALL, 3.0f);
+		else if(BestClientLightUiTheme::IsCustomUiDropdown())
+			BestClientLightUiTheme::DrawUiDropdown(pRect, ColorRGBA(1.0f, 1.0f, 1.0f, Alpha), Accent, IGraphics::CORNER_ALL, 3.0f);
 		else
-			BestClientUiTheme::DrawUiButton(pRect, ColorRGBA(1.0f, 1.0f, 1.0f, Alpha), Accent, IGraphics::CORNER_ALL, 3.0f);
+			BestClientLightUiTheme::DrawUiButton(pRect, ColorRGBA(1.0f, 1.0f, 1.0f, Alpha), Accent, IGraphics::CORNER_ALL, 3.0f);
 	}
-	// bestclient
+	// bestclient-light
 
 	CUIRect Label;
 	pRect->Margin(Padding, &Label);
@@ -1554,28 +1554,28 @@ float CUi::DoScrollbarV(const void *pId, const CUIRect *pRect, float Current)
 	}
 
 	// render
-	// bestclient
-	BestClientUiTheme::DrawUiScrollbar(&Rail, ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f), false, IGraphics::CORNER_ALL, Rail.w / 2.0f);
+	// bestclient-light
+	BestClientLightUiTheme::DrawUiScrollbar(&Rail, ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f), false, IGraphics::CORNER_ALL, Rail.w / 2.0f);
 	{
 		const bool ScrollAccent = CheckActiveItem(pId) || HotItem() == pId;
-		BestClientUiTheme::DrawUiScrollbar(&Handle, ms_ScrollBarColorFunction.GetColor(CheckActiveItem(pId), HotItem() == pId), ScrollAccent, IGraphics::CORNER_ALL, Handle.w / 2.0f);
+		BestClientLightUiTheme::DrawUiScrollbar(&Handle, ms_ScrollBarColorFunction.GetColor(CheckActiveItem(pId), HotItem() == pId), ScrollAccent, IGraphics::CORNER_ALL, Handle.w / 2.0f);
 	}
-	// bestclient
+	// bestclient-light
 
 	return ReturnValue;
 }
 
 float CUi::DoScrollbarH(const void *pId, const CUIRect *pRect, float Current, const ColorRGBA *pColorInner, const char *pValueText)
 {
-	// bestclient
-	if(BestClientUiTheme::IsNewScrollbar() && !pColorInner)
+	// bestclient-light
+	if(BestClientLightUiTheme::IsNewScrollbar() && !pColorInner)
 	{
-		const float ReturnValue = BestClientUiTheme::DoScrollbarH(this, pId, pRect, Current, pValueText);
+		const float ReturnValue = BestClientLightUiTheme::DoScrollbarH(this, pId, pRect, Current, pValueText);
 		if(CheckActiveItem(pId))
 			m_pLastActiveScrollbar = pId;
 		return ReturnValue;
 	}
-	// bestclient
+	// bestclient-light
 
 	Current = std::clamp(Current, 0.0f, 1.0f);
 
@@ -1659,9 +1659,9 @@ float CUi::DoScrollbarH(const void *pId, const CUIRect *pRect, float Current, co
 	}
 
 	// render
-	// bestclient
-	const ColorRGBA HandleColor = BestClientUiTheme::UiScrollbar(ms_ScrollBarColorFunction.GetColor(CheckActiveItem(pId), HotItem() == pId), CheckActiveItem(pId) || HotItem() == pId);
-	// bestclient
+	// bestclient-light
+	const ColorRGBA HandleColor = BestClientLightUiTheme::UiScrollbar(ms_ScrollBarColorFunction.GetColor(CheckActiveItem(pId), HotItem() == pId), CheckActiveItem(pId) || HotItem() == pId);
+	// bestclient-light
 	if(pColorInner)
 	{
 		CUIRect Slider;
@@ -1673,10 +1673,10 @@ float CUi::DoScrollbarH(const void *pId, const CUIRect *pRect, float Current, co
 	}
 	else
 	{
-		// bestclient
-		BestClientUiTheme::DrawUiScrollbar(&Rail, ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f), false, IGraphics::CORNER_ALL, Rail.h / 2.0f);
-		BestClientUiTheme::DrawUiScrollbar(&Handle, HandleColor, CheckActiveItem(pId) || HotItem() == pId, IGraphics::CORNER_ALL, Rail.h / 2.0f);
-		// bestclient
+		// bestclient-light
+		BestClientLightUiTheme::DrawUiScrollbar(&Rail, ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f), false, IGraphics::CORNER_ALL, Rail.h / 2.0f);
+		BestClientLightUiTheme::DrawUiScrollbar(&Handle, HandleColor, CheckActiveItem(pId) || HotItem() == pId, IGraphics::CORNER_ALL, Rail.h / 2.0f);
+		// bestclient-light
 	}
 
 	return ReturnValue;
@@ -1713,8 +1713,8 @@ bool CUi::DoScrollbarOption(const void *pId, int *pOption, const CUIRect *pRect,
 
 	char aBuf[256];
 	char aValueBuf[64];
-	// bestclient
-	if(BestClientUiTheme::IsNewScrollbar())
+	// bestclient-light
+	if(BestClientLightUiTheme::IsNewScrollbar())
 	{
 		if(!Infinite || Value != Max)
 			str_format(aValueBuf, sizeof(aValueBuf), "%i%s", Value, pSuffix);
@@ -1723,7 +1723,7 @@ bool CUi::DoScrollbarOption(const void *pId, int *pOption, const CUIRect *pRect,
 		str_copy(aBuf, pStr);
 	}
 	else if(!Infinite || Value != Max)
-		// bestclient
+		// bestclient-light
 		str_format(aBuf, sizeof(aBuf), "%s: %i%s", pStr, Value, pSuffix);
 	else
 		str_format(aBuf, sizeof(aBuf), "%s: ∞", pStr);
@@ -1743,13 +1743,13 @@ bool CUi::DoScrollbarOption(const void *pId, int *pOption, const CUIRect *pRect,
 	const float FontSize = Label.h * CUi::ms_FontmodHeight * 0.8f;
 	DoLabel(&Label, aBuf, FontSize, TEXTALIGN_ML);
 
-	// bestclient
-	BestClientSettingsSearch::DrawItemHighlight(pId, pRect);
-	// bestclient
+	// bestclient-light
+	BestClientLightSettingsSearch::DrawItemHighlight(pId, pRect);
+	// bestclient-light
 
-	// bestclient
-	Value = pScale->ToAbsolute(DoScrollbarH(pId, &ScrollBar, pScale->ToRelative(Value, Min, Max), nullptr, BestClientUiTheme::IsNewScrollbar() ? aValueBuf : nullptr), Min, Max);
-	// bestclient
+	// bestclient-light
+	Value = pScale->ToAbsolute(DoScrollbarH(pId, &ScrollBar, pScale->ToRelative(Value, Min, Max), nullptr, BestClientLightUiTheme::IsNewScrollbar() ? aValueBuf : nullptr), Min, Max);
+	// bestclient-light
 	if(NoClampValue && ((Value == Min && PrevValue < Min) || (Value == Max && PrevValue > Max)))
 	{
 		Value = PrevValue; // use previous out of range value instead if the scrollbar is at the edge
@@ -1777,27 +1777,27 @@ bool CUi::DoScrollbarOption(const void *pId, int *pOption, const CUIRect *pRect,
 void CUi::RenderProgressBar(CUIRect ProgressBar, float Progress)
 {
 	const float Rounding = std::min(5.0f, ProgressBar.h / 2.0f);
-	// bestclient
-	BestClientUiTheme::DrawUiScrollbar(&ProgressBar, ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f), false, IGraphics::CORNER_ALL, Rounding);
+	// bestclient-light
+	BestClientLightUiTheme::DrawUiScrollbar(&ProgressBar, ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f), false, IGraphics::CORNER_ALL, Rounding);
 	ProgressBar.w = std::max(ProgressBar.w * Progress, 2 * Rounding);
-	BestClientUiTheme::DrawUiScrollbar(&ProgressBar, ColorRGBA(1.0f, 1.0f, 1.0f, 0.5f), false, IGraphics::CORNER_ALL, Rounding);
-	// bestclient
+	BestClientLightUiTheme::DrawUiScrollbar(&ProgressBar, ColorRGBA(1.0f, 1.0f, 1.0f, 0.5f), false, IGraphics::CORNER_ALL, Rounding);
+	// bestclient-light
 }
 
 void CCachedText::Update(ITextRender *pTextRender, const char *pText, float FontSize, float LineWidth, int CursorFlags)
 {
-	// bestclient
+	// bestclient-light
 	if(m_FontSize == FontSize && m_LineWidth == LineWidth && m_CursorFlags == CursorFlags && m_Text == pText && !m_Colored)
 		return;
-	// bestclient
+	// bestclient-light
 
 	// The render flags of a text container are fixed when it is created and depend on the
 	// line width, so only text and font size changes can reuse the existing container and
 	// upload the new quads into its buffer instead of allocating a new one.
-	// bestclient
+	// bestclient-light
 	const bool ReuseContainer = m_TextContainerIndex.Valid() && m_LineWidth == LineWidth && m_CursorFlags == CursorFlags && !m_Colored;
 	m_Colored = false;
-	// bestclient
+	// bestclient-light
 
 	m_Text = pText;
 	m_FontSize = FontSize;
@@ -1822,7 +1822,7 @@ void CCachedText::Update(ITextRender *pTextRender, const char *pText, float Font
 	m_MaxCharacterHeight = Cursor.m_MaxCharacterHeight;
 }
 
-// bestclient
+// bestclient-light
 void CCachedText::UpdateColored(ITextRender *pTextRender, const char *pText, float FontSize, const std::vector<STextColorSplit> &vColorSplits, float LineWidth, int CursorFlags)
 {
 	const bool ReuseContainer = m_TextContainerIndex.Valid() && m_LineWidth == LineWidth && m_CursorFlags == CursorFlags;
@@ -1853,7 +1853,7 @@ void CCachedText::UpdateColored(ITextRender *pTextRender, const char *pText, flo
 	m_BoundingBox = Cursor.BoundingBox();
 	m_MaxCharacterHeight = Cursor.m_MaxCharacterHeight;
 }
-// bestclient
+// bestclient-light
 
 void CCachedText::Render(ITextRender *pTextRender, vec2 Pos, ColorRGBA Color) const
 {
@@ -1873,9 +1873,9 @@ void CCachedText::Reset(ITextRender *pTextRender)
 	m_CursorFlags = 0;
 	m_BoundingBox = {0.0f, 0.0f, 0.0f, 0.0f};
 	m_MaxCharacterHeight = 0.0f;
-	// bestclient
+	// bestclient-light
 	m_Colored = false;
-	// bestclient
+	// bestclient-light
 }
 
 void CUi::RenderTime(CUIRect TimeRect, float FontSize, int Seconds, bool NotFinished, int Millis, bool TrueMilliseconds, CCachedText &SecondsText, CCachedText &MillisText, ColorRGBA Color) const

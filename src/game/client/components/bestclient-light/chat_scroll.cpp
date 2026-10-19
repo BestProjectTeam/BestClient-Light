@@ -9,7 +9,7 @@
 #include <engine/shared/config.h>
 #include <engine/textrender.h>
 
-#include <game/client/components/bestclient/scroll_bar.h>
+#include <game/client/components/bestclient-light/scroll_bar.h>
 #include <game/client/components/chat.h>
 #include <game/client/components/tclient/colored_parts.h>
 #include <game/client/gameclient.h>
@@ -372,19 +372,19 @@ void CChatScroll::UpdateScrollbar(CChat &Chat, float X, float Y, float Width, fl
 	}
 
 	CUIRect ScrollbarRect;
-	ScrollbarRect.x = X - BestClientScrollBar::CHAT.m_Width - BestClientScrollBar::CHAT.m_OuterMargin;
+	ScrollbarRect.x = X - BestClientLightScrollBar::CHAT.m_Width - BestClientLightScrollBar::CHAT.m_OuterMargin;
 	ScrollbarRect.y = HeightLimit;
-	ScrollbarRect.w = BestClientScrollBar::CHAT.m_Width;
+	ScrollbarRect.w = BestClientLightScrollBar::CHAT.m_Width;
 	ScrollbarRect.h = ViewportHeight;
 
 	const vec2 ScreenPos = MousePos(Chat);
 	const bool MouseDown = pClient->Input()->NativeMousePressed(1);
 
-	BestClientScrollBar::SDragState ScrollState;
+	BestClientLightScrollBar::SDragState ScrollState;
 	ScrollState.m_Dragging = Chat.m_ScrollbarDragging;
 	ScrollState.m_DragOffset = Chat.m_ScrollbarDragOffset;
 	const float PrevOffset = Chat.m_BacklogScrollOffset;
-	const float NewOffset = BestClientScrollBar::DoVerticalPixels(ScrollState, ScrollbarRect, Chat.m_BacklogScrollOffset, Chat.m_ChatMaxScrollOffset, ScreenPos, MouseDown, BestClientScrollBar::CHAT);
+	const float NewOffset = BestClientLightScrollBar::DoVerticalPixels(ScrollState, ScrollbarRect, Chat.m_BacklogScrollOffset, Chat.m_ChatMaxScrollOffset, ScreenPos, MouseDown, BestClientLightScrollBar::CHAT);
 	if(NewOffset != PrevOffset || ScrollState.m_Dragging)
 		Chat.m_BacklogScrollOffsetChange = 0.0f;
 	if(NewOffset != PrevOffset)
@@ -400,7 +400,7 @@ void CChatScroll::UpdateScrollbar(CChat &Chat, float X, float Y, float Width, fl
 CChatScroll::SActionFrame CChatScroll::BeginActions(CChat &Chat)
 {
 	SActionFrame Frame;
-	if(!g_Config.m_BcChatMessageActions)
+	if(!g_Config.m_BclChatMessageActions)
 	{
 		Chat.m_ActionLineIndex = -1;
 		return Frame;
@@ -418,16 +418,16 @@ CChatScroll::SActionFrame CChatScroll::BeginActions(CChat &Chat)
 	if(Chat.m_Mode != CChat::MODE_NONE && Chat.m_ActionLineIndex >= 0)
 	{
 		const CChat::CLine &ActionLine = Chat.m_aLines[Chat.m_ActionLineIndex];
-		Frame.m_Layout = BestClientChatMessageActions::BuildLayout(Chat.m_ActionMenuPos, Chat.FontSize(), ActionLine.m_ClientId >= 0);
+		Frame.m_Layout = BestClientLightChatMessageActions::BuildLayout(Chat.m_ActionMenuPos, Chat.FontSize(), ActionLine.m_ClientId >= 0);
 		Frame.m_LayoutValid = true;
 	}
-	Frame.m_MouseOverMenu = Frame.m_LayoutValid && BestClientChatMessageActions::PanelContains(Frame.m_Layout, Frame.m_MousePos);
+	Frame.m_MouseOverMenu = Frame.m_LayoutValid && BestClientLightChatMessageActions::PanelContains(Frame.m_Layout, Frame.m_MousePos);
 	return Frame;
 }
 
 void CChatScroll::NoteLineHover(SActionFrame &Frame, CChat &Chat, int ArrayIndex, float X, float LineW, float LineRenderY, float LineH, bool InteractionActive)
 {
-	if(!g_Config.m_BcChatMessageActions)
+	if(!g_Config.m_BclChatMessageActions)
 		return;
 	const bool InsideLine = !Frame.m_MouseOverMenu && InteractionActive && Chat.m_Mode != CChat::MODE_NONE && !Chat.m_ScrollbarDragging &&
 		Frame.m_MousePos.x >= X && Frame.m_MousePos.x <= X + LineW && Frame.m_MousePos.y >= LineRenderY && Frame.m_MousePos.y <= LineRenderY + LineH;
@@ -437,17 +437,17 @@ void CChatScroll::NoteLineHover(SActionFrame &Frame, CChat &Chat, int ArrayIndex
 
 bool CChatScroll::ShouldHighlight(const SActionFrame &Frame, const CChat &Chat, int ArrayIndex)
 {
-	return g_Config.m_BcChatMessageActions && Chat.m_Mode != CChat::MODE_NONE && (ArrayIndex == Frame.m_HotLineIndex || ArrayIndex == Chat.m_ActionLineIndex);
+	return g_Config.m_BclChatMessageActions && Chat.m_Mode != CChat::MODE_NONE && (ArrayIndex == Frame.m_HotLineIndex || ArrayIndex == Chat.m_ActionLineIndex);
 }
 
 void CChatScroll::DrawHighlight(CChat &Chat, float X, float LineRenderY, float LineW, float LineH, float Blend)
 {
-	BestClientChatMessageActions::DrawMessageHighlight(Chat.BcGameClient()->Graphics(), X, LineRenderY, LineW, LineH, Chat.MessageRounding(), Blend);
+	BestClientLightChatMessageActions::DrawMessageHighlight(Chat.BcGameClient()->Graphics(), X, LineRenderY, LineW, LineH, Chat.MessageRounding(), Blend);
 }
 
 void CChatScroll::EndActions(CChat &Chat, SActionFrame &Frame, float ModuleAlpha)
 {
-	if(!g_Config.m_BcChatMessageActions)
+	if(!g_Config.m_BclChatMessageActions)
 	{
 		Chat.m_ActionLineIndex = -1;
 		return;
@@ -455,7 +455,7 @@ void CChatScroll::EndActions(CChat &Chat, SActionFrame &Frame, float ModuleAlpha
 
 	CGameClient *pClient = Chat.BcGameClient();
 	if(Frame.m_LayoutValid)
-		BestClientChatMessageActions::Render(pClient->TextRender(), Frame.m_Layout, Frame.m_MousePos, ModuleAlpha);
+		BestClientLightChatMessageActions::Render(pClient->TextRender(), Frame.m_Layout, Frame.m_MousePos, ModuleAlpha);
 
 	if(Chat.m_Mode == CChat::MODE_NONE || Chat.m_ScrollbarDragging)
 		return;
@@ -472,21 +472,21 @@ void CChatScroll::EndActions(CChat &Chat, SActionFrame &Frame, float ModuleAlpha
 				Chat.m_ActionMenuPos = Frame.m_MousePos;
 			}
 		}
-		else if(!(Frame.m_LayoutValid && BestClientChatMessageActions::PanelContains(Frame.m_Layout, Frame.m_MousePos)))
+		else if(!(Frame.m_LayoutValid && BestClientLightChatMessageActions::PanelContains(Frame.m_Layout, Frame.m_MousePos)))
 		{
 			Chat.m_ActionLineIndex = -1;
 		}
 	}
 	else if(Frame.m_LeftClicked && Frame.m_LayoutValid)
 	{
-		const auto Action = BestClientChatMessageActions::HitTest(Frame.m_Layout, Frame.m_MousePos);
-		if(Action == BestClientChatMessageActions::EAction::Copy && Chat.m_ActionLineIndex >= 0)
+		const auto Action = BestClientLightChatMessageActions::HitTest(Frame.m_Layout, Frame.m_MousePos);
+		if(Action == BestClientLightChatMessageActions::EAction::Copy && Chat.m_ActionLineIndex >= 0)
 		{
 			const std::string PlainText = BuildPlainTextLine(Chat, Chat.m_ActionLineIndex);
 			pClient->Input()->SetClipboardText(PlainText.c_str());
 			Chat.m_ActionLineIndex = -1;
 		}
-		else if(Action == BestClientChatMessageActions::EAction::Reply && Chat.m_ActionLineIndex >= 0)
+		else if(Action == BestClientLightChatMessageActions::EAction::Reply && Chat.m_ActionLineIndex >= 0)
 		{
 			const CChat::CLine &Line = Chat.m_aLines[Chat.m_ActionLineIndex];
 			if(Line.m_ClientId >= 0 && Line.m_ClientId < MAX_CLIENTS)
@@ -498,7 +498,7 @@ void CChatScroll::EndActions(CChat &Chat, SActionFrame &Frame, float ModuleAlpha
 			}
 			Chat.m_ActionLineIndex = -1;
 		}
-		else if(!BestClientChatMessageActions::PanelContains(Frame.m_Layout, Frame.m_MousePos))
+		else if(!BestClientLightChatMessageActions::PanelContains(Frame.m_Layout, Frame.m_MousePos))
 		{
 			Chat.m_ActionLineIndex = -1;
 		}

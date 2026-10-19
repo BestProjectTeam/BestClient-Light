@@ -1,10 +1,10 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_CHAT_SCROLL_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_CHAT_SCROLL_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CHAT_SCROLL_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CHAT_SCROLL_H
 
 #include <base/vmath.h>
 
-#include <game/client/components/bestclient/chat_message_actions.h>
+#include <game/client/components/bestclient-light/chat_message_actions.h>
 
 #include <engine/input.h>
 
@@ -22,7 +22,7 @@ public:
 		bool m_RightClicked = false;
 		bool m_MouseOverMenu = false;
 		bool m_LayoutValid = false;
-		BestClientChatMessageActions::SLayout m_Layout{};
+		BestClientLightChatMessageActions::SLayout m_Layout{};
 		int m_HotLineIndex = -1;
 	};
 

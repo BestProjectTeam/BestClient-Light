@@ -149,7 +149,7 @@ void COutlines::OnRender()
 
 	CScreenRect ScreenRect = Graphics()->GetScreen();
 
-	// bestclient
+	// bestclient-light
 	if(GameClient()->OptimizerFpsFogEnabled())
 	{
 		float HalfW = 0.0f;
@@ -166,7 +166,7 @@ void COutlines::OnRender()
 				return;
 		}
 	}
-	// bestclient
+	// bestclient-light
 
 	int StartX = (int)(ScreenRect.m_TopLeft.x / Scale) - 1;
 	int StartY = (int)(ScreenRect.m_TopLeft.y / Scale) - 1;

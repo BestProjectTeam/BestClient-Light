@@ -667,7 +667,7 @@ static DWORD WINAPI WorkerThread(LPVOID pParam)
 	SetPercent(100);
 
 
-	SetStatus(L"Launching BestClient...");
+	SetStatus(L"Launching BestClient Light...");
 	Sleep(500);
 
 	SHELLEXECUTEINFOW Sei = {};
@@ -749,7 +749,7 @@ static void Paint(HWND hWnd)
 		HFONT Old = (HFONT)SelectObject(Mem, F);
 		SetTextColor(Mem, C_TITLE);
 		RECT R = {0, 10, Rc.right, 52};
-		DrawTextW(Mem, L"BestClient", -1, &R, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+		DrawTextW(Mem, L"BestClient Light", -1, &R, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
 		SelectObject(Mem, Old);
 		DeleteObject(F);
 	}
@@ -878,8 +878,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	if(Argc < 5 || !ppArgv)
 	{
 		MessageBoxW(NULL,
-			L"Usage: bestclient-updater.exe <pid> <archive> <install_dir> <exe>",
-			L"BestClient Updater", MB_ICONERROR);
+			L"Usage: bestclient-light-updater.exe <pid> <archive> <install_dir> <exe>",
+			L"BestClient Light Updater", MB_ICONERROR);
 		return 1;
 	}
 
@@ -907,7 +907,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 	g_hWnd = CreateWindowExW(
 		WS_EX_APPWINDOW,
 		L"BCUpdater",
-		L"BestClient Updater",
+		L"BestClient Light Updater",
 		WS_POPUP | WS_VISIBLE,
 		X, Y, WND_W, WND_H,
 		NULL, NULL, hInst, NULL);

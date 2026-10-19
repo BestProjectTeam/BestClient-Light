@@ -19,10 +19,10 @@ static constexpr float CAPTURED_LEAF_LIFE = 30.0f;
 
 static const ColorRGBA DUST_COLOR(0.72f, 0.66f, 0.56f, 1.0f);
 
-static float WindDensity() { return g_Config.m_BcHookWindDensity / 100.0f; }
-static float WindSpin() { return g_Config.m_BcHookWindSpin / 100.0f; }
-static float WindLeaves() { return g_Config.m_BcHookWindLeafAmount / 100.0f; }
-static float WindDust() { return g_Config.m_BcHookWindDust / 100.0f; }
+static float WindDensity() { return g_Config.m_BclHookWindDensity / 100.0f; }
+static float WindSpin() { return g_Config.m_BclHookWindSpin / 100.0f; }
+static float WindLeaves() { return g_Config.m_BclHookWindLeafAmount / 100.0f; }
+static float WindDust() { return g_Config.m_BclHookWindDust / 100.0f; }
 
 static int RandomRound(float Amount)
 {
@@ -289,7 +289,7 @@ void CHookWind::Update(float Passed)
 		{
 			const CHookGripTracker::CGrip &Grip = m_Tracker.Grip(Leaf.m_Owner);
 			const float Spin = m_aStates[Leaf.m_Owner].m_Spin;
-			const float Scale = g_Config.m_BcHookSize / 100.0f;
+			const float Scale = g_Config.m_BclHookSize / 100.0f;
 			const float Orbit = mix(26.0f, 16.0f, Grip.m_Charge) * Scale;
 			Leaf.m_Radius = std::max(Orbit, Leaf.m_Radius + Leaf.m_RadialSpeed * Passed);
 			const float OrbitSpin = Spin * mix(3.0f, 9.0f, Grip.m_Charge) * WindSpin() * (1.0f + 15.0f / (Leaf.m_Radius + 10.0f));
@@ -337,8 +337,8 @@ void CHookWind::Draw(ColorRGBA Tint, float Scale)
 			return;
 	}
 
-	const float Opacity = g_Config.m_BcHookWindOpacity / 100.0f;
-	const float Thickness = g_Config.m_BcHookWindThickness / 100.0f;
+	const float Opacity = g_Config.m_BclHookWindOpacity / 100.0f;
+	const float Thickness = g_Config.m_BclHookWindThickness / 100.0f;
 
 	Graphics()->BlendNormal();
 
@@ -373,7 +373,7 @@ void CHookWind::Draw(ColorRGBA Tint, float Scale)
 	{
 		const CHookGripTracker::CGrip &Grip = m_Tracker.Grip(i);
 		const CWindState &State = m_aStates[i];
-		if(Grip.m_Fade <= 0.0f || !g_Config.m_BcHookWindEye)
+		if(Grip.m_Fade <= 0.0f || !g_Config.m_BclHookWindEye)
 			continue;
 		const float Radius = mix(6.0f, 16.0f, Grip.m_Charge) * Scale * (0.3f + 0.7f * Grip.m_Fade);
 		for(int Arc = 0; Arc < NUM_EYE_ARCS; Arc++)
@@ -415,7 +415,7 @@ void CHookWind::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(g_Config.m_BcHookStyle != FGF_HOOK_STYLE_WHIRLWIND || !g_Config.m_BcHookTip)
+	if(g_Config.m_BclHookStyle != FGF_HOOK_STYLE_WHIRLWIND || !g_Config.m_BclHookTip)
 	{
 		if(m_WasActive)
 			OnReset();
@@ -423,10 +423,10 @@ void CHookWind::OnRender()
 	}
 	m_WasActive = true;
 
-	const ColorRGBA Tint = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BcHookWindColor));
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
+	const ColorRGBA Tint = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclHookWindColor));
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
 
-	m_Tracker.Update(GameClient(), Passed, g_Config.m_BcHookChargeTime / 1000.0f, FADE_TIME,
+	m_Tracker.Update(GameClient(), Passed, g_Config.m_BclHookChargeTime / 1000.0f, FADE_TIME,
 		[&](int ClientId, CHookGripTracker::EEvent Event, const CHookGripTracker::CGrip &Grip) {
 			switch(Event)
 			{
@@ -434,7 +434,7 @@ void CHookWind::OnRender()
 				m_aStates[ClientId] = CWindState();
 				m_aStates[ClientId].m_Spin = random_float() < 0.5f ? -1.0f : 1.0f;
 				m_aStates[ClientId].m_EyeAngle = random_angle();
-				if(g_Config.m_BcHookWindBurst)
+				if(g_Config.m_BclHookWindBurst)
 					Burst(ClientId, Grip, Scale);
 				break;
 			case CHookGripTracker::EEvent::CHARGED:

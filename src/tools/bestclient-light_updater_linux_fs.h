@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef TOOLS_BESTCLIENT_UPDATER_LINUX_FS_H
-#define TOOLS_BESTCLIENT_UPDATER_LINUX_FS_H
+#ifndef TOOLS_BESTCLIENT_LIGHT_UPDATER_LINUX_FS_H
+#define TOOLS_BESTCLIENT_LIGHT_UPDATER_LINUX_FS_H
 
 #include <dirent.h>
 #include <sys/stat.h>

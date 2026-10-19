@@ -92,7 +92,7 @@ void CPhysicBalls::ConNewPhysicBall(IConsole::IResult *pResult, void *pUserData)
 {
 	CPhysicBalls *pSelf = static_cast<CPhysicBalls *>(pUserData);
 	float Size = pResult->NumArguments() > 0 ? pResult->GetFloat(0) : PhysicBallSize;
-	const int Count = std::clamp(g_Config.m_BcPhysicBallsSpawnCount, 1, 50);
+	const int Count = std::clamp(g_Config.m_BclPhysicBallsSpawnCount, 1, 50);
 
 	for(int i = 0; i < Count; i++)
 		pSelf->NewBallPlayer(Size);
@@ -103,7 +103,7 @@ void CPhysicBalls::ConNewPhysicBallAtCursor(IConsole::IResult *pResult, void *pU
 	CPhysicBalls *pSelf = static_cast<CPhysicBalls *>(pUserData);
 
 	float Size = pResult->NumArguments() > 0 ? pResult->GetFloat(0) : PhysicBallSize;
-	const int Count = std::clamp(g_Config.m_BcPhysicBallsSpawnCount, 1, 50);
+	const int Count = std::clamp(g_Config.m_BclPhysicBallsSpawnCount, 1, 50);
 
 	for(int i = 0; i < Count; i++)
 		pSelf->NewBallCursor(Size);
@@ -184,7 +184,7 @@ void CPhysicBalls::RenderBalls()
 	if(m_vBalls.empty())
 		return;
 
-	const CSkin *pSkin = GameClient()->m_Skins.Find(g_Config.m_BcPhysicBallsSkin);
+	const CSkin *pSkin = GameClient()->m_Skins.Find(g_Config.m_BclPhysicBallsSkin);
 
 	const CScreenRect ScreenRect = Graphics()->GetScreen();
 	const float ScreenX0 = std::min(ScreenRect.m_TopLeft.x, ScreenRect.m_BottomRight.x);

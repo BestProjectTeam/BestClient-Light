@@ -26,7 +26,7 @@ namespace
 
 bool CWeaponVfx::RenderRocketTrail(const CProjectileData &Data, float Time, float Curvature, float Speed, float Alpha)
 {
-	if(!g_Config.m_BcRocketGlow || g_Config.m_BcRocketGlowPower <= 0)
+	if(!g_Config.m_BclRocketGlow || g_Config.m_BclRocketGlowPower <= 0)
 		return false;
 	if(GameClient()->OptimizerDisableParticles() || (g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideEffects))
 		return true;
@@ -40,7 +40,7 @@ bool CWeaponVfx::RenderRocketTrail(const CProjectileData &Data, float Time, floa
 		aPoints[i] = CalcPos(Data.m_StartPos, Data.m_StartVel, Curvature, Speed, Sample);
 		aAlphas[i] = Alpha;
 	}
-	RenderRocketTrajectory(aPoints, aAlphas, NumSamples, g_Config.m_BcRocketGlowMode, (float)g_Config.m_BcRocketGlowPower);
+	RenderRocketTrajectory(aPoints, aAlphas, NumSamples, g_Config.m_BclRocketGlowMode, (float)g_Config.m_BclRocketGlowPower);
 	return true;
 }
 
@@ -50,9 +50,9 @@ void CWeaponVfx::RenderRocketTrajectory(const vec2 *pPoints, const float *pAlpha
 		return;
 
 	ColorRGBA UserRocketCol(1.0f, 0.55f, 0.15f, 1.0f);
-	if(g_Config.m_BcRocketGlowColor != 0)
+	if(g_Config.m_BclRocketGlowColor != 0)
 	{
-		ColorHSLA Hsl(g_Config.m_BcRocketGlowColor);
+		ColorHSLA Hsl(g_Config.m_BclRocketGlowColor);
 		if(Hsl.l < 0.08f)
 			Hsl.l = 0.55f;
 		if(Hsl.s < 0.08f)

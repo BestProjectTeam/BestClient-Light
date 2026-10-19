@@ -26,9 +26,9 @@
 
 using namespace std::chrono_literals;
 
-// bestclient
+// bestclient-light
 extern void (*BCGradient_ApplyEverythingHook)(CTextCursor *pCursor, const char *pText, int Length);
-// bestclient
+// bestclient-light
 
 // TClient
 static void ReplaceHyphensWithSpaces(char *pStr)
@@ -922,9 +922,9 @@ struct STextContainer
 
 	bool m_HasCursor;
 	bool m_ForceCursorRendering;
-	// bestclient
+	// bestclient-light
 	bool m_HideCursorQuad;
-	// bestclient
+	// bestclient-light
 	bool m_HasSelection;
 
 	bool m_SingleTimeUse;
@@ -950,9 +950,9 @@ struct STextContainer
 
 		m_HasCursor = false;
 		m_ForceCursorRendering = false;
-		// bestclient
+		// bestclient-light
 		m_HideCursorQuad = false;
-		// bestclient
+		// bestclient-light
 		m_HasSelection = false;
 
 		m_SingleTimeUse = false;
@@ -1285,9 +1285,9 @@ public:
 				log_error("textrender", "Failed to open/read font file '%s'", aFontName);
 			}
 		}
-		// bestclient
+		// bestclient-light
 		{
-			const char *pBcFontPath = "BestClient/ActayWide-Bold.otf";
+			const char *pBcFontPath = "bestclient-light/ActayWide-Bold.otf";
 			void *pBcFontData;
 			unsigned BcFontDataSize;
 			if(Storage()->ReadFile(pBcFontPath, IStorage::TYPE_ALL, &pBcFontData, &BcFontDataSize))
@@ -1302,7 +1302,7 @@ public:
 				log_error("textrender", "Failed to open/read font file '%s'", pBcFontPath);
 			}
 		}
-		// bestclient
+		// bestclient-light
 		UpdateCustomFontList();
 	}
 	// TClient
@@ -1675,10 +1675,10 @@ public:
 		else
 			Length = std::min(Length, str_length(pText));
 
-		// bestclient
+		// bestclient-light
 		if(BCGradient_ApplyEverythingHook && pCursor->m_vColorSplits.empty())
 			BCGradient_ApplyEverythingHook(pCursor, pText, Length);
-		// bestclient
+		// bestclient-light
 
 		const char *pCurrent = pText;
 		const char *pEnd = pCurrent + Length;
@@ -2202,9 +2202,9 @@ public:
 			TextContainer.m_HasCursor = HasCursor;
 			TextContainer.m_HasSelection = HasSelection;
 			TextContainer.m_ForceCursorRendering = pCursor->m_ForceCursorRendering;
-			// bestclient
+			// bestclient-light
 			TextContainer.m_HideCursorQuad = pCursor->m_HideCursorQuad;
-			// bestclient
+			// bestclient-light
 
 			if(HasSelection)
 			{
@@ -2225,9 +2225,9 @@ public:
 
 		TextContainer.m_BoundingBox = pCursor->BoundingBox();
 
-		// bestclient
+		// bestclient-light
 		pCursor->m_vColorSplits.clear();
-		// bestclient
+		// bestclient-light
 	}
 
 	bool CreateOrAppendTextContainer(STextContainerIndex &TextContainerIndex, CTextCursor *pCursor, const char *pText, int Length = -1) override
@@ -2356,9 +2356,9 @@ public:
 				Graphics()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 			}
 
-			// bestclient
+			// bestclient-light
 			if(TextContainer.m_HasCursor && !TextContainer.m_HideCursorQuad)
-			// bestclient
+			// bestclient-light
 			{
 				const auto CurTime = time_get_nanoseconds();
 

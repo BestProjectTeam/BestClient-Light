@@ -165,7 +165,7 @@ void CFgfActions::UpdateSlot(int Dummy, float Passed, ColorRGBA Main, ColorRGBA 
 	int JumpedTotal = Snap.m_HasExtendedData ? Snap.m_ExtendedData.m_JumpedTotal : -1;
 	if(pPredicted)
 		JumpedTotal = pPredicted->Core()->m_JumpedTotal;
-	if(Slot.m_JumpedTotal >= 0 && JumpedTotal > Slot.m_JumpedTotal && g_Config.m_BcAirJump)
+	if(Slot.m_JumpedTotal >= 0 && JumpedTotal > Slot.m_JumpedTotal && g_Config.m_BclAirJump)
 		AirJump(Pos + vec2(0.0f, 16.0f), Main, Core);
 	Slot.m_JumpedTotal = JumpedTotal;
 
@@ -175,13 +175,13 @@ void CFgfActions::UpdateSlot(int Dummy, float Passed, ColorRGBA Main, ColorRGBA 
 	{
 		const vec2 Aim = GameClient()->m_Controls.m_aMousePos[Dummy];
 		const float Angle = length(Aim) > 0.001f ? angle(Aim) : Client.m_RenderCur.m_Angle / 256.0f;
-		if(Weapon == WEAPON_HAMMER && g_Config.m_BcHammerSlash)
+		if(Weapon == WEAPON_HAMMER && g_Config.m_BclHammerSlash)
 			Swing(ClientId, Angle, Core);
 	}
 	Slot.m_AttackTick = AttackTick;
 
 	const CNetObj_Character &Cur = Client.m_RenderCur;
-	const bool Holding = (g_Config.m_BcHookTether || g_Config.m_BcHookLassoBox) && Cur.m_HookState == HOOK_GRABBED &&
+	const bool Holding = (g_Config.m_BclHookTether || g_Config.m_BclHookLassoBox) && Cur.m_HookState == HOOK_GRABBED &&
 			     in_range(Cur.m_HookedPlayer, MAX_CLIENTS - 1) && GameClient()->m_Snap.m_aCharacters[Cur.m_HookedPlayer].m_Active;
 	if(Holding)
 	{
@@ -236,7 +236,7 @@ void CFgfActions::DrawTether(const CSlot &Slot, ColorRGBA Main, ColorRGBA Core, 
 		const vec2 Target = Slot.m_TargetPos;
 		const float T = Slot.m_TetherTime;
 
-		if(g_Config.m_BcHookLassoBox && T < 0.6f)
+		if(g_Config.m_BclHookLassoBox && T < 0.6f)
 		{
 			const float Snap = EaseOut(T / 0.18f);
 			const float Dist = mix(48.0f, 25.0f, Snap);
@@ -257,7 +257,7 @@ void CFgfActions::DrawTether(const CSlot &Slot, ColorRGBA Main, ColorRGBA Core, 
 			}
 		}
 
-		if(g_Config.m_BcHookTether)
+		if(g_Config.m_BclHookTether)
 		{
 			const float Tighten = EaseOut(T / 0.22f);
 			const float RadiusX = mix(40.0f, 23.0f, Tighten);
@@ -269,7 +269,7 @@ void CFgfActions::DrawTether(const CSlot &Slot, ColorRGBA Main, ColorRGBA Core, 
 			DrawEllipseArc(Graphics(), Waist, RadiusX * 1.15f, RadiusY * 1.15f, -Tilt, 0.0f, pi, 0.7f, Main.WithAlpha(0.4f));
 		}
 	}
-	else if(g_Config.m_BcHookTether && Slot.m_ReleaseAge < RELEASE_TIME)
+	else if(g_Config.m_BclHookTether && Slot.m_ReleaseAge < RELEASE_TIME)
 	{
 		const float Age = Slot.m_ReleaseAge / RELEASE_TIME;
 		const float RadiusX = mix(23.0f, 48.0f, EaseOut(Age));
@@ -330,7 +330,7 @@ void CFgfActions::OnRender()
 	Graphics()->QuadsSetRotation(0.0f);
 	for(const CSlot &Slot : m_aSlots)
 	{
-		if(!g_Config.m_BcHookTether || !Slot.m_Tethered)
+		if(!g_Config.m_BclHookTether || !Slot.m_Tethered)
 			continue;
 		const vec2 Target = Slot.m_TargetPos;
 		Graphics()->SetColor(Main.WithAlpha(0.14f + 0.06f * std::sin(Time * 6.0f)));

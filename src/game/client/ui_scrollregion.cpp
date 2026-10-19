@@ -8,8 +8,8 @@
 #include <engine/keys.h>
 #include <engine/shared/config.h>
 
-#include <game/client/components/bestclient/settings_search.h> // bestclient
-#include <game/client/components/bestclient/ui_theme/style.h> // bestclient
+#include <game/client/components/bestclient-light/settings_search.h> // bestclient-light
+#include <game/client/components/bestclient-light/ui_theme/style.h> // bestclient-light
 
 CScrollRegion::CScrollRegion()
 {
@@ -21,9 +21,9 @@ void CScrollRegion::Reset()
 	m_ScrollPos = 0.0f;
 	m_ContentSize = 0.0f;
 	m_RequestScrollPos = -1.0f;
-	// bestclient
+	// bestclient-light
 	m_RequestScrollSmooth = false;
-	// bestclient
+	// bestclient-light
 	m_ScrollDirection = SCROLLRELATIVE_NONE;
 	m_ScrollSpeedMultiplier = 1.0f;
 
@@ -58,16 +58,16 @@ void CScrollRegion::Begin(CUIRect *pClipRect, const CScrollRegionParams *pParams
 	else
 		pClipRect->y += m_ContentScrollOffset;
 
-	// bestclient
-	BestClientSettingsSearch::SetActiveScrollRegion(this);
-	// bestclient
+	// bestclient-light
+	BestClientLightSettingsSearch::SetActiveScrollRegion(this);
+	// bestclient-light
 }
 
 void CScrollRegion::End()
 {
-	// bestclient
-	BestClientSettingsSearch::ClearActiveScrollRegion(this);
-	// bestclient
+	// bestclient-light
+	BestClientLightSettingsSearch::ClearActiveScrollRegion(this);
+	// bestclient-light
 
 	Ui()->ClipDisable();
 
@@ -110,11 +110,11 @@ void CScrollRegion::ScrollHere(EScrollOption Option, bool Smooth)
 		m_RequestScrollPos = TopScroll - (ContentAreaSize() - MinHeight);
 		break;
 
-	// bestclient
+	// bestclient-light
 	case SCROLLHERE_CENTER:
 		m_RequestScrollPos = TopScroll - (ContentAreaSize() - LastAddedSize) * 0.5f;
 		break;
-	// bestclient
+	// bestclient-light
 
 	case SCROLLHERE_KEEP_IN_VIEW:
 	default:
@@ -129,10 +129,10 @@ void CScrollRegion::ScrollHere(EScrollOption Option, bool Smooth)
 		break;
 	}
 	}
-	// bestclient
+	// bestclient-light
 	m_RequestScrollPos = std::max(0.0f, m_RequestScrollPos);
 	m_RequestScrollSmooth = Smooth;
-	// bestclient
+	// bestclient-light
 }
 
 void CScrollRegion::ScrollRelative(EScrollRelative Direction, float SpeedMultiplier)
@@ -143,13 +143,13 @@ void CScrollRegion::ScrollRelative(EScrollRelative Direction, float SpeedMultipl
 
 void CScrollRegion::ScrollRelativeDirect(vec2 ScrollAmount)
 {
-	// bestclient
+	// bestclient-light
 	const float MaxPos = std::max(0.0f, m_ContentSize - ContentAreaSize());
 	if(m_Params.m_ScrollHorizontal)
 		m_RequestScrollPos = std::clamp(m_ScrollPos + ScrollAmount.x, 0.0f, MaxPos);
 	else
 		m_RequestScrollPos = std::clamp(m_ScrollPos + ScrollAmount.y, 0.0f, MaxPos);
-	// bestclient
+	// bestclient-light
 }
 
 void CScrollRegion::DoEdgeScrolling()
@@ -250,9 +250,9 @@ void CScrollRegion::DrawBackground(const CUIRect &ScrollbarBg)
 		if(m_Params.m_RailBgColor.a > 0.0f)
 		{
 			float Rounding = m_Params.m_ScrollHorizontal ? m_RailRect.h / 2.0f : m_RailRect.w / 2.0f;
-			// bestclient
-			BestClientUiTheme::DrawUiScrollbar(&m_RailRect, m_Params.m_RailBgColor, false, IGraphics::CORNER_ALL, Rounding, !m_Params.m_ScrollHorizontal);
-			// bestclient
+			// bestclient-light
+			BestClientLightUiTheme::DrawUiScrollbar(&m_RailRect, m_Params.m_RailBgColor, false, IGraphics::CORNER_ALL, Rounding, !m_Params.m_ScrollHorizontal);
+			// bestclient-light
 		}
 	}
 	if(m_Params.m_ClipBgColor.a > 0.0f)
@@ -316,7 +316,7 @@ void CScrollRegion::AdvanceAnimation()
 	{
 		m_AnimTargetScrollPos = m_RequestScrollPos;
 		m_AnimTime = 0.0f;
-		// bestclient
+		// bestclient-light
 		if(m_RequestScrollSmooth)
 		{
 			m_AnimInitScrollPos = m_ScrollPos;
@@ -324,13 +324,13 @@ void CScrollRegion::AdvanceAnimation()
 			m_AnimTime = m_AnimTimeMax > 0.0f ? m_AnimTimeMax : 0.0f;
 			m_RequestScrollSmooth = false;
 		}
-		// bestclient
+		// bestclient-light
 		m_RequestScrollPos = -1.0f;
 	}
 
-	// bestclient
+	// bestclient-light
 	m_AnimTargetScrollPos = std::clamp(m_AnimTargetScrollPos, 0.0f, std::max(0.0f, MaxScroll()));
-	// bestclient
+	// bestclient-light
 
 	if(absolute(m_AnimInitScrollPos - m_AnimTargetScrollPos) < 0.5f)
 		m_AnimTime = 0.0f;
@@ -383,14 +383,14 @@ void CScrollRegion::DoSlider()
 		m_AnimTime = 0.0f;
 	}
 
-	// bestclient
+	// bestclient-light
 	m_ScrollPos = std::clamp(m_ScrollPos, 0.0f, std::max(0.0f, MaxScroll()));
-	// bestclient
+	// bestclient-light
 	m_ContentScrollOffset = -m_ScrollPos;
 
 	const float Rounding = m_Params.m_ScrollHorizontal ? Slider.h / 2.0f : Slider.w / 2.0f;
-	// bestclient
+	// bestclient-light
 	const bool ScrollAccent = Ui()->CheckActiveItem(pId) || Ui()->HotItem() == pId;
-	BestClientUiTheme::DrawUiScrollbar(&Slider, m_Params.SliderColor(Ui()->CheckActiveItem(pId), Ui()->HotItem() == pId), ScrollAccent, IGraphics::CORNER_ALL, Rounding, !m_Params.m_ScrollHorizontal);
-	// bestclient
+	BestClientLightUiTheme::DrawUiScrollbar(&Slider, m_Params.SliderColor(Ui()->CheckActiveItem(pId), Ui()->HotItem() == pId), ScrollAccent, IGraphics::CORNER_ALL, Rounding, !m_Params.m_ScrollHorizontal);
+	// bestclient-light
 }

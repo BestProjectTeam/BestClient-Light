@@ -1,4 +1,4 @@
-#include "bestclient_indicator_protocol.h"
+#include "bestclient-light_indicator_protocol.h"
 
 #include <base/hash_ctxt.h>
 #include <base/net.h>
@@ -6,7 +6,7 @@
 
 #include <cstring>
 
-namespace BestClientIndicator
+namespace BestClientLightIndicator
 {
 namespace
 {

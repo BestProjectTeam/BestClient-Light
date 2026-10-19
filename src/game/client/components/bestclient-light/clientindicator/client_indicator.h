@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_CLIENTINDICATOR_CLIENT_INDICATOR_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_CLIENTINDICATOR_CLIENT_INDICATOR_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CLIENTINDICATOR_CLIENT_INDICATOR_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_CLIENTINDICATOR_CLIENT_INDICATOR_H
 
 #include "browser_cache.h"
 #include "client_indicator_sync.h"
@@ -29,8 +29,8 @@ public:
 	void OnStateChange(int NewState, int OldState) override;
 	void OnShutdown() override;
 
-	bool IsPlayerBestClient(int ClientId) const;
-	bool IsPlayerBClient(int ClientId) { return IsPlayerBestClient(ClientId); }
+	bool IsPlayerBestClientLight(int ClientId) const;
+	bool IsPlayerBClient(int ClientId) { return IsPlayerBestClientLight(ClientId); }
 	bool IsPlayerDeveloper(int ClientId) const;
 	bool IsPlayerFakeVersion(int ClientId) const;
 	bool GetPlayerVersionLabel(int ClientId, char *pVersion, int VersionSize) const;

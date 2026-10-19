@@ -1,5 +1,5 @@
-#ifndef ENGINE_SHARED_BESTCLIENT_INDICATOR_PROTOCOL_H
-#define ENGINE_SHARED_BESTCLIENT_INDICATOR_PROTOCOL_H
+#ifndef ENGINE_SHARED_BESTCLIENT_LIGHT_INDICATOR_PROTOCOL_H
+#define ENGINE_SHARED_BESTCLIENT_LIGHT_INDICATOR_PROTOCOL_H
 
 #include <base/hash.h>
 #include <base/net.h>
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace BestClientIndicator
+namespace BestClientLightIndicator
 {
 constexpr uint32_t PROTOCOL_MAGIC = 0x42434931u;
 constexpr uint8_t PROTOCOL_VERSION = 1;

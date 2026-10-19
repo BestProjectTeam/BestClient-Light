@@ -705,8 +705,8 @@ int CSound::LoadOpus(const char *pFilename, int StorageType)
 
 	void *pData;
 	unsigned DataSize;
-	bool bLoaded = false; // bestclient
-	// bestclient: fallback chain custom → default → original.
+	bool bLoaded = false; // bestclient-light
+	// bestclient-light: fallback chain custom → default → original.
 	// Determine which pack folder to load from (if any).
 	const char *pEffectivePack = nullptr;
 	{
@@ -747,8 +747,8 @@ int CSound::LoadOpus(const char *pFilename, int StorageType)
 			str_format(aCustomPath, sizeof(aCustomPath), "assets/audio/%s/%s", pEffectivePack, pSuffix);
 			TryLoad(aCustomPath);
 		}
-	} // bestclient
-	if(!bLoaded) // bestclient
+	} // bestclient-light
+	if(!bLoaded) // bestclient-light
 	{
 		if(pEffectivePack != nullptr)
 		{
@@ -762,7 +762,7 @@ int CSound::LoadOpus(const char *pFilename, int StorageType)
 			log_error("sound/opus", "Failed to open file. Filename='%s'", pFilename);
 			return -1;
 		}
-	} // bestclient
+	} // bestclient-light
 
 	const bool DecodeSuccess = DecodeOpus(*pSample, pData, DataSize, pFilename);
 	free(pData);
@@ -794,8 +794,8 @@ int CSound::LoadWV(const char *pFilename, int StorageType)
 
 	void *pData;
 	unsigned DataSize;
-	bool bLoaded = false; // bestclient
-	// bestclient: fallback chain custom → default → original.
+	bool bLoaded = false; // bestclient-light
+	// bestclient-light: fallback chain custom → default → original.
 	// Determine which pack folder to load from (if any).
 	const char *pEffectivePack = nullptr;
 	{
@@ -836,8 +836,8 @@ int CSound::LoadWV(const char *pFilename, int StorageType)
 			str_format(aCustomPath, sizeof(aCustomPath), "assets/audio/%s/%s", pEffectivePack, pSuffix);
 			TryLoad(aCustomPath);
 		}
-	} // bestclient
-	if(!bLoaded) // bestclient
+	} // bestclient-light
+	if(!bLoaded) // bestclient-light
 	{
 		if(pEffectivePack != nullptr)
 		{
@@ -851,7 +851,7 @@ int CSound::LoadWV(const char *pFilename, int StorageType)
 			log_error("sound/wv", "Failed to open file. Filename='%s'", pFilename);
 			return -1;
 		}
-	} // bestclient
+	} // bestclient-light
 
 	const bool DecodeSuccess = DecodeWV(*pSample, pData, DataSize, pFilename);
 	free(pData);

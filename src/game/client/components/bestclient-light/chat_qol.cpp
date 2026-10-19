@@ -114,7 +114,7 @@ static bool IsLikelySlashCommandName(const char *pName)
 
 bool CChatQoL::TryConvertWrongLayoutSlashCommand(const CChat &Chat, const char *pLine, char *pOut, int OutSize)
 {
-	if(!g_Config.m_BcChatAltCommandLayout || !pLine || !pOut || OutSize <= 0)
+	if(!g_Config.m_BclChatAltCommandLayout || !pLine || !pOut || OutSize <= 0)
 		return false;
 
 	const char *pTokenStart = str_utf8_skip_whitespaces(pLine);
@@ -384,7 +384,7 @@ void CChatQoL::ClearSavesChatOnMapChange(CGameClient *pGameClient)
 
 void CChatQoL::NotifySavesOnMapLoad(CGameClient *pGameClient)
 {
-	if(!pGameClient || !g_Config.m_BcNotifySavesOnMap)
+	if(!pGameClient || !g_Config.m_BclNotifySavesOnMap)
 		return;
 	if(pGameClient->Client()->State() == IClient::STATE_DEMOPLAYBACK)
 		return;

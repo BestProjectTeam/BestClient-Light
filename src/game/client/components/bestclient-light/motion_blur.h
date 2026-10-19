@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_MOTION_BLUR_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_MOTION_BLUR_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_MOTION_BLUR_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_MOTION_BLUR_H
 
 #include <base/time.h>
 
@@ -11,7 +11,7 @@
 
 inline bool BcMotionBlurEnabled()
 {
-	return g_Config.m_BcMotionBlur != 0 && g_Config.m_BcMotionBlurStrength > 0;
+	return g_Config.m_BclMotionBlur != 0 && g_Config.m_BclMotionBlurStrength > 0;
 }
 
 inline float BcMotionBlurAdvanceFrameTime(int64_t &LastTime)

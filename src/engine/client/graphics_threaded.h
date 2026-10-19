@@ -1292,7 +1292,7 @@ public:
 
 	// TClient
 	void SetForcedAspect(bool Force, bool ApplyCustomAspect = true) override;
-	// bestclient
+	// bestclient-light
 	void SetScreenAspectOverrideEnabled(bool Enabled) override;
 	void PushPreviewViewport(int X, int Y, int W, int H) override;
 	void PopPreviewViewport() override;
@@ -1301,7 +1301,7 @@ private:
 	bool m_PreviewViewportPushed = false;
 	float m_PreviewSavedAspectOverride = 0.0f;
 	bool m_PreviewSavedAspectOverrideEnabled = false;
-	// bestclient
+	// bestclient-light
 };
 
 extern bool g_GraphicsForcedAspect;

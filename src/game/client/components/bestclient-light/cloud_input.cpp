@@ -10,12 +10,12 @@
 
 bool CCloudInput::IsActive() const
 {
-	return g_Config.m_BcInputs == BC_INPUTS_CLOUD && Amount() > 0.0f;
+	return g_Config.m_BclInputs == BC_INPUTS_CLOUD && Amount() > 0.0f;
 }
 
 float CCloudInput::Amount() const
 {
-	return g_Config.m_BcCloudInputAmount / 100.0f;
+	return g_Config.m_BclCloudInputAmount / 100.0f;
 }
 
 int CCloudInput::SelfTickOffset() const
@@ -25,7 +25,7 @@ int CCloudInput::SelfTickOffset() const
 
 int CCloudInput::OthersTickOffset() const
 {
-	return g_Config.m_BcCloudInputOthers && Amount() > 0.0f ? 1 : 0;
+	return g_Config.m_BclCloudInputOthers && Amount() > 0.0f ? 1 : 0;
 }
 
 CNetObj_PlayerInput &CCloudInput::Input(int Dummy)
@@ -84,7 +84,7 @@ void CCloudInput::ApplyOffset(const CGameClient &GameClient, int ClientId, int &
 {
 	if(!IsActive())
 		return;
-	if(!GameClient.IsFastInputLocalClient(ClientId) && (!g_Config.m_BcCloudInputOthers || !GameClient.m_ReceivedPreInput))
+	if(!GameClient.IsFastInputLocalClient(ClientId) && (!g_Config.m_BclCloudInputOthers || !GameClient.m_ReceivedPreInput))
 		return;
 
 	const float Offset = GameClient.IsFastInputLocalClient(ClientId) ? Amount() : (float)OthersTickOffset();

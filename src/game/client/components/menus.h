@@ -16,9 +16,9 @@
 #include <engine/textrender.h>
 
 #include <game/client/component.h>
-// bestclient
-#include <game/client/components/bestclient/server_map_preview.h>
-// bestclient
+// bestclient-light
+#include <game/client/components/bestclient-light/server_map_preview.h>
+// bestclient-light
 #include <game/client/components/community_icons.h>
 #include <game/client/components/mapimages.h>
 #include <game/client/components/menus_ingame_touch_controls.h>
@@ -38,11 +38,11 @@
 #include <set>
 #include <string>
 
-class CDemoTeeEditor; // bestclient
+class CDemoTeeEditor; // bestclient-light
 
 class CMenus : public CComponent
 {
-	friend class CDemoTeeEditor; // bestclient
+	friend class CDemoTeeEditor; // bestclient-light
 	static ColorRGBA ms_GuiColor;
 	static ColorRGBA ms_ColorTabbarInactiveOutgame;
 	static ColorRGBA ms_ColorTabbarActiveOutgame;
@@ -60,10 +60,10 @@ public:
 
 	int DoButton_Toggle(const void *pId, int Checked, const CUIRect *pRect, bool Active, unsigned Flags = BUTTONFLAG_LEFT);
 	int DoButton_Menu(CButtonContainer *pButtonContainer, const char *pText, int Checked, const CUIRect *pRect, unsigned Flags = BUTTONFLAG_LEFT, const char *pImageName = nullptr, int Corners = IGraphics::CORNER_ALL, float Rounding = 5.0f, float FontFactor = 0.0f, ColorRGBA Color = ColorRGBA(1.0f, 1.0f, 1.0f, 0.5f), const void *pImageHotId = nullptr);
-	// bestclient
+	// bestclient-light
 	int DoButton_MenuEx(CButtonContainer *pButtonContainer, const char *pText, int Checked, const CUIRect *pRect, unsigned Flags, const char *pImageName, int Corners, float Rounding, float FontFactor, ColorRGBA Color, bool AlwaysColoredImage);
 	int DoButton_MenuTab(CButtonContainer *pButtonContainer, const char *pText, int Checked, const CUIRect *pRect, int Corners, SUIAnimator *pAnimator = nullptr, const ColorRGBA *pDefaultColor = nullptr, const ColorRGBA *pActiveColor = nullptr, const ColorRGBA *pHoverColor = nullptr, float EdgeRounding = 10.0f, const CCommunityIcon *pCommunityIcon = nullptr, bool AnimateChecked = true, int HoverCorners = IGraphics::CORNER_NONE, float HoverRounding = -1.0f, float AlphaMul = 1.0f);
-	// bestclient
+	// bestclient-light
 
 	int DoButton_CheckBox_Common(const void *pId, const char *pText, const char *pBoxText, const CUIRect *pRect, unsigned Flags);
 	int DoButton_CheckBox(const void *pId, const char *pText, int Checked, const CUIRect *pRect);
@@ -71,9 +71,9 @@ public:
 	int DoButton_CheckBox_Number(const void *pId, const char *pText, int Checked, const CUIRect *pRect);
 
 	bool DoSliderWithScaledValue(const void *pId, int *pOption, const CUIRect *pRect, const char *pStr, int Min, int Max, int Scale, const IScrollbarScale *pScale, unsigned Flags = 0u, const char *pSuffix = "");
-	// bestclient
+	// bestclient-light
 	void DoTickAmountSlider(int *pValue, const CUIRect *pRect, const char *pLabel, int Min, int Max, int Scale = 100);
-	// bestclient
+	// bestclient-light
 	bool DoEditBoxWithLabel(CLineInput *LineInput, const CUIRect *pRect, const char *pLabel, const char *pDefault, char *pBuf, size_t BufSize);
 	bool DoLine_RadioMenu(CUIRect &View, const char *pLabel, std::vector<CButtonContainer> &vButtonContainers, const std::vector<const char *> &vLabels, const std::vector<int> &vValues, int &Value);
 	bool DoLine_KeyReader(CUIRect &View, CButtonContainer &ReaderButton, CButtonContainer &ClearButton, const char *pName, const char *pCommand);
@@ -548,10 +548,10 @@ protected:
 	void HandleDemoSeeking(float PositionToSeek, float TimeToSeek);
 	void RenderDemoPlayer(CUIRect MainView);
 	void RenderDemoPlayerSliceSavePopup(CUIRect MainView);
-	// bestclient
+	// bestclient-light
 	SPopupMenuId m_DemoCameraEffectsPopupId;
 	static CUi::EPopupMenuFunctionResult PopupDemoCameraEffects(void *pContext, CUIRect View, bool Active);
-	// bestclient
+	// bestclient-light
 	bool m_DemoBrowserListInitialized = false;
 	void RenderDemoBrowser(CUIRect MainView);
 	void RenderDemoBrowserList(CUIRect ListView, bool &WasListboxItemActivated);
@@ -593,9 +593,9 @@ protected:
 	void RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemActivated);
 	void RenderServerbrowserStatusBox(CUIRect StatusBox, bool WasListboxItemActivated);
 	void PopupConfirmSwitchServer();
-	// bestclient
-	void ToggleBestClientServerFilter();
-	// bestclient
+	// bestclient-light
+	void ToggleBestClientLightServerFilter();
+	// bestclient-light
 	void RenderServerbrowserFilters(CUIRect View);
 	void ResetServerbrowserFilters();
 	void RenderServerbrowserDDNetFilter(CUIRect View,
@@ -617,9 +617,9 @@ protected:
 	static CUi::EPopupMenuFunctionResult PopupCountrySelection(void *pContext, CUIRect View, bool Active);
 	void RenderServerbrowserInfo(CUIRect View);
 	void RenderServerbrowserInfoScoreboard(CUIRect View, const CServerInfo *pSelectedServer);
-	// bestclient
-	void RenderServerbrowserBestClient(CUIRect View);
-	// bestclient
+	// bestclient-light
+	void RenderServerbrowserBestClientLight(CUIRect View);
+	// bestclient-light
 	void RenderServerbrowserFriends(CUIRect View);
 	void FriendlistOnUpdate();
 	void PopupConfirmRemoveFriend();
@@ -645,11 +645,11 @@ protected:
 	// found in menus_settings_appearance.cpp
 	void RenderSettingsAppearance(CUIRect MainView);
 	void DoLaserPreview(const CUIRect *pRect, ColorHSLA OutlineColor, ColorHSLA InnerColor, int LaserType);
-	// bestclient
+	// bestclient-light
 	void DoRocketPreview(const CUIRect *pRect);
-	void RenderSettingsBestClientWeaponGlow(CUIRect &Column);
-	void RenderSettingsBestClientFx(CUIRect &Column, bool HookColumn);
-	// bestclient
+	void RenderSettingsBestClientLightWeaponGlow(CUIRect &Column);
+	void RenderSettingsBestClientLightFx(CUIRect &Column, bool HookColumn);
+	// bestclient-light
 
 	// found in menus_settings_controls.cpp
 	// TODO: Change PopupConfirm to avoid using a function pointer to a CMenus
@@ -675,19 +675,19 @@ protected:
 
 	// found in menus_settings_player.cpp
 	void RenderSettingsPlayer(CUIRect MainView);
-	struct SPopupSettingsCountrySelectionContext // bestclient
+	struct SPopupSettingsCountrySelectionContext // bestclient-light
 	{
 		CMenus *m_pMenus;
 		int *m_pCountry;
 		int m_Selection;
 		bool m_New;
 	};
-	static CUi::EPopupMenuFunctionResult PopupSettingsCountrySelection(void *pContext, CUIRect View, bool Active); // bestclient
+	static CUi::EPopupMenuFunctionResult PopupSettingsCountrySelection(void *pContext, CUIRect View, bool Active); // bestclient-light
 
 	// found in menus_settings_sound.cpp
 	void RenderSettingsSound(CUIRect MainView);
 
-	// bestclient
+	// bestclient-light
 	static float FrozenSkinSettingsHeight();
 	void RenderFrozenSkinSettings(CUIRect &View);
 	struct SPopupVoiceModerationContext
@@ -695,7 +695,7 @@ protected:
 		CMenus *m_pMenus;
 	};
 	static CUi::EPopupMenuFunctionResult PopupVoiceModeration(void *pContext, CUIRect View, bool Active);
-	// bestclient
+	// bestclient-light
 
 	// found in menus_settings_tee.cpp
 	void RenderSettingsTee(CUIRect MainView);
@@ -753,7 +753,7 @@ protected:
 	void UpdateColors();
 
 	IGraphics::CTextureHandle m_TextureBlob;
-	// bestclient
+	// bestclient-light
 	IGraphics::CTextureHandle m_BcLogoTexture;
 
 public:
@@ -806,14 +806,14 @@ public:
 		PAGE_LENGTH,
 	};
 
-	// bestclient
+	// bestclient-light
 	bool IsIngameGamePage() const { return m_MenuActive && Client()->State() == IClient::STATE_ONLINE && m_GamePage == PAGE_GAME; }
 	bool IsServerBrowserPageActive() const
 	{
 		return (Client()->State() == IClient::STATE_OFFLINE && m_MenuPage >= PAGE_INTERNET && m_MenuPage <= PAGE_FAVORITE_COMMUNITY_5) ||
 			(Client()->State() == IClient::STATE_ONLINE && m_GamePage == PAGE_NETWORK);
 	}
-	// bestclient
+	// bestclient-light
 
 	enum
 	{
@@ -828,7 +828,7 @@ public:
 		SETTINGS_DDNET,
 		SETTINGS_ASSETS,
 		SETTINGS_TCLIENT, // TClient
-		SETTINGS_BESTCLIENT, // bestclient
+		SETTINGS_BESTCLIENT_LIGHT, // bestclient-light
 		SETTINGS_PROFILES, // TClient
 		SETTINGS_CONFIGS, // TClient
 		SETTINGS_CREDITS,
@@ -861,9 +861,9 @@ public:
 		SMALL_TAB_SERVER,
 		SMALL_TAB_BROWSER_FILTER,
 		SMALL_TAB_BROWSER_INFO,
-		// bestclient
-		SMALL_TAB_BROWSER_BESTCLIENT,
-		// bestclient
+		// bestclient-light
+		SMALL_TAB_BROWSER_BESTCLIENT_LIGHT,
+		// bestclient-light
 		SMALL_TAB_BROWSER_FRIENDS,
 
 		SMALL_TAB_LENGTH,
@@ -950,7 +950,7 @@ public:
 		POPUP_RESTART,
 		POPUP_WARNING,
 		POPUP_SAVE_SKIN,
-		POPUP_STYLE_PICKER, // bestclient
+		POPUP_STYLE_PICKER, // bestclient-light
 	};
 
 	enum
@@ -970,9 +970,9 @@ public:
 
 private:
 	CCommunityIcons m_CommunityIcons;
-	// bestclient
+	// bestclient-light
 	CServerMapPreview m_ServerMapPreview;
-	// bestclient
+	// bestclient-light
 	CMenusIngameTouchControls m_MenusIngameTouchControls;
 	friend CMenusIngameTouchControls;
 	CMenusSettingsControls m_MenusSettingsControls;
@@ -1006,22 +1006,22 @@ private:
 	int DoButtonNoRect_FontIcon(CButtonContainer *pButtonContainer, const char *pText, int Checked, const CUIRect *pRect, int Corners = IGraphics::CORNER_ALL);
 	int DoButtonLineSize_Menu(CButtonContainer *pButtonContainer, const char *pText, int Checked, const CUIRect *pRect, float ButtonLineSize, bool Fake = false, const char *pImageName = nullptr, int Corners = IGraphics::CORNER_ALL, float Rounding = 5.0f, float FontFactor = 0.0f, ColorRGBA Color = ColorRGBA(1.0f, 1.0f, 1.0f, 0.5f));
 
-	// found in components/bestclient/menus_bestclient.cpp // bestclient
-	void RenderSettingsBestClient(CUIRect MainView);
-	void RenderSettingsBestClientVisuals(CUIRect MainView);
-	void RenderSettingsBestClientGameplay(CUIRect MainView);
-	void RenderSettingsBestClientOthers(CUIRect MainView);
-	// bestclient
-	void RenderSettingsBestClientFun(CUIRect MainView);
-	// bestclient
-	void RenderSettingsBestClientInfo(CUIRect MainView); // bestclient
-	void RenderSettingsBestClientConfigPresets(CUIRect MainView); // bestclient
-	void RenderSettingsBestClientChatMediaBlock(CUIRect &Column); // bestclient
-	void RenderPopupStylePicker(CUIRect Box); // bestclient
-	void FinishWelcomeToStylePicker(); // bestclient
-	// bestclient
-	void OpenBestClientFun();
-	// bestclient
+	// found in components/bestclient-light/menus_bestclient-light.cpp // bestclient-light
+	void RenderSettingsBestClientLight(CUIRect MainView);
+	void RenderSettingsBestClientLightVisuals(CUIRect MainView);
+	void RenderSettingsBestClientLightGameplay(CUIRect MainView);
+	void RenderSettingsBestClientLightOthers(CUIRect MainView);
+	// bestclient-light
+	void RenderSettingsBestClientLightFun(CUIRect MainView);
+	// bestclient-light
+	void RenderSettingsBestClientLightInfo(CUIRect MainView); // bestclient-light
+	void RenderSettingsBestClientLightConfigPresets(CUIRect MainView); // bestclient-light
+	void RenderSettingsBestClientLightChatMediaBlock(CUIRect &Column); // bestclient-light
+	void RenderPopupStylePicker(CUIRect Box); // bestclient-light
+	void FinishWelcomeToStylePicker(); // bestclient-light
+	// bestclient-light
+	void OpenBestClientLightFun();
+	// bestclient-light
 	float m_MenuTabAlpha = 1.0f;
 	enum
 	{
@@ -1144,18 +1144,18 @@ private:
 	void AssetsEditorOpenColorPopup(int SlotIndex, float X, float Y);
 	void AssetsEditorClearSlotColor(int SlotIndex);
 	static CUi::EPopupMenuFunctionResult AssetsEditorPopupColorEditor(void *pContext, CUIRect View, bool Active);
-	// bestclient
+	// bestclient-light
 public:
-	void CloseBestClientFun();
-	void SetBestClientSettingsTab(int Tab);
-	int GetBestClientSettingsTab() const;
+	void CloseBestClientLightFun();
+	void SetBestClientLightSettingsTab(int Tab);
+	int GetBestClientLightSettingsTab() const;
 	void SetTClientSettingsTab(int Tab);
 	int GetTClientSettingsTab() const;
 	void RenderSettingsNavNewStyle(CUIRect &TabBar);
 	void RenderSettingsPage(CUIRect MainView);
-	void RenderSettingsPageAt(CUIRect MainView, int SettingsPage, int TClientTab, int BestClientTab);
+	void RenderSettingsPageAt(CUIRect MainView, int SettingsPage, int TClientTab, int BestClientLightTab);
 	void RenderSettingsContentNewStyle(CUIRect MainView);
 	void RenderSettingsContentLegacyStyle(CUIRect MainView);
-	// bestclient
+	// bestclient-light
 };
 #endif

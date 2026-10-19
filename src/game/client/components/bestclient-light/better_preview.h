@@ -1,6 +1,6 @@
 /* Copyright © 2026 BestProject Team */
-#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_BETTER_PREVIEW_H
-#define GAME_CLIENT_COMPONENTS_BESTCLIENT_BETTER_PREVIEW_H
+#ifndef GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_BETTER_PREVIEW_H
+#define GAME_CLIENT_COMPONENTS_BESTCLIENT_LIGHT_BETTER_PREVIEW_H
 
 #include <engine/graphics.h>
 
@@ -8,7 +8,7 @@
 
 class CUi;
 
-namespace BestClientBetterPreview
+namespace BestClientLightBetterPreview
 {
 
 void RenderEntities(IGraphics *pGraphics, const IGraphics::CTextureHandle &Texture, const CUIRect &TextureRect, float TextureWidth);

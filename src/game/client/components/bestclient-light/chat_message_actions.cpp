@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-namespace BestClientChatMessageActions
+namespace BestClientLightChatMessageActions
 {
 
 static bool Inside(const CUIRect &Rect, vec2 Pos)
@@ -91,4 +91,4 @@ void DrawMessageHighlight(IGraphics *pGraphics, float X, float Y, float W, float
 	pGraphics->DrawRect(X, Y, W, H, ColorRGBA(0.58f, 0.58f, 0.58f, 0.30f * Alpha), IGraphics::CORNER_ALL, Rounding);
 }
 
-} // namespace BestClientChatMessageActions
+} // namespace BestClientLightChatMessageActions

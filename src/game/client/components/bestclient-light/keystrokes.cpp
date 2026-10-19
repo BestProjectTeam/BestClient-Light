@@ -371,7 +371,7 @@ namespace
 
 	bool IsKeystrokesMinecraftStyle()
 	{
-		return g_Config.m_BcKeystrokesStyle == KEYSTROKES_STYLE_MINECRAFT;
+		return g_Config.m_BclKeystrokesStyle == KEYSTROKES_STYLE_MINECRAFT;
 	}
 
 	struct SKeystrokesMcKey
@@ -503,11 +503,11 @@ namespace
 		SKeystrokesMcLayout Layout;
 		const float K = KEYSTROKES_MC_KEY;
 		const float G = KEYSTROKES_MC_GAP;
-		const bool OnlyAd = g_Config.m_BcKeystrokesMcLayout == 1;
+		const bool OnlyAd = g_Config.m_BclKeystrokesMcLayout == 1;
 		const bool ShowWs = !OnlyAd;
-		const bool ShowLmb = !OnlyAd || g_Config.m_BcKeystrokesMcShowLmb != 0;
-		const bool ShowRmb = !OnlyAd || g_Config.m_BcKeystrokesMcShowRmb != 0;
-		const bool ShowSpace = !OnlyAd || g_Config.m_BcKeystrokesMcShowSpace != 0;
+		const bool ShowLmb = !OnlyAd || g_Config.m_BclKeystrokesMcShowLmb != 0;
+		const bool ShowRmb = !OnlyAd || g_Config.m_BclKeystrokesMcShowRmb != 0;
+		const bool ShowSpace = !OnlyAd || g_Config.m_BclKeystrokesMcShowSpace != 0;
 		const float Width = ShowWs ? (3.0f * K + 2.0f * G) : (2.0f * K + G);
 
 		float Y = 0.0f;
@@ -594,7 +594,7 @@ namespace
 		if(W <= 0.0f || H <= 0.0f)
 			return;
 
-		const float PressedOpacity = std::clamp(g_Config.m_BcKeystrokesMcPressedOpacity * 0.01f, 0.0f, 1.0f);
+		const float PressedOpacity = std::clamp(g_Config.m_BclKeystrokesMcPressedOpacity * 0.01f, 0.0f, 1.0f);
 		const ColorRGBA Bg = Active ? ColorRGBA(1.0f, 1.0f, 1.0f, PressedOpacity) : ColorRGBA(0.0f, 0.0f, 0.0f, 0.55f);
 		pGraphics->DrawRect(X, Y, W, H, Bg, IGraphics::CORNER_NONE, 0.0f);
 
@@ -652,7 +652,7 @@ namespace
 
 float GetKeystrokesKeyboardPresetWidthHudPx(int Preset)
 {
-	if(g_Config.m_BcKeystrokesStyle == 1)
+	if(g_Config.m_BclKeystrokesStyle == 1)
 		return BuildKeystrokesMcLayout().m_OverlayWidth * KEYSTROKES_ATLAS_SCALE;
 	return GetKeystrokesKeyboardPreset(Preset).m_OverlayWidth * KEYSTROKES_ATLAS_SCALE;
 }
@@ -660,8 +660,8 @@ float GetKeystrokesKeyboardPresetWidthHudPx(int Preset)
 void CKeystrokes::OnInit()
 {
 	OnReset();
-	m_KeyboardTexture = Graphics()->LoadTexture("BestClient/keystrokes/wasd.png", IStorage::TYPE_ALL);
-	m_MouseTexture = Graphics()->LoadTexture("BestClient/keystrokes/mouse.png", IStorage::TYPE_ALL);
+	m_KeyboardTexture = Graphics()->LoadTexture("bestclient-light/keystrokes/wasd.png", IStorage::TYPE_ALL);
+	m_MouseTexture = Graphics()->LoadTexture("bestclient-light/keystrokes/mouse.png", IStorage::TYPE_ALL);
 	if(m_KeyboardTexture.IsNullTexture())
 		log_warn("keystrokes", "Failed to load keyboard keystrokes texture");
 	if(m_MouseTexture.IsNullTexture())
@@ -691,8 +691,8 @@ void CKeystrokes::OnRender()
 	if(g_Config.m_ClFocusMode && (g_Config.m_ClFocusModeHideHud || g_Config.m_ClFocusModeHideUI))
 		return;
 
-	const bool KeyboardEnabled = HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_KEYBOARD) && g_Config.m_BcKeystrokesKeyboard != 0;
-	const bool MouseEnabled = HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_MOUSE) && g_Config.m_BcKeystrokesMouse != 0;
+	const bool KeyboardEnabled = HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_KEYBOARD) && g_Config.m_BclKeystrokesKeyboard != 0;
+	const bool MouseEnabled = HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_MOUSE) && g_Config.m_BclKeystrokesMouse != 0;
 	if(!KeyboardEnabled && !MouseEnabled)
 		return;
 
@@ -706,7 +706,7 @@ void CKeystrokes::OnRender()
 
 CUIRect CKeystrokes::GetKeyboardRectInternal(bool IgnoreModuleEnabled) const
 {
-	if(!IgnoreModuleEnabled && (!HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_KEYBOARD) || g_Config.m_BcKeystrokesKeyboard == 0))
+	if(!IgnoreModuleEnabled && (!HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_KEYBOARD) || g_Config.m_BclKeystrokesKeyboard == 0))
 		return {};
 
 	const float HudHeight = HudLayout::CANVAS_HEIGHT;
@@ -723,7 +723,7 @@ CUIRect CKeystrokes::GetKeyboardRectInternal(bool IgnoreModuleEnabled) const
 	}
 	else
 	{
-		const auto &Preset = GetKeystrokesKeyboardPreset(g_Config.m_BcKeystrokesKeyboardPreset);
+		const auto &Preset = GetKeystrokesKeyboardPreset(g_Config.m_BclKeystrokesKeyboardPreset);
 		OverlayWidth = (float)Preset.m_OverlayWidth;
 		OverlayHeight = (float)Preset.m_OverlayHeight;
 	}
@@ -736,13 +736,13 @@ CUIRect CKeystrokes::GetMouseRectInternal(bool IgnoreModuleEnabled) const
 {
 	if(IsKeystrokesMinecraftStyle())
 		return {};
-	if(!IgnoreModuleEnabled && (!HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_MOUSE) || g_Config.m_BcKeystrokesMouse == 0))
+	if(!IgnoreModuleEnabled && (!HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_MOUSE) || g_Config.m_BclKeystrokesMouse == 0))
 		return {};
 
 	const float HudHeight = HudLayout::CANVAS_HEIGHT;
 	const float HudWidth = HudHeight * Graphics()->ScreenAspect();
 	const auto Layout = HudLayout::Get(HudLayout::MODULE_KEYSTROKES_MOUSE, HudWidth, HudHeight);
-	const auto &Preset = GetKeystrokesMousePreset(g_Config.m_BcKeystrokesMousePreset);
+	const auto &Preset = GetKeystrokesMousePreset(g_Config.m_BclKeystrokesMousePreset);
 	const float Scale = GetKeystrokesScale(Layout);
 	const float Width = Preset.m_OverlayWidth * Scale;
 	const float Height = Preset.m_OverlayHeight * Scale;
@@ -855,7 +855,7 @@ void CKeystrokes::RenderKeyboardInternal(bool ForcePreview, bool IgnoreModuleEna
 		return;
 	}
 
-	const auto &Preset = GetKeystrokesKeyboardPreset(g_Config.m_BcKeystrokesKeyboardPreset);
+	const auto &Preset = GetKeystrokesKeyboardPreset(g_Config.m_BclKeystrokesKeyboardPreset);
 	for(int i = 0; i < Preset.m_NumElements; ++i)
 	{
 		const auto &Element = Preset.m_pElements[i];
@@ -900,7 +900,7 @@ void CKeystrokes::RenderMouseInternal(bool ForcePreview, bool IgnoreModuleEnable
 	const float HudHeight = HudLayout::CANVAS_HEIGHT;
 	const float HudWidth = HudHeight * Graphics()->ScreenAspect();
 	const auto Layout = HudLayout::Get(HudLayout::MODULE_KEYSTROKES_MOUSE, HudWidth, HudHeight);
-	const auto &Preset = GetKeystrokesMousePreset(g_Config.m_BcKeystrokesMousePreset);
+	const auto &Preset = GetKeystrokesMousePreset(g_Config.m_BclKeystrokesMousePreset);
 	const float Scale = GetKeystrokesScale(Layout);
 	const int64_t Now = time_get();
 	const int64_t HighlightDuration = time_freq() * KEYSTROKES_WHEEL_HIGHLIGHT_MS / 1000;

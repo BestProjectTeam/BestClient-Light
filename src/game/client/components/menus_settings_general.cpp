@@ -17,19 +17,19 @@
 void CMenus::RenderSettingsGeneral(CUIRect MainView)
 {
 	char aBuf[128 + IO_MAX_PATH_LENGTH];
-	CUIRect Label, Button, Left, Right, Game, ClientSettings; // bestclient
-	MainView.HSplitTop(190.0f, &Game, &ClientSettings); // bestclient
+	CUIRect Label, Button, Left, Right, Game, ClientSettings; // bestclient-light
+	MainView.HSplitTop(190.0f, &Game, &ClientSettings); // bestclient-light
 
 	// game
 	{
 		// headline
 		CUIRect GameLabel, LanguageLabel;
 		Game.HSplitTop(30.0f, &Label, &Game);
-		Label.VSplitMid(&GameLabel, &LanguageLabel, 20.0f); // bestclient
+		Label.VSplitMid(&GameLabel, &LanguageLabel, 20.0f); // bestclient-light
 		Ui()->DoLabel(&GameLabel, Localize("Game"), 20.0f, TEXTALIGN_ML);
-		Ui()->DoLabel(&LanguageLabel, Localize("Language"), 20.0f, TEXTALIGN_ML); // bestclient
+		Ui()->DoLabel(&LanguageLabel, Localize("Language"), 20.0f, TEXTALIGN_ML); // bestclient-light
 		Game.HSplitTop(5.0f, nullptr, &Game);
-		Game.VSplitMid(&Left, &Right, 20.0f); // bestclient
+		Game.VSplitMid(&Left, &Right, 20.0f); // bestclient-light
 
 		// dynamic camera
 		Left.HSplitTop(20.0f, &Button, &Left);
@@ -79,7 +79,7 @@ void CMenus::RenderSettingsGeneral(CUIRect MainView)
 			g_Config.m_ClAutoswitchWeaponsOutOfAmmo ^= 1;
 
 		Right.HSplitTop(5.0f, nullptr, &Right);
-		RenderLanguageSelection(Right); // bestclient
+		RenderLanguageSelection(Right); // bestclient-light
 	}
 
 	// client

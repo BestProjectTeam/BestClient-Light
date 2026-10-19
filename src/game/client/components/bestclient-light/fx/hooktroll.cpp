@@ -28,7 +28,7 @@ static float Near(const CHookGripTracker::CGrip &Grip)
 
 void CHookTroll::OnInit()
 {
-	m_FaceTexture = Graphics()->LoadTexture("BestClient/trollface.png", IStorage::TYPE_ALL);
+	m_FaceTexture = Graphics()->LoadTexture("bestclient-light/trollface.png", IStorage::TYPE_ALL);
 	m_DiscTexture = FgfGlow::CreateDiscTexture(Graphics());
 }
 
@@ -156,15 +156,15 @@ void CHookTroll::OnRender()
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.05f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
 
-	if(g_Config.m_BcHookStyle != FGF_HOOK_STYLE_TROLL)
+	if(g_Config.m_BclHookStyle != FGF_HOOK_STYLE_TROLL)
 	{
 		if(m_WasActive)
 			OnReset();
 		return;
 	}
 	m_WasActive = true;
-	const float Scale = g_Config.m_BcHookSize / 100.0f;
-	const bool Tip = g_Config.m_BcHookTip != 0;
+	const float Scale = g_Config.m_BclHookSize / 100.0f;
+	const bool Tip = g_Config.m_BclHookTip != 0;
 
 	if(!Tip)
 	{
@@ -175,7 +175,7 @@ void CHookTroll::OnRender()
 	}
 	else
 	{
-		m_Tracker.Update(GameClient(), Passed, g_Config.m_BcHookChargeTime / 1000.0f, FADE_TIME,
+		m_Tracker.Update(GameClient(), Passed, g_Config.m_BclHookChargeTime / 1000.0f, FADE_TIME,
 			[&](int ClientId, CHookGripTracker::EEvent Event, const CHookGripTracker::CGrip &Grip) {
 				CTrollState &State = m_aStates[ClientId];
 				const float Alpha = Grip.m_Alpha * Near(Grip);

@@ -32,7 +32,7 @@ constexpr T maximum(T a, T b, T c)
 
 #include <algorithm>
 
-namespace BestClientVisualizer
+namespace BestClientLightVisualizer
 {
 
 CVisualizerSmoother::CVisualizerSmoother()
@@ -71,4 +71,4 @@ void CVisualizerSmoother::Process(const SVisualizerFrame &RawFrame, SVisualizerF
 	}
 }
 
-} // namespace BestClientVisualizer
+} // namespace BestClientLightVisualizer
