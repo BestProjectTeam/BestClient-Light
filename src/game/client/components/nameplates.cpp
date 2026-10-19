@@ -1213,7 +1213,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 		m_pData->m_aLastAlpha[ClientId] = Alpha;
 		NamePlate.Update(*GameClient(), Data);
 	}
-	NamePlate.Render(*GameClient(), Position);
+	NamePlate.Render(*GameClient(), Position - vec2(0.0f, (float)g_Config.m_ClNamePlatesOffset));
 }
 
 void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
