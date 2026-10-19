@@ -24,12 +24,6 @@
 	{"Corner rounding", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Bubbles", &g_Config.m_BclChatBubbleRounding, &g_Config.m_BclChatBubbles},
 	{"Custom colors", SETTINGS_NAV_LEAF_BC_VISUALS, "Chat Bubbles", &g_Config.m_BclChatBubbleCustomColors, &g_Config.m_BclChatBubbles},
 
-	{"Gradient", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclNameplateGradient, nullptr},
-	{"Gradient clans", SETTINGS_NAV_LEAF_BC_VISUALS, "Gradient", &g_Config.m_BclNameplateGradientClan, nullptr},
-	{"Gradient skin", SETTINGS_NAV_LEAF_BC_VISUALS, "Gradient", &g_Config.m_BclNameplateGradientSkin, nullptr},
-	{"Gradient everything", SETTINGS_NAV_LEAF_BC_VISUALS, "Gradient", &g_Config.m_BclNameplateGradientEverything, nullptr},
-	{"Animate speed", SETTINGS_NAV_LEAF_BC_VISUALS, "Gradient", &g_Config.m_BclNameplateGradientAnimateSpeed, &g_Config.m_BclNameplateGradient},
-
 	{"Flying Name Plates", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclFlyingNamePlates, nullptr},
 	{"Hide line", SETTINGS_NAV_LEAF_BC_VISUALS, "Flying Name Plates", &g_Config.m_BclFlyingNamePlatesHideLine, &g_Config.m_BclFlyingNamePlates},
 	{"Lift above player", SETTINGS_NAV_LEAF_BC_VISUALS, "Flying Name Plates", &g_Config.m_BclFlyingNamePlatesLift, &g_Config.m_BclFlyingNamePlates},

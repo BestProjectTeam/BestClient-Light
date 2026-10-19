@@ -26,10 +26,6 @@
 
 using namespace std::chrono_literals;
 
-// bestclient-light
-extern void (*BCGradient_ApplyEverythingHook)(CTextCursor *pCursor, const char *pText, int Length);
-// bestclient-light
-
 // TClient
 static void ReplaceHyphensWithSpaces(char *pStr)
 {
@@ -1674,11 +1670,6 @@ public:
 			Length = str_length(pText);
 		else
 			Length = std::min(Length, str_length(pText));
-
-		// bestclient-light
-		if(BCGradient_ApplyEverythingHook && pCursor->m_vColorSplits.empty())
-			BCGradient_ApplyEverythingHook(pCursor, pText, Length);
-		// bestclient-light
 
 		const char *pCurrent = pText;
 		const char *pEnd = pCurrent + Length;

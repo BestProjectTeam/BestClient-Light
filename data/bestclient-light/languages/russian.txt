@@ -219,30 +219,6 @@ Outline
 == Обводка
 
 [BestClient Light]
-Gradient
-== Градиент
-
-[BestClient Light]
-Gradient nicknames
-== Градиент ников
-
-[BestClient Light]
-Gradient clans
-== Градиент кланов
-
-[BestClient Light]
-Gradient skin
-== Градиент скина
-
-[BestClient Light]
-Gradient everything
-== Градиент всего
-
-[BestClient Light]
-Animate speed
-== Скорость анимации
-
-[BestClient Light]
 Mode
 == Режим
 
@@ -253,26 +229,6 @@ Skin
 [BestClient Light]
 Custom
 == Свой
-
-[BestClient Light]
-Color count
-== Число цветов
-
-[BestClient Light]
-Color 1
-== Цвет 1
-
-[BestClient Light]
-Color 2
-== Цвет 2
-
-[BestClient Light]
-Color 3
-== Цвет 3
-
-[BestClient Light]
-Color 4
-== Цвет 4
 
 [BestClient Light]
 Flying Name Plates
@@ -2073,19 +2029,3 @@ Medium
 [BestClient Light]
 Hard
 == Сложно
-
-[Gradient]
-Apply to
-== Применить к
-
-[Gradient]
-Own
-== Свои
-
-[Gradient]
-Others
-== Другие
-
-[Gradient]
-All
-== Все

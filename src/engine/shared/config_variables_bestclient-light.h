@@ -143,20 +143,6 @@ MACRO_CONFIG_INT(BclFastActions, bcl_fast_actions, 1, 0, 1, CFGFLAG_CLIENT | CFG
 MACRO_CONFIG_INT(BclSnapTap, bcl_snap_tap, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Enable Snap Tap for opposite left/right inputs")
 MACRO_CONFIG_INT(BclSnapTapDelay, bcl_snap_tap_delay, 0, 0, 200, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Snap Tap direction switch delay in milliseconds (0 = off)")
 
-// Gradient
-MACRO_CONFIG_INT(BclNameplateGradient, bcl_nameplate_gradient, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Gradient player nicknames")
-MACRO_CONFIG_INT(BclNameplateGradientClan, bcl_nameplate_gradient_clan, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Gradient player clan tags")
-MACRO_CONFIG_INT(BclNameplateGradientMode, bcl_nameplate_gradient_mode, 0, 0, 2, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Gradient mode (0 = skin colors, 1 = custom, 2 = rainbow)")
-MACRO_CONFIG_INT(BclNameplateGradientColorCount, bcl_nameplate_gradient_color_count, 2, 2, 4, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Number of custom gradient colors")
-MACRO_CONFIG_COL(BclNameplateGradientColor1, bcl_nameplate_gradient_color1, 0xFF3366FFU, CFGFLAG_CLIENT | CFGFLAG_SAVE | CFGFLAG_COLALPHA, "Custom gradient color 1")
-MACRO_CONFIG_COL(BclNameplateGradientColor2, bcl_nameplate_gradient_color2, 0xFF66CCFFU, CFGFLAG_CLIENT | CFGFLAG_SAVE | CFGFLAG_COLALPHA, "Custom gradient color 2")
-MACRO_CONFIG_COL(BclNameplateGradientColor3, bcl_nameplate_gradient_color3, 0xFF33FF99U, CFGFLAG_CLIENT | CFGFLAG_SAVE | CFGFLAG_COLALPHA, "Custom gradient color 3")
-MACRO_CONFIG_COL(BclNameplateGradientColor4, bcl_nameplate_gradient_color4, 0xFFFFCC33U, CFGFLAG_CLIENT | CFGFLAG_SAVE | CFGFLAG_COLALPHA, "Custom gradient color 4")
-MACRO_CONFIG_INT(BclNameplateGradientSkin, bcl_nameplate_gradient_skin, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Apply gradient colors to player skin body and feet")
-MACRO_CONFIG_INT(BclNameplateGradientEverything, bcl_nameplate_gradient_everything, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Apply gradient to all rendered text")
-MACRO_CONFIG_INT(BclNameplateGradientAnimateSpeed, bcl_nameplate_gradient_animate_speed, 35, 1, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Speed of the animated gradient sweep, in percent")
-MACRO_CONFIG_INT(BclNameplateGradientTarget, bcl_nameplate_gradient_target, 2, 0, 2, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Who the gradient applies to (0 = own, 1 = others, 2 = all)")
-
 // Flying name plates
 MACRO_CONFIG_INT(BclFlyingNamePlates, bcl_flying_name_plates, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Render name plates like flying kites attached to players")
 MACRO_CONFIG_INT(BclFlyingNamePlatesHideLine, bcl_flying_name_plates_hide_line, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Hide the line between players and flying name plates")

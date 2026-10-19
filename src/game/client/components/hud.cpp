@@ -22,7 +22,6 @@
 #include <game/client/animstate.h>
 #include <game/client/components/bestclient-light/corner_indicator.h> // bestclient-light
 #include <game/client/components/bestclient-light/cursor_trail.h> // bestclient-light
-#include <game/client/components/bestclient-light/gradient.h> // bestclient-light
 #include <game/client/components/bestclient-light/hud_extras.h> // bestclient-light
 #include <game/client/components/scoreboard.h>
 #include <game/client/components/skins.h>
@@ -33,7 +32,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <vector>
 
 namespace
 {
@@ -276,23 +274,11 @@ void CHud::RenderScoreHud(bool ForcePreview)
 		Graphics()->DrawRect(X, Y, W, H, Color.WithMultipliedAlpha(ModuleAlpha), Corners, Rounding);
 	};
 
-	auto RenderPlayerName = [&](int Id, float X, float Y, float Size, const char *pName) {
+	auto RenderPlayerName = [&](float X, float Y, float Size, const char *pName) {
 		CTextCursor Cursor;
 		Cursor.SetPosition(vec2(X, Y));
 		Cursor.m_FontSize = Size;
-		if(Id >= 0 && Id < MAX_CLIENTS && g_Config.m_BclNameplateGradient && CBcGradient::AppliesTo(Id, GameClient()))
-		{
-			const float Phase = CBcGradient::AnimatePhase(Client()->GlobalTime());
-			const std::vector<STextColorSplit> vGradientSplits = CBcGradient::BuildAnimatedTextSplits(pName, Id, GameClient(), Phase);
-			if(!vGradientSplits.empty())
-			{
-				for(const STextColorSplit &GradientSplit : vGradientSplits)
-					Cursor.m_vColorSplits.emplace_back(Cursor.m_CharCount + GradientSplit.m_CharIndex, GradientSplit.m_Length, GradientSplit.m_Color);
-				TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
-			}
-		}
-		else
-			TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
+		TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
 		TextRender()->TextEx(&Cursor, pName);
 		TextRender()->TextColor(TextRender()->DefaultTextColor());
 	};
@@ -351,7 +337,6 @@ void CHud::RenderScoreHud(bool ForcePreview)
 					const char *pName = GameClient()->m_aClients[Id].m_aName;
 					const float NameWidth = TextRender()->TextWidth(NameTextSize, pName, -1, -1.0f);
 					RenderPlayerName(
-						Id,
 						std::min(RightEdge - NameWidth - 1.0f * Scale, BoxX),
 						RowY + 20.0f * Scale - 2.0f * Scale,
 						NameTextSize,
@@ -464,7 +449,6 @@ void CHud::RenderScoreHud(bool ForcePreview)
 				const char *pName = GameClient()->m_aClients[Id].m_aName;
 				const float NameWidth = TextRender()->TextWidth(NameTextSize, pName, -1, -1.0f);
 				RenderPlayerName(
-					Id,
 					std::min(RightEdge - NameWidth - 1.0f * Scale, BoxX),
 					RowY + 20.0f * Scale - 2.0f * Scale,
 					NameTextSize,

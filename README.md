@@ -105,7 +105,6 @@ The client currently ships with more than **300** `bc_*` config variables, five 
 ### Visuals
 
 - **Chat Media** — inline photo/GIF previews, domain filter, above-head gif bubble
-- **Gradient** — gradient nicknames, clans, skins, or all text (skin / custom / rainbow)
 - **Hook Combo** — combo popups and sounds (hook / hammer / both)
 - **3D Particles** — cubes/hearts/mixed, glow, player push
 - **Media Background** — video/image in menus and ingame background
@@ -396,17 +395,6 @@ bc_mute_others_hammer
 bc_mute_others_hook
 bc_nameplate_client_indicator_offset_x
 bc_nameplate_client_indicator_offset_y
-bc_nameplate_gradient
-bc_nameplate_gradient_animate_speed
-bc_nameplate_gradient_clan
-bc_nameplate_gradient_color1
-bc_nameplate_gradient_color2
-bc_nameplate_gradient_color3
-bc_nameplate_gradient_color4
-bc_nameplate_gradient_color_count
-bc_nameplate_gradient_everything
-bc_nameplate_gradient_mode
-bc_nameplate_gradient_skin
 bc_nameplate_voice_offset_x
 bc_nameplate_voice_offset_y
 bc_optimizer

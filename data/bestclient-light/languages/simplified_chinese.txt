@@ -219,30 +219,6 @@ Outline
 == 描边
 
 [BestClient Light]
-Gradient
-== 渐变
-
-[BestClient Light]
-Gradient nicknames
-== 昵称渐变
-
-[BestClient Light]
-Gradient clans
-== 战队渐变
-
-[BestClient Light]
-Gradient skin
-== 皮肤渐变
-
-[BestClient Light]
-Gradient everything
-== 全部渐变
-
-[BestClient Light]
-Animate speed
-== 动画速度
-
-[BestClient Light]
 Mode
 == 模式
 
@@ -253,26 +229,6 @@ Skin
 [BestClient Light]
 Custom
 == 自定义
-
-[BestClient Light]
-Color count
-== 颜色数量
-
-[BestClient Light]
-Color 1
-== 颜色 1
-
-[BestClient Light]
-Color 2
-== 颜色 2
-
-[BestClient Light]
-Color 3
-== 颜色 3
-
-[BestClient Light]
-Color 4
-== 颜色 4
 
 [BestClient Light]
 Flying Name Plates
@@ -2069,19 +2025,3 @@ Medium
 [BestClient Light]
 Hard
 == 困难
-
-[Gradient]
-Apply to
-== 应用到
-
-[Gradient]
-Own
-== 自己
-
-[Gradient]
-Others
-== 其他人
-
-[Gradient]
-All
-== 全部

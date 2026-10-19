@@ -16,7 +16,6 @@
 #include <engine/keys.h>
 #include <engine/shared/config.h>
 
-#include <game/client/components/bestclient-light/gradient.h> // bestclient-light
 #include <game/client/components/bestclient-light/settings_search.h> // bestclient-light
 #include <game/client/components/bestclient-light/ui_theme/style.h> // bestclient-light
 #include <game/client/components/bestclient-light/ui_theme/widgets.h> // bestclient-light
@@ -58,9 +57,6 @@ void CUIElement::SUIElementRect::Reset()
 	m_TextOutlineColor = ColorRGBA(-1, -1, -1, -1);
 	m_QuadColor = ColorRGBA(-1, -1, -1, -1);
 	m_ReadCursorGlyphCount = -1;
-	// bestclient-light
-	m_GradientPhaseBucket = -1;
-	// bestclient-light
 }
 
 void CUIElement::SUIElementRect::Draw(const CUIRect *pRect, ColorRGBA Color, int Corners, float Rounding)
@@ -911,16 +907,6 @@ void CUi::DoLabelStreamed(CUIElement::SUIElementRect &RectEl, const CUIRect *pRe
 	const int ReadCursorGlyphCount = pReadCursor == nullptr ? -1 : pReadCursor->m_GlyphCount;
 	bool NeedsRecreate = false;
 	bool ColorChanged = RectEl.m_TextColor != TextRender()->GetTextColor() || RectEl.m_TextOutlineColor != TextRender()->GetTextOutlineColor();
-	// bestclient-light
-	int GradientPhaseBucket = -1;
-	if(g_Config.m_BclNameplateGradientEverything)
-	{
-		const float Phase = CBcGradient::AnimatePhase(Client()->GlobalTime());
-		GradientPhaseBucket = (int)(Phase * 64.0f) % 64;
-		if(RectEl.m_GradientPhaseBucket != GradientPhaseBucket)
-			NeedsRecreate = true;
-	}
-	// bestclient-light
 	if((!RectEl.m_UITextContainer.Valid() && pText[0] != '\0' && StrLen != 0) || RectEl.m_Width != pRect->w || RectEl.m_Height != pRect->h || ColorChanged || RectEl.m_ReadCursorGlyphCount != ReadCursorGlyphCount)
 	{
 		NeedsRecreate = true;
@@ -940,9 +926,6 @@ void CUi::DoLabelStreamed(CUIElement::SUIElementRect &RectEl, const CUIRect *pRe
 	}
 	RectEl.m_X = pRect->x;
 	RectEl.m_Y = pRect->y;
-	// bestclient-light
-	RectEl.m_GradientPhaseBucket = GradientPhaseBucket;
-	// bestclient-light
 	if(NeedsRecreate)
 	{
 		TextRender()->DeleteTextContainer(RectEl.m_UITextContainer);
@@ -1701,18 +1684,13 @@ void CUi::RenderProgressBar(CUIRect ProgressBar, float Progress)
 
 void CCachedText::Update(ITextRender *pTextRender, const char *pText, float FontSize, float LineWidth, int CursorFlags)
 {
-	// bestclient-light
-	if(m_FontSize == FontSize && m_LineWidth == LineWidth && m_CursorFlags == CursorFlags && m_Text == pText && !m_Colored)
+	if(m_FontSize == FontSize && m_LineWidth == LineWidth && m_CursorFlags == CursorFlags && m_Text == pText)
 		return;
-	// bestclient-light
 
 	// The render flags of a text container are fixed when it is created and depend on the
 	// line width, so only text and font size changes can reuse the existing container and
 	// upload the new quads into its buffer instead of allocating a new one.
-	// bestclient-light
-	const bool ReuseContainer = m_TextContainerIndex.Valid() && m_LineWidth == LineWidth && m_CursorFlags == CursorFlags && !m_Colored;
-	m_Colored = false;
-	// bestclient-light
+	const bool ReuseContainer = m_TextContainerIndex.Valid() && m_LineWidth == LineWidth && m_CursorFlags == CursorFlags;
 
 	m_Text = pText;
 	m_FontSize = FontSize;
@@ -1737,39 +1715,6 @@ void CCachedText::Update(ITextRender *pTextRender, const char *pText, float Font
 	m_MaxCharacterHeight = Cursor.m_MaxCharacterHeight;
 }
 
-// bestclient-light
-void CCachedText::UpdateColored(ITextRender *pTextRender, const char *pText, float FontSize, const std::vector<STextColorSplit> &vColorSplits, float LineWidth, int CursorFlags)
-{
-	const bool ReuseContainer = m_TextContainerIndex.Valid() && m_LineWidth == LineWidth && m_CursorFlags == CursorFlags;
-
-	m_Text = pText;
-	m_FontSize = FontSize;
-	m_LineWidth = LineWidth;
-	m_CursorFlags = CursorFlags;
-	m_Colored = true;
-
-	CTextCursor Cursor;
-	Cursor.m_FontSize = FontSize;
-	Cursor.m_LineWidth = LineWidth;
-	Cursor.m_Flags = CursorFlags;
-	Cursor.m_vColorSplits = vColorSplits;
-
-	const ColorRGBA OldColor = pTextRender->GetTextColor();
-	pTextRender->TextColor(pTextRender->DefaultTextColor());
-	const unsigned OldFlags = pTextRender->GetRenderFlags();
-	pTextRender->SetRenderFlags(OldFlags | TEXT_RENDER_FLAG_ONE_TIME_USE);
-	if(ReuseContainer)
-		pTextRender->RecreateTextContainerSoft(m_TextContainerIndex, &Cursor, m_Text.c_str());
-	else
-		pTextRender->RecreateTextContainer(m_TextContainerIndex, &Cursor, m_Text.c_str());
-	pTextRender->SetRenderFlags(OldFlags);
-	pTextRender->TextColor(OldColor);
-
-	m_BoundingBox = Cursor.BoundingBox();
-	m_MaxCharacterHeight = Cursor.m_MaxCharacterHeight;
-}
-// bestclient-light
-
 void CCachedText::Render(ITextRender *pTextRender, vec2 Pos, ColorRGBA Color) const
 {
 	if(!m_TextContainerIndex.Valid())
@@ -1788,9 +1733,6 @@ void CCachedText::Reset(ITextRender *pTextRender)
 	m_CursorFlags = 0;
 	m_BoundingBox = {0.0f, 0.0f, 0.0f, 0.0f};
 	m_MaxCharacterHeight = 0.0f;
-	// bestclient-light
-	m_Colored = false;
-	// bestclient-light
 }
 
 void CUi::RenderTime(CUIRect TimeRect, float FontSize, int Seconds, bool NotFinished, int Millis, bool TrueMilliseconds, CCachedText &SecondsText, CCachedText &MillisText, ColorRGBA Color) const

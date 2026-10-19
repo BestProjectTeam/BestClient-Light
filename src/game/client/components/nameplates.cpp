@@ -13,7 +13,6 @@
 
 #include <game/client/animstate.h>
 #include <game/client/components/bestclient-light/demo_tee_editor.h> // bestclient-light
-#include <game/client/components/bestclient-light/gradient.h> // bestclient-light
 #include <game/client/components/bestclient-light/version.h> // bestclient-light
 #include <game/client/gameclient.h>
 #include <game/client/prediction/entities/character.h>
@@ -103,9 +102,6 @@ protected:
 	STextContainerIndex m_TextContainerIndex;
 	virtual bool UpdateNeeded(CGameClient &This, const CNamePlateData &Data) = 0;
 	virtual void UpdateText(CGameClient &This, const CNamePlateData &Data) = 0;
-	// bestclient-light
-	virtual bool SoftUpdate() const { return false; }
-	// bestclient-light
 	ColorRGBA m_Color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
 	CNamePlatePartText(CGameClient &This) :
 		CNamePlatePart(This)
@@ -130,10 +126,7 @@ public:
 			// Create text at standard zoom
 			CScreenRect ScreenRect = This.Graphics()->GetScreen();
 			This.Graphics()->MapScreenToInterface(This.m_Camera.m_Center.x, This.m_Camera.m_Center.y);
-			// bestclient-light
-			if(!SoftUpdate())
-				This.TextRender()->DeleteTextContainer(m_TextContainerIndex);
-			// bestclient-light
+			This.TextRender()->DeleteTextContainer(m_TextContainerIndex);
 			UpdateText(This, Data);
 			This.Graphics()->MapScreen(ScreenRect);
 		}
@@ -365,10 +358,6 @@ class CNamePlatePartName : public CNamePlatePartText
 private:
 	char m_aText[std::max((size_t)MAX_NAME_LENGTH, (size_t)protocol7::MAX_NAME_ARRAY_SIZE)] = "";
 	float m_FontSize = -INFINITY;
-	// bestclient-light
-	bool m_Gradient = false;
-	float m_LastPhase = -1.0f;
-	// bestclient-light
 
 protected:
 	bool UpdateNeeded(CGameClient &This, const CNamePlateData &Data) override
@@ -385,88 +374,16 @@ protected:
 			else if(This.m_WarList.GetWarData(Data.m_ClientId).m_WarClan)
 				m_Color = This.m_WarList.GetClanColor(Data.m_ClientId).WithAlpha(Data.m_Color.a);
 		}
-		// bestclient-light
-		bool NeedsUpdate = m_FontSize != Data.m_FontSize || str_comp(m_aText, Data.m_aName) != 0;
-		bool UseGradient = false;
-		const bool HasWarColor = g_Config.m_TcWarList && (This.m_WarList.GetWarData(Data.m_ClientId).m_WarName || This.m_WarList.GetWarData(Data.m_ClientId).m_WarClan);
-		if(!HasWarColor && g_Config.m_BclNameplateGradient && (!Data.m_InGame || CBcGradient::AppliesTo(Data.m_ClientId, &This)))
-		{
-			UseGradient = true;
-			if(g_Config.m_BclNameplateGradientAnimateSpeed != 0)
-			{
-				const float Phase = CBcGradient::AnimatePhase(This.Client()->GlobalTime());
-				float PhaseDiff = absolute(Phase - m_LastPhase);
-				if(PhaseDiff > 0.5f)
-					PhaseDiff = 1.0f - PhaseDiff;
-				if(m_LastPhase < 0.0f || PhaseDiff >= 0.015f)
-					NeedsUpdate = true;
-			}
-			else if(m_LastPhase < 0.0f)
-			{
-				NeedsUpdate = true;
-			}
-		}
-		if(m_Gradient != UseGradient)
-		{
-			NeedsUpdate = true;
-			m_LastPhase = -1.0f;
-		}
-		m_Gradient = UseGradient;
-		return NeedsUpdate;
-		// bestclient-light
+		return m_FontSize != Data.m_FontSize || str_comp(m_aText, Data.m_aName) != 0;
 	}
-	// bestclient-light
-	bool SoftUpdate() const override { return m_Gradient; }
-	void Reset(CGameClient &This) override
-	{
-		CNamePlatePartText::Reset(This);
-		m_LastPhase = -1.0f;
-	}
-	// bestclient-light
 	void UpdateText(CGameClient &This, const CNamePlateData &Data) override
 	{
 		m_FontSize = Data.m_FontSize;
 		str_copy(m_aText, Data.m_aName);
 		CTextCursor Cursor;
 		Cursor.m_FontSize = m_FontSize;
-		// bestclient-light
-		if(m_Gradient)
-		{
-			const float Phase = CBcGradient::AnimatePhase(This.Client()->GlobalTime());
-			m_LastPhase = Phase;
-			Cursor.m_vColorSplits = CBcGradient::BuildAnimatedTextSplits(m_aText, Data.m_ClientId, &This, Phase);
-			const unsigned OldFlags = This.TextRender()->GetRenderFlags();
-			This.TextRender()->SetRenderFlags(OldFlags | ETextRenderFlags::TEXT_RENDER_FLAG_ONE_TIME_USE);
-			if(m_TextContainerIndex.Valid())
-				This.TextRender()->RecreateTextContainerSoft(m_TextContainerIndex, &Cursor, m_aText);
-			else
-				This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, m_aText);
-			This.TextRender()->SetRenderFlags(OldFlags);
-		}
-		else
-		{
-			m_LastPhase = -1.0f;
-			This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, m_aText);
-		}
-		// bestclient-light
+		This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, m_aText);
 	}
-	// bestclient-light
-	void Render(CGameClient &This, vec2 Pos) const override
-	{
-		if(!m_TextContainerIndex.Valid())
-			return;
-
-		ColorRGBA OutlineColor(0.0f, 0.0f, 0.0f, 0.5f * m_Color.a);
-		ColorRGBA Color;
-		if(m_Gradient)
-			Color = ColorRGBA(1.0f, 1.0f, 1.0f, m_Color.a);
-		else
-			Color = m_Color;
-		This.TextRender()->RenderTextContainer(m_TextContainerIndex,
-			Color, OutlineColor,
-			Pos.x - Size().x / 2.0f, Pos.y - Size().y / 2.0f);
-	}
-	// bestclient-light
 
 public:
 	CNamePlatePartName(CGameClient &This) :
@@ -478,10 +395,6 @@ class CNamePlatePartClan : public CNamePlatePartText
 private:
 	char m_aText[std::max((size_t)MAX_CLAN_LENGTH, (size_t)protocol7::MAX_CLAN_ARRAY_SIZE)] = "";
 	float m_FontSize = -INFINITY;
-	// bestclient-light
-	bool m_Gradient = false;
-	float m_LastPhase = -1.0f;
-	// bestclient-light
 
 protected:
 	bool UpdateNeeded(CGameClient &This, const CNamePlateData &Data) override
@@ -493,88 +406,16 @@ protected:
 		// TClient
 		if(This.m_WarList.GetWarData(Data.m_ClientId).m_WarClan)
 			m_Color = This.m_WarList.GetClanColor(Data.m_ClientId).WithAlpha(Data.m_Color.a);
-		// bestclient-light
-		bool NeedsUpdate = m_FontSize != Data.m_FontSizeClan || str_comp(m_aText, Data.m_aClan) != 0;
-		bool UseGradient = false;
-		const bool HasWarClanColor = g_Config.m_TcWarList && This.m_WarList.GetWarData(Data.m_ClientId).m_WarClan;
-		if(!HasWarClanColor && g_Config.m_BclNameplateGradientClan && (!Data.m_InGame || CBcGradient::AppliesTo(Data.m_ClientId, &This)))
-		{
-			UseGradient = true;
-			if(g_Config.m_BclNameplateGradientAnimateSpeed != 0)
-			{
-				const float Phase = CBcGradient::AnimatePhase(This.Client()->GlobalTime());
-				float PhaseDiff = absolute(Phase - m_LastPhase);
-				if(PhaseDiff > 0.5f)
-					PhaseDiff = 1.0f - PhaseDiff;
-				if(m_LastPhase < 0.0f || PhaseDiff >= 0.015f)
-					NeedsUpdate = true;
-			}
-			else if(m_LastPhase < 0.0f)
-			{
-				NeedsUpdate = true;
-			}
-		}
-		if(m_Gradient != UseGradient)
-		{
-			NeedsUpdate = true;
-			m_LastPhase = -1.0f;
-		}
-		m_Gradient = UseGradient;
-		return NeedsUpdate;
-		// bestclient-light
+		return m_FontSize != Data.m_FontSizeClan || str_comp(m_aText, Data.m_aClan) != 0;
 	}
-	// bestclient-light
-	bool SoftUpdate() const override { return m_Gradient; }
-	void Reset(CGameClient &This) override
-	{
-		CNamePlatePartText::Reset(This);
-		m_LastPhase = -1.0f;
-	}
-	// bestclient-light
 	void UpdateText(CGameClient &This, const CNamePlateData &Data) override
 	{
 		m_FontSize = Data.m_FontSizeClan;
 		str_copy(m_aText, Data.m_aClan);
 		CTextCursor Cursor;
 		Cursor.m_FontSize = m_FontSize;
-		// bestclient-light
-		if(m_Gradient)
-		{
-			const float Phase = CBcGradient::AnimatePhase(This.Client()->GlobalTime());
-			m_LastPhase = Phase;
-			Cursor.m_vColorSplits = CBcGradient::BuildAnimatedTextSplits(m_aText, Data.m_ClientId, &This, Phase);
-			const unsigned OldFlags = This.TextRender()->GetRenderFlags();
-			This.TextRender()->SetRenderFlags(OldFlags | ETextRenderFlags::TEXT_RENDER_FLAG_ONE_TIME_USE);
-			if(m_TextContainerIndex.Valid())
-				This.TextRender()->RecreateTextContainerSoft(m_TextContainerIndex, &Cursor, m_aText);
-			else
-				This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, m_aText);
-			This.TextRender()->SetRenderFlags(OldFlags);
-		}
-		else
-		{
-			m_LastPhase = -1.0f;
-			This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, m_aText);
-		}
-		// bestclient-light
+		This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, m_aText);
 	}
-	// bestclient-light
-	void Render(CGameClient &This, vec2 Pos) const override
-	{
-		if(!m_TextContainerIndex.Valid())
-			return;
-
-		ColorRGBA OutlineColor(0.0f, 0.0f, 0.0f, 0.5f * m_Color.a);
-		ColorRGBA Color;
-		if(m_Gradient)
-			Color = ColorRGBA(1.0f, 1.0f, 1.0f, m_Color.a);
-		else
-			Color = m_Color;
-		This.TextRender()->RenderTextContainer(m_TextContainerIndex,
-			Color, OutlineColor,
-			Pos.x - Size().x / 2.0f, Pos.y - Size().y / 2.0f);
-	}
-	// bestclient-light
 
 public:
 	CNamePlatePartClan(CGameClient &This) :
