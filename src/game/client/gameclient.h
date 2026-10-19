@@ -45,7 +45,6 @@
 #include "components/bestclient-light/finish_prediction.h" // bestclient-light
 #include "components/bestclient-light/flying_name_plates.h" // bestclient-light
 #include "components/bestclient-light/gradient.h" // bestclient-light
-#include "components/bestclient-light/jelly_tee.h" // bestclient-light
 #include "components/bestclient-light/keystrokes.h" // bestclient-light
 #include "components/bestclient-light/music_player.h" // bestclient-light
 #include "components/bestclient-light/optimizer.h" // bestclient-light
@@ -244,7 +243,6 @@ public:
 	CAdminPanel m_AdminPanel; // bestclient-light
 	CAspectRatio m_AspectRatio; // bestclient-light
 	C3DParticles m_3DParticles; // bestclient-light
-	CJellyTee m_JellyTee; // bestclient-light
 	CBcGradient m_BcGradient; // bestclient-light
 	CFlyingNamePlates m_FlyingNamePlates; // bestclient-light
 	CQuickBinds m_QuickBinds; // bestclient-light

@@ -256,18 +256,18 @@ void CRenderTools::GetRenderTeeOffsetToRenderedTee(const CAnimState *pAnim, cons
 	TeeOffsetToMid.y = -MidOfRendered;
 }
 
-void CRenderTools::RenderTee(const CAnimState *pAnim, const CTeeRenderInfo *pInfo, int Emote, vec2 Dir, vec2 Pos, float Alpha, bool IsLocal, vec2 BodyScale, vec2 FeetScale, float BodyAngle, float FeetAngle) const // bestclient-light
+void CRenderTools::RenderTee(const CAnimState *pAnim, const CTeeRenderInfo *pInfo, int Emote, vec2 Dir, vec2 Pos, float Alpha, bool IsLocal) const
 {
 	if(pInfo->m_aSixup[g_Config.m_ClDummy].PartTexture(protocol7::SKINPART_BODY).IsValid())
-		RenderTee7(pAnim, pInfo, Emote, Dir, Pos, Alpha, IsLocal, BodyScale, FeetScale, BodyAngle, FeetAngle); // bestclient-light
+		RenderTee7(pAnim, pInfo, Emote, Dir, Pos, Alpha, IsLocal);
 	else
-		RenderTee6(pAnim, pInfo, Emote, Dir, Pos, Alpha, IsLocal, BodyScale, FeetScale, BodyAngle, FeetAngle); // bestclient-light
+		RenderTee6(pAnim, pInfo, Emote, Dir, Pos, Alpha, IsLocal);
 
 	Graphics()->SetColor(1.f, 1.f, 1.f, 1.f);
 	Graphics()->QuadsSetRotation(0);
 }
 
-void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pInfo, int Emote, vec2 Dir, vec2 Pos, float Alpha, bool IsLocal, vec2 BodyScale, vec2 FeetScale, float BodyAngle, float FeetAngle) const // bestclient-light
+void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pInfo, int Emote, vec2 Dir, vec2 Pos, float Alpha, bool IsLocal) const
 {
 	vec2 Direction = Dir;
 	vec2 Position = Pos;
@@ -297,16 +297,12 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 			if(Filling == 1)
 			{
 				vec2 BodyPos = Position + vec2(pAnim->GetBody()->m_X, pAnim->GetBody()->m_Y) * AnimScale;
-				// bestclient-light
-				IGraphics::CQuadItem BodyItem(BodyPos.x, BodyPos.y, BaseSize * BodyScale.x, BaseSize * BodyScale.y);
-				// bestclient-light
+				IGraphics::CQuadItem BodyItem(BodyPos.x, BodyPos.y, BaseSize, BaseSize);
 				IGraphics::CQuadItem Item;
 
 				if(IsBot && !OutLine)
 				{
-					// bestclient-light
-					IGraphics::CQuadItem BotItem(BodyPos.x + (2.f / 3.f) * AnimScale, BodyPos.y + (-16 + 2.f / 3.f) * AnimScale, BaseSize * BodyScale.x, BaseSize * BodyScale.y); // x+0.66, y+0.66 to correct some rendering bug
-					// bestclient-light
+					IGraphics::CQuadItem BotItem(BodyPos.x + (2.f / 3.f) * AnimScale, BodyPos.y + (-16 + 2.f / 3.f) * AnimScale, BaseSize, BaseSize); // x+0.66, y+0.66 to correct some rendering bug
 
 					// draw bot visuals (background)
 					Graphics()->TextureSet(pInfo->m_aSixup[g_Config.m_ClDummy].m_BotTexture);
@@ -337,7 +333,7 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 				{
 					Graphics()->TextureSet(DecorationTexture);
 					Graphics()->QuadsBegin();
-					Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2 + BodyAngle); // bestclient-light
+					Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2);
 					Graphics()->SetColor(pInfo->m_aSixup[g_Config.m_ClDummy].m_aColors[protocol7::SKINPART_DECORATION].WithAlpha(Alpha));
 					Graphics()->SelectSprite7(OutLine ? client_data7::SPRITE_TEE_DECORATION_OUTLINE : client_data7::SPRITE_TEE_DECORATION);
 					Item = BodyItem;
@@ -349,7 +345,7 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 				const IGraphics::CTextureHandle &BodyTexture = pInfo->m_aSixup[g_Config.m_ClDummy].PartTexture(protocol7::SKINPART_BODY);
 				Graphics()->TextureSet(BodyTexture);
 				Graphics()->QuadsBegin();
-				Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2 + BodyAngle); // bestclient-light
+				Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2);
 				if(OutLine)
 				{
 					Graphics()->SetColor(1.0f, 1.0f, 1.0f, Alpha);
@@ -370,7 +366,7 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 				{
 					Graphics()->TextureSet(MarkingTexture);
 					Graphics()->QuadsBegin();
-					Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2 + BodyAngle); // bestclient-light
+					Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2);
 					ColorRGBA MarkingColor = pInfo->m_aSixup[g_Config.m_ClDummy].m_aColors[protocol7::SKINPART_MARKING];
 					Graphics()->SetColor(MarkingColor.r * MarkingColor.a, MarkingColor.g * MarkingColor.a, MarkingColor.b * MarkingColor.a, MarkingColor.a * Alpha);
 					Graphics()->SelectSprite7(client_data7::SPRITE_TEE_MARKING);
@@ -384,7 +380,7 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 				{
 					Graphics()->TextureSet(BodyTexture);
 					Graphics()->QuadsBegin();
-					Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2 + BodyAngle); // bestclient-light
+					Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2);
 					Graphics()->SetColor(1.0f, 1.0f, 1.0f, Alpha);
 					for(int t = 0; t < 2; t++)
 					{
@@ -398,7 +394,7 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 				// draw eyes
 				Graphics()->TextureSet(pInfo->m_aSixup[g_Config.m_ClDummy].PartTexture(protocol7::SKINPART_EYES));
 				Graphics()->QuadsBegin();
-				Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2 + BodyAngle); // bestclient-light
+				Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2);
 				if(IsBot)
 				{
 					Graphics()->SetColor(pInfo->m_aSixup[g_Config.m_ClDummy].m_BotColor.WithAlpha(Alpha));
@@ -429,11 +425,9 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 						break;
 					}
 
-					// bestclient-light
-					float EyeScale = BaseSize * 0.60f * BodyScale.x;
-					float h = (Emote == EMOTE_BLINK ? BaseSize * 0.15f / 2.0f : EyeScale / 2.0f) * BodyScale.y;
-					vec2 Offset = vec2(Direction.x * 0.125f * BodyScale.x, (-0.05f + Direction.y * 0.10f) * BodyScale.y) * BaseSize;
-					// bestclient-light
+					float EyeScale = BaseSize * 0.60f;
+					float h = (Emote == EMOTE_BLINK ? BaseSize * 0.15f / 2.0f : EyeScale / 2.0f);
+					vec2 Offset = vec2(Direction.x * 0.125f, -0.05f + Direction.y * 0.10f) * BaseSize;
 					IGraphics::CQuadItem QuadItem(BodyPos.x + Offset.x, BodyPos.y + Offset.y, EyeScale, h);
 					Graphics()->QuadsDraw(&QuadItem, 1);
 				}
@@ -444,7 +438,7 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 				{
 					Graphics()->TextureSet(pInfo->m_aSixup[g_Config.m_ClDummy].m_HatTexture);
 					Graphics()->QuadsBegin();
-					Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2 + BodyAngle); // bestclient-light
+					Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2);
 					Graphics()->SetColor(1.0f, 1.0f, 1.0f, Alpha);
 					int Flag = Direction.x < 0.0f ? IGraphics::SPRITE_FLAG_FLIP_X : 0;
 					switch(pInfo->m_aSixup[g_Config.m_ClDummy].m_HatSpriteIndex)
@@ -478,10 +472,8 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 			Graphics()->QuadsBegin();
 			const CAnimKeyframe *pFoot = Filling ? pAnim->GetFrontFoot() : pAnim->GetBackFoot();
 
-			// bestclient-light
-			float w = (BaseSize / 2.1f) * FeetScale.x;
-			float h = (BaseSize / 2.1f) * FeetScale.y;
-			// bestclient-light
+			float w = BaseSize / 2.1f;
+			float h = BaseSize / 2.1f;
 
 			if(TinyTee) // TClient
 			{
@@ -489,7 +481,7 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 				h *= TinyFeetScale * SizeMultiplier;
 			}
 
-			Graphics()->QuadsSetRotation(pFoot->m_Angle * pi * 2 + FeetAngle); // bestclient-light
+			Graphics()->QuadsSetRotation(pFoot->m_Angle * pi * 2);
 
 			if(OutLine)
 			{
@@ -517,7 +509,7 @@ void CRenderTools::RenderTee7(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 	}
 }
 
-void CRenderTools::RenderTee6(const CAnimState *pAnim, const CTeeRenderInfo *pInfo, int Emote, vec2 Dir, vec2 Pos, float Alpha, bool IsLocal, vec2 BodyScale, vec2 FeetScale, float BodyAngle, float FeetAngle) const // bestclient-light
+void CRenderTools::RenderTee6(const CAnimState *pAnim, const CTeeRenderInfo *pInfo, int Emote, vec2 Dir, vec2 Pos, float Alpha, bool IsLocal) const
 {
 	vec2 Direction = Dir;
 	vec2 Position = Pos;
@@ -548,17 +540,15 @@ void CRenderTools::RenderTee6(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 
 			if(Filling == 1)
 			{
-				Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2 + BodyAngle); // bestclient-light
+				Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle * pi * 2);
 
 				// draw body
 				Graphics()->SetColor(pInfo->m_ColorBody.r, pInfo->m_ColorBody.g, pInfo->m_ColorBody.b, Alpha);
 				vec2 BodyPos = Position + vec2(pAnim->GetBody()->m_X, pAnim->GetBody()->m_Y) * AnimScale;
-				// bestclient-light
 				float RenderBodyScale;
 				GetRenderTeeBodyScale(BaseSize, RenderBodyScale);
 				Graphics()->TextureSet(OutLine == 1 ? pSkinTextures->m_BodyOutline : pSkinTextures->m_Body);
-				Graphics()->RenderQuadContainerAsSprite(m_TeeQuadContainerIndex, OutLine, BodyPos.x, BodyPos.y, RenderBodyScale * BodyScale.x, RenderBodyScale * BodyScale.y);
-				// bestclient-light
+				Graphics()->RenderQuadContainerAsSprite(m_TeeQuadContainerIndex, OutLine, BodyPos.x, BodyPos.y, RenderBodyScale, RenderBodyScale);
 
 				// draw eyes
 				if(Pass == 1)
@@ -590,12 +580,10 @@ void CRenderTools::RenderTee6(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 						break;
 					}
 
-					// bestclient-light
-					float EyeScale = BaseSize * 0.40f * BodyScale.x;
-					float h = (Emote == EMOTE_BLINK ? BaseSize * 0.15f : BaseSize * 0.40f) * BodyScale.y;
-					float EyeSeparation = (0.075f - 0.010f * absolute(Direction.x)) * BaseSize * BodyScale.x;
-					vec2 Offset = vec2(Direction.x * 0.125f * BodyScale.x, (-0.05f + Direction.y * 0.10f) * BodyScale.y) * BaseSize;
-					// bestclient-light
+					float EyeScale = BaseSize * 0.40f;
+					float h = (Emote == EMOTE_BLINK ? BaseSize * 0.15f : BaseSize * 0.40f);
+					float EyeSeparation = (0.075f - 0.010f * absolute(Direction.x)) * BaseSize;
+					vec2 Offset = vec2(Direction.x * 0.125f, -0.05f + Direction.y * 0.10f) * BaseSize;
 
 					Graphics()->TextureSet(pSkinTextures->m_aEyes[TeeEye]);
 					Graphics()->RenderQuadContainerAsSprite(m_TeeQuadContainerIndex, QuadOffset + EyeQuadOffset, BodyPos.x - EyeSeparation + Offset.x, BodyPos.y + Offset.y, EyeScale / (64.f * 0.4f), h / (64.f * 0.4f));
@@ -612,10 +600,8 @@ void CRenderTools::RenderTee6(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 			// draw feet
 			const CAnimKeyframe *pFoot = Filling ? pAnim->GetFrontFoot() : pAnim->GetBackFoot();
 
-			// bestclient-light
-			float w = BaseSize * FeetScale.x;
-			float h = (BaseSize / 2) * FeetScale.y;
-			// bestclient-light
+			float w = BaseSize;
+			float h = BaseSize / 2;
 
 			if(TinyTee)
 			{
@@ -629,7 +615,7 @@ void CRenderTools::RenderTee6(const CAnimState *pAnim, const CTeeRenderInfo *pIn
 				QuadOffset += 2;
 			}
 
-			Graphics()->QuadsSetRotation(pFoot->m_Angle * pi * 2 + FeetAngle); // bestclient-light
+			Graphics()->QuadsSetRotation(pFoot->m_Angle * pi * 2);
 
 			bool Indicate = !pInfo->m_GotAirJump && g_Config.m_ClAirjumpindicator;
 			float ColorScale = 1.0f;

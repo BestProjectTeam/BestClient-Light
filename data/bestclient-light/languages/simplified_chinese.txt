@@ -111,26 +111,6 @@ UI scale
 == 界面缩放
 
 [BestClient Light]
-Jelly Tee
-== 果冻 Tee
-
-[BestClient Light]
-Enable Jelly Tee
-== 启用果冻 Tee
-
-[BestClient Light]
-Jelly Others
-== 其他玩家果冻
-
-[BestClient Light]
-Jelly strength
-== 果冻强度
-
-[BestClient Light]
-Jelly duration
-== 果冻时长
-
-[BestClient Light]
 Corner indicator
 == 角落指示
 

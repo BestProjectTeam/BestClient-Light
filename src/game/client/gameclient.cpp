@@ -153,7 +153,6 @@ void CGameClient::OnConsoleInit()
 					      &m_3DParticles, // bestclient-light
 					      &m_Ghost,
 					      &m_TClient, // TClient (Must be before chat and players)
-					      &m_JellyTee, // bestclient-light
 					      &m_BcGradient, // bestclient-light
 					      &m_FlyingNamePlates, // bestclient-light
 					      &m_Players,
@@ -5977,8 +5976,6 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "Ghost";
 	if(pComp == &m_TClient)
 		return "TClient";
-	if(pComp == &m_JellyTee)
-		return "JellyTee";
 	if(pComp == &m_BcGradient)
 		return "BcGradient";
 	if(pComp == &m_FlyingNamePlates)

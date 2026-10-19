@@ -111,26 +111,6 @@ UI scale
 == Масштаб UI
 
 [BestClient Light]
-Jelly Tee
-== Джелли тии
-
-[BestClient Light]
-Enable Jelly Tee
-== Включить джелли тии
-
-[BestClient Light]
-Jelly Others
-== Джелли других
-
-[BestClient Light]
-Jelly strength
-== Сила джелли
-
-[BestClient Light]
-Jelly duration
-== Длительность джелли
-
-[BestClient Light]
 Corner indicator
 == Индикатор углов
 

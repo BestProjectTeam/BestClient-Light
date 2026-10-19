@@ -898,66 +898,6 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 
 	Column.HSplitTop(MarginBetweenViews, nullptr, &Column);
 
-	const bool JellyExpanded = g_Config.m_BclJellyTee != 0;
-	const float JellyHeaderHeight = LineSize + MarginSmall + LineSize;
-	const float JellyExpandedTargetHeight = MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize;
-	const float JellyExpandedHeight = BC_MODULE_REVEAL(JellyExpanded, JellyExpandedTargetHeight, Client()->RenderFrameTime());
-	const float JellyBlockHeight = JellyHeaderHeight + JellyExpandedHeight;
-
-	CUIRect JellyBlock;
-	Column.HSplitTop(JellyBlockHeight, &JellyBlock, &Column);
-
-	CUIRect JellyBlockBg = JellyBlock;
-	JellyBlockBg.w += BlockPadding;
-	JellyBlockBg.h += BlockPadding;
-	JellyBlockBg.x -= BlockPadding * 0.5f;
-	JellyBlockBg.y -= BlockPadding * 0.5f;
-	BestClientLightUiTheme::DrawUiBlock(&JellyBlockBg, IGraphics::CORNER_ALL, 10.0f);
-	BestClientLightSettingsSearch::DrawBlockHighlight(&g_Config.m_BclJellyTee, &JellyBlockBg);
-
-	MainView = JellyBlock;
-
-	MainView.HSplitTop(LineSize, &Label, &MainView);
-	CUIRect JellyTitleLabel, JellyResetButton;
-	Label.VSplitRight(LineSize + 8.0f, &JellyTitleLabel, &JellyResetButton);
-	static CButtonContainer s_JellyTeeResetButton;
-	const bool JellyTeeResetClicked = Ui()->DoButton_FontIcon(&s_JellyTeeResetButton, FontIcon::ARROW_ROTATE_LEFT, 0, &JellyResetButton, BUTTONFLAG_LEFT);
-	GameClient()->m_Tooltips.DoToolTip(&s_JellyTeeResetButton, &JellyResetButton, BcLocalize("Reset to defaults"));
-	if(JellyTeeResetClicked)
-	{
-		g_Config.m_BclJellyTeeOthers = DefaultConfig::BclJellyTeeOthers;
-		g_Config.m_BclJellyTeeStrength = DefaultConfig::BclJellyTeeStrength;
-		g_Config.m_BclJellyTeeDuration = DefaultConfig::BclJellyTeeDuration;
-	}
-	Ui()->DoLabel(&JellyTitleLabel, BcLocalize("Jelly Tee"), HeadlineFontSize, TEXTALIGN_ML);
-	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-
-	MainView.HSplitTop(LineSize, &Content, &MainView);
-	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclJellyTee, BcLocalize("Enable Jelly Tee"), &g_Config.m_BclJellyTee, &Content, LineSize);
-
-	if(JellyExpandedHeight > 0.5f)
-	{
-		CUIRect Visible = MainView;
-		Visible.h = JellyExpandedHeight;
-		Ui()->ClipEnable(&Visible);
-
-		MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-		MainView.HSplitTop(LineSize, &Content, &MainView);
-		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclJellyTeeOthers, BcLocalize("Jelly Others"), &g_Config.m_BclJellyTeeOthers, &Content, LineSize);
-
-		MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-		MainView.HSplitTop(LineSize, &Button, &MainView);
-		Ui()->DoScrollbarOption(&g_Config.m_BclJellyTeeStrength, &g_Config.m_BclJellyTeeStrength, &Button, BcLocalize("Jelly strength"), 1, 500);
-
-		MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-		MainView.HSplitTop(LineSize, &Button, &MainView);
-		Ui()->DoScrollbarOption(&g_Config.m_BclJellyTeeDuration, &g_Config.m_BclJellyTeeDuration, &Button, BcLocalize("Jelly duration"), 1, 80);
-
-		Ui()->ClipDisable();
-	}
-
-	Column.HSplitTop(MarginBetweenViews, nullptr, &Column);
-
 	RenderSettingsBestClientLightWeaponGlow(Column);
 
 	Column.HSplitTop(MarginBetweenViews, nullptr, &Column);

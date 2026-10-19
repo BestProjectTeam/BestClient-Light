@@ -1,8 +1,3 @@
-	{"Jelly Tee", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclJellyTee, nullptr},
-	{"Jelly Others", SETTINGS_NAV_LEAF_BC_VISUALS, "Jelly Tee", &g_Config.m_BclJellyTeeOthers, &g_Config.m_BclJellyTee},
-	{"Jelly strength", SETTINGS_NAV_LEAF_BC_VISUALS, "Jelly Tee", &g_Config.m_BclJellyTeeStrength, &g_Config.m_BclJellyTee},
-	{"Jelly duration", SETTINGS_NAV_LEAF_BC_VISUALS, "Jelly Tee", &g_Config.m_BclJellyTeeDuration, &g_Config.m_BclJellyTee},
-
 	{"Corner indicator", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclCornerIndicator, nullptr},
 	{"Only in team", SETTINGS_NAV_LEAF_BC_VISUALS, "Corner indicator", &g_Config.m_BclCornerIndicatorOnlyInTeam, &g_Config.m_BclCornerIndicator},
 	{"Show alive teammates", SETTINGS_NAV_LEAF_BC_VISUALS, "Corner indicator", &g_Config.m_BclCornerIndicatorShowAlive, &g_Config.m_BclCornerIndicator},

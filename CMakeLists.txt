@@ -2881,8 +2881,6 @@ if(CLIENT)
     components/bestclient-light/aspect_ratio.h
     components/bestclient-light/gradient.cpp
     components/bestclient-light/gradient.h
-    components/bestclient-light/jelly_tee.cpp
-    components/bestclient-light/jelly_tee.h
     components/bestclient-light/flying_name_plates.cpp
     components/bestclient-light/flying_name_plates.h
     components/bestclient-light/3d_particles.cpp

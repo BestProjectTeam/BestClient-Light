@@ -20,7 +20,6 @@
 #include <game/client/animstate.h>
 #include <game/client/components/bestclient-light/bestclient-light.h> // bestclient-light
 #include <game/client/components/bestclient-light/demo_tee_editor.h> // bestclient-light
-#include <game/client/components/bestclient-light/jelly_tee.h> // bestclient-light
 #include <game/client/components/controls.h>
 #include <game/client/components/effects.h>
 #include <game/client/components/flow.h>
@@ -752,10 +751,7 @@ void CPlayers::RenderPlayer(
 	float Angle = GetPlayerTargetAngle(&Prev, &Player, ClientId, Intra);
 
 	vec2 Direction = direction(Angle);
-	// bestclient-light
-	const vec2 PrevVel = vec2(Prev.m_VelX / 256.0f, Prev.m_VelY / 256.0f);
-	vec2 Vel = mix(PrevVel, vec2(Player.m_VelX / 256.0f, Player.m_VelY / 256.0f), Intra);
-	// bestclient-light
+	vec2 Vel = mix(vec2(Prev.m_VelX / 256.0f, Prev.m_VelY / 256.0f), vec2(Player.m_VelX / 256.0f, Player.m_VelY / 256.0f), Intra);
 
 	// TClient: render the ghost as a circle instead of a tee
 	if(RenderGhost && g_Config.m_TcRenderGhostAsCircle && !FrozenSwappingHide)
@@ -821,10 +817,6 @@ void CPlayers::RenderPlayer(
 	// bestclient-light
 	if(Inactive && GameClient()->m_FastPractice.Active() && GameClient()->m_FastPractice.IsPracticeParticipant(ClientId))
 		Inactive = false;
-	// bestclient-light
-
-	// bestclient-light
-	const SJellyTeeDeform JellyDeform = GameClient()->m_JellyTee.GetDeform(ClientId, PrevVel, Vel, Direction, InAir, WantOtherDir, Position);
 	// bestclient-light
 
 	// evaluate animation
@@ -1148,10 +1140,10 @@ void CPlayers::RenderPlayer(
 				vec2(GameClient()->m_Snap.m_aCharacters[ClientId].m_Cur.m_X, GameClient()->m_Snap.m_aCharacters[ClientId].m_Cur.m_Y),
 				Client()->IntraGameTick(g_Config.m_ClDummy));
 
-		RenderTools()->RenderTee(&State, &RenderInfo, Player.m_Emote, Direction, ShadowPosition, g_Config.m_ClUnpredictedShadowAlpha / 100.f, Local, JellyDeform.m_BodyScale, JellyDeform.m_FeetScale, JellyDeform.m_BodyAngle, JellyDeform.m_FeetAngle); // bestclient-light
+		RenderTools()->RenderTee(&State, &RenderInfo, Player.m_Emote, Direction, ShadowPosition, g_Config.m_ClUnpredictedShadowAlpha / 100.f, Local);
 	}
 
-	RenderTools()->RenderTee(&State, &RenderInfo, Player.m_Emote, Direction, Position, Alpha, Local, JellyDeform.m_BodyScale, JellyDeform.m_FeetScale, JellyDeform.m_BodyAngle, JellyDeform.m_FeetAngle); // bestclient-light
+	RenderTools()->RenderTee(&State, &RenderInfo, Player.m_Emote, Direction, Position, Alpha, Local);
 
 	// bestclient-light
 	if(ClientId >= 0 && Client()->State() == IClient::STATE_DEMOPLAYBACK && ClientId == GameClient()->m_DemoTeeEditor.SelectedClientId() &&
