@@ -1002,8 +1002,7 @@ private:
 	// found in components/bestclient-light/menus_bestclient-light.cpp // bestclient-light
 	void RenderSettingsBestClientLight(CUIRect MainView);
 	void RenderSettingsBestClientLightVisuals(CUIRect MainView);
-	void RenderSettingsBestClientLightGameplay(CUIRect MainView);
-	void RenderSettingsBestClientLightOthers(CUIRect MainView);
+	void RenderSettingsBestClientLightTools(CUIRect MainView);
 	// bestclient-light
 	void RenderSettingsBestClientLightInfo(CUIRect MainView); // bestclient-light
 	void RenderSettingsBestClientLightConfigPresets(CUIRect MainView); // bestclient-light

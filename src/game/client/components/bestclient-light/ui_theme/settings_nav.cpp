@@ -27,10 +27,11 @@ static constexpr int TC_TAB_STATUSBAR = 4;
 static constexpr int TC_TAB_INFO = 5;
 
 static constexpr int BC_TAB_VISUALS = 0;
-static constexpr int BC_TAB_GAMEPLAY = 1;
-static constexpr int BC_TAB_OTHERS = 2;
-static constexpr int BC_TAB_CONFIGS = 3;
-static constexpr int BC_TAB_INFO = 4;
+static constexpr int BC_TAB_TOOLS = 1;
+static constexpr int BC_TAB_CONFIGS = 2;
+static constexpr int BC_TAB_INFO = 3;
+static constexpr int BC_HIDE_BIT_VISUALS = 0;
+static constexpr int BC_HIDE_BIT_TOOLS = 1;
 
 static const int s_aDdnetLeaves[] = {
 	SETTINGS_NAV_LEAF_GENERAL,
@@ -55,9 +56,7 @@ static const int s_aTclientLeaves[] = {
 };
 static const int s_aBestclientLightLeaves[] = {
 	SETTINGS_NAV_LEAF_BC_VISUALS,
-	SETTINGS_NAV_LEAF_BC_GAMEPLAY,
-	SETTINGS_NAV_LEAF_BC_OTHERS,
-	SETTINGS_NAV_LEAF_BC_CONFIGS,
+	SETTINGS_NAV_LEAF_BC_TOOLS,
 	SETTINGS_NAV_LEAF_BC_INFO,
 };
 
@@ -152,13 +151,9 @@ SSettingsLeafTarget LeafTarget(int Leaf)
 		Target.m_SettingsPage = CMenus::SETTINGS_BESTCLIENT_LIGHT;
 		Target.m_BestClientLightTab = BC_TAB_VISUALS;
 		break;
-	case SETTINGS_NAV_LEAF_BC_GAMEPLAY:
+	case SETTINGS_NAV_LEAF_BC_TOOLS:
 		Target.m_SettingsPage = CMenus::SETTINGS_BESTCLIENT_LIGHT;
-		Target.m_BestClientLightTab = BC_TAB_GAMEPLAY;
-		break;
-	case SETTINGS_NAV_LEAF_BC_OTHERS:
-		Target.m_SettingsPage = CMenus::SETTINGS_BESTCLIENT_LIGHT;
-		Target.m_BestClientLightTab = BC_TAB_OTHERS;
+		Target.m_BestClientLightTab = BC_TAB_TOOLS;
 		break;
 	case SETTINGS_NAV_LEAF_BC_CONFIGS:
 		Target.m_SettingsPage = CMenus::SETTINGS_BESTCLIENT_LIGHT;
@@ -191,13 +186,12 @@ bool IsLeafVisible(int Leaf, int TcTabFlags, int BcTabFlags)
 		const int Tab = Leaf - SETTINGS_NAV_LEAF_TC_SETTINGS;
 		return !IsFlagSet(TcTabFlags, Tab);
 	}
-	if(Leaf >= SETTINGS_NAV_LEAF_BC_VISUALS && Leaf <= SETTINGS_NAV_LEAF_BC_OTHERS)
-	{
-		const int Tab = Leaf - SETTINGS_NAV_LEAF_BC_VISUALS;
-		return !IsFlagSet(BcTabFlags, Tab);
-	}
+	if(Leaf == SETTINGS_NAV_LEAF_BC_VISUALS)
+		return !IsFlagSet(BcTabFlags, BC_HIDE_BIT_VISUALS);
+	if(Leaf == SETTINGS_NAV_LEAF_BC_TOOLS)
+		return !IsFlagSet(BcTabFlags, BC_HIDE_BIT_TOOLS);
 	if(Leaf == SETTINGS_NAV_LEAF_BC_CONFIGS)
-		return !IsFlagSet(BcTabFlags, BC_TAB_CONFIGS);
+		return false;
 	return true;
 }
 
@@ -229,9 +223,8 @@ int LeafFromState(int SettingsPage, int TClientTab, int BestClientLightTab)
 	case CMenus::SETTINGS_BESTCLIENT_LIGHT:
 		switch(BestClientLightTab)
 		{
-		case BC_TAB_GAMEPLAY: return SETTINGS_NAV_LEAF_BC_GAMEPLAY;
-		case BC_TAB_OTHERS: return SETTINGS_NAV_LEAF_BC_OTHERS;
-		case BC_TAB_CONFIGS: return SETTINGS_NAV_LEAF_BC_CONFIGS;
+		case BC_TAB_TOOLS: return SETTINGS_NAV_LEAF_BC_TOOLS;
+		case BC_TAB_CONFIGS: return SETTINGS_NAV_LEAF_BC_TOOLS;
 		case BC_TAB_INFO: return SETTINGS_NAV_LEAF_BC_INFO;
 		default: return SETTINGS_NAV_LEAF_BC_VISUALS;
 		}
@@ -373,7 +366,7 @@ void CMenus::RenderSettingsNavNewStyle(CUIRect &TabBar)
 	const char *apGroupNames[SETTINGS_NAV_GROUP_COUNT] = {
 		Localize("DDNet"),
 		TCLocalize("TClient"),
-		Localize("BestClient Light"),
+		Localize("Light"),
 	};
 
 	auto LeafName = [&](int Leaf) -> const char * {
@@ -397,8 +390,7 @@ void CMenus::RenderSettingsNavNewStyle(CUIRect &TabBar)
 		case SETTINGS_NAV_LEAF_TC_PROFILE: return Localize("Profiles");
 		case SETTINGS_NAV_LEAF_TC_CONFIGS: return Localize("Configs");
 		case SETTINGS_NAV_LEAF_BC_VISUALS: return BcLocalize("Visuals");
-		case SETTINGS_NAV_LEAF_BC_GAMEPLAY: return BcLocalize("Gameplay");
-		case SETTINGS_NAV_LEAF_BC_OTHERS: return BcLocalize("Others");
+		case SETTINGS_NAV_LEAF_BC_TOOLS: return BcLocalize("Tools");
 		case SETTINGS_NAV_LEAF_BC_CONFIGS: return BcLocalize("Configs");
 		case SETTINGS_NAV_LEAF_BC_INFO: return BcLocalize("Info");
 		default: return "";

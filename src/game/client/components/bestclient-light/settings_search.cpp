@@ -72,8 +72,7 @@ static const char *LeafLabel(int Leaf)
 	case SETTINGS_NAV_LEAF_TC_PROFILE: return TCLocalize("Profiles");
 	case SETTINGS_NAV_LEAF_TC_CONFIGS: return TCLocalize("Configs");
 	case SETTINGS_NAV_LEAF_BC_VISUALS: return BcLocalize("Visuals");
-	case SETTINGS_NAV_LEAF_BC_GAMEPLAY: return BcLocalize("Gameplay");
-	case SETTINGS_NAV_LEAF_BC_OTHERS: return BcLocalize("Others");
+	case SETTINGS_NAV_LEAF_BC_TOOLS: return BcLocalize("Tools");
 	case SETTINGS_NAV_LEAF_BC_CONFIGS: return BcLocalize("Configs");
 	case SETTINGS_NAV_LEAF_BC_INFO: return BcLocalize("Info");
 	default: return Localize("Settings");
@@ -84,7 +83,7 @@ static const char *GroupLabel(int Leaf)
 {
 	if(GroupForLeaf(Leaf) == SETTINGS_NAV_GROUP_TCLIENT)
 		return TCLocalize("TClient");
-	return Localize("BestClient Light");
+	return Localize("Light");
 }
 
 static void FormatPath(const SEntry &Entry, char *pBuf, size_t BufSize)

@@ -132,7 +132,7 @@ void CMenus::RenderSettings(CUIRect MainView)
 			Localize("DDNet"),
 			Localize("Assets"),
 			TCLocalize("TClient"), // TClient
-			Localize("BestClient Light"), // bestclient-light
+			Localize("Light"), // bestclient-light
 			Localize("Profiles"), // TClient
 			Localize("Configs"), // TClient
 			Localize("Credits")};
