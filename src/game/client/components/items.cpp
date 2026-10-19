@@ -105,10 +105,7 @@ void CItems::RenderProjectile(const CProjectileData *pCurrent, int ItemId, const
 	// don't check for validity of the projectile for the current weapon here, so particle effects are rendered for mod compatibility
 	if(CurWeapon == WEAPON_GRENADE)
 	{
-		// bestclient-light
-		if(!GameClient()->m_WeaponVfx.RenderRocketTrail(*pCurrent, Ct, Curvature, Speed, Alpha))
-			GameClient()->m_Effects.SmokeTrail(Pos, Vel * -1, Alpha, 0.0f);
-		// bestclient-light
+		GameClient()->m_Effects.SmokeTrail(Pos, Vel * -1, Alpha, 0.0f);
 		static float s_Time = 0.0f;
 		static float s_LastLocalTime = LocalTime();
 		s_Time += (LocalTime() - s_LastLocalTime) * GameClient()->GetAnimationPlaybackSpeed();
@@ -361,11 +358,6 @@ void CItems::RenderLaser(const CLaserData *pCurrent, bool IsPredicted)
 void CItems::RenderLaser(vec2 From, vec2 Pos, ColorRGBA OuterColor, ColorRGBA InnerColor, float TicksBody, float TicksHead, int Type) const
 {
 	float Len = distance(Pos, From);
-	// bestclient-light
-	if(GameClient()->m_WeaponVfx.RenderWeaponLaser(From, Pos, OuterColor, InnerColor, TicksBody, TicksHead, Type))
-		return;
-	// bestclient-light
-
 	if(Len > 0)
 	{
 		if(Type == LASERTYPE_DRAGGER)
@@ -758,10 +750,6 @@ void CItems::OnInit()
 
 void CItems::ReconstructSmokeTrail(const CProjectileData *pCurrent, int DestroyTick)
 {
-	// bestclient-light
-	if(pCurrent->m_Type == WEAPON_GRENADE && g_Config.m_BclRocketGlow && g_Config.m_BclRocketGlowPower > 0)
-		return;
-	// bestclient-light
 	bool LocalPlayerInGame = false;
 
 	if(GameClient()->m_Snap.m_pLocalInfo)

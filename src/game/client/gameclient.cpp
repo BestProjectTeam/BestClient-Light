@@ -167,7 +167,6 @@ void CGameClient::OnConsoleInit()
 					      &m_Pet, // TClient
 					      // bestclient-light
 					      &m_FgfWeather,
-					      &m_WeaponVfx,
 					      // bestclient-light
 					      &m_Particles.m_RenderExplosions,
 					      &m_NamePlates,
@@ -6002,8 +6001,6 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "Pet";
 	if(pComp == &m_FgfWeather)
 		return "FgfWeather";
-	if(pComp == &m_WeaponVfx)
-		return "WeaponVfx";
 	if(pComp == &m_Particles.m_RenderExplosions)
 		return "Particles.RenderExplosions";
 	if(pComp == &m_NamePlates)

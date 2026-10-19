@@ -646,8 +646,6 @@ protected:
 	void RenderSettingsAppearance(CUIRect MainView);
 	void DoLaserPreview(const CUIRect *pRect, ColorHSLA OutlineColor, ColorHSLA InnerColor, int LaserType);
 	// bestclient-light
-	void DoRocketPreview(const CUIRect *pRect);
-	void RenderSettingsBestClientLightWeaponGlow(CUIRect &Column);
 	void RenderSettingsBestClientLightFx(CUIRect &Column);
 	// bestclient-light
 

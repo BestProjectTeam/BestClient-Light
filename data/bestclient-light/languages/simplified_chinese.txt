@@ -1467,54 +1467,6 @@ Hide Settings Tabs
 == 隐藏设置标签
 
 [BestClient Light]
-Laser Glow
-== 激光发光
-
-[BestClient Light]
-Shotgun Glow
-== 霰弹发光
-
-[BestClient Light]
-Rocket Glow
-== 火箭发光
-
-[BestClient Light]
-Rocket
-== 火箭
-
-[BestClient Light]
-Prism
-== 棱镜
-
-[BestClient Light]
-Pulse
-== 脉冲
-
-[BestClient Light]
-Crystal
-== 水晶
-
-[BestClient Light]
-Power
-== 强度
-
-[BestClient Light]
-Nuke effects
-== 爆炸效果
-
-[BestClient Light]
-Enable Nuke effects
-== 启用爆炸效果
-
-[BestClient Light]
-Screen shake
-== 屏幕震动
-
-[BestClient Light]
-Nuke size
-== 爆炸大小
-
-[BestClient Light]
 Custom hooks
 == 自定义钩索
 

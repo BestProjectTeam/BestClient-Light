@@ -2938,11 +2938,6 @@ if(CLIENT)
     components/bestclient-light/corner_indicator.h
     components/bestclient-light/cursor_trail.cpp
     components/bestclient-light/cursor_trail.h
-    components/bestclient-light/weapon_vfx.cpp
-    components/bestclient-light/weapon_vfx.h
-    components/bestclient-light/laser_glow.cpp
-    components/bestclient-light/rocket_glow.cpp
-    components/bestclient-light/nuke_vfx.cpp
     components/bestclient-light/menus_fx.cpp
     components/bestclient-light/fx/components.h
     components/bestclient-light/fx/own_tee.h

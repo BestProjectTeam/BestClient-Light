@@ -86,13 +86,6 @@
 	{"Physic Balls", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclPhysicBallsSpawnCount, nullptr},
 	{"Spawn count", SETTINGS_NAV_LEAF_BC_VISUALS, "Physic Balls", &g_Config.m_BclPhysicBallsSpawnCount, nullptr},
 
-	{"Laser Glow", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclLaserGlow, nullptr},
-	{"Shotgun Glow", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclShotgunGlow, nullptr},
-	{"Rocket Glow", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclRocketGlow, nullptr},
-	{"Enable Nuke effects", SETTINGS_NAV_LEAF_BC_VISUALS, "Rocket Glow", &g_Config.m_BclMemeNukeExplosion, &g_Config.m_BclRocketGlow},
-	{"Screen shake", SETTINGS_NAV_LEAF_BC_VISUALS, "Rocket Glow", &g_Config.m_BclMemeNukeShake, &g_Config.m_BclMemeNukeExplosion},
-	{"Nuke size", SETTINGS_NAV_LEAF_BC_VISUALS, "Rocket Glow", &g_Config.m_BclMemeNukeScale, &g_Config.m_BclMemeNukeExplosion},
-
 	{"Weather", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclAtmosphere, nullptr},
 	{"Size", SETTINGS_NAV_LEAF_BC_VISUALS, "Weather", &g_Config.m_BclWeatherSnowSize, &g_Config.m_BclAtmosphere},
 	{"Speed", SETTINGS_NAV_LEAF_BC_VISUALS, "Weather", &g_Config.m_BclWeatherSnowSpeed, &g_Config.m_BclAtmosphere},

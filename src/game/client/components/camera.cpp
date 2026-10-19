@@ -443,9 +443,6 @@ void CCamera::OnRender()
 
 	// demo always count as spectating
 	m_WasSpectating = GameClient()->m_Snap.m_SpecInfo.m_Active;
-	// bestclient-light
-	GameClient()->m_WeaponVfx.ApplyCameraShake(m_Center);
-	// bestclient-light
 }
 
 void CCamera::OnConsoleInit()

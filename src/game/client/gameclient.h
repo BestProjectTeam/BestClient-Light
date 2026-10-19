@@ -54,7 +54,6 @@
 #include "components/bestclient-light/snap_tap.h" // bestclient-light
 // bestclient-light
 #include "components/bestclient-light/fx/components.h"
-#include "components/bestclient-light/weapon_vfx.h"
 // bestclient-light
 #include "components/bestclient-light/automargin.h" // bestclient-light
 #include "components/bestclient-light/chat_bubbles.h" // bestclient-light
@@ -264,7 +263,6 @@ public:
 	CFinishPrediction m_FinishPrediction; // bestclient-light
 	CKeystrokes m_Keystrokes; // bestclient-light
 	// bestclient-light
-	CWeaponVfx m_WeaponVfx;
 	CFgfWeather m_FgfWeather;
 	// bestclient-light
 	CHudEditor m_HudEditor; // bestclient-light

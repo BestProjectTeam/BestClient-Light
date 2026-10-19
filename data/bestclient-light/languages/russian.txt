@@ -1471,54 +1471,6 @@ Hide Settings Tabs
 == Скрыть вкладки настроек
 
 [BestClient Light]
-Laser Glow
-== Свечение лазера
-
-[BestClient Light]
-Shotgun Glow
-== Свечение дробовика
-
-[BestClient Light]
-Rocket Glow
-== Свечение ракеты
-
-[BestClient Light]
-Rocket
-== Ракета
-
-[BestClient Light]
-Prism
-== Призма
-
-[BestClient Light]
-Pulse
-== Пульс
-
-[BestClient Light]
-Crystal
-== Кристалл
-
-[BestClient Light]
-Power
-== Мощность
-
-[BestClient Light]
-Nuke effects
-== Эффекты ньюка
-
-[BestClient Light]
-Enable Nuke effects
-== Включить эффекты ньюка
-
-[BestClient Light]
-Screen shake
-== Тряска экрана
-
-[BestClient Light]
-Nuke size
-== Размер ньюка
-
-[BestClient Light]
 Custom hooks
 == Кастомные хуки
 
