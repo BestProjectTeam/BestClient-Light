@@ -83,9 +83,6 @@
 
 	{"Aspect Ratio", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclCustomAspectRatioMode, nullptr},
 
-	{"Physic Balls", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclPhysicBallsSpawnCount, nullptr},
-	{"Spawn count", SETTINGS_NAV_LEAF_BC_VISUALS, "Physic Balls", &g_Config.m_BclPhysicBallsSpawnCount, nullptr},
-
 	{"Weather", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclAtmosphere, nullptr},
 	{"Size", SETTINGS_NAV_LEAF_BC_VISUALS, "Weather", &g_Config.m_BclWeatherSnowSize, &g_Config.m_BclAtmosphere},
 	{"Speed", SETTINGS_NAV_LEAF_BC_VISUALS, "Weather", &g_Config.m_BclWeatherSnowSpeed, &g_Config.m_BclAtmosphere},

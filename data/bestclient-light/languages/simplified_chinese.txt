@@ -735,34 +735,6 @@ Unavailable while camera zoom is disabled
 == 镜头缩放关闭时不可用
 
 [BestClient Light]
-Physic Balls
-== 物理球
-
-[BestClient Light]
-Ball amount: %d
-== 球数量：%d
-
-[BestClient Light]
-Clear all balls
-== 清除所有球
-
-[BestClient Light]
-Ball skin
-== 球皮肤
-
-[BestClient Light]
-Spawn count
-== 生成数量
-
-[BestClient Light]
-New Ball
-== 新球
-
-[BestClient Light]
-New Ball Cursor
-== 在光标处生成球
-
-[BestClient Light]
 ticks
 == tick
 

@@ -2962,8 +2962,6 @@ if(CLIENT)
     components/bestclient-light/spec_pause_radio.h
     components/bestclient-light/chat_bubbles.cpp
     components/bestclient-light/chat_bubbles.h
-    components/bestclient-light/physicball.cpp
-    components/bestclient-light/physicball.h
     components/bestclient-light/ui_animations.cpp
     components/bestclient-light/ui_animations.h
     components/bestclient-light/ui_theme/style.h

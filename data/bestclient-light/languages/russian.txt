@@ -735,34 +735,6 @@ Unavailable while camera zoom is disabled
 == Недоступно, пока зум камеры выключен
 
 [BestClient Light]
-Physic Balls
-== Физик боллы
-
-[BestClient Light]
-Ball amount: %d
-== Количество шаров: %d
-
-[BestClient Light]
-Clear all balls
-== Убрать все шары
-
-[BestClient Light]
-Ball skin
-== Скин шара
-
-[BestClient Light]
-Spawn count
-== Число спавна
-
-[BestClient Light]
-New Ball
-== Новый шар
-
-[BestClient Light]
-New Ball Cursor
-== Новый шар на курсоре
-
-[BestClient Light]
 ticks
 == тики
 

@@ -405,10 +405,6 @@ void CEffects::Explosion(vec2 Pos, float Alpha)
 		p.m_StartAlpha = p.m_Color.a;
 		GameClient()->m_Particles.Add(CParticles::GROUP_GENERAL, &p);
 	}
-
-	// bestclient-light
-	GameClient()->m_PhysicBalls.OnExplosion(Pos, Alpha == 1.0f);
-	// bestclient-light
 }
 
 void CEffects::HammerHit(vec2 Pos, float Alpha, float Volume, bool OtherPlayer)

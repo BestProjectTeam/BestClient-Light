@@ -172,7 +172,6 @@ void CGameClient::OnConsoleInit()
 					      &m_NamePlates,
 					      &m_GifBubbles, // bestclient-light
 					      &m_ChatBubbles, // bestclient-light
-					      &m_PhysicBalls, // bestclient-light
 					      &m_CursorTrail, // bestclient-light
 					      &m_BcUiAnimations, // bestclient-light
 					      &m_Particles.m_RenderExtra,
@@ -6009,8 +6008,6 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "GifBubbles";
 	if(pComp == &m_ChatBubbles)
 		return "ChatBubbles";
-	if(pComp == &m_PhysicBalls)
-		return "PhysicBalls";
 	if(pComp == &m_CursorTrail)
 		return "CursorTrail";
 	if(pComp == &m_BcUiAnimations)

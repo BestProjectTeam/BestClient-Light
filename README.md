@@ -107,7 +107,6 @@ The client currently ships with more than **300** `bc_*` config variables, five 
 - **Chat Media** — inline photo/GIF previews, domain filter, above-head gif bubble
 - **Gradient** — gradient nicknames, clans, skins, or all text (skin / custom / rainbow)
 - **Hook Combo** — combo popups and sounds (hook / hammer / both)
-- **Jelly Tee** — tee deformation (self / others)
 - **3D Particles** — cubes/hearts/mixed, glow, player push
 - **Media Background** — video/image in menus and ingame background
 - **Sweat Weapon (Crystal Laser)** — crystal laser and shotgun effects
@@ -118,7 +117,6 @@ The client currently ships with more than **300** `bc_*` config variables, five 
 - **Keystrokes** — Classic / Minecraft keyboard and mouse HUD
 - **Custom Aspect Ratio** — presets and arbitrary num:den input
 - **Chat Bubbles** — bubbles above players (from Entity-Client)
-- **Physic Balls** — spawn physics balls with map/player collisions (from Entity-Client)
 
 Demo playback only (Demo Player): **Camera Drift**, **Dynamic FOV**.
 
@@ -354,10 +352,6 @@ bc_hud_votes_scale
 bc_hud_votes_x
 bc_hud_votes_y
 bc_inputs
-bc_jelly_tee
-bc_jelly_tee_duration
-bc_jelly_tee_others
-bc_jelly_tee_strength
 bc_keystrokes_keyboard
 bc_keystrokes_keyboard_preset
 bc_keystrokes_mc_layout
@@ -423,7 +417,6 @@ bc_optimizer_fps_fog_mode
 bc_optimizer_fps_fog_radius_tiles
 bc_optimizer_fps_fog_render_rect
 bc_optimizer_fps_fog_zoom_percent
-bc_physic_balls_skin
 bc_prev_inp_mousesens_45_degrees
 bc_prev_inp_mousesens_small_sens
 bc_prev_mouse_max_distance_45_degrees
@@ -492,7 +485,7 @@ Plain-text export: [docs/bc_config_list.txt](docs/bc_config_list.txt).
 
 Some BestClient features were adapted from other DDNet client forks:
 
-- **Entity-Client** ([FoxNet-DDNet/Entity-Client-DDNet](https://github.com/FoxNet-DDNet/Entity-Client-DDNet)) — Physic Balls, Better Spectate (`+specpause`), Chat Bubbles
+- **Entity-Client** ([FoxNet-DDNet/Entity-Client-DDNet](https://github.com/FoxNet-DDNet/Entity-Client-DDNet)) — Better Spectate (`+specpause`), Chat Bubbles
 - **RushieClient** ([RushieClient/RushieClient-ddnet](https://github.com/RushieClient/RushieClient-ddnet)) — Chat Filter, Edge Info, Find Teleport, Find Finish
 
 ## License

@@ -62,7 +62,6 @@
 #include "components/bestclient-light/cursor_trail.h" // bestclient-light
 #include "components/bestclient-light/gif_bubbles.h" // bestclient-light
 #include "components/bestclient-light/hud_editor.h" // bestclient-light
-#include "components/bestclient-light/physicball.h" // bestclient-light
 #include "components/bestclient-light/show_points.h" // bestclient-light
 #include "components/bestclient-light/spec_pause_radio.h" // bestclient-light
 #include "components/bestclient-light/twitch_chat.h" // bestclient-light
@@ -267,7 +266,6 @@ public:
 	// bestclient-light
 	CHudEditor m_HudEditor; // bestclient-light
 	CChatBubbles m_ChatBubbles; // bestclient-light
-	CPhysicBalls m_PhysicBalls; // bestclient-light
 	CCursorTrail m_CursorTrail; // bestclient-light
 	CBcUiAnimations m_BcUiAnimations; // bestclient-light
 	CGifBubbles m_GifBubbles; // bestclient-light

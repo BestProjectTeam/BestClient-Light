@@ -21,7 +21,6 @@
 #include <game/client/components/bestclient-light/gradient.h>
 #include <game/client/components/bestclient-light/bestclient-light.h>
 #include <game/client/components/bestclient-light/cursor_trail.h>
-#include <game/client/components/bestclient-light/physicball.h>
 #include <game/client/components/bestclient-light/media_decoder.h>
 #include <game/client/components/bestclient-light/menu_media_background.h>
 #include <game/client/components/bestclient-light/settings_search.h>
@@ -2344,78 +2343,6 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 		TextRender()->TextColor(1.0f, 0.4f, 0.4f, 1.0f);
 		Ui()->DoLabel(&Label, BcLocalize("Unavailable while camera zoom is disabled"), 14.0f, TEXTALIGN_ML);
 		TextRender()->TextColor(TextRender()->DefaultTextColor());
-	}
-
-	RightColumn.HSplitTop(MarginBetweenViews, nullptr, &RightColumn);
-
-	const float PhysicBallsBlockHeight = LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + 25.0f;
-	CUIRect PhysicBallsBlock;
-	RightColumn.HSplitTop(PhysicBallsBlockHeight, &PhysicBallsBlock, &RightColumn);
-
-	CUIRect PhysicBallsBlockBg = PhysicBallsBlock;
-	PhysicBallsBlockBg.w += BlockPadding;
-	PhysicBallsBlockBg.h += BlockPadding;
-	PhysicBallsBlockBg.x -= BlockPadding * 0.5f;
-	PhysicBallsBlockBg.y -= BlockPadding * 0.5f;
-	BestClientLightUiTheme::DrawUiBlock(&PhysicBallsBlockBg, IGraphics::CORNER_ALL, 10.0f);
-	BestClientLightSettingsSearch::DrawBlockHighlight(&g_Config.m_BclPhysicBallsSpawnCount, &PhysicBallsBlockBg);
-
-	MainView = PhysicBallsBlock;
-	MainView.HSplitTop(LineSize, &Label, &MainView);
-	CUIRect PhysicBallsTitleLabel = Label;
-	PhysicBallsTitleLabel.VSplitRight(MarginSmall, &PhysicBallsTitleLabel, nullptr);
-	BcMenuBadges::DrawEClient(Graphics(), Ui(), TextRender(), &PhysicBallsTitleLabel, MarginSmall);
-	Ui()->DoLabel(&PhysicBallsTitleLabel, BcLocalize("Physic Balls"), HeadlineFontSize, TEXTALIGN_ML);
-	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-
-	MainView.HSplitTop(LineSize, &Button, &MainView);
-	char aBallAmount[64];
-	str_format(aBallAmount, sizeof(aBallAmount), BcLocalize("Ball amount: %d"), (int)GameClient()->m_PhysicBalls.GetBallCount());
-	CUIRect BallAmountLabel, ClearBallsButton;
-	Button.VSplitRight(LineSize + 8.0f, &BallAmountLabel, &ClearBallsButton);
-	Ui()->DoLabel(&BallAmountLabel, aBallAmount, 14.0f, TEXTALIGN_ML);
-	static CButtonContainer s_ClearPhysicBallsButton;
-	if(Ui()->DoButton_FontIcon(&s_ClearPhysicBallsButton, FontIcon::TRASH, 0, &ClearBallsButton, BUTTONFLAG_LEFT))
-		GameClient()->m_PhysicBalls.OnReset();
-	GameClient()->m_Tooltips.DoToolTip(&s_ClearPhysicBallsButton, &ClearBallsButton, BcLocalize("Clear all balls"));
-
-	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-	MainView.HSplitTop(LineSize, &Button, &MainView);
-	{
-		static CLineInput s_PhysicBallsSkinInput;
-		s_PhysicBallsSkinInput.SetBuffer(g_Config.m_BclPhysicBallsSkin, sizeof(g_Config.m_BclPhysicBallsSkin));
-		s_PhysicBallsSkinInput.SetEmptyText("volleyball");
-		CUIRect SkinLabel, SkinField;
-		Button.VSplitLeft(70.0f, &SkinLabel, &Button);
-		Button.VSplitLeft(MarginSmall, nullptr, &Button);
-		Button.VSplitLeft(140.0f, &SkinField, nullptr);
-		Ui()->DoLabel(&SkinLabel, BcLocalize("Ball skin"), 14.0f, TEXTALIGN_ML);
-		Ui()->DoEditBox(&s_PhysicBallsSkinInput, &SkinField, 14.0f);
-	}
-
-	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-	MainView.HSplitTop(LineSize, &Button, &MainView);
-	Ui()->DoScrollbarOption(&g_Config.m_BclPhysicBallsSpawnCount, &g_Config.m_BclPhysicBallsSpawnCount, &Button, BcLocalize("Spawn count"), 1, 50);
-
-	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-	MainView.HSplitTop(25.0f, &Button, &MainView);
-	CUIRect SpawnBallButton, SpawnCursorButton;
-	Button.VSplitLeft(110.0f, &SpawnBallButton, &Button);
-	Button.VSplitLeft(MarginSmall, nullptr, &Button);
-	Button.VSplitLeft(130.0f, &SpawnCursorButton, nullptr);
-	static CButtonContainer s_SpawnPhysicBallButton;
-	static CButtonContainer s_SpawnPhysicBallCursorButton;
-	const ColorRGBA PhysicBallButtonColor = ColorRGBA(1.0f, 1.0f, 1.0f, 0.5f);
-	const int PhysicBallsSpawnCount = std::clamp(g_Config.m_BclPhysicBallsSpawnCount, 1, 50);
-	if(DoButton_Menu(&s_SpawnPhysicBallButton, BcLocalize("New Ball"), 0, &SpawnBallButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 5.0f, 0.0f, PhysicBallButtonColor))
-	{
-		for(int i = 0; i < PhysicBallsSpawnCount; i++)
-			GameClient()->m_PhysicBalls.NewBallPlayer(60.0f);
-	}
-	if(DoButton_Menu(&s_SpawnPhysicBallCursorButton, BcLocalize("New Ball Cursor"), 0, &SpawnCursorButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_ALL, 5.0f, 0.0f, PhysicBallButtonColor))
-	{
-		for(int i = 0; i < PhysicBallsSpawnCount; i++)
-			GameClient()->m_PhysicBalls.NewBallCursor(60.0f);
 	}
 
 	const float RightColumnEndY = RightColumn.y;
