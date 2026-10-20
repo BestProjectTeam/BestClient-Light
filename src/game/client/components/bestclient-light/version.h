@@ -4,7 +4,9 @@
 
 #define BESTCLIENT_LIGHT_BUILD_DATE "28.05 00:00"
 #define BESTCLIENT_LIGHT_VERSIONNR 100
-#define BESTCLIENT_LIGHT_VERSION "5 stable"
+#define BESTCLIENT_LIGHT_VERSION "5.0 stable"
+
+void BestClientLightFormatDisplayVersion(const char *pVersion, char *pOut, int OutSize);
 
 #ifndef BESTCLIENT_LIGHT_OFFICIAL_CODE
 #define BESTCLIENT_LIGHT_OFFICIAL_CODE ""

@@ -33,6 +33,52 @@
 
 static const int FROZEN_SKIN_MAX_DARKEN = 70;
 
+void BestClientLightFormatDisplayVersion(const char *pVersion, char *pOut, int OutSize)
+{
+	if(!pOut || OutSize <= 0)
+		return;
+	str_copy(pOut, pVersion ? pVersion : "", OutSize);
+
+	char *pDot = nullptr;
+	for(char *p = pOut; *p != '\0'; ++p)
+	{
+		if(*p == '.')
+		{
+			pDot = p;
+			break;
+		}
+	}
+	if(!pDot || pDot == pOut)
+		return;
+
+	for(const char *p = pOut; p < pDot; ++p)
+	{
+		if(*p < '0' || *p > '9')
+			return;
+	}
+
+	char *pMinor = pDot + 1;
+	if(*pMinor < '0' || *pMinor > '9')
+		return;
+
+	bool MinorIsZero = true;
+	char *pAfterMinor = pMinor;
+	while(*pAfterMinor >= '0' && *pAfterMinor <= '9')
+	{
+		if(*pAfterMinor != '0')
+			MinorIsZero = false;
+		++pAfterMinor;
+	}
+	if(!MinorIsZero || *pAfterMinor == '.')
+		return;
+
+	char *pDst = pDot;
+	const char *pSrc = pAfterMinor;
+	while(*pSrc != '\0')
+		*pDst++ = *pSrc++;
+	*pDst = '\0';
+}
+
 int CBestClientLight::HudFramesPerSecond(float FrameTimeAverage)
 {
 	if(!g_Config.m_BclDisplayMaxFps)

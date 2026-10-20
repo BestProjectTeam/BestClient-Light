@@ -814,13 +814,13 @@ private:
 			// bestclient-light
 			AddPart<CNamePlatePartName>(This);
 			AddPart<CNamePlatePartNewLine>(This);
+
+			AddPart<CNamePlatePartClan>(This);
+			AddPart<CNamePlatePartNewLine>(This);
 			// bestclient-light
 			AddPart<CNamePlatePartBClientVersion>(This);
 			AddPart<CNamePlatePartNewLine>(This);
 			// bestclient-light
-
-			AddPart<CNamePlatePartClan>(This);
-			AddPart<CNamePlatePartNewLine>(This);
 
 			AddPart<CNamePlatePartReason>(This); // TClient
 			AddPart<CNamePlatePartNewLine>(This); // TClient

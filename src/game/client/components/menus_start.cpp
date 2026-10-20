@@ -310,7 +310,11 @@ void CMenusStart::RenderStartMenu(CUIRect MainView)
 		char aBestClientLightBuf[64];
 		str_format(aDDNetBuf, sizeof(aDDNetBuf), "DDNet %s", GAME_RELEASE_VERSION);
 		str_format(aTClientBuf, sizeof(aTClientBuf), "TClient %s", TCLIENT_VERSION);
-		str_format(aBestClientLightBuf, sizeof(aBestClientLightBuf), "BestClient Light %s", BESTCLIENT_LIGHT_VERSION);
+		// bestclient-light
+		char aBestClientLightDisplayVersion[32];
+		BestClientLightFormatDisplayVersion(BESTCLIENT_LIGHT_VERSION, aBestClientLightDisplayVersion, sizeof(aBestClientLightDisplayVersion));
+		str_format(aBestClientLightBuf, sizeof(aBestClientLightBuf), "BestClient Light %s", aBestClientLightDisplayVersion);
+		// bestclient-light
 		Ui()->DoLabel(&VersionLine1, aDDNetBuf, 14.0f, TEXTALIGN_MR);
 		Ui()->DoLabel(&VersionLine2, aTClientBuf, 14.0f, TEXTALIGN_MR);
 		Ui()->DoLabel(&VersionLine3, aBestClientLightBuf, 14.0f, TEXTALIGN_MR);

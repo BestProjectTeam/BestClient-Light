@@ -1669,7 +1669,13 @@ void CGameConsole::OnRender()
 		TextRender()->Text(ButtonBar.x + ButtonBar.w - TextRender()->TextWidth(FONT_SIZE, aBuf) - 10.0f, FONT_SIZE / 2.f, FONT_SIZE, aBuf);
 
 		// TClient: render client version
-		const char *pClientVersion = CLIENT_NAME " " CLIENT_RELEASE_VERSION;
+		// bestclient-light
+		char aDisplayVersion[32];
+		char aClientVersion[64];
+		BestClientLightFormatDisplayVersion(CLIENT_RELEASE_VERSION, aDisplayVersion, sizeof(aDisplayVersion));
+		str_format(aClientVersion, sizeof(aClientVersion), "%s %s", CLIENT_NAME, aDisplayVersion);
+		const char *pClientVersion = aClientVersion;
+		// bestclient-light
 		TextRender()->Text(ButtonBar.x + ButtonBar.w - TextRender()->TextWidth(FONT_SIZE, pClientVersion) - 10.0f, FONT_SIZE / 2.0f + FONT_SIZE * 1.5f, FONT_SIZE, pClientVersion);
 	}
 }
