@@ -93,7 +93,7 @@ public:
 		DiscordCreateParams Params;
 		DiscordCreateParamsSetDefault(&Params);
 
-		Params.client_id = 1444576875774083133;
+		Params.client_id = 1562149262626656276;
 		Params.flags = EDiscordCreateFlags::DiscordCreateFlags_NoRequireDiscord;
 		Params.event_data = this;
 		Params.activity_events = &m_ActivityEvents;
@@ -126,7 +126,7 @@ public:
 		m_pActivityManager->register_steam(m_pActivityManager, 412220);
 
 		ClearGameInfo();
-		dbg_msg("discord", "initialized custom RPC (app_id=1444576875774083133)");
+		dbg_msg("discord", "initialized custom RPC (app_id=1562149262626656276)");
 
 		return false;
 	}
@@ -160,8 +160,9 @@ public:
 	{
 		mem_zero(&m_Activity, sizeof(DiscordActivity));
 
-		str_copy(m_Activity.assets.large_image, "bestclientlogo");
-		str_copy(m_Activity.assets.large_text, "discord.gg/bestclient");
+		str_copy(m_Activity.name, "BestClient Light");
+		str_copy(m_Activity.assets.large_image, "bestclient_light_logo");
+		str_copy(m_Activity.assets.large_text, "BestClient Light");
 		str_copy(m_Activity.details, "discord.gg/bestclient");
 		m_Activity.timestamps.start = 0;
 		m_Activity.instance = false;
@@ -173,8 +174,9 @@ public:
 	{
 		mem_zero(&m_Activity, sizeof(DiscordActivity));
 
-		str_copy(m_Activity.assets.large_image, "bestclientlogo");
-		str_copy(m_Activity.assets.large_text, "discord.gg/bestclient");
+		str_copy(m_Activity.name, "BestClient Light");
+		str_copy(m_Activity.assets.large_image, "bestclient_light_logo");
+		str_copy(m_Activity.assets.large_text, "BestClient Light");
 		m_Activity.timestamps.start = time_timestamp();
 		m_Activity.instance = true;
 		m_ShowMap = ShowMap;

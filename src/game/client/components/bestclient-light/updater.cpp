@@ -34,8 +34,8 @@ static bool StrEndsWithNoCase(const char *pStr, const char *pSuffix)
 	return str_comp_nocase(pStr + StrLen - SuffixLen, pSuffix) == 0;
 }
 
-static constexpr const char *GITHUB_RELEASES_URL = "https://api.github.com/repos/BestProjectTeam/BestClient/releases?per_page=10";
-static constexpr const char *GITHUB_LATEST_RELEASE_URL = "https://github.com/BestProjectTeam/BestClient/releases/latest";
+static constexpr const char *GITHUB_RELEASES_URL = "https://api.github.com/repos/BestProjectTeam/BestClient-Light/releases?per_page=10";
+static constexpr const char *GITHUB_LATEST_RELEASE_URL = "https://github.com/BestProjectTeam/BestClient-Light/releases/latest";
 #if defined(CONF_PLATFORM_LINUX)
 static constexpr const char *UPDATE_ARCHIVE_PATH = "update/bestclient-release.tar.xz";
 #else
@@ -169,12 +169,12 @@ static int ScoreArchiveAsset(const char *pAssetName)
 	int Score = 100;
 
 #if defined(CONF_FAMILY_WINDOWS)
-	if(Lower == "bestclient-windows.zip")
+	if(Lower == "bestclient-light-windows.zip")
 		Score += 200;
 	if(Lower.find("x64") != std::string::npos || Lower.find("64") != std::string::npos || Lower.find("amd64") != std::string::npos)
 		Score += 20;
 #elif defined(CONF_PLATFORM_LINUX)
-	if(Lower == "bestclient-linux.tar.xz")
+	if(Lower == "bestclient-light-linux.tar.xz")
 		Score += 200;
 #endif
 

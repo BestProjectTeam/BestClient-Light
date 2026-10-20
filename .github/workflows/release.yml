@@ -28,9 +28,6 @@ on:
 permissions:
   contents: write
 
-env:
-  CLIENT_NAME: BestClient Light
-
 jobs:
   build-cmake:
     name: Build Release (${{ matrix.name }})
@@ -49,14 +46,14 @@ jobs:
           cmake-init-env: CXXFLAGS="-Werror -Wno-unused-function"
           package-file: "*-linux_x86_64.tar.xz"
           artifact-name: release-linux
-          asset-name: BestClient-Light-linux.tar.xz
+          asset-name: bestclient-light-linux.tar.xz
         - name: windows
           os: windows-latest
           cmake-args: -A x64 -DTOOLS=OFF -DDOWNLOAD_GTEST=OFF -DVULKAN=ON
           cmake-init-env: CXXFLAGS= LDFLAGS=
           package-file: "*-win64.zip"
           artifact-name: release-windows
-          asset-name: BestClient-Light-windows.zip
+          asset-name: bestclient-light-windows.zip
         - name: macos
           os: macOS-latest
           # Universal PCH builds split architectures and reject the shared ARM compiler flags.
@@ -64,7 +61,7 @@ jobs:
           cmake-init-env: CXXFLAGS=
           package-file: "*-macos.dmg"
           artifact-name: release-macos
-          asset-name: BestClient-Light-macos.dmg
+          asset-name: bestclient-light-macos.dmg
 
     steps:
     - uses: actions/checkout@v4
@@ -212,9 +209,9 @@ jobs:
         draft: true
         generate_release_notes: true
         files: |
-          artifacts/${{ env.CLIENT_NAME }}-linux.tar.xz
-          artifacts/${{ env.CLIENT_NAME }}-windows.zip
-          artifacts/${{ env.CLIENT_NAME }}-macos.dmg
+          artifacts/bestclient-light-linux.tar.xz
+          artifacts/bestclient-light-windows.zip
+          artifacts/bestclient-light-macos.dmg
 
     - name: Create or update release manually
       if: github.event_name == 'workflow_dispatch'
@@ -225,6 +222,6 @@ jobs:
         body: ${{ github.event.inputs.body }}
         draft: true
         files: |
-          artifacts/${{ env.CLIENT_NAME }}-linux.tar.xz
-          artifacts/${{ env.CLIENT_NAME }}-windows.zip
-          artifacts/${{ env.CLIENT_NAME }}-macos.dmg
+          artifacts/bestclient-light-linux.tar.xz
+          artifacts/bestclient-light-windows.zip
+          artifacts/bestclient-light-macos.dmg
