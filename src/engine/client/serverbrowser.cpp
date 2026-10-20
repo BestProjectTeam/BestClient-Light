@@ -1722,8 +1722,9 @@ void CServerBrowser::SetBestClientLightPlayers(const std::vector<CBestClientLigh
 		if(Entry.m_aServerAddress[0] == '\0' || Entry.m_aName[0] == '\0')
 			continue;
 		auto &Flags = m_BestClientLightPlayersByServer[Entry.m_aServerAddress][Entry.m_aName];
-		Flags.first = Flags.first || Entry.m_Developer;
-		Flags.second = Flags.second || Entry.m_Fake;
+		Flags.m_Developer = Flags.m_Developer || Entry.m_Developer;
+		Flags.m_Fake = Flags.m_Fake || Entry.m_Fake;
+		Flags.m_Light = Flags.m_Light || Entry.m_Light;
 	}
 
 	for(CServerEntry *pEntry : m_vpServerlist)
@@ -1740,14 +1741,16 @@ void CServerBrowser::UpdateServerBestClientLights(CServerInfo *pInfo) const
 	pInfo->m_HasBestClientLightPlayers = false;
 	pInfo->m_NumBestClientLightDeveloperPlayers = 0;
 	pInfo->m_HasBestClientLightDeveloperPlayers = false;
+	pInfo->m_NumBestClientLightEditionPlayers = 0;
 	for(auto &Client : pInfo->m_vClients)
 	{
 		Client.m_BestClientLight = false;
 		Client.m_BestClientLightDeveloper = false;
 		Client.m_BestClientLightFake = false;
+		Client.m_BestClientEditionLight = false;
 	}
 
-	std::vector<const std::unordered_map<std::string, std::pair<bool, bool>> *> vpAddressMatches;
+	std::vector<const std::unordered_map<std::string, CBestClientLightBrowserFlags> *> vpAddressMatches;
 	vpAddressMatches.reserve(pInfo->m_NumAddresses);
 	for(int AddressIndex = 0; AddressIndex < pInfo->m_NumAddresses; ++AddressIndex)
 	{
@@ -1769,14 +1772,17 @@ void CServerBrowser::UpdateServerBestClientLights(CServerInfo *pInfo) const
 			if(PlayerIt == pPlayers->end())
 				continue;
 			Client.m_BestClientLight = true;
-			Client.m_BestClientLightDeveloper = Client.m_BestClientLightDeveloper || PlayerIt->second.first;
-			Client.m_BestClientLightFake = Client.m_BestClientLightFake || PlayerIt->second.second;
+			Client.m_BestClientLightDeveloper = Client.m_BestClientLightDeveloper || PlayerIt->second.m_Developer;
+			Client.m_BestClientLightFake = Client.m_BestClientLightFake || PlayerIt->second.m_Fake;
+			Client.m_BestClientEditionLight = Client.m_BestClientEditionLight || PlayerIt->second.m_Light;
 		}
 		if(Client.m_BestClientLight)
 		{
 			pInfo->m_NumBestClientLightPlayers++;
 			if(Client.m_BestClientLightDeveloper)
 				pInfo->m_NumBestClientLightDeveloperPlayers++;
+			if(Client.m_BestClientEditionLight)
+				pInfo->m_NumBestClientLightEditionPlayers++;
 		}
 	}
 

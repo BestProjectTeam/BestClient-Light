@@ -9,14 +9,17 @@
 #include <base/net.h>
 
 #include <engine/http.h>
+#include <engine/shared/protocol.h>
 #include <engine/shared/uuid_manager.h>
 
 #include <game/client/component.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 class CClientIndicator : public CComponent
 {
@@ -31,6 +34,7 @@ public:
 
 	bool IsPlayerBestClientLight(int ClientId) const;
 	bool IsPlayerBClient(int ClientId) { return IsPlayerBestClientLight(ClientId); }
+	bool IsPlayerLightEdition(int ClientId) const;
 	bool IsPlayerDeveloper(int ClientId) const;
 	bool IsPlayerFakeVersion(int ClientId) const;
 	bool GetPlayerVersionLabel(int ClientId, char *pVersion, int VersionSize) const;
@@ -67,7 +71,15 @@ private:
 	std::unordered_set<int> m_RegisteredClientIds;
 	std::unordered_set<int> m_DeveloperClientIds;
 	std::unordered_set<int> m_FakeClientIds;
+	std::unordered_set<int> m_LightClientIds;
 	std::unordered_map<int, std::string> m_ClientVersions;
+	std::array<bool, MAX_CLIENTS> m_aBestClient{};
+	std::array<bool, MAX_CLIENTS> m_aLightEdition{};
+	std::array<bool, MAX_CLIENTS> m_aDeveloper{};
+	std::array<bool, MAX_CLIENTS> m_aFake{};
+	int64_t m_LastFlagRebuildTick = 0;
+	bool m_FlagsDirty = true;
+	std::vector<uint8_t> m_vSendPacket;
 	CPresenceCache m_PresenceCache;
 
 	std::shared_ptr<IHttpRequest> m_pBrowserTask = nullptr;
@@ -91,6 +103,7 @@ private:
 	const char *CurrentGameServerAddress();
 	const char *PlayerNameForClient(int ClientId) const;
 
+	void RebuildPlayerFlags();
 	void FinishBrowserCacheRefresh();
 	void ResetBrowserTask();
 	void FinishTokenRefresh();

@@ -81,7 +81,8 @@ public:
 		// bestclient-light
 		bool m_BestClientLight = false;
 		bool m_BestClientLightDeveloper = false;
-		bool m_BestClientLightFake = false; // bestclient-light
+		bool m_BestClientLightFake = false;
+		bool m_BestClientEditionLight = false; // bestclient-light
 
 		// bestclient-light
 		// skin info 0.6
@@ -138,6 +139,7 @@ public:
 	bool m_HasBestClientLightPlayers = false;
 	int m_NumBestClientLightDeveloperPlayers = 0;
 	bool m_HasBestClientLightDeveloperPlayers = false;
+	int m_NumBestClientLightEditionPlayers = 0;
 	// bestclient-light
 
 	static int EstimateLatency(int Loc1, int Loc2);
@@ -374,6 +376,7 @@ public:
 		char m_aName[MAX_NAME_LENGTH];
 		bool m_Developer;
 		bool m_Fake;
+		bool m_Light;
 	};
 	// bestclient-light
 

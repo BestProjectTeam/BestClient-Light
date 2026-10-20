@@ -95,7 +95,7 @@ float BestClientLightScoreboardPlayerPopupHeight(const class CGameClient *pGameC
 float BestClientLightTeeRenderSize(const class CGameClient *pGameClient, int ClientId);
 void BestClientLightRenderRealHitbox(class IGraphics *pGraphics, class CGameClient *pGameClient, int ClientId, vec2 Position);
 void BestClientLightRenderVotePercentages(class CUi *pUi, class ITextRender *pTextRender, const class CUIRect &Bars, int Yes, int No, int Total);
-void BestClientLightRenderIndicatorIcon(class IGraphics *pGraphics, const class CUIRect &Rect, bool Developer = false, bool Fake = false, ColorRGBA Color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+void BestClientLightRenderIndicatorIcon(class IGraphics *pGraphics, const class CUIRect &Rect, bool Developer = false, bool Fake = false, bool Light = false, ColorRGBA Color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 
 constexpr const char *BESTCLIENT_LIGHT_BETTER_FONT_FACE = "ActayWide Bold";
 void BestClientLightApplyMenuFont(class ITextRender *pTextRender);

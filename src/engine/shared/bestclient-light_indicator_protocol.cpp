@@ -354,15 +354,24 @@ bool ReadClientVersionPacket(const uint8_t *pData, int DataSize, CClientVersionP
 
 	Out.m_ClientId = ClientId;
 	Out.m_Checksum.clear();
+	Out.m_Light = false;
 	// New: optional checksum string before shared-token trailer.
 	// Legacy: version only (or version with embedded "label 8hex").
-	const int RemainingBeforeProof = DataSize - Offset - CLIENT_PACKET_PROOF_SIZE;
-	if(RemainingBeforeProof > 0)
+	if(DataSize < Offset + CLIENT_PACKET_PROOF_SIZE)
+		return false;
+	const int PayloadEnd = DataSize - CLIENT_PACKET_PROOF_SIZE;
+	if(Offset < PayloadEnd && !ReadString(pData, PayloadEnd, Offset, Out.m_Checksum))
+		return false;
+	if(PayloadEnd - Offset == 1)
 	{
-		if(!ReadString(pData, DataSize, Offset, Out.m_Checksum))
+		uint8_t Light = 0;
+		if(!ReadU8(pData, PayloadEnd, Offset, Light))
 			return false;
+		Out.m_Light = Light == 1;
 	}
-	return Offset + CLIENT_PACKET_PROOF_SIZE == DataSize;
+	else if(Offset != PayloadEnd)
+		return false;
+	return true;
 }
 
 bool ReadPeerStatePacket(const uint8_t *pData, int DataSize, CPeerState &Out)
@@ -468,6 +477,26 @@ bool ReadPeerVersionStatePacket(const uint8_t *pData, int DataSize, CPeerVersion
 		return false;
 	}
 	Out.m_Fake = Fake != 0;
+	return Offset == DataSize;
+}
+
+bool ReadPeerEditionStatePacket(const uint8_t *pData, int DataSize, CPeerState &Out)
+{
+	int Offset = 0;
+	EPacketType Type;
+	if(!ReadHeader(pData, DataSize, Type, Offset) || Type != PACKET_PEER_EDITION_STATE)
+		return false;
+	int16_t ClientId = -1;
+	uint8_t Light = 0;
+	if(!ReadString(pData, DataSize, Offset, Out.m_ServerAddress) ||
+		!ReadString(pData, DataSize, Offset, Out.m_PlayerName) ||
+		!ReadS16(pData, DataSize, Offset, ClientId) ||
+		!ReadU8(pData, DataSize, Offset, Light))
+	{
+		return false;
+	}
+	Out.m_ClientId = ClientId;
+	Out.m_Light = Light == 1;
 	return Offset == DataSize;
 }
 

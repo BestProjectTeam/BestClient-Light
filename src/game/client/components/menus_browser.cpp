@@ -60,7 +60,7 @@ static void RenderCenteredBestClientLightTabIcon(IGraphics *pGraphics, const CUI
 	Icon.h = Size;
 	Icon.x += (Rect.w - Size) / 2.0f;
 	Icon.y += (Rect.h - Size) / 2.0f;
-	BestClientLightRenderIndicatorIcon(pGraphics, Icon, false, false, Color);
+	BestClientLightRenderIndicatorIcon(pGraphics, Icon, false, false, false, Color);
 }
 // bestclient-light
 
@@ -251,7 +251,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		else if(Col.m_Id == COL_BESTCLIENT_LIGHT)
 		{
 			const CUIRect Icon = CenterSquareIcon(Col.m_Rect, 2.0f);
-			BestClientLightRenderIndicatorIcon(Graphics(), Icon, false, false, ColorRGBA(1.0f, 1.0f, 1.0f, 0.9f));
+			BestClientLightRenderIndicatorIcon(Graphics(), Icon, false, false, false, ColorRGBA(1.0f, 1.0f, 1.0f, 0.9f));
 		}
 		// bestclient-light
 		else if(Col.m_Id == COL_FLAG_FAV)
@@ -494,7 +494,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 				if(pItem->m_HasBestClientLightDeveloperPlayers && HasRegularBestClientLightPlayers)
 				{
 					const CUIRect Icon = CenterSquareIcon(Button, 2.0f);
-					BestClientLightRenderIndicatorIcon(Graphics(), Icon, true, false, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+					BestClientLightRenderIndicatorIcon(Graphics(), Icon, true, false, false, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 
 					if(pItem->m_NumBestClientLightDeveloperPlayers > 1)
 					{
@@ -512,8 +512,9 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 					const bool HasDeveloperPlayers = pItem->m_HasBestClientLightDeveloperPlayers;
 					const int NumRegularBestClientLightPlayers = std::max(0, pItem->m_NumBestClientLightPlayers - pItem->m_NumBestClientLightDeveloperPlayers);
 					const bool OnlyDevelopers = HasDeveloperPlayers && NumRegularBestClientLightPlayers == 0;
+					const bool AllLight = pItem->m_NumBestClientLightPlayers > 0 && pItem->m_NumBestClientLightEditionPlayers == pItem->m_NumBestClientLightPlayers;
 					const CUIRect Icon = CenterSquareIcon(Button, 2.0f);
-					BestClientLightRenderIndicatorIcon(Graphics(), Icon, OnlyDevelopers, false, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+					BestClientLightRenderIndicatorIcon(Graphics(), Icon, OnlyDevelopers, false, !OnlyDevelopers && AllLight, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 
 					const int CounterValue = OnlyDevelopers ? pItem->m_NumBestClientLightDeveloperPlayers : NumRegularBestClientLightPlayers;
 					if(CounterValue > 1)
@@ -840,7 +841,7 @@ void CMenus::RenderServerbrowserFilters(CUIRect View)
 
 	// bestclient-light
 	View.HSplitTop(RowHeight, &Button, &View);
-	if(DoButton_CheckBox(&g_Config.m_BrFilterBestclientLight, Localize("Show BestClient Light only"), g_Config.m_BrFilterBestclientLight, &Button))
+	if(DoButton_CheckBox(&g_Config.m_BrFilterBestclientLight, Localize("BestClient only"), g_Config.m_BrFilterBestclientLight, &Button))
 		ToggleBestClientLightServerFilter();
 	// bestclient-light
 
@@ -1588,7 +1589,7 @@ void CMenus::RenderServerbrowserBestClientLight(CUIRect View)
 		Button.VSplitRight(5.0f, &Button, nullptr);
 		Button.VSplitRight(80.0f, &Button, &VersionsButton);
 	}
-	if(DoButton_CheckBox(&g_Config.m_BrFilterBestclientLight, Localize("Show BestClient Light only"), g_Config.m_BrFilterBestclientLight, &Button))
+	if(DoButton_CheckBox(&g_Config.m_BrFilterBestclientLight, Localize("BestClient only"), g_Config.m_BrFilterBestclientLight, &Button))
 		ToggleBestClientLightServerFilter();
 
 	if(g_Config.m_BclClientIndicatorVersions)
@@ -1826,7 +1827,7 @@ void CMenus::RenderServerbrowserBestClientLight(CUIRect View)
 		BestClientLightIcon.h = BestClientLightIconSize;
 		BestClientLightIcon.x = std::min(NameCursor.m_X + BestClientLightIconSpacing, Name.x + Name.w - BestClientLightIcon.w);
 		BestClientLightIcon.y = Name.y + (Name.h - BestClientLightIcon.h) / 2.0f;
-		BestClientLightRenderIndicatorIcon(Graphics(), BestClientLightIcon, Client.m_BestClientLightDeveloper, Client.m_BestClientLightFake, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+		BestClientLightRenderIndicatorIcon(Graphics(), BestClientLightIcon, Client.m_BestClientLightDeveloper, Client.m_BestClientLightFake, Client.m_BestClientEditionLight, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
 		Ui()->DoLabel(&Clan, Client.m_aClan, FontSize - 2.0f, TEXTALIGN_ML);
 	}
 

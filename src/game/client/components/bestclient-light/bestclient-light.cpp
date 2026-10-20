@@ -480,12 +480,12 @@ void BestClientLightRenderVotePercentages(CUi *pUi, ITextRender *pTextRender, co
 	pTextRender->TextColor(pTextRender->DefaultTextColor());
 }
 
-void BestClientLightRenderIndicatorIcon(IGraphics *pGraphics, const CUIRect &Rect, bool Developer, bool Fake, ColorRGBA Color)
+void BestClientLightRenderIndicatorIcon(IGraphics *pGraphics, const CUIRect &Rect, bool Developer, bool Fake, bool Light, ColorRGBA Color)
 {
 	if(!pGraphics)
 		return;
 
-	const int ImageId = Developer ? IMAGE_BCDEVICON : (Fake ? IMAGE_BCFAKEICON : IMAGE_BCICON);
+	const int ImageId = Developer ? IMAGE_BCDEVICON : (Fake ? IMAGE_BCFAKEICON : (Light ? IMAGE_BCLIGHTICON : IMAGE_BCICON));
 	pGraphics->TextureSet(g_pData->m_aImages[ImageId].m_Id);
 	pGraphics->QuadsBegin();
 	pGraphics->SetColor(Color);
