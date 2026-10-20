@@ -67,8 +67,8 @@ Show player below indicator
 == 显示下方玩家指示
 
 [BestClient Light]
-Show current checkpoint in hud
-== 在 HUD 中显示当前检查点
+Show current checkpoint
+== 显示当前检查点
 
 [BestClient Light]
 Show points in tab

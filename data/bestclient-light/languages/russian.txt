@@ -119,8 +119,8 @@ Show player below indicator
 == Показывать индикатор игрока снизу
 
 [BestClient Light]
-Show current checkpoint in hud
-== Показывать текущий чекпоинт в HUD
+Show current checkpoint
+== Показывать текущий чекпоинт
 
 [BestClient Light]
 Show points in tab
