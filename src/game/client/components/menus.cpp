@@ -1266,9 +1266,6 @@ void CMenus::Render()
 	case IClient::STATE_DEMOPLAYBACK:
 		if(m_Popup != POPUP_NONE)
 		{
-			// bestclient-light
-			Ui()->ClosePopupMenu(&m_DemoCameraEffectsPopupId);
-			// bestclient-light
 			RenderPopupFullscreen(Screen);
 		}
 		else
@@ -1721,9 +1718,6 @@ void CMenus::RenderPopupFullscreen(CUIRect Screen)
 		if(DoButton_Menu(&s_ButtonAbort, Localize("Abort"), 0, &Abort) || Ui()->ConsumeHotkey(CUi::HOTKEY_ESCAPE))
 		{
 			m_DemoRenderInput.Clear();
-			// bestclient-light
-			GameClient()->m_DemoTeeEditor.ClearCutRender();
-			// bestclient-light
 			m_Popup = POPUP_NONE;
 		}
 
@@ -2431,10 +2425,6 @@ void CMenus::PopupConfirmDemoReplaceVideo()
 	char aVideoName[IO_MAX_PATH_LENGTH];
 	str_copy(aVideoName, m_DemoRenderInput.GetString());
 	const char *pError = Client()->DemoPlayer_Render(aBuf, m_DemolistStorageType, aVideoName, m_Speed, m_StartPaused);
-	// bestclient-light
-	if(!pError)
-		GameClient()->m_DemoTeeEditor.RestoreCutRender(aBuf);
-	// bestclient-light
 	m_Speed = DEMO_SPEED_INDEX_DEFAULT;
 	m_StartPaused = false;
 	m_LastPauseChange = -1.0f;
@@ -2515,15 +2505,6 @@ void CMenus::OnStateChange(int NewState, int OldState)
 {
 	// reset active item
 	Ui()->SetActiveItem(nullptr);
-	// bestclient-light
-	if(NewState != IClient::STATE_DEMOPLAYBACK)
-		Ui()->ClosePopupMenu(&m_DemoCameraEffectsPopupId);
-	if(NewState != IClient::STATE_DEMOPLAYBACK || OldState != IClient::STATE_DEMOPLAYBACK)
-	{
-		GameClient()->m_DemoTeeEditor.Close(GameClient());
-		GameClient()->m_DemoTeeEditor.Reset();
-	}
-	// bestclient-light
 
 	if(OldState == IClient::STATE_ONLINE || OldState == IClient::STATE_OFFLINE)
 		TextRender()->DeleteTextContainer(m_MotdTextContainerIndex);

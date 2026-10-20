@@ -34,7 +34,6 @@
 #include "components/bestclient-light/bestclient-light.h" // bestclient-light
 #include "components/bestclient-light/browser_utils.h" // bestclient-light
 #include "components/bestclient-light/config_presets.h" // bestclient-light
-#include "components/bestclient-light/demo_tee_editor.h" // bestclient-light
 #include "components/bestclient-light/edgehelper.h" // bestclient-light
 #include "components/bestclient-light/ego_legit_finished_maps.h" // bestclient-light
 #include "components/bestclient-light/ego_tiles_prediction.h" // bestclient-light
@@ -207,7 +206,6 @@ class CGameClient : public IGameClient
 public:
 	friend class CTClient;
 	friend class CFastPractice; // bestclient-light
-	friend class CDemoTeeEditor; // bestclient-light
 
 	// all components
 	CInfoMessages m_InfoMessages;
@@ -240,7 +238,6 @@ public:
 	CSnapTap m_SnapTap; // bestclient-light
 	CCloudInput m_CloudInput; // bestclient-light
 	CFastPractice m_FastPractice; // bestclient-light
-	CDemoTeeEditor m_DemoTeeEditor; // bestclient-light
 	CBcAutoMargin m_BclAutoMargin; // bestclient-light
 	COptimizer m_Optimizer; // bestclient-light
 	CProcessPriority m_ProcessPriority; // bestclient-light

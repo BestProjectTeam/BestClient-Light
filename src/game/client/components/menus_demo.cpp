@@ -23,7 +23,6 @@
 #include <generated/client_data.h>
 #include <generated/protocol.h>
 
-#include <game/client/components/bestclient-light/demo_tee_editor.h> // bestclient-light
 #include <game/client/components/console.h>
 #include <game/client/gameclient.h>
 #include <game/client/ui.h>
@@ -314,27 +313,8 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 		UpdateLastPauseChange();
 	}
 
-	CUIRect DemoControlsProbe;
-	MainView.HSplitBottom(TotalHeight, nullptr, &DemoControlsProbe);
-	DemoControlsProbe.VSplitLeft(50.0f, nullptr, &DemoControlsProbe);
-	// bestclient-light
-	DemoControlsProbe.VSplitLeft(635.0f, &DemoControlsProbe, nullptr);
-	// bestclient-light
-	DemoControlsProbe.x += m_DemoControlsPositionOffset.x;
-	DemoControlsProbe.y += m_DemoControlsPositionOffset.y;
-
-	// bestclient-light
-	if(Client()->State() == IClient::STATE_DEMOPLAYBACK)
-		GameClient()->m_DemoTeeEditor.UpdateSelection(GameClient(), DemoControlsProbe);
-	// bestclient-light
-
 	if(!m_MenuActive)
 	{
-		// bestclient-light
-		if(Ui()->IsPopupOpen(&m_DemoCameraEffectsPopupId))
-			Ui()->ClosePopupMenu(&m_DemoCameraEffectsPopupId);
-		GameClient()->m_DemoTeeEditor.CloseIfMenuInactive(GameClient(), m_MenuActive);
-		// bestclient-light
 		HandleDemoSeeking(PositionToSeek, TimeToSeek);
 		return;
 	}
@@ -342,9 +322,7 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 	CUIRect DemoControls;
 	MainView.HSplitBottom(TotalHeight, nullptr, &DemoControls);
 	DemoControls.VSplitLeft(50.0f, nullptr, &DemoControls);
-	// bestclient-light
-	DemoControls.VSplitLeft(635.0f, &DemoControls, nullptr);
-	// bestclient-light
+	DemoControls.VSplitLeft(600.0f, &DemoControls, nullptr);
 	const CUIRect DemoControlsOriginal = DemoControls;
 	DemoControls.x += m_DemoControlsPositionOffset.x;
 	DemoControls.y += m_DemoControlsPositionOffset.y;
@@ -758,9 +736,6 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 	static CButtonContainer s_ExitButton;
 	if(Ui()->DoButton_FontIcon(&s_ExitButton, FontIcon::XMARK, 0, &Button, BUTTONFLAG_LEFT) || (Input()->KeyPress(KEY_C) && !GameClient()->m_GameConsole.IsActive() && m_DemoPlayerState == DEMOPLAYER_NONE))
 	{
-		// bestclient-light
-		Ui()->ClosePopupMenu(&m_DemoCameraEffectsPopupId);
-		// bestclient-light
 		Client()->Disconnect();
 		SetMenuPage(PAGE_DEMOS);
 		DemolistOnUpdate(false);
@@ -776,31 +751,6 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 		g_Config.m_ClDemoKeyboardShortcuts ^= 1;
 	}
 	GameClient()->m_Tooltips.DoToolTip(&s_KeyboardShortcutsButton, &Button, Localize("Toggle keyboard shortcuts"));
-
-	// bestclient-light
-	ButtonBar.VSplitRight(Margins, &ButtonBar, nullptr);
-	ButtonBar.VSplitRight(ButtonbarHeight, &ButtonBar, &Button);
-	static CButtonContainer s_DemoCameraEffectsButton;
-	const bool DemoCameraEffectsPopupOpen = Ui()->IsPopupOpen(&m_DemoCameraEffectsPopupId);
-	const bool DemoCameraEffectsEnabled = g_Config.m_BclCameraDrift || g_Config.m_BclDynamicFov;
-	if(Ui()->DoButton_FontIcon(&s_DemoCameraEffectsButton, FontIcon::GEAR, DemoCameraEffectsPopupOpen || DemoCameraEffectsEnabled, &Button, BUTTONFLAG_LEFT))
-	{
-		if(DemoCameraEffectsPopupOpen)
-		{
-			Ui()->ClosePopupMenu(&m_DemoCameraEffectsPopupId);
-		}
-		else
-		{
-			constexpr float PopupWidth = 320.0f;
-			constexpr float PopupHeight = 310.0f;
-			constexpr float PopupMargin = 5.0f;
-			const float PopupX = std::clamp(Button.x + Button.w - PopupWidth, PopupMargin, std::max(PopupMargin, Ui()->Screen()->w - PopupWidth - PopupMargin));
-			const float PopupY = Button.y >= PopupHeight + PopupMargin ? Button.y - PopupHeight - 2.0f : Button.y + Button.h + 2.0f;
-			Ui()->DoPopupMenu(&m_DemoCameraEffectsPopupId, PopupX, PopupY, PopupWidth, PopupHeight, this, PopupDemoCameraEffects);
-		}
-	}
-	GameClient()->m_Tooltips.DoToolTip(&s_DemoCameraEffectsButton, &Button, Localize("Configure demo camera effects"));
-	// bestclient-light
 
 	// auto camera button (only available when it is possible to use)
 	if(GameClient()->m_Camera.CanUseAutoSpecCamera())
@@ -850,75 +800,6 @@ void CMenus::RenderDemoPlayer(CUIRect MainView)
 		RenderDemoPlayerSliceSavePopup(MainView);
 	}
 }
-
-// bestclient-light
-CUi::EPopupMenuFunctionResult CMenus::PopupDemoCameraEffects(void *pContext, CUIRect View, bool Active)
-{
-	CMenus *pMenus = static_cast<CMenus *>(pContext);
-
-	if(pMenus->Client()->State() != IClient::STATE_DEMOPLAYBACK || !pMenus->m_MenuActive || pMenus->m_Popup != POPUP_NONE)
-		return CUi::POPUP_CLOSE_CURRENT;
-	if(!Active)
-		return CUi::POPUP_CLOSE_CURRENT;
-
-	constexpr float RowHeight = 20.0f;
-	constexpr float CheckBoxHeight = 18.0f;
-	constexpr float Gap = 6.0f;
-
-	View.Margin(6.0f, &View);
-
-	CUIRect Row;
-	View.HSplitTop(RowHeight, &Row, &View);
-	pMenus->Ui()->DoLabel(&Row, Localize("Demo camera effects"), 14.0f, TEXTALIGN_MC);
-	View.HSplitTop(4.0f, nullptr, &View);
-
-	View.HSplitTop(CheckBoxHeight, &Row, &View);
-	if(pMenus->DoButton_CheckBox(&g_Config.m_BclCameraDrift, Localize("Camera drift"), g_Config.m_BclCameraDrift, &Row))
-		g_Config.m_BclCameraDrift ^= 1;
-
-	View.HSplitTop(RowHeight, &Row, &View);
-	pMenus->Ui()->DoScrollbarOption(&g_Config.m_BclCameraDriftAmount, &g_Config.m_BclCameraDriftAmount, &Row, Localize("Drift amount"), 1, 200);
-
-	View.HSplitTop(RowHeight, &Row, &View);
-	pMenus->Ui()->DoScrollbarOption(&g_Config.m_BclCameraDriftSmoothness, &g_Config.m_BclCameraDriftSmoothness, &Row, Localize("Drift smoothness"), 1, 20);
-
-	View.HSplitTop(CheckBoxHeight, &Row, &View);
-	if(pMenus->DoButton_CheckBox(&g_Config.m_BclCameraDriftReverse, Localize("Reverse drift direction"), g_Config.m_BclCameraDriftReverse, &Row))
-		g_Config.m_BclCameraDriftReverse ^= 1;
-
-	View.HSplitTop(Gap, nullptr, &View);
-	View.HSplitTop(1.0f, &Row, &View);
-	Row.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, 0.15f), IGraphics::CORNER_NONE, 0.0f);
-	View.HSplitTop(Gap, nullptr, &View);
-
-	View.HSplitTop(CheckBoxHeight, &Row, &View);
-	if(pMenus->DoButton_CheckBox(&g_Config.m_BclDynamicFov, Localize("Dynamic FOV"), g_Config.m_BclDynamicFov, &Row))
-		g_Config.m_BclDynamicFov ^= 1;
-
-	View.HSplitTop(RowHeight, &Row, &View);
-	pMenus->Ui()->DoScrollbarOption(&g_Config.m_BclDynamicFovAmount, &g_Config.m_BclDynamicFovAmount, &Row, Localize("FOV amount"), 1, 200);
-
-	View.HSplitTop(RowHeight, &Row, &View);
-	pMenus->Ui()->DoScrollbarOption(&g_Config.m_BclDynamicFovSmoothness, &g_Config.m_BclDynamicFovSmoothness, &Row, Localize("FOV smoothness"), 1, 100);
-
-	View.HSplitTop(Gap, nullptr, &View);
-	View.HSplitTop(1.0f, &Row, &View);
-	Row.Draw(ColorRGBA(1.0f, 1.0f, 1.0f, 0.15f), IGraphics::CORNER_NONE, 0.0f);
-	View.HSplitTop(Gap, nullptr, &View);
-
-	View.HSplitTop(CheckBoxHeight, &Row, &View);
-	if(pMenus->DoButton_CheckBox(&g_Config.m_BclFreeviewNumpad, Localize("Numpad move (2/4/6/8)"), g_Config.m_BclFreeviewNumpad, &Row))
-		g_Config.m_BclFreeviewNumpad ^= 1;
-
-	View.HSplitTop(RowHeight, &Row, &View);
-	pMenus->Ui()->DoScrollbarOption(&g_Config.m_BclFreeviewSpeed, &g_Config.m_BclFreeviewSpeed, &Row, Localize("Freeview speed"), 1, 1000);
-
-	View.HSplitTop(RowHeight, &Row, &View);
-	pMenus->Ui()->DoScrollbarOption(&g_Config.m_BclFreeviewSmoothness, &g_Config.m_BclFreeviewSmoothness, &Row, Localize("Freeview smoothness"), 1, 100);
-
-	return CUi::POPUP_KEEP_OPEN;
-}
-// bestclient-light
 
 void CMenus::RenderDemoPlayerSliceSavePopup(CUIRect MainView)
 {
@@ -1043,18 +924,7 @@ void CMenus::RenderDemoPlayerSliceSavePopup(CUIRect MainView)
 		if(str_endswith(m_aCurrentDemoSelectionName, ".demo"))
 			m_aCurrentDemoSelectionName[str_length(m_aCurrentDemoSelectionName) - str_length(".demo")] = '\0';
 
-		// bestclient-light
-		if(GameClient()->m_DemoTeeEditor.SliceHasUnsupportedEdits(Client()->IsSixup()))
-		{
-			static CUi::SMessagePopupContext s_UnsupportedPopupContext;
-			s_UnsupportedPopupContext.ErrorColor();
-			str_copy(s_UnsupportedPopupContext.m_aMessage, Localize("Exporting tee edits from 0.7 demos is not supported"));
-			Ui()->ShowPopupMessage(Ui()->MouseX(), Ui()->MouseY(), &s_UnsupportedPopupContext);
-			s_ConfirmPopupContext.Reset();
-			return;
-		}
-		// bestclient-light
-		if(!Client()->DemoSlice(aPath, CMenus::DemoFilterChat, &s_RemoveChat, CDemoTeeEditor::ApplyToSliceCallback, &GameClient()->m_DemoTeeEditor))
+		if(!Client()->DemoSlice(aPath, CMenus::DemoFilterChat, &s_RemoveChat))
 		{
 			static CUi::SMessagePopupContext s_ErrorPopupContext;
 			s_ErrorPopupContext.ErrorColor();
@@ -1069,9 +939,6 @@ void CMenus::RenderDemoPlayerSliceSavePopup(CUIRect MainView)
 #if defined(CONF_VIDEORECORDER)
 		if(s_RenderCut)
 		{
-			// bestclient-light
-			GameClient()->m_DemoTeeEditor.PrepareCutRender(aPath);
-			// bestclient-light
 			m_Popup = POPUP_RENDER_DEMO;
 			m_StartPaused = false;
 			m_DemoRenderInput.Set(m_aCurrentDemoSelectionName);

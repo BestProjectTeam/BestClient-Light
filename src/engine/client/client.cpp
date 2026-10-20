@@ -4240,11 +4240,11 @@ void CClient::SaveReplay(const int Length, const char *pFilename)
 	}
 }
 
-bool CClient::DemoSlice(const char *pDstPath, CLIENTFUNC_FILTER pfnFilter, void *pUser, CLIENTFUNC_SNAPSHOT pfnSnapshot, void *pSnapshotUser)
+bool CClient::DemoSlice(const char *pDstPath, CLIENTFUNC_FILTER pfnFilter, void *pUser)
 {
 	if(m_DemoPlayer.IsPlaying())
 	{
-		return m_DemoEditor.Slice(m_DemoPlayer.Filename(), pDstPath, g_Config.m_ClDemoSliceBegin, g_Config.m_ClDemoSliceEnd, pfnFilter, pUser, pfnSnapshot, pSnapshotUser);
+		return m_DemoEditor.Slice(m_DemoPlayer.Filename(), pDstPath, g_Config.m_ClDemoSliceBegin, g_Config.m_ClDemoSliceEnd, pfnFilter, pUser);
 	}
 	return false;
 }

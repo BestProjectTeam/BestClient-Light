@@ -114,8 +114,6 @@ The client currently ships with more than **300** `bc_*` config variables, five 
 - **Custom Aspect Ratio** — presets and arbitrary num:den input
 - **Chat Bubbles** — bubbles above players (from Entity-Client)
 
-Demo playback only (Demo Player): **Camera Drift**, **Dynamic FOV**.
-
 ### Gameplay
 
 - **Inputs** — Fast, Best (smoothing/latency/interpolation), Saiko, Delta, F + Auto Margin
@@ -203,10 +201,6 @@ bc_better_spectate
 bc_blocked_content_partial_replacement_char
 bc_blocked_content_replacement_char
 bc_blocked_word_console_color
-bc_camera_drift
-bc_camera_drift_amount
-bc_camera_drift_reverse
-bc_camera_drift_smoothness
 bc_casino_balance
 bc_casino_last_claim
 bc_chat_alt_command_layout
@@ -265,9 +259,6 @@ bc_custom_aspect_ratio_num
 bc_delta_input_amount
 bc_delta_input_others
 bc_discord_normal_process_priority
-bc_dynamic_fov
-bc_dynamic_fov_amount
-bc_dynamic_fov_smoothness
 bc_enable_censor_list
 bc_extend_zoom
 bc_f_input_amount

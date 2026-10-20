@@ -35,11 +35,8 @@
 #include <set>
 #include <string>
 
-class CDemoTeeEditor; // bestclient-light
-
 class CMenus : public CComponent
 {
-	friend class CDemoTeeEditor; // bestclient-light
 	static ColorRGBA ms_GuiColor;
 	static ColorRGBA ms_ColorTabbarInactiveOutgame;
 	static ColorRGBA ms_ColorTabbarActiveOutgame;
@@ -545,10 +542,6 @@ protected:
 	void HandleDemoSeeking(float PositionToSeek, float TimeToSeek);
 	void RenderDemoPlayer(CUIRect MainView);
 	void RenderDemoPlayerSliceSavePopup(CUIRect MainView);
-	// bestclient-light
-	SPopupMenuId m_DemoCameraEffectsPopupId;
-	static CUi::EPopupMenuFunctionResult PopupDemoCameraEffects(void *pContext, CUIRect View, bool Active);
-	// bestclient-light
 	bool m_DemoBrowserListInitialized = false;
 	void RenderDemoBrowser(CUIRect MainView);
 	void RenderDemoBrowserList(CUIRect ListView, bool &WasListboxItemActivated);

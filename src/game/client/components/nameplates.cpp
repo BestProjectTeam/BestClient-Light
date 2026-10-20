@@ -12,7 +12,6 @@
 #include <generated/client_data.h>
 
 #include <game/client/animstate.h>
-#include <game/client/components/bestclient-light/demo_tee_editor.h> // bestclient-light
 #include <game/client/components/bestclient-light/version.h> // bestclient-light
 #include <game/client/gameclient.h>
 #include <game/client/prediction/entities/character.h>
@@ -981,21 +980,6 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 
 	Data.m_ShowName = pPlayerInfo->m_Local ? g_Config.m_ClNamePlatesOwn : g_Config.m_ClNamePlates;
 	str_copy(Data.m_aName, ClientData.m_aName);
-	// bestclient-light
-	bool DemoTeeClanOverride = false;
-	if(Client()->State() == IClient::STATE_DEMOPLAYBACK)
-	{
-		const SDemoTeeOverride *pDemoTeeOverride = GameClient()->m_DemoTeeEditor.Override(pPlayerInfo->m_ClientId);
-		if(pDemoTeeOverride != nullptr && str_comp(pDemoTeeOverride->m_aOriginalName, ClientData.m_aName) == 0)
-		{
-			str_copy(Data.m_aName, pDemoTeeOverride->m_aName);
-			if(str_comp(pDemoTeeOverride->m_aName, pDemoTeeOverride->m_aOriginalName) != 0)
-				MarkChangedDemoName(Data.m_aName, sizeof(Data.m_aName));
-			str_copy(Data.m_aClan, pDemoTeeOverride->m_aClan);
-			DemoTeeClanOverride = true;
-		}
-	}
-	// bestclient-light
 	Data.m_ShowFriendMark = Data.m_ShowName && g_Config.m_ClNamePlatesFriendMark && GameClient()->m_aClients[pPlayerInfo->m_ClientId].m_Friend;
 	Data.m_ShowClientId = Data.m_ShowName && (g_Config.m_Debug || g_Config.m_ClNamePlatesIds);
 	Data.m_FontSize = 18.0f + 20.0f * g_Config.m_ClNamePlatesSize / 100.0f;
@@ -1005,10 +989,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	Data.m_FontSizeClientId = Data.m_ClientIdSeparateLine ? (18.0f + 20.0f * g_Config.m_ClNamePlatesIdsSize / 100.0f) : Data.m_FontSize;
 
 	Data.m_ShowClan = Data.m_ShowName && g_Config.m_ClNamePlatesClan;
-	// bestclient-light
-	if(!DemoTeeClanOverride)
-		// bestclient-light
-		str_copy(Data.m_aClan, GameClient()->m_aClients[pPlayerInfo->m_ClientId].m_aClan);
+	str_copy(Data.m_aClan, GameClient()->m_aClients[pPlayerInfo->m_ClientId].m_aClan);
 	Data.m_FontSizeClan = 18.0f + 20.0f * g_Config.m_ClNamePlatesClanSize / 100.0f;
 
 	Data.m_FontSizeHookStrongWeak = 18.0f + 20.0f * g_Config.m_ClNamePlatesStrongSize / 100.0f;

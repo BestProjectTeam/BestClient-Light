@@ -10,7 +10,6 @@
 
 #include <engine/shared/config.h>
 
-#include <game/client/components/bestclient-light/camera_demos.h> // bestclient-light
 #include <game/client/components/bestclient-light/camera_extras.h> // bestclient-light
 #include <game/client/gameclient.h>
 #include <game/collision.h>
@@ -66,9 +65,6 @@ float CCamera::ZoomProgress(float CurrentTime) const
 
 void CCamera::ScaleZoom(float Factor)
 {
-	// bestclient-light
-	CCameraDemos::RemoveDynamicFov(m_Zoom);
-	// bestclient-light
 	float CurrentTarget = m_Zooming ? m_ZoomSmoothingTarget : m_Zoom;
 	ChangeZoom(CurrentTarget * Factor, GameClient()->m_Snap.m_SpecInfo.m_Active && GameClient()->m_MultiViewActivated ? g_Config.m_ClMultiViewZoomSmoothness : g_Config.m_ClSmoothZoomTime, true);
 
@@ -87,9 +83,6 @@ float CCamera::MinZoomLevel()
 
 void CCamera::ChangeZoom(float Target, int Smoothness, bool IsUser)
 {
-	// bestclient-light
-	CCameraDemos::RemoveDynamicFov(m_Zoom);
-	// bestclient-light
 	if(Target > MaxZoomLevel() || Target < MinZoomLevel())
 	{
 		return;
@@ -123,9 +116,6 @@ void CCamera::ResetAutoSpecCamera()
 
 void CCamera::UpdateCamera()
 {
-	// bestclient-light
-	CCameraDemos::RemoveDynamicFov(m_Zoom);
-	// bestclient-light
 	// use hardcoded smooth camera for spectating unless player explicitly turn it off
 	bool CanUseCameraInfo = !GameClient()->m_MultiViewActivated;
 	if(Client()->State() == IClient::STATE_DEMOPLAYBACK)
@@ -222,9 +212,6 @@ void CCamera::UpdateCamera()
 		m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy] = vec2(0, 0);
 		m_CanUseCameraInfo = CanUseCameraInfo;
 		m_UsingAutoSpecCamera = UsingAutoSpecCamera;
-		// bestclient-light
-		CCameraDemos::UpdateEffects(GameClient(), Client()->RenderFrameTime(), m_Zoom, MinZoomLevel(), MaxZoomLevel());
-		// bestclient-light
 		return;
 	}
 
@@ -300,9 +287,6 @@ void CCamera::UpdateCamera()
 	m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy] = CurrentCameraOffset;
 	m_CanUseCameraInfo = CanUseCameraInfo;
 	m_UsingAutoSpecCamera = UsingAutoSpecCamera;
-	// bestclient-light
-	CCameraDemos::UpdateEffects(GameClient(), DeltaTime, m_Zoom, MinZoomLevel(), MaxZoomLevel());
-	// bestclient-light
 }
 
 void CCamera::OnRender()
@@ -369,19 +353,11 @@ void CCamera::OnRender()
 			m_CamType = CAMTYPE_PLAYER;
 		}
 
-		// bestclient-light
-		const vec2 DemoCameraDriftOffset = CCameraDemos::DriftOffset(Client()->State() == IClient::STATE_DEMOPLAYBACK);
 		if(GameClient()->m_Snap.m_SpecInfo.m_Active)
-			m_Center = GameClient()->m_Snap.m_SpecInfo.m_Position + m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy] + DemoCameraDriftOffset;
+			m_Center = GameClient()->m_Snap.m_SpecInfo.m_Position + m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy];
 		else
-			m_Center = GameClient()->m_LocalCharacterPos + m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy] + DemoCameraDriftOffset;
-		// bestclient-light
+			m_Center = GameClient()->m_LocalCharacterPos + m_aDyncamCurrentCameraOffset[g_Config.m_ClDummy];
 	}
-
-	// bestclient-light
-	if(m_CamType == CAMTYPE_SPEC)
-		CCameraDemos::ApplyFreeviewNumpad(Input(), Client()->RenderFrameTime(), m_ForceFreeview, m_ForceFreeviewPos, m_Center);
-	// bestclient-light
 
 	if(m_ForceFreeview && m_CamType == CAMTYPE_SPEC)
 	{
@@ -464,9 +440,6 @@ void CCamera::OnReset()
 	m_Zooming = false;
 	m_AutoSpecCameraZooming = false;
 	m_UserZoomTarget = CCamera::ZoomStepsToValue(g_Config.m_ClDefaultZoom - 10);
-	// bestclient-light
-	CCameraDemos::Reset();
-	// bestclient-light
 }
 
 void CCamera::ConZoomPlus(IConsole::IResult *pResult, void *pUserData)
