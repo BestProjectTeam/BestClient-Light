@@ -463,8 +463,12 @@ Paste theme from clipboard
 == Вставить тему из буфера
 
 [BestClient Light]
+Motion Blur
+== Моушен блюр
+
+[BestClient Light]
 Enable motion blur
-== Включить Motion Blur
+== Включить моушен блюр
 
 [BestClient Light]
 Blend strength
