@@ -15,6 +15,7 @@
 #include <memory>
 
 class IHttpRequest;
+class IStorage;
 
 class CTeeRenderInfo;
 
@@ -100,5 +101,6 @@ void BestClientLightRenderIndicatorIcon(class IGraphics *pGraphics, const class 
 constexpr const char *BESTCLIENT_LIGHT_BETTER_FONT_FACE = "ActayWide Bold";
 void BestClientLightApplyMenuFont(class ITextRender *pTextRender);
 void BestClientLightRefreshMenuFont(class CGameClient *pGameClient);
+bool BestClientLightOpenDemoInNewClient(IStorage *pStorage, const char *pAbsoluteDemoPath);
 
 #endif
