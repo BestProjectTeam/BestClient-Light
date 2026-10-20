@@ -118,6 +118,17 @@ void CSkins::CSkinContainer::RequestLoad()
 	}
 }
 
+// bestclient-light
+bool CSkins::CSkinContainer::IsSuppressedForGame() const
+{
+	if(g_Config.m_ClVanillaSkinsOnly && !m_Vanilla)
+	{
+		return true;
+	}
+	return !g_Config.m_ClDownloadSkins && (m_Type == EType::DOWNLOAD || m_Type == EType::CACHED);
+}
+// bestclient-light
+
 CSkins::CSkinContainer::EState CSkins::CSkinContainer::DetermineInitialState() const
 {
 	if(m_AlwaysLoaded)
@@ -125,8 +136,7 @@ CSkins::CSkinContainer::EState CSkins::CSkinContainer::DetermineInitialState() c
 		// Load immediately if it should always be loaded
 		return EState::PENDING;
 	}
-	else if(m_Type == EType::DOWNLOAD &&
-		((g_Config.m_ClVanillaSkinsOnly && !m_Vanilla) || !g_Config.m_ClDownloadSkins))
+	else if(IsSuppressedForGame()) // bestclient-light
 	{
 		return EState::NOT_FOUND;
 	}
@@ -893,6 +903,13 @@ const CSkin *CSkins::FindLocalSkin(const char *pName)
 	CSkinContainer *pContainer = SkinIt->second.get();
 	if(pContainer->Type() == CSkinContainer::EType::DOWNLOAD && !pContainer->m_CacheAvailable)
 		return nullptr;
+	// bestclient-light
+	if(pContainer->State() == CSkinContainer::EState::NOT_FOUND &&
+		(pContainer->Type() == CSkinContainer::EType::LOCAL || pContainer->Type() == CSkinContainer::EType::CACHED))
+	{
+		pContainer->SetState(CSkinContainer::EState::UNLOADED);
+	}
+	// bestclient-light
 	pContainer->RequestLoad();
 	return pContainer->State() == CSkinContainer::EState::LOADED ? pContainer->Skin().get() : nullptr;
 }
@@ -943,6 +960,12 @@ const CSkins::CSkinContainer *CSkins::FindContainerImpl(const char *pName)
 		pSkinContainer->SetState(pSkinContainer->DetermineInitialState());
 		ExistingSkin = m_Skins.insert({pSkinContainer->Name(), std::move(pSkinContainer)}).first;
 	}
+	// bestclient-light
+	if(ExistingSkin->second->IsSuppressedForGame())
+	{
+		return ExistingSkin->second.get();
+	}
+	// bestclient-light
 	if(ExistingSkin->second->m_CacheOnly)
 	{
 		ExistingSkin->second->m_CacheOnly = false;
@@ -955,10 +978,14 @@ const CSkins::CSkinContainer *CSkins::FindContainerImpl(const char *pName)
 const CSkin *CSkins::FindOrNullptr(const char *pName)
 {
 	const CSkinContainer *pSkinContainer = FindContainerOrNullptr(pName);
-	if(pSkinContainer == nullptr || pSkinContainer->m_State != CSkinContainer::EState::LOADED)
+	// bestclient-light
+	if(pSkinContainer == nullptr ||
+		pSkinContainer->IsSuppressedForGame() ||
+		pSkinContainer->m_State != CSkinContainer::EState::LOADED)
 	{
 		return nullptr;
 	}
+	// bestclient-light
 	return pSkinContainer->m_pSkin.get();
 }
 
