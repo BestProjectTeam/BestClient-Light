@@ -1579,7 +1579,9 @@ inline float CHud::GetMovementInformationBoxHeight() const
 	const bool ShowPos = g_Config.m_ClShowhudPlayerPosition != 0;
 	const bool ShowSpeed = g_Config.m_ClShowhudPlayerSpeed != 0;
 	const bool ShowAngle = g_Config.m_ClShowhudPlayerAngle != 0;
-	float BoxHeight = 3.0f * MOVEMENT_INFORMATION_LINE_HEIGHT * (ShowPos + ShowSpeed) + 2.0f * MOVEMENT_INFORMATION_LINE_HEIGHT * ShowAngle;
+	// bestclient-light
+	float BoxHeight = 3.0f * MOVEMENT_INFORMATION_LINE_HEIGHT * (ShowPos + ShowSpeed) + MOVEMENT_INFORMATION_LINE_HEIGHT * ShowAngle;
+	// bestclient-light
 
 	if(Client()->DummyConnected())
 	{
@@ -1892,12 +1894,12 @@ void CHud::RenderMovementInformation(bool ForcePreview)
 
 	if(g_Config.m_ClShowhudPlayerAngle)
 	{
+		// bestclient-light
 		TextRender()->Text(LeftX, y, Fontsize, Localize("Angle:"), -1.0f);
-		y += LineHeight;
-
 		UpdateMovementInformationTextContainer(m_PlayerAngleTextContainerIndex, Fontsize, Info.m_Angle, m_PlayerPrevAngle, UpdateMoveContainers);
 		RenderMovementInformationTextContainer(m_PlayerAngleTextContainerIndex, TextRender()->DefaultTextColor(), RightX, y);
 		y += LineHeight;
+		// bestclient-light
 
 		if(ShowDummyAngle)
 		{
