@@ -3003,7 +3003,7 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 
 	LeftColumn.HSplitTop(MarginBetweenViews, nullptr, &LeftColumn);
 
-	const float BrowserUtilsBlockHeight = 6.0f * LineSize + 5.0f * MarginSmall;
+	const float BrowserUtilsBlockHeight = 5.0f * LineSize + 4.0f * MarginSmall;
 
 	CUIRect BrowserUtilsBlock;
 	LeftColumn.HSplitTop(BrowserUtilsBlockHeight, &BrowserUtilsBlock, &LeftColumn);
@@ -3033,12 +3033,8 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 
 	BrowserUtilsBlock.HSplitTop(MarginSmall, nullptr, &BrowserUtilsBlock);
 	BrowserUtilsBlock.HSplitTop(LineSize, &Content, &BrowserUtilsBlock);
-	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowFinishedMapOnEgo, BcLocalize("Show finished map on EGO"), &g_Config.m_BclShowFinishedMapOnEgo, &Content, LineSize);
-
-	BrowserUtilsBlock.HSplitTop(MarginSmall, nullptr, &BrowserUtilsBlock);
-	BrowserUtilsBlock.HSplitTop(LineSize, &Content, &BrowserUtilsBlock);
 	BcMenuBadges::DrawNew(Graphics(), Ui(), TextRender(), &Content, MarginSmall);
-	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowFinishedMapOnLegit, BcLocalize("Show finished map on Legit Network"), &g_Config.m_BclShowFinishedMapOnLegit, &Content, LineSize);
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowFinishedMapOnEgoLegit, BcLocalize("Show finished map on EGO/LEGIT-NET"), &g_Config.m_BclShowFinishedMapOnEgoLegit, &Content, LineSize);
 
 	LeftColumn.HSplitTop(MarginBetweenViews, nullptr, &LeftColumn);
 

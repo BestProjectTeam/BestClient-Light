@@ -181,8 +181,7 @@ void CGameClient::OnConsoleInit()
 					      &m_MusicPlayer, // bestclient-light
 					      &m_BrowserUtils, // bestclient-light
 					      &m_TwitchChat, // bestclient-light
-					      &m_EgoFinishedMaps, // bestclient-light
-					      &m_LegitFinishedMaps, // bestclient-light
+					      &m_EgoLegitFinishedMaps, // bestclient-light
 					      &m_ShowPoints, // bestclient-light
 					      &m_ClientIndicator, // bestclient-light
 					      &m_Hud,
@@ -6022,8 +6021,8 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "BrowserUtils";
 	if(pComp == &m_TwitchChat)
 		return "TwitchChat";
-	if(pComp == &m_EgoFinishedMaps)
-		return "EgoFinishedMaps";
+	if(pComp == &m_EgoLegitFinishedMaps)
+		return "EgoLegitFinishedMaps";
 	if(pComp == &m_ShowPoints)
 		return "ShowPoints";
 	if(pComp == &m_ClientIndicator)

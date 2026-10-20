@@ -1047,12 +1047,8 @@ Short EGO/KoG server name
 == Короткое имя сервера EGO/KoG
 
 [BestClient Light]
-Show finished map on EGO
-== Показывать пройденную карту на EGO
-
-[BestClient Light]
-Show finished map on Legit Network
-== Показывать пройденную карту на Legit Network
+Show finished map on EGO/LEGIT-NET
+== Показывать пройденную карту на EGO/LEGIT-NET
 
 [BestClient Light]
 Rollback Demo

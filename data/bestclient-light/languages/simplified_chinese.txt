@@ -991,12 +991,8 @@ Short EGO/KoG server name
 == 缩短 EGO/KoG 服务器名
 
 [BestClient Light]
-Show finished map on EGO
-== 在 EGO 上显示已完成地图
-
-[BestClient Light]
-Show finished map on Legit Network
-== 在 Legit Network 上显示已完成地图
+Show finished map on EGO/LEGIT-NET
+== 在 EGO/LEGIT-NET 上显示已完成地图
 
 [BestClient Light]
 Rollback Demo

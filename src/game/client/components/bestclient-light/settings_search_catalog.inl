@@ -150,7 +150,7 @@
 
 	{"Browser Utils", SETTINGS_NAV_LEAF_BC_TOOLS, "Tools", &g_Config.m_BclAutoServerListRefresh, nullptr},
 	{"Short EGO/KoG server name", SETTINGS_NAV_LEAF_BC_TOOLS, "Browser Utils", &g_Config.m_BclUseShortKogServerName, nullptr},
-	{"Show finished map on EGO", SETTINGS_NAV_LEAF_BC_TOOLS, "Browser Utils", &g_Config.m_BclShowFinishedMapOnEgo, nullptr},
+	{"Show finished map on EGO/LEGIT-NET", SETTINGS_NAV_LEAF_BC_TOOLS, "Browser Utils", &g_Config.m_BclShowFinishedMapOnEgoLegit, nullptr},
 
 	{"Show ping colored circle in nameplates", SETTINGS_NAV_LEAF_TC_SETTINGS, "Visual", &g_Config.m_TcNameplatePingCircle, nullptr},
 	{"Show country flags in nameplates", SETTINGS_NAV_LEAF_TC_SETTINGS, "Visual", &g_Config.m_TcNameplateCountry, nullptr},

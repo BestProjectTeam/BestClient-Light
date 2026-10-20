@@ -2961,10 +2961,8 @@ if(CLIENT)
     components/bestclient-light/ui_theme/widgets.h
     components/bestclient-light/gif_bubbles.cpp
     components/bestclient-light/gif_bubbles.h
-    components/bestclient-light/ego_finished_maps.cpp
-    components/bestclient-light/ego_finished_maps.h
-    components/bestclient-light/legit_finished_maps.cpp
-    components/bestclient-light/legit_finished_maps.h
+    components/bestclient-light/ego_legit_finished_maps.cpp
+    components/bestclient-light/ego_legit_finished_maps.h
     components/bestclient-light/ego_tiles_prediction.cpp
     components/bestclient-light/ego_tiles_prediction.h
     components/bestclient-light/edgehelper.cpp

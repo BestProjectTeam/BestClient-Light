@@ -174,8 +174,7 @@ MACRO_CONFIG_INT(BclShowSettingsTransfer, bcl_show_settings_transfer, 1, 0, 1, C
 MACRO_CONFIG_INT(BclAutoServerListRefresh, bcl_auto_server_list_refresh, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Automatically refresh the server browser list while a browser tab is open")
 MACRO_CONFIG_INT(BclAutoServerListRefreshSeconds, bcl_auto_server_list_refresh_seconds, 10, 1, 300, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Auto refresh interval for the server browser list in seconds")
 MACRO_CONFIG_INT(BclUseShortKogServerName, bcl_use_short_kog_server_name, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Use short names for E-Gores and KoG servers in browser list")
-MACRO_CONFIG_INT(BclShowFinishedMapOnEgo, bcl_show_finished_map_on_ego, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show completed EGO maps in the server browser")
-MACRO_CONFIG_INT(BclShowFinishedMapOnLegit, bcl_show_finished_map_on_legit, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show completed Legit Network maps in the server browser")
+MACRO_CONFIG_INT(BclShowFinishedMapOnEgoLegit, bcl_show_finished_map_on_ego_legit, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show completed EGO and Legit Network maps in the server browser")
 MACRO_CONFIG_INT(BrFilterBestclientLight, br_filter_bestclient_light, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Filter out servers with no BestClient Light users")
 
 // Client Indicator

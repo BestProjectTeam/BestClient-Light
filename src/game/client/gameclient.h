@@ -36,8 +36,7 @@
 #include "components/bestclient-light/config_presets.h" // bestclient-light
 #include "components/bestclient-light/demo_tee_editor.h" // bestclient-light
 #include "components/bestclient-light/edgehelper.h" // bestclient-light
-#include "components/bestclient-light/ego_finished_maps.h" // bestclient-light
-#include "components/bestclient-light/legit_finished_maps.h" // bestclient-light
+#include "components/bestclient-light/ego_legit_finished_maps.h" // bestclient-light
 #include "components/bestclient-light/ego_tiles_prediction.h" // bestclient-light
 #include "components/bestclient-light/fast_actions.h" // bestclient-light
 #include "components/bestclient-light/fast_practice.h" // bestclient-light
@@ -248,8 +247,7 @@ public:
 	CMusicPlayer m_MusicPlayer; // bestclient-light
 	CBrowserUtils m_BrowserUtils; // bestclient-light
 	CTwitchChat m_TwitchChat; // bestclient-light
-	CEgoFinishedMaps m_EgoFinishedMaps; // bestclient-light
-	CLegitFinishedMaps m_LegitFinishedMaps; // bestclient-light
+	CEgoLegitFinishedMaps m_EgoLegitFinishedMaps; // bestclient-light
 	CEdgeHelper m_EdgeHelper; // bestclient-light
 	CFinishPrediction m_FinishPrediction; // bestclient-light
 	CKeystrokes m_Keystrokes; // bestclient-light
