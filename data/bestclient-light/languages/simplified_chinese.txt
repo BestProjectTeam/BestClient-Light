@@ -55,6 +55,10 @@ Visuals QoL
 == 视觉便利
 
 [BestClient Light]
+Show coordinates above tees
+== 在 Tee 上方显示坐标
+
+[BestClient Light]
 Show real hitbox
 == 显示真实碰撞箱
 

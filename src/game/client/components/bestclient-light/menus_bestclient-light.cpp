@@ -641,7 +641,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	const float RealHitboxColorHeight = g_Config.m_BclShowRealHitbox ? RealHitboxColorLineSize + RealHitboxColorLineSpacing : 0.0f;
 	const float VisualsQoLBlockHeight =
 		LineSize + MarginSmall +
-		8.0f * LineSize +
+		9.0f * LineSize +
 		RealHitboxColorHeight +
 		3.0f * LineSize;
 	CUIRect VisualsQoLBlock;
@@ -659,6 +659,9 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	Ui()->DoLabel(&Label, BcLocalize("Visuals QoL"), HeadlineFontSize, TEXTALIGN_ML);
 	VisualsQoLBlock.HSplitTop(MarginSmall, nullptr, &VisualsQoLBlock);
 
+	VisualsQoLBlock.HSplitTop(LineSize, &Button, &VisualsQoLBlock);
+	BcMenuBadges::DrawNew(Graphics(), Ui(), TextRender(), &Button, MarginSmall);
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowTeeCoords, BcLocalize("Show coordinates above tees"), &g_Config.m_BclShowTeeCoords, &Button, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowRealHitbox, BcLocalize("Show real hitbox"), &g_Config.m_BclShowRealHitbox, &VisualsQoLBlock, LineSize);
 	if(g_Config.m_BclShowRealHitbox)
 	{

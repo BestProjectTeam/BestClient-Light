@@ -63,6 +63,9 @@ public:
 	bool m_ShowBClientVersion;
 	float m_FontSizeBClientVersion;
 	char m_aBClientVersion[32];
+	bool m_ShowTeeCoords;
+	int m_TeeCoordX100;
+	float m_FontSizeTeeCoords;
 	// bestclient-light
 };
 
@@ -734,6 +737,38 @@ public:
 	}
 };
 
+class CNamePlatePartTeeCoord : public CNamePlatePartText
+{
+private:
+	int m_X100 = -1;
+	float m_FontSize = -INFINITY;
+	char m_aText[16] = "";
+
+protected:
+	bool UpdateNeeded(CGameClient &This, const CNamePlateData &Data) override
+	{
+		m_Visible = Data.m_ShowTeeCoords;
+		if(!m_Visible)
+			return false;
+		m_Color = ColorRGBA(1.0f, 1.0f, 1.0f, Data.m_Color.a);
+		return m_FontSize != Data.m_FontSizeTeeCoords || m_X100 != Data.m_TeeCoordX100;
+	}
+
+	void UpdateText(CGameClient &This, const CNamePlateData &Data) override
+	{
+		m_FontSize = Data.m_FontSizeTeeCoords;
+		m_X100 = Data.m_TeeCoordX100;
+		str_format(m_aText, sizeof(m_aText), "X:%.2f", m_X100 / 100.0f);
+		CTextCursor Cursor;
+		Cursor.m_FontSize = m_FontSize;
+		This.TextRender()->CreateOrAppendTextContainer(m_TextContainerIndex, &Cursor, m_aText);
+	}
+
+public:
+	CNamePlatePartTeeCoord(CGameClient &This) :
+		CNamePlatePartText(This) {}
+};
+
 class CNamePlatePartBClientVersion : public CNamePlatePartText
 {
 private:
@@ -818,6 +853,8 @@ private:
 			AddPart<CNamePlatePartClan>(This);
 			AddPart<CNamePlatePartNewLine>(This);
 			// bestclient-light
+			AddPart<CNamePlatePartTeeCoord>(This);
+			AddPart<CNamePlatePartNewLine>(This);
 			AddPart<CNamePlatePartBClientVersion>(This);
 			AddPart<CNamePlatePartNewLine>(This);
 			// bestclient-light
@@ -1098,6 +1135,9 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 		Data.m_ShowBClientVersion = GameClient()->m_ClientIndicator.GetPlayerVersionLabel(pPlayerInfo->m_ClientId, Data.m_aBClientVersion, sizeof(Data.m_aBClientVersion));
 		Data.m_FontSizeBClientVersion = std::max(10.0f, Data.m_FontSize * 0.75f);
 	}
+	Data.m_ShowTeeCoords = g_Config.m_BclShowTeeCoords != 0;
+	Data.m_TeeCoordX100 = round_to_int(Position.x / 32.0f * 100.0f);
+	Data.m_FontSizeTeeCoords = Data.m_FontSize;
 	// bestclient-light
 
 	const bool Following = (GameClient()->m_Snap.m_SpecInfo.m_Active && !GameClient()->m_MultiViewActivated && GameClient()->m_Snap.m_SpecInfo.m_SpectatorId != SPEC_FREEVIEW);
@@ -1134,9 +1174,12 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	CNamePlate &NamePlate = m_pData->m_aNamePlates[ClientId];
 	const int CurTick = Client()->GameTick(g_Config.m_ClDummy);
 
+	// bestclient-light
 	const bool NeedsUpdate = !NamePlate.IsInited() ||
 				 (CurTick != m_pData->m_aLastUpdateTick[ClientId]) ||
-				 (absolute(Alpha - m_pData->m_aLastAlpha[ClientId]) > 0.05f);
+				 (absolute(Alpha - m_pData->m_aLastAlpha[ClientId]) > 0.05f) ||
+				 g_Config.m_BclShowTeeCoords != 0;
+	// bestclient-light
 
 	if(NeedsUpdate)
 	{
@@ -1241,6 +1284,9 @@ void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
 		Data.m_ShowBClientVersion = true;
 		str_copy(Data.m_aBClientVersion, BESTCLIENT_LIGHT_VERSION, sizeof(Data.m_aBClientVersion));
 	}
+	Data.m_ShowTeeCoords = false;
+	Data.m_TeeCoordX100 = 0;
+	Data.m_FontSizeTeeCoords = FontSize;
 	// bestclient-light
 
 	CNamePlate NamePlate(*GameClient(), Data);

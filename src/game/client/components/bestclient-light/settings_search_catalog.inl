@@ -74,6 +74,7 @@
 	{"Size", SETTINGS_NAV_LEAF_BC_VISUALS, "Weather", &g_Config.m_BclWeatherDustSize, &g_Config.m_BclAtmosphere},
 	{"Speed", SETTINGS_NAV_LEAF_BC_VISUALS, "Weather", &g_Config.m_BclWeatherDustSpeed, &g_Config.m_BclAtmosphere},
 
+	{"Show coordinates above tees", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowTeeCoords, nullptr},
 	{"Show real hitbox", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowRealHitbox, nullptr},
 	{"Real hitbox dot color", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowRealHitboxColor, &g_Config.m_BclShowRealHitbox},
 	{"Show player below indicator", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowhudDummyCoordIndicator, nullptr},

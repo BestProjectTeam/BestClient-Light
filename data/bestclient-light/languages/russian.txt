@@ -107,6 +107,10 @@ Visuals QoL
 == Удобства визуала
 
 [BestClient Light]
+Show coordinates above tees
+== Показывать координаты над тии
+
+[BestClient Light]
 Show real hitbox
 == Показывать реальный хитбокс
 
