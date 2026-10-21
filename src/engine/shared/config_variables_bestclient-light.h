@@ -33,7 +33,7 @@ MACRO_CONFIG_INT(BclTranslateShiftClickTarget, bcl_translate_shift_click_target,
 MACRO_CONFIG_INT(BclTranslateMessageButton, bcl_translate_message_button, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show a translate button to the right of other players' chat messages")
 
 // Auto update
-MACRO_CONFIG_INT(BclAutoUpdate, bcl_auto_update, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Automatically download and apply updates on startup")
+MACRO_CONFIG_INT(BclAutoUpdate, bcl_auto_update, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Automatically download updates and restart to apply them on the main menu")
 
 // Twitch chat integration
 MACRO_CONFIG_STR(BclTwitchChatNick, bcl_twitch_chat_nick, 64, "", CFGFLAG_CLIENT | CFGFLAG_SAVE, "Twitch channel nick for chat integration")
