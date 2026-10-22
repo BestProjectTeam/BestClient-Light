@@ -79,6 +79,10 @@ Show points in tab
 == 在记分板中显示分数
 
 [BestClient Light]
+Show friend icon in scoreboard
+== 在记分板中显示好友图标
+
+[BestClient Light]
 Show spectator nicknames
 == 显示观战者昵称
 

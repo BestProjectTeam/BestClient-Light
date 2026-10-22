@@ -53,6 +53,7 @@ MACRO_CONFIG_COL(BclShowRealHitboxColor, bcl_show_real_hitbox_color, 0xFFFFFFFFU
 MACRO_CONFIG_INT(BclShowhudDummyCoordIndicator, bcl_showhud_dummy_coord_indicator, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show player-below indicator when aligned above another player")
 MACRO_CONFIG_INT(BclShowCorrectCheckpoint, bcl_show_correct_checkpoint, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show current tele checkpoint in movement information")
 MACRO_CONFIG_INT(BclShowPointsInTab, bcl_show_points_in_tab, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show player points in the scoreboard on DDNet, EGO and Legit Network servers")
+MACRO_CONFIG_INT(BclScoreboardFriendMark, bcl_scoreboard_friendmark, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show friend mark (♥) in scoreboard")
 MACRO_CONFIG_INT(BclShowSpectatorNames, bcl_show_spectator_names, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show spectator nicknames in the spectator count HUD")
 MACRO_CONFIG_INT(BclShowVotePercentage, bcl_show_vote_percentage, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show yes/no vote percentages on the vote HUD")
 MACRO_CONFIG_INT(BclDisplayMaxFps, bcl_display_max_fps, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show the maximum FPS in the HUD counter instead of the average")

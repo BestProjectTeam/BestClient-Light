@@ -641,7 +641,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	const float RealHitboxColorHeight = g_Config.m_BclShowRealHitbox ? RealHitboxColorLineSize + RealHitboxColorLineSpacing : 0.0f;
 	const float VisualsQoLBlockHeight =
 		LineSize + MarginSmall +
-		9.0f * LineSize +
+		10.0f * LineSize +
 		RealHitboxColorHeight +
 		3.0f * LineSize;
 	CUIRect VisualsQoLBlock;
@@ -671,6 +671,9 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowhudDummyCoordIndicator, BcLocalize("Show player below indicator"), &g_Config.m_BclShowhudDummyCoordIndicator, &VisualsQoLBlock, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowCorrectCheckpoint, BcLocalize("Show current checkpoint"), &g_Config.m_BclShowCorrectCheckpoint, &VisualsQoLBlock, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowPointsInTab, BcLocalize("Show points in tab"), &g_Config.m_BclShowPointsInTab, &VisualsQoLBlock, LineSize);
+	VisualsQoLBlock.HSplitTop(LineSize, &Button, &VisualsQoLBlock);
+	BcMenuBadges::DrawNew(Graphics(), Ui(), TextRender(), &Button, MarginSmall);
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclScoreboardFriendMark, BcLocalize("Show friend icon in scoreboard"), &g_Config.m_BclScoreboardFriendMark, &Button, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowSpectatorNames, BcLocalize("Show spectator nicknames"), &g_Config.m_BclShowSpectatorNames, &VisualsQoLBlock, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowVotePercentage, BcLocalize("Show vote percentage"), &g_Config.m_BclShowVotePercentage, &VisualsQoLBlock, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclDisplayMaxFps, BcLocalize("Display max FPS"), &g_Config.m_BclDisplayMaxFps, &VisualsQoLBlock, LineSize);

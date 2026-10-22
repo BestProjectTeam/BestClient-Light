@@ -130,6 +130,9 @@ void CScoreboard::ResetTexts()
 		Player.m_ScoreMillis.Reset(TextRender());
 		Player.m_Name.Reset(TextRender());
 		Player.m_MuteMark.Reset(TextRender());
+		// bestclient-light
+		Player.m_FriendMark.Reset(TextRender());
+		// bestclient-light
 		Player.m_ReadyMark.Reset(TextRender());
 		Player.m_Clan.Reset(TextRender());
 		Player.m_Ping.Reset(TextRender());
@@ -900,6 +903,16 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 				}
 
 				float NameTextOffset = NameOffset;
+				// bestclient-light
+				if(pInfo->m_ClientId >= 0 && GameClient()->m_aClients[pInfo->m_ClientId].m_Friend && g_Config.m_BclScoreboardFriendMark)
+				{
+					TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
+					Player.m_FriendMark.Update(TextRender(), FontIcon::HEART, FontSize);
+					TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
+					Player.m_FriendMark.Render(TextRender(), vec2(NameTextOffset, TextY), ColorRGBA(1.0f, 0.0f, 0.0f, TextColor.a));
+					NameTextOffset += Player.m_FriendMark.Width() + TextRender()->TextWidth(FontSize, " ");
+				}
+				// bestclient-light
 				const bool Muted = pInfo->m_ClientId >= 0 && (GameClient()->m_aClients[pInfo->m_ClientId].m_Foe || GameClient()->m_aClients[pInfo->m_ClientId].m_ChatIgnore);
 				if(Muted)
 				{

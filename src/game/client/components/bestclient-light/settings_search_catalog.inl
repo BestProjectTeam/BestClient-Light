@@ -81,6 +81,7 @@
 	{"Show player below indicator", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowhudDummyCoordIndicator, nullptr},
 	{"Show current checkpoint", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowCorrectCheckpoint, nullptr},
 	{"Show points in tab", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowPointsInTab, nullptr},
+	{"Show friend icon in scoreboard", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclScoreboardFriendMark, nullptr},
 	{"Show spectator nicknames", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowSpectatorNames, nullptr},
 	{"Show vote percentage", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowVotePercentage, nullptr},
 	{"Display max FPS", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclDisplayMaxFps, nullptr},
