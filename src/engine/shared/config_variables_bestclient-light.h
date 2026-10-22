@@ -44,6 +44,7 @@ MACRO_CONFIG_INT(BclCustomAspectRatioApplyMode, bcl_custom_aspect_ratio_apply_mo
 MACRO_CONFIG_INT(BclCustomAspectRatio, bcl_custom_aspect_ratio, 0, 0, 1000, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Aspect ratio value x100 (0=off, presets: 125=5:4, 133=4:3, 150=3:2, custom: 100-1000)")
 MACRO_CONFIG_INT(BclCustomAspectRatioNum, bcl_custom_aspect_ratio_num, 0, 0, 100000, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Custom aspect ratio numerator (width), 0=unset")
 MACRO_CONFIG_INT(BclCustomAspectRatioDen, bcl_custom_aspect_ratio_den, 0, 0, 100000, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Custom aspect ratio denominator (height), 0=unset")
+MACRO_CONFIG_INT(BclCustomAspectRatioCursorNative, bcl_custom_aspect_ratio_cursor_native, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Keep ingame cursor movement as if the aspect ratio was not stretched")
 
 // Visuals QoL
 MACRO_CONFIG_INT(BclShowTeeCoords, bcl_show_tee_coords, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show each tee's X coordinate above it")

@@ -595,6 +595,10 @@ Custom size
 == 自定义大小
 
 [BestClient Light]
+Cursor as without stretch
+== 光标如同未拉伸
+
+[BestClient Light]
 Looks like you're on a server where this feature is forbidden
 == 当前服务器似乎禁止此功能
 

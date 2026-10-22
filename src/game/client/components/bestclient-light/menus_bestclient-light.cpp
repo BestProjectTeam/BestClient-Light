@@ -1361,7 +1361,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	const bool AspectBlocked = GameClient()->m_AspectRatio.IsAspectBlocked();
 	const int AspectMode = g_Config.m_BclCustomAspectRatioMode >= 0 ? g_Config.m_BclCustomAspectRatioMode : (g_Config.m_BclCustomAspectRatio > 0 ? 1 : 0);
 	const bool AspectCustomMode = AspectMode == 2;
-	const float AspectHeaderHeight = LineSize + MarginSmall + LineSize + MarginSmall + LineSize;
+	const float AspectHeaderHeight = LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize;
 	const float AspectExpandedHeight = AspectCustomMode ? (MarginSmall + LineSize + MarginSmall + LineSize) : 0.0f;
 	const float AspectBlockedHintHeight = AspectBlocked ? (MarginSmall + LineSize) : 0.0f;
 	const float AspectBlockHeight = AspectHeaderHeight + AspectExpandedHeight + AspectBlockedHintHeight;
@@ -1475,6 +1475,10 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 		g_Config.m_BclCustomAspectRatioApplyMode = NewApplyMode;
 		GameClient()->m_TClient.SetForcedAspect();
 	}
+
+	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
+	MainView.HSplitTop(LineSize, &Button, &MainView);
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclCustomAspectRatioCursorNative, BcLocalize("Cursor as without stretch"), &g_Config.m_BclCustomAspectRatioCursorNative, &Button, LineSize);
 
 	const int EffectiveAspectMode = g_Config.m_BclCustomAspectRatioMode >= 0 ? g_Config.m_BclCustomAspectRatioMode : (g_Config.m_BclCustomAspectRatio > 0 ? 1 : 0);
 	static CLineInputNumber s_CustomAspectNumeratorInput;

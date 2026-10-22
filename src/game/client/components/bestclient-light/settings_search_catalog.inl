@@ -62,6 +62,7 @@
 	{"Keystrokes", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclKeystrokesKeyboard, nullptr},
 
 	{"Aspect Ratio", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclCustomAspectRatioMode, nullptr},
+	{"Cursor as without stretch", SETTINGS_NAV_LEAF_BC_VISUALS, "Aspect Ratio", &g_Config.m_BclCustomAspectRatioCursorNative, nullptr},
 
 	{"Weather", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals", &g_Config.m_BclAtmosphere, nullptr},
 	{"Size", SETTINGS_NAV_LEAF_BC_VISUALS, "Weather", &g_Config.m_BclWeatherSnowSize, &g_Config.m_BclAtmosphere},
