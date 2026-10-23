@@ -50,6 +50,7 @@ MACRO_CONFIG_INT(BclCustomAspectRatioCursorNative, bcl_custom_aspect_ratio_curso
 MACRO_CONFIG_INT(BclShowTeeCoords, bcl_show_tee_coords, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show each tee's X coordinate above it")
 MACRO_CONFIG_INT(BclShowRealHitbox, bcl_show_real_hitbox, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show a dot at the center of your real hitbox")
 MACRO_CONFIG_COL(BclShowRealHitboxColor, bcl_show_real_hitbox_color, 0xFFFFFFFFU, CFGFLAG_CLIENT | CFGFLAG_SAVE | CFGFLAG_COLALPHA, "Color of the real hitbox center dot")
+MACRO_CONFIG_INT(BclDisplayFreezeMarker, bcl_display_freeze_marker, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show a marker on each freeze tile where your tee became frozen")
 MACRO_CONFIG_INT(BclShowhudDummyCoordIndicator, bcl_showhud_dummy_coord_indicator, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show player-below indicator when aligned above another player")
 MACRO_CONFIG_INT(BclShowCorrectCheckpoint, bcl_show_correct_checkpoint, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show current tele checkpoint in movement information")
 MACRO_CONFIG_INT(BclShowPointsInTab, bcl_show_points_in_tab, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show player points in the scoreboard on DDNet, EGO and Legit Network servers")

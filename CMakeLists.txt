@@ -2971,6 +2971,8 @@ if(CLIENT)
     components/bestclient-light/fast_practice.h
     components/bestclient-light/finish_prediction.cpp
     components/bestclient-light/finish_prediction.h
+    components/bestclient-light/freeze_marker.cpp
+    components/bestclient-light/freeze_marker.h
     components/bestclient-light/keystrokes.cpp
     components/bestclient-light/keystrokes.h
     components/bestclient-light/hud_editor.cpp

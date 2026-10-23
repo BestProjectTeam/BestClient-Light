@@ -40,6 +40,7 @@
 #include "components/bestclient-light/fast_actions.h" // bestclient-light
 #include "components/bestclient-light/fast_practice.h" // bestclient-light
 #include "components/bestclient-light/finish_prediction.h" // bestclient-light
+#include "components/bestclient-light/freeze_marker.h" // bestclient-light
 #include "components/bestclient-light/keystrokes.h" // bestclient-light
 #include "components/bestclient-light/music_player.h" // bestclient-light
 #include "components/bestclient-light/optimizer.h" // bestclient-light
@@ -247,6 +248,7 @@ public:
 	CEgoLegitFinishedMaps m_EgoLegitFinishedMaps; // bestclient-light
 	CEdgeHelper m_EdgeHelper; // bestclient-light
 	CFinishPrediction m_FinishPrediction; // bestclient-light
+	CFreezeMarker m_FreezeMarker; // bestclient-light
 	CKeystrokes m_Keystrokes; // bestclient-light
 	// bestclient-light
 	CFgfWeather m_FgfWeather;

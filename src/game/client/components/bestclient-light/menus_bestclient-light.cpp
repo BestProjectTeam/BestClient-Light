@@ -641,7 +641,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	const float RealHitboxColorHeight = g_Config.m_BclShowRealHitbox ? RealHitboxColorLineSize + RealHitboxColorLineSpacing : 0.0f;
 	const float VisualsQoLBlockHeight =
 		LineSize + MarginSmall +
-		10.0f * LineSize +
+		11.0f * LineSize +
 		RealHitboxColorHeight +
 		3.0f * LineSize;
 	CUIRect VisualsQoLBlock;
@@ -668,6 +668,9 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 		static CButtonContainer s_RealHitboxDotColorButton;
 		DoLine_ColorPicker(&s_RealHitboxDotColorButton, RealHitboxColorLineSize, 13.0f, RealHitboxColorLineSpacing, &VisualsQoLBlock, BcLocalize("Real hitbox dot color"), &g_Config.m_BclShowRealHitboxColor, color_cast<ColorRGBA>(ColorHSLA(DefaultConfig::BclShowRealHitboxColor, true)), false, nullptr, true);
 	}
+	VisualsQoLBlock.HSplitTop(LineSize, &Button, &VisualsQoLBlock);
+	BcMenuBadges::DrawNew(Graphics(), Ui(), TextRender(), &Button, MarginSmall);
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclDisplayFreezeMarker, BcLocalize("Display freeze marker"), &g_Config.m_BclDisplayFreezeMarker, &Button, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowhudDummyCoordIndicator, BcLocalize("Show player below indicator"), &g_Config.m_BclShowhudDummyCoordIndicator, &VisualsQoLBlock, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowCorrectCheckpoint, BcLocalize("Show current checkpoint"), &g_Config.m_BclShowCorrectCheckpoint, &VisualsQoLBlock, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowPointsInTab, BcLocalize("Show points in tab"), &g_Config.m_BclShowPointsInTab, &VisualsQoLBlock, LineSize);

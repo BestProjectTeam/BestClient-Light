@@ -78,6 +78,7 @@
 	{"Show coordinates above tees", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowTeeCoords, nullptr},
 	{"Show real hitbox", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowRealHitbox, nullptr},
 	{"Real hitbox dot color", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowRealHitboxColor, &g_Config.m_BclShowRealHitbox},
+	{"Display freeze marker", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclDisplayFreezeMarker, nullptr},
 	{"Show player below indicator", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowhudDummyCoordIndicator, nullptr},
 	{"Show current checkpoint", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowCorrectCheckpoint, nullptr},
 	{"Show points in tab", SETTINGS_NAV_LEAF_BC_VISUALS, "Visuals QoL", &g_Config.m_BclShowPointsInTab, nullptr},

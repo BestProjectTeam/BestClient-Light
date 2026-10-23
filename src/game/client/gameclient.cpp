@@ -160,6 +160,9 @@ void CGameClient::OnConsoleInit()
 					      &m_MapLayersForeground,
 					      &m_MovingTilesForeground, // TClient
 					      &m_Outlines, // TClient
+					      // bestclient-light
+					      &m_FreezeMarker,
+					      // bestclient-light
 					      &m_Mumble, // TClient
 					      &m_Pet, // TClient
 					      // bestclient-light
@@ -5983,6 +5986,10 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "MovingTilesFg";
 	if(pComp == &m_Outlines)
 		return "Outlines";
+	// bestclient-light
+	if(pComp == &m_FreezeMarker)
+		return "FreezeMarker";
+	// bestclient-light
 	if(pComp == &m_Mumble)
 		return "Mumble";
 	if(pComp == &m_Pet)
