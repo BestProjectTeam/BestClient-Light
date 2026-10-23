@@ -42,6 +42,7 @@
 #include "components/bestclient-light/finish_prediction.h" // bestclient-light
 #include "components/bestclient-light/freeze_marker.h" // bestclient-light
 #include "components/bestclient-light/keystrokes.h" // bestclient-light
+#include "components/bestclient-light/minimap.h" // bestclient-light
 #include "components/bestclient-light/music_player.h" // bestclient-light
 #include "components/bestclient-light/optimizer.h" // bestclient-light
 #include "components/bestclient-light/process_priority.h" // bestclient-light
@@ -250,6 +251,7 @@ public:
 	CFinishPrediction m_FinishPrediction; // bestclient-light
 	CFreezeMarker m_FreezeMarker; // bestclient-light
 	CKeystrokes m_Keystrokes; // bestclient-light
+	CMinimap m_Minimap; // bestclient-light
 	// bestclient-light
 	CFgfWeather m_FgfWeather;
 	// bestclient-light

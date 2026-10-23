@@ -99,6 +99,7 @@ void CFinishPrediction::OnReset()
 	m_LastPredictTick = -1;
 	m_FinishedRaceTick = -1;
 	m_UsingFastPractice = false;
+	m_ProgressQuery = false;
 	m_CachedStateValid = false;
 	m_CachedForcePreview = false;
 	m_CachedStateTick = -1;
@@ -107,7 +108,7 @@ void CFinishPrediction::OnReset()
 
 void CFinishPrediction::OnNewSnapshot()
 {
-	if(g_Config.m_BclFinishPrediction != 0)
+	if(g_Config.m_BclFinishPrediction != 0 || GameClient()->m_Minimap.ConsumesProgress())
 		EnsurePathData();
 }
 
@@ -672,7 +673,7 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 		return true;
 	}
 
-	if(g_Config.m_BclFinishPrediction == 0)
+	if(g_Config.m_BclFinishPrediction == 0 && !m_ProgressQuery)
 	{
 		ResetState();
 		m_TrackedClientId = -1;
@@ -776,7 +777,7 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 
 	if(RaceStartTick < 0)
 	{
-		if(g_Config.m_BclFinishPredictionShowAlways == 0)
+		if(g_Config.m_BclFinishPredictionShowAlways == 0 && !m_ProgressQuery)
 			return CacheState(false);
 
 		State.m_CurrentTimeMs = 0;
@@ -801,7 +802,7 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 	if(RaceFinished)
 	{
 		ResetState(false);
-		if(g_Config.m_BclFinishPredictionShowAlways == 0)
+		if(g_Config.m_BclFinishPredictionShowAlways == 0 && !m_ProgressQuery)
 			return CacheState(false);
 		State.m_Progress = 1.0f;
 		State.m_CurrentTimeMs = 0;
@@ -812,7 +813,7 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 
 	if(!EnsurePathData())
 	{
-		if(g_Config.m_BclFinishPredictionShowAlways == 0)
+		if(g_Config.m_BclFinishPredictionShowAlways == 0 && !m_ProgressQuery)
 			return CacheState(false);
 		State.m_HasPredictedTime = false;
 		State.m_Progress = 0.0f;
@@ -956,7 +957,7 @@ CUIRect CFinishPrediction::GetRect(bool ForcePreview) const
 	const float Gap = 1.5f * Scale;
 	const bool ShowName = State.m_ShowPlayerName && State.m_aPlayerName[0] != '\0';
 	const bool ShowTime = g_Config.m_BclFinishPredictionShowTime != 0;
-	const bool ShowPercentage = g_Config.m_BclFinishPredictionShowPercentage != 0;
+	const bool ShowPercentage = g_Config.m_BclFinishPredictionShowPercentage != 0 && (ForcePreview || !GameClient()->m_Minimap.ConsumesProgress());
 	const bool ShowMillis = g_Config.m_BclFinishPredictionShowMillis != 0;
 	if(!ShowName && !ShowTime && !ShowPercentage)
 		return {};
@@ -1019,7 +1020,7 @@ void CFinishPrediction::Render(bool ForcePreview)
 	const bool ShowName = State.m_ShowPlayerName && State.m_aPlayerName[0] != '\0';
 	const bool ShowTime = g_Config.m_BclFinishPredictionShowTime != 0;
 	const bool ShowRemaining = g_Config.m_BclFinishPredictionTimeMode == 0;
-	const bool ShowPercentage = g_Config.m_BclFinishPredictionShowPercentage != 0;
+	const bool ShowPercentage = g_Config.m_BclFinishPredictionShowPercentage != 0 && (ForcePreview || !GameClient()->m_Minimap.ConsumesProgress());
 	const bool ShowMillis = g_Config.m_BclFinishPredictionShowMillis != 0;
 
 	if(Layout.m_BackgroundEnabled)
@@ -1056,4 +1057,16 @@ void CFinishPrediction::Render(bool ForcePreview)
 		TextRender()->Text(Rect.x + std::max(PaddingX, (Rect.w - ProgressWidth) * 0.5f), TextY, ProgressFontSize, aProgress, -1.0f);
 	}
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
+}
+
+bool CFinishPrediction::TryGetProgress(float &Progress)
+{
+	m_ProgressQuery = g_Config.m_BclFinishPrediction == 0;
+	SFinishPredictionState State;
+	const bool Ok = GetState(State, false) && State.m_Valid;
+	m_ProgressQuery = false;
+	if(!Ok)
+		return false;
+	Progress = State.m_Progress;
+	return true;
 }

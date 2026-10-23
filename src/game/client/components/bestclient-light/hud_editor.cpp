@@ -521,6 +521,10 @@ CHudEditor::SModuleVisual CHudEditor::GetModuleVisual(HudLayout::EModule Module)
 		Visual.m_Rect = GameClient()->m_FinishPrediction.GetHudEditorRect();
 		Visual.m_Rounding = 5.0f;
 		break;
+	case HudLayout::MODULE_MINIMAP:
+		Visual.m_Rect = GameClient()->m_Minimap.GetHudEditorRect();
+		Visual.m_Rounding = 4.0f;
+		break;
 	case HudLayout::MODULE_KEYSTROKES_KEYBOARD:
 		Visual.m_Rect = GameClient()->m_Keystrokes.GetKeyboardHudEditorRect();
 		Visual.m_Rounding = 4.0f;
@@ -542,6 +546,8 @@ CHudEditor::SModuleVisual CHudEditor::GetModuleVisual(HudLayout::EModule Module)
 	Visual.m_Rounding = std::clamp(Visual.m_Rounding, 2.0f, 12.0f);
 	Visual.m_Rect = ClampToBounds(Visual.m_Rect, Width, Height);
 	Visual.m_Corners = HudLayout::BackgroundCorners(IGraphics::CORNER_ALL, Visual.m_Rect.x, Visual.m_Rect.y, Visual.m_Rect.w, Visual.m_Rect.h, Width, Height);
+	if(Visual.m_Corners != IGraphics::CORNER_ALL)
+		Visual.m_Rounding = 0.0f;
 	return Visual;
 }
 
@@ -567,6 +573,7 @@ void CHudEditor::CollectModuleVisuals(SModuleVisual *pOut, int &Count) const
 	AddModule(HudLayout::MODULE_MUSIC_PLAYER);
 	AddModule(HudLayout::MODULE_EDGE_INFO);
 	AddModule(HudLayout::MODULE_FINISH_PREDICTION);
+	AddModule(HudLayout::MODULE_MINIMAP);
 	AddModule(HudLayout::MODULE_KEYSTROKES_KEYBOARD);
 }
 
@@ -1163,6 +1170,7 @@ void CHudEditor::RenderOverlay(vec2 MousePos)
 	GameClient()->m_MusicPlayer.RenderHudEditor(!MusicPlayerHasLiveRect);
 	GameClient()->m_EdgeHelper.RenderPreview();
 	GameClient()->m_FinishPrediction.RenderPreview();
+	GameClient()->m_Minimap.RenderEditorPreview();
 	GameClient()->m_Keystrokes.RenderKeyboardPreview();
 
 	Graphics()->MapScreenToSize(Width, Height);

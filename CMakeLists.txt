@@ -2975,6 +2975,8 @@ if(CLIENT)
     components/bestclient-light/freeze_marker.h
     components/bestclient-light/keystrokes.cpp
     components/bestclient-light/keystrokes.h
+    components/bestclient-light/minimap.cpp
+    components/bestclient-light/minimap.h
     components/bestclient-light/hud_editor.cpp
     components/bestclient-light/hud_editor.h
     components/bestclient-light/music_player.cpp

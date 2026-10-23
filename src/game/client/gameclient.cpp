@@ -188,6 +188,7 @@ void CGameClient::OnConsoleInit()
 					      &m_ShowPoints, // bestclient-light
 					      &m_ClientIndicator, // bestclient-light
 					      &m_Hud,
+					      &m_Minimap, // bestclient-light
 					      &m_BestClientLight, // bestclient-light
 					      &m_BcConfigPresets, // bestclient-light
 					      &m_Translate, // bestclient-light
@@ -244,6 +245,7 @@ void CGameClient::OnConsoleInit()
 						  &m_ImportantAlert,
 						  &m_AdminPanel, // bestclient-light
 						  &m_Menus,
+						  &m_Minimap, // bestclient-light
 						  &m_Controls,
 						  &m_TouchControls,
 						  &m_Binds});
@@ -544,10 +546,17 @@ void CGameClient::OnUpdate()
 	IInput::ECursorType CursorType = Input()->CursorRelative(&x, &y);
 	if(CursorType != IInput::CURSOR_NONE)
 	{
-		for(auto &pComponent : m_vpInput)
+		// bestclient-light
+		if(m_Minimap.BlocksGameInput())
+			m_Minimap.OnCursorMove(x, y, CursorType);
+		else
+		// bestclient-light
 		{
-			if(pComponent->OnCursorMove(x, y, CursorType))
-				break;
+			for(auto &pComponent : m_vpInput)
+			{
+				if(pComponent->OnCursorMove(x, y, CursorType))
+					break;
+			}
 		}
 	}
 
@@ -568,6 +577,10 @@ void CGameClient::OnUpdate()
 	Input()->ConsumeEvents([&](const IInput::CEvent &Event) {
 		OnInput(Event);
 	});
+	// bestclient-light
+	if(m_Minimap.BlocksFollowInput())
+		m_Minimap.ReleaseFollowInput();
+	// bestclient-light
 
 	if(g_Config.m_ClSubTickAiming && m_Binds.m_MouseOnAction)
 	{
@@ -592,6 +605,20 @@ void CGameClient::OnUpdate()
 
 void CGameClient::OnInput(const IInput::CEvent &Event)
 {
+	// bestclient-light
+	if(m_Minimap.BlocksGameInput() && (Event.m_Flags & ~IInput::FLAG_RELEASE) != 0)
+	{
+		if(!m_Minimap.OnInput(Event))
+			m_Binds.OnInput(Event);
+		return;
+	}
+	if(m_Minimap.BlocksFollowInput())
+	{
+		if((Event.m_Flags & IInput::FLAG_RELEASE) != 0)
+			m_Binds.OnInput(Event);
+		return;
+	}
+	// bestclient-light
 	for(auto &pComponent : m_vpInput)
 	{
 		// Events with flag `FLAG_RELEASE` must always be forwarded to all components so keys being
@@ -955,6 +982,10 @@ void CGameClient::OnRender()
 			m_mCompTiming[pComponent].m_pName = GetComponentName(pComponent);
 		}
 	}
+
+	// bestclient-light
+	m_Minimap.RenderFullOverlay();
+	// bestclient-light
 
 	if(g_Config.m_Debug)
 	{
@@ -6088,6 +6119,8 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "FinishPrediction";
 	if(pComp == &m_Keystrokes)
 		return "Keystrokes";
+	if(pComp == &m_Minimap) // bestclient-light
+		return "Minimap"; // bestclient-light
 	if(pComp == &m_Scoreboard)
 		return "Scoreboard";
 	if(pComp == &m_Statboard)

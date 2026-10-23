@@ -338,3 +338,27 @@ MACRO_CONFIG_INT(BclWeatherDustSpeed, bcl_weather_dust_speed, 100, 25, 300, CFGF
 
 // KeybindMap
 MACRO_CONFIG_INT(BclKeybindMapFormat, bcl_keybind_map_format, 2, 0, 2, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Last keybind map format (0=100%, 1=86%, 2=60%)")
+
+// Minimap
+MACRO_CONFIG_INT(BclMinimap, bcl_minimap, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show a local minimap in the HUD")
+MACRO_CONFIG_INT(BclMinimapHud, bcl_minimap_hud, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show the minimap in the HUD")
+MACRO_CONFIG_INT(BclMinimapZoom, bcl_minimap_zoom, 500, 300, 2400, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Minimap zoom percentage")
+MACRO_CONFIG_INT(BclMinimapSyncZoom, bcl_minimap_sync_zoom, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Synchronize minimap zoom with game zoom")
+MACRO_CONFIG_INT(BclMinimapAlpha, bcl_minimap_alpha, 82, 10, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Minimap alpha")
+MACRO_CONFIG_INT(BclMinimapPlayers, bcl_minimap_players, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show players on the minimap")
+MACRO_CONFIG_INT(BclMinimapShowOthers, bcl_minimap_show_others, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show other teams")
+MACRO_CONFIG_INT(BclMinimapTeeSize, bcl_minimap_tee_size, 14, 4, 40, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Rendered tee size on the minimap")
+MACRO_CONFIG_INT(BclMinimapTeeSizeFlexible, bcl_minimap_tee_size_flexible, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Scale the minimap tee size with the current game zoom")
+MACRO_CONFIG_INT(BclMinimapShowAlive, bcl_minimap_show_alive, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show alive teammates on the minimap")
+MACRO_CONFIG_INT(BclMinimapShowFrozen, bcl_minimap_show_frozen, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show frozen teammates on the minimap")
+MACRO_CONFIG_INT(BclMinimapShowCritical, bcl_minimap_show_critical, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show frozen teammates on the minimap when you are the last alive")
+MACRO_CONFIG_INT(BclMinimapPlatforms, bcl_minimap_platforms, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Highlight route platforms on the minimap")
+MACRO_CONFIG_INT(BclMinimapShowJumps, bcl_minimap_show_jumps, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show jump markers on the minimap")
+MACRO_CONFIG_INT(BclMinimapShowHits, bcl_minimap_show_hits, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show hammer hit markers on the minimap")
+MACRO_CONFIG_INT(BclMinimapShowSaves, bcl_minimap_show_saves, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show save markers on the minimap")
+MACRO_CONFIG_INT(BclMinimapShowFreezes, bcl_minimap_show_freezes, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show freeze touch markers on the minimap")
+MACRO_CONFIG_INT(BclMinimapMarksInGame, bcl_minimap_marks_in_game, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Display marks in game")
+MACRO_CONFIG_INT(BclLargeMinimapZoom, bcl_large_minimap_zoom, 500, 20, 2400, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Large minimap zoom percentage")
+MACRO_CONFIG_INT(BclLargeMinimapCurrentZoom, bcl_large_minimap_current_zoom, 500, 20, 2400, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Last used large minimap zoom percentage")
+MACRO_CONFIG_INT(BclLargeMinimapAlpha, bcl_large_minimap_alpha, 92, 0, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Large minimap alpha")
+MACRO_CONFIG_INT(BclLargeMinimapProgress, bcl_large_minimap_progress, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Display map progress")

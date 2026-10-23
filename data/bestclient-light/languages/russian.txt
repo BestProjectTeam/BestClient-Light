@@ -1633,3 +1633,87 @@ Type to search settings
 [BestClient Light]
 Element
 == Элемент
+
+[BestClient Light]
+Minimap
+== Миникарта
+
+[BestClient Light]
+Enable minimap
+== Включить миникарту
+
+[BestClient Light]
+Show minimap in HUD
+== Показывать миникарту в HUD
+
+[BestClient Light]
+Minimap zoom
+== Зум миникарты
+
+[BestClient Light]
+Minimap alpha
+== Прозрачность миникарты
+
+[BestClient Light]
+Tee size
+== Размер тии
+
+[BestClient Light]
+Sync zoom with game
+== Синхронизировать зум с игрой
+
+[BestClient Light]
+Show players
+== Показывать игроков
+
+[BestClient Light]
+Show other teams
+== Показывать чужие команды
+
+[BestClient Light]
+Scale tee with zoom
+== Масштаб тии от зума
+
+[BestClient Light]
+Show last alive
+== Показывать последнего живого
+
+[BestClient Light]
+Map peek
+== Просмотр карты
+
+[BestClient Light]
+Display map progress
+== Прогресс карты
+
+[BestClient Light]
+Full map
+== Полная карта
+
+[BestClient Light]
+Platforms
+== Платформы
+
+[BestClient Light]
+Jumps
+== Прыжки
+
+[BestClient Light]
+Hits
+== Удары
+
+[BestClient Light]
+Saves
+== Сейвы
+
+[BestClient Light]
+Freezes
+== Фризы
+
+[BestClient Light]
+Display marks in game
+== Показывать метки в игре
+
+[BestClient Light]
+Clear marks
+== Очистить метки

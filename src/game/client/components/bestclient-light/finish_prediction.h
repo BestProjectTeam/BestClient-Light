@@ -30,6 +30,7 @@ public:
 
 	CUIRect GetHudEditorRect() const { return GetRect(true); }
 	void RenderPreview() { Render(true); }
+	bool TryGetProgress(float &Progress);
 
 	void OnReset() override;
 	void OnRender() override;
@@ -77,6 +78,7 @@ private:
 	int m_LastPredictTick = -1;
 	int m_FinishedRaceTick = -1;
 	bool m_UsingFastPractice = false;
+	bool m_ProgressQuery = false;
 
 	bool m_CachedStateValid = false;
 	bool m_CachedForcePreview = false;

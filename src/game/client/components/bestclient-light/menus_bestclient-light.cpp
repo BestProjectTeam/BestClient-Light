@@ -2607,6 +2607,89 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 
 	RightColumn.HSplitTop(MarginBetweenViews, nullptr, &RightColumn);
 
+	{
+		const bool MinimapExpanded = g_Config.m_BclMinimap != 0;
+		const float Row = LineSize + MarginSmall;
+		const float MinimapHeaderHeight = LineSize + MarginSmall + LineSize;
+		const float MinimapExpandedTarget = 15.0f * Row;
+		const float MinimapExpandedHeight = BC_MODULE_REVEAL(MinimapExpanded, MinimapExpandedTarget, Client()->RenderFrameTime());
+		const float MinimapBlockHeight = MinimapHeaderHeight + MinimapExpandedHeight;
+		CUIRect MinimapBlock;
+		RightColumn.HSplitTop(MinimapBlockHeight, &MinimapBlock, &RightColumn);
+		CUIRect MinimapBg = MinimapBlock;
+		MinimapBg.w += BlockPadding;
+		MinimapBg.h += BlockPadding;
+		MinimapBg.x -= BlockPadding * 0.5f;
+		MinimapBg.y -= BlockPadding * 0.5f;
+		BestClientLightUiTheme::DrawUiBlock(&MinimapBg, IGraphics::CORNER_ALL, 10.0f);
+		BestClientLightSettingsSearch::DrawBlockHighlight(&g_Config.m_BclMinimap, &MinimapBg);
+
+		MinimapBlock.HSplitTop(LineSize, &Label, &MinimapBlock);
+		CUIRect MinimapTitleLabel, MinimapHudEditorButton;
+		Label.VSplitRight(LineSize + 8.0f, &MinimapTitleLabel, &MinimapHudEditorButton);
+		MinimapTitleLabel.VSplitRight(MarginSmall, &MinimapTitleLabel, nullptr);
+		BcMenuBadges::DrawNew(Graphics(), Ui(), TextRender(), &MinimapTitleLabel, MarginSmall);
+		BcMenuBadges::DrawBeta(Graphics(), Ui(), TextRender(), &MinimapTitleLabel, MarginSmall);
+		static CButtonContainer s_MinimapHudEditorButton;
+		const bool MinimapCanOpenHudEditor = Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK;
+		const bool MinimapHudEditorClicked = Ui()->DoButton_FontIcon(&s_MinimapHudEditorButton, FontIcon::UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER, MinimapCanOpenHudEditor ? 0 : -1, &MinimapHudEditorButton, BUTTONFLAG_LEFT);
+		GameClient()->m_Tooltips.DoToolTip(&s_MinimapHudEditorButton, &MinimapHudEditorButton, MinimapCanOpenHudEditor ? BcLocalize("Open in HUD editor") : BcLocalize("Join a game first"));
+		GameClient()->m_Tooltips.SetFadeTime(&s_MinimapHudEditorButton, 0.0f);
+		if(MinimapHudEditorClicked && MinimapCanOpenHudEditor)
+		{
+			SetActive(false);
+			GameClient()->m_HudEditor.Activate();
+		}
+		Ui()->DoLabel(&MinimapTitleLabel, BcLocalize("Minimap"), HeadlineFontSize, TEXTALIGN_ML);
+		MinimapBlock.HSplitTop(MarginSmall, nullptr, &MinimapBlock);
+		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclMinimap, BcLocalize("Enable minimap"), &g_Config.m_BclMinimap, &MinimapBlock, LineSize);
+		HudLayout::SetEnabled(HudLayout::MODULE_MINIMAP, g_Config.m_BclMinimap != 0 && g_Config.m_BclMinimapHud != 0);
+
+		if(MinimapExpandedHeight > 0.5f)
+		{
+			CUIRect Visible;
+			MinimapBlock.HSplitTop(MinimapExpandedHeight, &Visible, &MinimapBlock);
+			Ui()->ClipEnable(&Visible);
+			CUIRect Expanded = {Visible.x, Visible.y, Visible.w, MinimapExpandedTarget};
+
+			auto Slider = [&](int *pValue, const char *pText, int Min, int Max, const char *pUnit) {
+				Expanded.HSplitTop(LineSize, &Button, &Expanded);
+				Ui()->DoScrollbarOption(pValue, pValue, &Button, pText, Min, Max, &CUi::ms_LinearScrollbarScale, CUi::SCROLLBAR_OPTION_DELAYUPDATE, pUnit);
+				Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			};
+			auto Check = [&](int *pValue, const char *pText) {
+				DoButton_CheckBoxAutoVMarginAndSet(pValue, pText, pValue, &Expanded, LineSize);
+				Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			};
+
+			Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			Check(&g_Config.m_BclMinimapHud, BcLocalize("Show minimap in HUD"));
+			Slider(&g_Config.m_BclMinimapZoom, BcLocalize("Minimap zoom"), 300, 2400, "%");
+			Slider(&g_Config.m_BclMinimapAlpha, BcLocalize("Minimap alpha"), 10, 100, "%");
+			Slider(&g_Config.m_BclMinimapTeeSize, BcLocalize("Tee size"), 4, 40, "");
+			Check(&g_Config.m_BclMinimapSyncZoom, BcLocalize("Sync zoom with game"));
+			Check(&g_Config.m_BclMinimapPlayers, BcLocalize("Show players"));
+			Check(&g_Config.m_BclMinimapShowOthers, BcLocalize("Show other teams"));
+			Check(&g_Config.m_BclMinimapTeeSizeFlexible, BcLocalize("Scale tee with zoom"));
+			Check(&g_Config.m_BclLargeMinimapProgress, BcLocalize("Display map progress"));
+			Check(&g_Config.m_BclMinimapShowAlive, BcLocalize("Show alive teammates"));
+			Check(&g_Config.m_BclMinimapShowFrozen, BcLocalize("Show frozen teammates"));
+			Check(&g_Config.m_BclMinimapShowCritical, BcLocalize("Show last alive"));
+			Check(&g_Config.m_BclMinimapMarksInGame, BcLocalize("Display marks in game"));
+
+			static CButtonContainer s_LargeBind, s_LargeBindClear;
+			static CButtonContainer s_FullBind, s_FullBindClear;
+			Expanded.HSplitTop(LineSize, &Button, &Expanded);
+			DoLine_KeyReader(Button, s_LargeBind, s_LargeBindClear, BcLocalize("Map peek"), "+bcl_large_minimap");
+			Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			Expanded.HSplitTop(LineSize, &Button, &Expanded);
+			DoLine_KeyReader(Button, s_FullBind, s_FullBindClear, BcLocalize("Full map"), "+bcl_large_minimap_full");
+			Ui()->ClipDisable();
+		}
+	}
+
+	RightColumn.HSplitTop(MarginBetweenViews, nullptr, &RightColumn);
+
 	const bool FastActionsExpanded = g_Config.m_BclFastActions != 0;
 	const float FastActionsHeaderHeight = LineSize + MarginSmall + LineSize;
 	const float FastActionsExpandedTargetHeight = MarginSmall + WheelPreviewHeight + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize * 0.8f + MarginSmall + LineSize;
