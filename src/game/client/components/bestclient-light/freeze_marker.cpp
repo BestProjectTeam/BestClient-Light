@@ -101,6 +101,34 @@ bool CFreezeMarker::IsFreezeTile(int ClientId, int TileIndex) const
 	return vSwitchers[Number].m_aStatus[Team];
 }
 
+int CFreezeMarker::FindFreezeTile(int ClientId, vec2 From, vec2 To) const
+{
+	const float Dist = distance(From, To);
+	if(Dist > 32.0f * 48.0f)
+		return -1;
+
+	const CCollision *pCollision = Collision();
+	const int Steps = (int)Dist + 1;
+	int LastIndex = -1;
+	for(int i = 0; i <= Steps; i++)
+	{
+		float Mix = 0.0f;
+		if(Dist > 0.0f)
+		{
+			Mix = i / Dist;
+			if(Mix > 1.0f)
+				Mix = 1.0f;
+		}
+		const int Index = pCollision->GetMapIndex(mix(From, To, Mix));
+		if(Index < 0 || Index == LastIndex)
+			continue;
+		LastIndex = Index;
+		if(IsFreezeTile(ClientId, Index))
+			return Index;
+	}
+	return -1;
+}
+
 void CFreezeMarker::NoteTouch(int TileX, int TileY, int TileIndex)
 {
 	const auto It = m_MarkerByTile.find(TileIndex);
@@ -135,11 +163,32 @@ void CFreezeMarker::SampleTee(int Slot, int ClientId)
 		return;
 
 	const CNetObj_Character &Snapped = GameClient()->m_aClients[ClientId].m_Snapped;
-	const int TileIndex = pCollision->GetMapIndex(vec2(Snapped.m_X, Snapped.m_Y));
+	const vec2 Pos(Snapped.m_X, Snapped.m_Y);
 	const bool Frozen = IsFrozen(ClientId);
 	const bool StartedFreeze = Frozen && (!Last.m_Valid || !Last.m_Frozen);
-	if(StartedFreeze && TileIndex >= 0 && IsFreezeTile(ClientId, TileIndex))
-		NoteTouch(TileIndex % Width, TileIndex / Width, TileIndex);
+	if(StartedFreeze)
+	{
+		int TileIndex = -1;
+		if(Last.m_HasOlder)
+			TileIndex = FindFreezeTile(ClientId, Last.m_OlderPos, Last.m_Pos);
+		if(TileIndex < 0 && Last.m_HasPos)
+			TileIndex = FindFreezeTile(ClientId, Last.m_Pos, Pos);
+		if(TileIndex < 0)
+		{
+			const int CurIndex = pCollision->GetMapIndex(Pos);
+			if(CurIndex >= 0 && IsFreezeTile(ClientId, CurIndex))
+				TileIndex = CurIndex;
+		}
+		if(TileIndex >= 0)
+			NoteTouch(TileIndex % Width, TileIndex / Width, TileIndex);
+	}
+	if(Last.m_HasPos)
+	{
+		Last.m_OlderPos = Last.m_Pos;
+		Last.m_HasOlder = true;
+	}
+	Last.m_Pos = Pos;
+	Last.m_HasPos = true;
 	Last.m_Valid = true;
 	Last.m_Frozen = Frozen;
 	m_HasData = true;
