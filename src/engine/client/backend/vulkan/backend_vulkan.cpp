@@ -27,6 +27,9 @@
 #include <game/client/components/bestclient-light/motion_blur.h>
 // bestclient-light
 #include <array>
+// bestclient-light
+#include <atomic>
+// bestclient-light
 #include <condition_variable>
 #include <cstddef>
 #include <cstdlib>
@@ -1092,6 +1095,28 @@ private:
 	SPipelineContainer m_QuadGroupedPipeline;
 
 	std::vector<VkPipeline> m_vLastPipeline;
+
+	// bestclient-light
+	struct SCommandBufferBindings
+	{
+		bool m_VertexBound = false;
+		VkBuffer m_VertexBuffer = VK_NULL_HANDLE;
+		VkDeviceSize m_VertexOffset = 0;
+
+		bool m_IndexBound = false;
+		VkBuffer m_IndexBuffer = VK_NULL_HANDLE;
+		VkDeviceSize m_IndexOffset = 0;
+		VkIndexType m_IndexType = VK_INDEX_TYPE_UINT32;
+
+		VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
+		std::array<bool, 2> m_aSetBound = {false, false};
+		std::array<VkDescriptorSet, 2> m_aSets = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+
+		uint64_t m_Epoch = 0;
+	};
+	std::vector<SCommandBufferBindings> m_vBindings;
+	std::atomic<uint64_t> m_BindingsEpoch{0};
+	// bestclient-light
 
 	std::vector<VkCommandPool> m_vCommandPools;
 
@@ -2309,6 +2334,9 @@ protected:
 					std::unique_lock<std::mutex> Lock(pRenderThread->m_Mutex);
 					pRenderThread->m_Cond.wait(Lock, [&pRenderThread] { return !pRenderThread->m_IsRendering; });
 					m_vLastPipeline[ThreadIndex + 1] = VK_NULL_HANDLE;
+					// bestclient-light
+					ClearCommandBufferBindings(ThreadIndex + 1);
+					// bestclient-light
 				}
 			}
 		}
@@ -2552,6 +2580,9 @@ protected:
 
 		// clear frame
 		vkResetCommandBuffer(GetMainGraphicCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		// bestclient-light
+		ClearAllCommandBufferBindings();
+		// bestclient-light
 
 		auto &CommandBuffer = GetMainGraphicCommandBuffer();
 		VkCommandBufferBeginInfo BeginInfo{};
@@ -2588,6 +2619,9 @@ protected:
 
 		for(auto &LastPipe : m_vLastPipeline)
 			LastPipe = VK_NULL_HANDLE;
+		// bestclient-light
+		ClearAllCommandBufferBindings();
+		// bestclient-light
 
 		return true;
 	}
@@ -3251,6 +3285,9 @@ protected:
 			FreeVertexMemBlock(BufferObject.m_BufferObject.m_Mem);
 		}
 		BufferObject = {};
+		// bestclient-light
+		InvalidateCommandBufferBindings();
+		// bestclient-light
 	}
 
 	[[nodiscard]] bool CopyBuffer(VkBuffer SrcBuffer, VkBuffer DstBuffer, VkDeviceSize SrcOffset, VkDeviceSize DstOffset, VkDeviceSize CopySize)
@@ -3469,13 +3506,106 @@ protected:
 		}
 	}
 
-	void BindPipeline(size_t RenderThreadIndex, VkCommandBuffer &CommandBuffer, SRenderCommandExecuteBuffer &ExecBuffer, VkPipeline &BindingPipe, const CCommandBuffer::SState &State)
+	// bestclient-light
+	void ClearCommandBufferBindings(size_t ThreadIndex)
+	{
+		if(ThreadIndex >= m_vBindings.size())
+			return;
+		const uint64_t Epoch = m_BindingsEpoch.load(std::memory_order_acquire);
+		m_vBindings[ThreadIndex] = {};
+		m_vBindings[ThreadIndex].m_Epoch = Epoch;
+	}
+
+	void ClearAllCommandBufferBindings()
+	{
+		for(size_t ThreadIndex = 0; ThreadIndex < m_vBindings.size(); ++ThreadIndex)
+			ClearCommandBufferBindings(ThreadIndex);
+	}
+
+	void InvalidateCommandBufferBindings()
+	{
+		m_BindingsEpoch.fetch_add(1, std::memory_order_release);
+	}
+
+	void SyncCommandBufferBindings(size_t ThreadIndex)
+	{
+		auto &Bindings = m_vBindings[ThreadIndex];
+		const uint64_t Epoch = m_BindingsEpoch.load(std::memory_order_acquire);
+		if(Bindings.m_Epoch != Epoch)
+		{
+			Bindings = {};
+			Bindings.m_Epoch = Epoch;
+		}
+	}
+
+	void NotePipelineLayout(size_t RenderThreadIndex, VkPipelineLayout Layout)
+	{
+		SyncCommandBufferBindings(RenderThreadIndex);
+		auto &Bindings = m_vBindings[RenderThreadIndex];
+		if(Bindings.m_PipelineLayout != Layout)
+		{
+			Bindings.m_PipelineLayout = Layout;
+			Bindings.m_aSetBound[0] = false;
+			Bindings.m_aSetBound[1] = false;
+		}
+	}
+
+	void BindVertexBufferCached(size_t RenderThreadIndex, VkCommandBuffer CommandBuffer, VkBuffer Buffer, VkDeviceSize Offset)
+	{
+		SyncCommandBufferBindings(RenderThreadIndex);
+		auto &Bindings = m_vBindings[RenderThreadIndex];
+		if(Bindings.m_VertexBound && Bindings.m_VertexBuffer == Buffer && Bindings.m_VertexOffset == Offset)
+			return;
+
+		std::array<VkBuffer, 1> aVertexBuffers = {Buffer};
+		std::array<VkDeviceSize, 1> aOffsets = {Offset};
+		vkCmdBindVertexBuffers(CommandBuffer, 0, 1, aVertexBuffers.data(), aOffsets.data());
+		Bindings.m_VertexBound = true;
+		Bindings.m_VertexBuffer = Buffer;
+		Bindings.m_VertexOffset = Offset;
+	}
+
+	void BindIndexBufferCached(size_t RenderThreadIndex, VkCommandBuffer CommandBuffer, VkBuffer Buffer, VkDeviceSize Offset, VkIndexType IndexType)
+	{
+		SyncCommandBufferBindings(RenderThreadIndex);
+		auto &Bindings = m_vBindings[RenderThreadIndex];
+		if(Bindings.m_IndexBound && Bindings.m_IndexBuffer == Buffer && Bindings.m_IndexOffset == Offset && Bindings.m_IndexType == IndexType)
+			return;
+
+		vkCmdBindIndexBuffer(CommandBuffer, Buffer, Offset, IndexType);
+		Bindings.m_IndexBound = true;
+		Bindings.m_IndexBuffer = Buffer;
+		Bindings.m_IndexOffset = Offset;
+		Bindings.m_IndexType = IndexType;
+	}
+
+	void BindDescriptorSetCached(size_t RenderThreadIndex, VkCommandBuffer CommandBuffer, VkPipelineLayout Layout, uint32_t Set, VkDescriptorSet Descriptor)
+	{
+		dbg_assert(Set < m_vBindings[RenderThreadIndex].m_aSets.size(), "Descriptor set slot is outside the bind cache.");
+		NotePipelineLayout(RenderThreadIndex, Layout);
+		auto &Bindings = m_vBindings[RenderThreadIndex];
+		if(Bindings.m_aSetBound[Set] && Bindings.m_aSets[Set] == Descriptor)
+			return;
+
+		vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Layout, Set, 1, &Descriptor, 0, nullptr);
+		Bindings.m_aSetBound[Set] = true;
+		Bindings.m_aSets[Set] = Descriptor;
+	}
+	// bestclient-light
+
+	// bestclient-light
+	void BindPipeline(size_t RenderThreadIndex, VkCommandBuffer &CommandBuffer, SRenderCommandExecuteBuffer &ExecBuffer, VkPipeline &BindingPipe, VkPipelineLayout Layout, const CCommandBuffer::SState &State)
+	// bestclient-light
 	{
 		if(m_vLastPipeline[RenderThreadIndex] != BindingPipe)
 		{
 			vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, BindingPipe);
 			m_vLastPipeline[RenderThreadIndex] = BindingPipe;
 		}
+
+		// bestclient-light
+		NotePipelineLayout(RenderThreadIndex, Layout);
+		// bestclient-light
 
 		size_t DynamicStateIndex = GetDynamicModeIndexFromExecBuffer(ExecBuffer);
 		if(DynamicStateIndex == VULKAN_BACKEND_CLIP_MODE_DYNAMIC_SCISSOR_AND_VIEWPORT)
@@ -3528,16 +3658,12 @@ protected:
 			return false;
 		auto &CommandBuffer = *pCommandBuffer;
 
-		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, State);
-
-		std::array<VkBuffer, 1> aVertexBuffers = {ExecBuffer.m_Buffer};
-		std::array<VkDeviceSize, 1> aOffsets = {(VkDeviceSize)ExecBuffer.m_BufferOff};
-		vkCmdBindVertexBuffers(CommandBuffer, 0, 1, aVertexBuffers.data(), aOffsets.data());
-
+		// bestclient-light
+		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, PipeLayout, State);
+		BindVertexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_Buffer, (VkDeviceSize)ExecBuffer.m_BufferOff);
 		if(IsTextured)
-		{
-			vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, PipeLayout, 0, 1, &ExecBuffer.m_aDescriptors[0].m_Descriptor, 0, nullptr);
-		}
+			BindDescriptorSetCached(ExecBuffer.m_ThreadIndex, CommandBuffer, PipeLayout, 0, ExecBuffer.m_aDescriptors[0].m_Descriptor);
+		// bestclient-light
 
 		SUniformTileGPosBorder VertexPushConstants;
 		size_t VertexPushConstantSize = sizeof(SUniformTileGPos);
@@ -3558,7 +3684,9 @@ protected:
 		vkCmdPushConstants(CommandBuffer, PipeLayout, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(SUniformTileGPosBorder) + sizeof(SUniformTileGVertColorAlign), FragPushConstantSize, &FragPushConstants);
 
 		size_t DrawCount = IndicesDrawNum;
-		vkCmdBindIndexBuffer(CommandBuffer, ExecBuffer.m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+		// bestclient-light
+		BindIndexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+		// bestclient-light
 		for(size_t i = 0; i < DrawCount; ++i)
 		{
 			VkDeviceSize IndexOffset = (VkDeviceSize)((ptrdiff_t)pIndicesOffsets[i] / sizeof(uint32_t));
@@ -3590,7 +3718,9 @@ protected:
 			return false;
 		auto &CommandBuffer = *pCommandBuffer;
 
-		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, State);
+		// bestclient-light
+		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, PipeLayout, State);
+		// bestclient-light
 
 		size_t VertPerPrim = 2;
 		bool IsIndexed = false;
@@ -3610,17 +3740,13 @@ protected:
 		if(!CreateStreamVertexBuffer(ExecBuffer.m_ThreadIndex, VKBuffer, VKBufferMem, BufferOff, pVertices, VertPerPrim * sizeof(TName) * PrimitiveCount))
 			return false;
 
-		std::array<VkBuffer, 1> aVertexBuffers = {VKBuffer};
-		std::array<VkDeviceSize, 1> aOffsets = {(VkDeviceSize)BufferOff};
-		vkCmdBindVertexBuffers(CommandBuffer, 0, 1, aVertexBuffers.data(), aOffsets.data());
-
+		// bestclient-light
+		BindVertexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, VKBuffer, (VkDeviceSize)BufferOff);
 		if(IsIndexed)
-			vkCmdBindIndexBuffer(CommandBuffer, ExecBuffer.m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
+			BindIndexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
 		if(IsTextured)
-		{
-			vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, PipeLayout, 0, 1, &ExecBuffer.m_aDescriptors[0].m_Descriptor, 0, nullptr);
-		}
+			BindDescriptorSetCached(ExecBuffer.m_ThreadIndex, CommandBuffer, PipeLayout, 0, ExecBuffer.m_aDescriptors[0].m_Descriptor);
+		// bestclient-light
 
 		vkCmdPushConstants(CommandBuffer, PipeLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(SUniformGPos), m.data());
 
@@ -5299,6 +5425,10 @@ public:
 			vkFreeDescriptorSets(m_VKDevice, pSets[i].m_pPools->m_vPools[pSets[i].m_PoolIndex].m_Pool, 1, &pSets[i].m_Descriptor);
 			pSets[i].m_Descriptor = VK_NULL_HANDLE;
 		}
+		// bestclient-light
+		if(SetCount > 0)
+			InvalidateCommandBufferBindings();
+		// bestclient-light
 	}
 
 	[[nodiscard]] bool CreateSpriteMultiGraphicsPipelineImpl(const char *pVertName, const char *pFragName, SPipelineContainer &PipeContainer, EVulkanBackendTextureModes TexMode, EVulkanBackendBlendModes BlendMode, EVulkanBackendClipModes DynamicMode)
@@ -5724,6 +5854,9 @@ public:
 		m_vImageLastFrameCheck.clear();
 
 		m_vLastPipeline.clear();
+		// bestclient-light
+		m_vBindings.clear();
+		// bestclient-light
 
 		for(size_t i = 0; i < m_ThreadCount; ++i)
 		{
@@ -6106,6 +6239,9 @@ public:
 		{
 			vkFreeDescriptorSets(m_VKDevice, DescrSet.m_pPools->m_vPools[DescrSet.m_PoolIndex].m_Pool, 1, &DescrSet.m_Descriptor);
 			DescrSet.m_pPools->m_vPools[DescrSet.m_PoolIndex].m_CurSize -= 1;
+			// bestclient-light
+			InvalidateCommandBufferBindings();
+			// bestclient-light
 		}
 	}
 
@@ -6436,6 +6572,9 @@ public:
 		}
 
 		m_vLastPipeline.resize(m_ThreadCount, VK_NULL_HANDLE);
+		// bestclient-light
+		m_vBindings.resize(m_ThreadCount);
+		// bestclient-light
 
 		m_vvFrameDelayedBufferCleanup.resize(m_SwapChainImageCount);
 		m_vvFrameDelayedTextureCleanup.resize(m_SwapChainImageCount);
@@ -6514,6 +6653,9 @@ public:
 				m_vvUsedThreadDrawCommandBuffer[RenderThreadIndex][m_CurImageIndex] = true;
 
 				vkResetCommandBuffer(DrawCommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+				// bestclient-light
+				ClearCommandBufferBindings(RenderThreadIndex);
+				// bestclient-light
 
 				VkCommandBufferBeginInfo BeginInfo{};
 				BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -7339,6 +7481,9 @@ public:
 			if(!CreateIndexBuffer(vIndices.data(), vIndices.size() * sizeof(uint32_t), m_RenderIndexBuffer, m_RenderIndexBufferMemory))
 				return false;
 			m_CurRenderIndexPrimitiveCount = IndicesCount / 6;
+			// bestclient-light
+			InvalidateCommandBufferBindings();
+			// bestclient-light
 		}
 
 		return true;
@@ -7412,18 +7557,13 @@ public:
 			return false;
 		auto &CommandBuffer = *pCommandBuffer;
 
-		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, pCommand->m_State);
-
-		std::array<VkBuffer, 1> aVertexBuffers = {ExecBuffer.m_Buffer};
-		std::array<VkDeviceSize, 1> aOffsets = {(VkDeviceSize)ExecBuffer.m_BufferOff};
-		vkCmdBindVertexBuffers(CommandBuffer, 0, 1, aVertexBuffers.data(), aOffsets.data());
-
-		vkCmdBindIndexBuffer(CommandBuffer, ExecBuffer.m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
+		// bestclient-light
+		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, PipeLayout, pCommand->m_State);
+		BindVertexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_Buffer, (VkDeviceSize)ExecBuffer.m_BufferOff);
+		BindIndexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
 		if(IsTextured)
-		{
-			vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, PipeLayout, 0, 1, &ExecBuffer.m_aDescriptors[0].m_Descriptor, 0, nullptr);
-		}
+			BindDescriptorSetCached(ExecBuffer.m_ThreadIndex, CommandBuffer, PipeLayout, 0, ExecBuffer.m_aDescriptors[0].m_Descriptor);
+		// bestclient-light
 
 		uint32_t DrawCount = (uint32_t)pCommand->m_QuadNum;
 
@@ -7457,7 +7597,9 @@ public:
 				if(!GetUniformBufferObject(ExecBuffer.m_ThreadIndex, true, UniDescrSet, RealDrawCount, (const float *)(pCommand->m_pQuadInfo + RenderOffset), RealDrawCount * sizeof(SQuadRenderInfo)))
 					return false;
 
-				vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, PipeLayout, IsTextured ? 1 : 0, 1, &UniDescrSet.m_Descriptor, 0, nullptr);
+				// bestclient-light
+				BindDescriptorSetCached(ExecBuffer.m_ThreadIndex, CommandBuffer, PipeLayout, IsTextured ? 1 : 0, UniDescrSet.m_Descriptor);
+				// bestclient-light
 				if(RenderOffset > 0)
 				{
 					int32_t QuadOffset = pCommand->m_QuadOffset + RenderOffset;
@@ -7510,15 +7652,12 @@ public:
 			return false;
 		auto &CommandBuffer = *pCommandBuffer;
 
-		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, pCommand->m_State);
-
-		std::array<VkBuffer, 1> aVertexBuffers = {ExecBuffer.m_Buffer};
-		std::array<VkDeviceSize, 1> aOffsets = {(VkDeviceSize)ExecBuffer.m_BufferOff};
-		vkCmdBindVertexBuffers(CommandBuffer, 0, 1, aVertexBuffers.data(), aOffsets.data());
-
-		vkCmdBindIndexBuffer(CommandBuffer, ExecBuffer.m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-		vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, PipeLayout, 0, 1, &ExecBuffer.m_aDescriptors[0].m_Descriptor, 0, nullptr);
+		// bestclient-light
+		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, PipeLayout, pCommand->m_State);
+		BindVertexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_Buffer, (VkDeviceSize)ExecBuffer.m_BufferOff);
+		BindIndexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+		BindDescriptorSetCached(ExecBuffer.m_ThreadIndex, CommandBuffer, PipeLayout, 0, ExecBuffer.m_aDescriptors[0].m_Descriptor);
+		// bestclient-light
 
 		SUniformGTextPos PosTexSizeConstant;
 		mem_copy(PosTexSizeConstant.m_aPos, m.data(), m.size() * sizeof(float));
@@ -7582,20 +7721,18 @@ public:
 			return false;
 		auto &CommandBuffer = *pCommandBuffer;
 
-		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, pCommand->m_State);
-
-		std::array<VkBuffer, 1> aVertexBuffers = {ExecBuffer.m_Buffer};
-		std::array<VkDeviceSize, 1> aOffsets = {(VkDeviceSize)ExecBuffer.m_BufferOff};
-		vkCmdBindVertexBuffers(CommandBuffer, 0, 1, aVertexBuffers.data(), aOffsets.data());
+		// bestclient-light
+		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, PipeLayout, pCommand->m_State);
+		// bestclient-light
 
 		VkDeviceSize IndexOffset = (VkDeviceSize)((ptrdiff_t)pCommand->m_pOffset);
 
-		vkCmdBindIndexBuffer(CommandBuffer, ExecBuffer.m_IndexBuffer, IndexOffset, VK_INDEX_TYPE_UINT32);
-
+		// bestclient-light
+		BindVertexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_Buffer, (VkDeviceSize)ExecBuffer.m_BufferOff);
+		BindIndexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_IndexBuffer, IndexOffset, VK_INDEX_TYPE_UINT32);
 		if(IsTextured)
-		{
-			vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, PipeLayout, 0, 1, &ExecBuffer.m_aDescriptors[0].m_Descriptor, 0, nullptr);
-		}
+			BindDescriptorSetCached(ExecBuffer.m_ThreadIndex, CommandBuffer, PipeLayout, 0, ExecBuffer.m_aDescriptors[0].m_Descriptor);
+		// bestclient-light
 
 		vkCmdPushConstants(CommandBuffer, PipeLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(SUniformGPos), m.data());
 
@@ -7628,20 +7765,18 @@ public:
 			return false;
 		auto &CommandBuffer = *pCommandBuffer;
 
-		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, pCommand->m_State);
-
-		std::array<VkBuffer, 1> aVertexBuffers = {ExecBuffer.m_Buffer};
-		std::array<VkDeviceSize, 1> aOffsets = {(VkDeviceSize)ExecBuffer.m_BufferOff};
-		vkCmdBindVertexBuffers(CommandBuffer, 0, 1, aVertexBuffers.data(), aOffsets.data());
+		// bestclient-light
+		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, PipeLayout, pCommand->m_State);
+		// bestclient-light
 
 		VkDeviceSize IndexOffset = (VkDeviceSize)((ptrdiff_t)pCommand->m_pOffset);
 
-		vkCmdBindIndexBuffer(CommandBuffer, ExecBuffer.m_IndexBuffer, IndexOffset, VK_INDEX_TYPE_UINT32);
-
+		// bestclient-light
+		BindVertexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_Buffer, (VkDeviceSize)ExecBuffer.m_BufferOff);
+		BindIndexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_IndexBuffer, IndexOffset, VK_INDEX_TYPE_UINT32);
 		if(IsTextured)
-		{
-			vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, PipeLayout, 0, 1, &ExecBuffer.m_aDescriptors[0].m_Descriptor, 0, nullptr);
-		}
+			BindDescriptorSetCached(ExecBuffer.m_ThreadIndex, CommandBuffer, PipeLayout, 0, ExecBuffer.m_aDescriptors[0].m_Descriptor);
+		// bestclient-light
 
 		SUniformPrimExGVertColor PushConstantColor;
 		SUniformPrimExGPos PushConstantVertex;
@@ -7693,16 +7828,14 @@ public:
 			return false;
 		auto &CommandBuffer = *pCommandBuffer;
 
-		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, pCommand->m_State);
-
-		std::array<VkBuffer, 1> aVertexBuffers = {ExecBuffer.m_Buffer};
-		std::array<VkDeviceSize, 1> aOffsets = {(VkDeviceSize)ExecBuffer.m_BufferOff};
-		vkCmdBindVertexBuffers(CommandBuffer, 0, 1, aVertexBuffers.data(), aOffsets.data());
+		// bestclient-light
+		BindPipeline(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer, PipeLine, PipeLayout, pCommand->m_State);
 
 		VkDeviceSize IndexOffset = (VkDeviceSize)((ptrdiff_t)pCommand->m_pOffset);
-		vkCmdBindIndexBuffer(CommandBuffer, ExecBuffer.m_IndexBuffer, IndexOffset, VK_INDEX_TYPE_UINT32);
-
-		vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, PipeLayout, 0, 1, &ExecBuffer.m_aDescriptors[0].m_Descriptor, 0, nullptr);
+		BindVertexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_Buffer, (VkDeviceSize)ExecBuffer.m_BufferOff);
+		BindIndexBufferCached(ExecBuffer.m_ThreadIndex, CommandBuffer, ExecBuffer.m_IndexBuffer, IndexOffset, VK_INDEX_TYPE_UINT32);
+		BindDescriptorSetCached(ExecBuffer.m_ThreadIndex, CommandBuffer, PipeLayout, 0, ExecBuffer.m_aDescriptors[0].m_Descriptor);
+		// bestclient-light
 
 		if(CanBePushed)
 		{
@@ -7749,7 +7882,9 @@ public:
 				if(!GetUniformBufferObject(ExecBuffer.m_ThreadIndex, false, UniDescrSet, UniformCount, (const float *)(pCommand->m_pRenderInfo + RenderOffset), UniformCount * sizeof(IGraphics::SRenderSpriteInfo)))
 					return false;
 
-				vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, PipeLayout, 1, 1, &UniDescrSet.m_Descriptor, 0, nullptr);
+				// bestclient-light
+				BindDescriptorSetCached(ExecBuffer.m_ThreadIndex, CommandBuffer, PipeLayout, 1, UniDescrSet.m_Descriptor);
+				// bestclient-light
 			}
 
 			vkCmdDrawIndexed(CommandBuffer, static_cast<uint32_t>(pCommand->m_DrawNum), UniformCount, 0, 0, 0);
