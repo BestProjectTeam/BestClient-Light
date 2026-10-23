@@ -8,6 +8,9 @@
 #include <game/client/lineinput.h>
 #include <game/client/ui.h>
 #include <game/client/ui_scrollregion.h>
+// bestclient-light
+#include <game/client/components/bestclient-light/keybind_map_ui.h>
+// bestclient-light
 
 #include <vector>
 
@@ -67,6 +70,11 @@ private:
 	void UpdateBindOptions();
 
 	CScrollRegion m_SettingsScrollRegion;
+	// bestclient-light
+	bool m_KeybindMap = false;
+	CButtonContainer m_KeybindMapButton;
+	CKeybindMapUi m_KeybindMapUi;
+	// bestclient-light
 	CButtonContainer m_ResetToDefaultButton;
 	CLineInputBuffered<128> m_FilterInput;
 	int m_CurrentSearchMatch = 0;

@@ -2904,6 +2904,9 @@ if(CLIENT)
     components/bestclient-light/menu_media_background.h
 
     components/bestclient-light/menus_bestclient-light.cpp
+    components/bestclient-light/keybind_map.cpp
+    components/bestclient-light/keybind_map.h
+    components/bestclient-light/keybind_map_ui.h
     components/bestclient-light/motion_blur.h
     components/bestclient-light/motion_blur_opengl.h
     components/bestclient-light/motion_blur_opengl.inl
@@ -3938,6 +3941,7 @@ if((GTEST_FOUND OR DOWNLOAD_GTEST) AND SERVER)
     jobs_test.cpp
     json_test.cpp
     jsonwriter_test.cpp
+    keybind_map_test.cpp
     linereader_test.cpp
     mapbugs_test.cpp
     mapitems_test.cpp
