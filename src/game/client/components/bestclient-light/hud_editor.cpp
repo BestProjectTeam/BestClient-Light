@@ -546,8 +546,6 @@ CHudEditor::SModuleVisual CHudEditor::GetModuleVisual(HudLayout::EModule Module)
 	Visual.m_Rounding = std::clamp(Visual.m_Rounding, 2.0f, 12.0f);
 	Visual.m_Rect = ClampToBounds(Visual.m_Rect, Width, Height);
 	Visual.m_Corners = HudLayout::BackgroundCorners(IGraphics::CORNER_ALL, Visual.m_Rect.x, Visual.m_Rect.y, Visual.m_Rect.w, Visual.m_Rect.h, Width, Height);
-	if(Visual.m_Corners != IGraphics::CORNER_ALL)
-		Visual.m_Rounding = 0.0f;
 	return Visual;
 }
 

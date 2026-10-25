@@ -1691,6 +1691,10 @@ Full map
 == Полная карта
 
 [BestClient Light]
+Open full map
+== Открыть полную карту
+
+[BestClient Light]
 Platforms
 == Платформы
 

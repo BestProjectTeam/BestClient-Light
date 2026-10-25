@@ -344,25 +344,31 @@ void CMinimap::OnConsoleInit()
 		if(!Pressed || WasPressed)
 			return;
 
-		const bool Active = !(pSelf->m_LargeActive && pSelf->m_ForceFullSize);
-		if(Active && !pSelf->m_LargeActive)
-			pSelf->m_ZoomOverride = std::clamp(g_Config.m_BclLargeMinimapCurrentZoom, LARGE_ZOOM_MIN, LARGE_ZOOM_MAX);
-		if(Active)
-		{
-			pSelf->UpdateScreen();
-			pSelf->m_MapCursor = vec2(pSelf->m_Width * 0.5f, pSelf->m_Height * 0.5f);
-			pSelf->m_MapCursorActive = true;
-		}
-		else
+		if(pSelf->m_LargeActive && pSelf->m_ForceFullSize)
 		{
 			if(pSelf->m_ZoomOverride >= 0)
 				g_Config.m_BclLargeMinimapCurrentZoom = pSelf->m_ZoomOverride;
 			pSelf->ResetLargeZoom();
 			pSelf->m_MapCursorActive = false;
+			pSelf->m_LargeActive = false;
+			pSelf->m_ForceFullSize = false;
 		}
-		pSelf->m_LargeActive = Active;
-		pSelf->m_ForceFullSize = Active;
+		else
+			pSelf->OpenFullMap();
 	}, this, "Toggle the full-size minimap");
+}
+
+void CMinimap::OpenFullMap()
+{
+	if(g_Config.m_BclMinimap == 0 || (m_LargeActive && m_ForceFullSize))
+		return;
+	if(!m_LargeActive)
+		m_ZoomOverride = std::clamp(g_Config.m_BclLargeMinimapCurrentZoom, LARGE_ZOOM_MIN, LARGE_ZOOM_MAX);
+	UpdateScreen();
+	m_MapCursor = vec2(m_Width * 0.5f, m_Height * 0.5f);
+	m_MapCursorActive = true;
+	m_LargeActive = true;
+	m_ForceFullSize = true;
 }
 
 int CMinimap::ClampLargeZoomOut(int Zoom) const
@@ -1563,15 +1569,7 @@ void CMinimap::RenderHud(bool EditorPreview)
 	const float ScaleReferenceH = LargeMinimap ? m_Height : MinimapH;
 	const float FitScale = std::max(ScaleReferenceW / std::max(MapWorldW, 1.0f), ScaleReferenceH / std::max(MapWorldH, 1.0f));
 	const float Scale = FitScale * Zoom;
-	float SmallX = 0.0f;
-	float SmallY = 0.0f;
-	float SmallSize = 0.0f;
-	SmallMapRect(m_Width, m_Height, SmallX, SmallY, SmallSize);
-	float SmallZoom = std::clamp(g_Config.m_BclMinimapZoom / 100.0f, 3.0f, 24.0f);
-	if(g_Config.m_BclMinimapSyncZoom)
-		SmallZoom = std::clamp(SmallZoom / std::max(GameClient()->m_Camera.m_Zoom, 0.05f), 0.05f, 24.0f);
-	const float SmallFit = std::max(SmallSize / std::max(MapWorldW, 1.0f), SmallSize / std::max(MapWorldH, 1.0f));
-	const float SmallScale = std::max(SmallFit * SmallZoom, 0.0001f);
+	const float ConfiguredSmallZoom = std::clamp(g_Config.m_BclMinimapZoom / 100.0f, 3.0f, 24.0f);
 
 	float CursorX = 0.0f;
 	float CursorY = 0.0f;
@@ -1680,17 +1678,10 @@ void CMinimap::RenderHud(bool EditorPreview)
 
 	const ColorRGBA BgColor = MinimapBackground(Alpha);
 	int MapCorners = IGraphics::CORNER_ALL;
-	float FrameRounding = 4.0f;
-	float FillRounding = 3.0f;
+	const float FrameRounding = 4.0f;
+	const float FillRounding = 3.0f;
 	if(!LargeMinimap)
-	{
 		MapCorners = HudLayout::BackgroundCorners(IGraphics::CORNER_ALL, X, Y, MinimapW, MinimapH, m_Width, m_Height);
-		if(MapCorners != IGraphics::CORNER_ALL)
-		{
-			FrameRounding = 0.0f;
-			FillRounding = 0.0f;
-		}
-	}
 	Graphics()->TextureClear();
 	Graphics()->DrawRect(X - 1.5f, Y - 1.5f, MinimapW + 3.0f, MinimapH + 3.0f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.45f * Alpha), MapCorners, FrameRounding);
 	Graphics()->DrawRect(X, Y, MinimapW, MinimapH, BgColor, MapCorners, FillRounding);
@@ -1788,9 +1779,9 @@ void CMinimap::RenderHud(bool EditorPreview)
 			}
 
 			CTeeRenderInfo TeeInfo = GameClient()->m_aClients[i].m_RenderInfo;
-			float TeeSize = (float)g_Config.m_BclMinimapTeeSize * (Scale / SmallScale);
+			float TeeSize = 32.0f * Scale * ((float)g_Config.m_BclMinimapTeeSize / 4.0f);
 			if(g_Config.m_BclMinimapTeeSizeFlexible)
-				TeeSize *= std::max(SmallZoom / 5.0f, 0.2f);
+				TeeSize *= std::max(ConfiguredSmallZoom / 5.0f, 0.2f);
 			TeeInfo.m_Size = std::max(TeeSize, 0.5f);
 			TeeInfo.m_TeeRenderFlags |= TEE_NO_WEAPON;
 			const float IconAlpha = i == LocalId ? 1.0f : (SameTeam ? 0.95f : 0.72f);

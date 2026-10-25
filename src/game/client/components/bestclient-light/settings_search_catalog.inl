@@ -224,3 +224,4 @@
 	{"Show frozen teammates", SETTINGS_NAV_LEAF_BC_TOOLS, "Minimap", &g_Config.m_BclMinimapShowFrozen, &g_Config.m_BclMinimap},
 	{"Show last alive", SETTINGS_NAV_LEAF_BC_TOOLS, "Minimap", &g_Config.m_BclMinimapShowCritical, &g_Config.m_BclMinimap},
 	{"Display marks in game", SETTINGS_NAV_LEAF_BC_TOOLS, "Minimap", &g_Config.m_BclMinimapMarksInGame, &g_Config.m_BclMinimap},
+	{"Open full map", SETTINGS_NAV_LEAF_BC_TOOLS, "Minimap", &g_Config.m_BclMinimap, &g_Config.m_BclMinimap},

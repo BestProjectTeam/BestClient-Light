@@ -131,6 +131,7 @@ public:
 	bool BlocksFollowInput() const { return BlocksGameInput() && m_FollowClientId >= 0; }
 	void ReleaseFollowInput();
 	void RenderFullOverlay();
+	void OpenFullMap();
 	CUIRect GetHudEditorRect() const;
 	void RenderEditorPreview();
 	bool ConsumesProgress() const;

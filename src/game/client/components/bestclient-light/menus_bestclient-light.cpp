@@ -2611,7 +2611,7 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 		const bool MinimapExpanded = g_Config.m_BclMinimap != 0;
 		const float Row = LineSize + MarginSmall;
 		const float MinimapHeaderHeight = LineSize + MarginSmall + LineSize;
-		const float MinimapExpandedTarget = 15.0f * Row;
+		const float MinimapExpandedTarget = 16.0f * Row;
 		const float MinimapExpandedHeight = BC_MODULE_REVEAL(MinimapExpanded, MinimapExpandedTarget, Client()->RenderFrameTime());
 		const float MinimapBlockHeight = MinimapHeaderHeight + MinimapExpandedHeight;
 		CUIRect MinimapBlock;
@@ -2666,7 +2666,7 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 			Check(&g_Config.m_BclMinimapHud, BcLocalize("Show minimap in HUD"));
 			Slider(&g_Config.m_BclMinimapZoom, BcLocalize("Minimap zoom"), 300, 2400, "%");
 			Slider(&g_Config.m_BclMinimapAlpha, BcLocalize("Minimap alpha"), 10, 100, "%");
-			Slider(&g_Config.m_BclMinimapTeeSize, BcLocalize("Tee size"), 4, 40, "");
+			Slider(&g_Config.m_BclMinimapTeeSize, BcLocalize("Tee size"), 1, 6, "");
 			Check(&g_Config.m_BclMinimapSyncZoom, BcLocalize("Sync zoom with game"));
 			Check(&g_Config.m_BclMinimapPlayers, BcLocalize("Show players"));
 			Check(&g_Config.m_BclMinimapShowOthers, BcLocalize("Show other teams"));
@@ -2679,11 +2679,20 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 
 			static CButtonContainer s_LargeBind, s_LargeBindClear;
 			static CButtonContainer s_FullBind, s_FullBindClear;
+			static CButtonContainer s_OpenFullMapButton;
 			Expanded.HSplitTop(LineSize, &Button, &Expanded);
 			DoLine_KeyReader(Button, s_LargeBind, s_LargeBindClear, BcLocalize("Map peek"), "+bcl_large_minimap");
 			Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
 			Expanded.HSplitTop(LineSize, &Button, &Expanded);
 			DoLine_KeyReader(Button, s_FullBind, s_FullBindClear, BcLocalize("Full map"), "+bcl_large_minimap_full");
+			Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			Expanded.HSplitTop(LineSize, &Button, &Expanded);
+			const bool CanOpenFullMap = Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK;
+			if(DoButton_Menu(&s_OpenFullMapButton, BcLocalize("Open full map"), CanOpenFullMap ? 0 : -1, &Button) && CanOpenFullMap)
+			{
+				SetActive(false);
+				GameClient()->m_Minimap.OpenFullMap();
+			}
 			Ui()->ClipDisable();
 		}
 	}

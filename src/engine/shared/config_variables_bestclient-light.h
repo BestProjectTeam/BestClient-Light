@@ -347,7 +347,7 @@ MACRO_CONFIG_INT(BclMinimapSyncZoom, bcl_minimap_sync_zoom, 0, 0, 1, CFGFLAG_CLI
 MACRO_CONFIG_INT(BclMinimapAlpha, bcl_minimap_alpha, 82, 10, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Minimap alpha")
 MACRO_CONFIG_INT(BclMinimapPlayers, bcl_minimap_players, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show players on the minimap")
 MACRO_CONFIG_INT(BclMinimapShowOthers, bcl_minimap_show_others, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show other teams")
-MACRO_CONFIG_INT(BclMinimapTeeSize, bcl_minimap_tee_size, 14, 4, 40, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Rendered tee size on the minimap")
+MACRO_CONFIG_INT(BclMinimapTeeSize, bcl_minimap_tee_size, 2, 1, 6, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Rendered tee size on the minimap")
 MACRO_CONFIG_INT(BclMinimapTeeSizeFlexible, bcl_minimap_tee_size_flexible, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Scale the minimap tee size with the current game zoom")
 MACRO_CONFIG_INT(BclMinimapShowAlive, bcl_minimap_show_alive, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show alive teammates on the minimap")
 MACRO_CONFIG_INT(BclMinimapShowFrozen, bcl_minimap_show_frozen, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show frozen teammates on the minimap")
