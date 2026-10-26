@@ -2981,6 +2981,8 @@ if(CLIENT)
     components/bestclient-light/minimap.h
     components/bestclient-light/hud_editor.cpp
     components/bestclient-light/hud_editor.h
+    components/bestclient-light/touch_controls_editor.cpp
+    components/bestclient-light/touch_controls_editor.h
     components/bestclient-light/music_player.cpp
     components/bestclient-light/music_player.h
     components/bestclient-light/music_player_lyrics.cpp

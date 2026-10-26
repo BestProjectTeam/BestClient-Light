@@ -228,10 +228,12 @@ void CGameClient::OnConsoleInit()
 					      &m_KeyBinder,
 					      &m_GameConsole,
 					      &m_MenuBackground,
-					      &m_HudEditor}); // bestclient-light
+					      &m_HudEditor, // bestclient-light
+					      &m_TouchControlsEditor}); // bestclient-light
 
 	// build the input stack
 	m_vpInput.insert(m_vpInput.end(), {&m_KeyBinder, // this will take over all input when we want to bind a key
+						  &m_TouchControlsEditor, // bestclient-light
 						  &m_HudEditor, // bestclient-light
 						  &m_Binds.m_SpecialBinds,
 						  &m_GameConsole,
@@ -6149,5 +6151,9 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "MenuBackground";
 	if(pComp == &m_HudEditor)
 		return "HudEditor";
+	// bestclient-light
+	if(pComp == &m_TouchControlsEditor)
+		return "TouchControlsEditor";
+	// bestclient-light
 	return "Unknown";
 }

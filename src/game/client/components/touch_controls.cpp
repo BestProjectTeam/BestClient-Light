@@ -796,6 +796,10 @@ void CTouchControls::OnWindowResize()
 
 bool CTouchControls::OnTouchState(std::vector<IInput::CTouchFingerState> &vTouchFingerStates)
 {
+	// bestclient-light
+	if(GameClient()->m_TouchControlsEditor.IsActive())
+		vTouchFingerStates.clear();
+	// bestclient-light
 	if(!g_Config.m_ClTouchControls)
 		return false;
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
@@ -821,6 +825,10 @@ bool CTouchControls::OnTouchState(std::vector<IInput::CTouchFingerState> &vTouch
 
 void CTouchControls::OnRender()
 {
+	// bestclient-light
+	if(GameClient()->m_TouchControlsEditor.IsActive())
+		return;
+	// bestclient-light
 	if(!g_Config.m_ClTouchControls)
 		return;
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)

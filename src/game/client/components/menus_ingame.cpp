@@ -305,6 +305,19 @@ void CMenus::RenderGame(CUIRect MainView)
 				}
 			}
 		}
+		// bestclient-light
+		ButtonBar2.VSplitLeft(5.0f, nullptr, &ButtonBar2);
+		ButtonBar2.VSplitLeft(140.0f, &Button, &ButtonBar2);
+		static CButtonContainer s_MoveTouchButtons;
+		if(DoButton_Menu(&s_MoveTouchButtons, BcLocalize("Move buttons"), 0, &Button))
+		{
+			SetActive(false);
+			GameClient()->m_TouchControls.SetEditingActive(false);
+			m_MenusIngameTouchControls.ResetButtonPointers();
+			GameClient()->m_TouchControlsEditor.Activate();
+		}
+		GameClient()->m_Tooltips.DoToolTip(&s_MoveTouchButtons, &Button, BcLocalize("Click a button for its settings. Drag to move, corners to resize."));
+		// bestclient-light
 
 		ButtonBar2.VSplitRight(80.0f, &ButtonBar2, &Button);
 		static CButtonContainer s_CloseButton;

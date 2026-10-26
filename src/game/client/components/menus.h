@@ -755,6 +755,9 @@ public:
 
 	bool IsActive() const { return m_MenuActive; }
 	void SetActive(bool Active);
+	// bestclient-light
+	void OpenTouchButtonSettings(CTouchControls::CTouchButton *pButton);
+	// bestclient-light
 
 	void OnInterfacesInit(CGameClient *pClient) override;
 	void OnInit() override;
