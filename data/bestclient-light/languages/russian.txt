@@ -1635,6 +1635,34 @@ Element
 == Элемент
 
 [BestClient Light]
+Stats counter
+== Счётчик статистики
+
+[BestClient Light]
+Enable stats counter
+== Включить счётчик статистики
+
+[BestClient Light]
+Show jumps
+== Показывать прыжки
+
+[BestClient Light]
+Show hits
+== Показывать удары
+
+[BestClient Light]
+Show saves
+== Показывать сейвы
+
+[BestClient Light]
+Show freezes
+== Показывать фризы
+
+[BestClient Light]
+Enable in team 0
+== Включать в команде 0
+
+[BestClient Light]
 Minimap
 == Миникарта
 

@@ -35,6 +35,7 @@ enum EModule
 	MODULE_SWAP_TIMER,
 	MODULE_EDGE_INFO,
 	MODULE_MINIMAP, // bestclient-light
+	MODULE_ACTIVITY_HUD, // bestclient-light
 	MODULE_COUNT,
 };
 
@@ -66,6 +67,12 @@ enum EPositionMode
 {
 	POSITION_MODE_TOP_LEFT = 0,
 	POSITION_MODE_BOTTOM_RIGHT,
+	// bestclient-light
+	POSITION_MODE_ACTIVITY_TL = 2,
+	POSITION_MODE_ACTIVITY_TR,
+	POSITION_MODE_ACTIVITY_BL,
+	POSITION_MODE_ACTIVITY_BR,
+	// bestclient-light
 };
 
 bool IsEditorModule(EModule Module);

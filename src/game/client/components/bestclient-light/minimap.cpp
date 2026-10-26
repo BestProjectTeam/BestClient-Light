@@ -522,11 +522,11 @@ void CMinimap::SmallMapRect(float HudW, float HudH, float &X, float &Y, float &S
 {
 	const auto Layout = HudLayout::Get(HudLayout::MODULE_MINIMAP, HudW, HudH);
 	const float MapScale = std::clamp(Layout.m_Scale / 100.0f, 0.25f, 3.0f);
-	Size = 86.0f * MapScale;
+	Size = 63.0f * MapScale;
 	if(!HudLayout::HasPositionOverride(HudLayout::MODULE_MINIMAP))
 	{
-		X = HudW - Size - 2.0f;
-		Y = (HudH - Size - 4.0f) * 0.12f + 2.0f;
+		X = 57.5f;
+		Y = 0.0f;
 	}
 	else
 	{
@@ -968,7 +968,6 @@ void CMinimap::OnNewSnapshot()
 		if(m_LargeActive)
 			CloseLarge();
 		ReleaseIdle();
-		SampleActivity();
 		return;
 	}
 	SampleActivity();
@@ -2009,6 +2008,8 @@ CUIRect CMinimap::GetHudEditorRect() const
 
 void CMinimap::RenderEditorPreview()
 {
+	if(g_Config.m_BclMinimap == 0)
+		return;
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;
 	if(!GameClient()->m_Snap.m_pGameInfoObj)

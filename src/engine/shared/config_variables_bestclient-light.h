@@ -362,3 +362,11 @@ MACRO_CONFIG_INT(BclLargeMinimapZoom, bcl_large_minimap_zoom, 500, 20, 2400, CFG
 MACRO_CONFIG_INT(BclLargeMinimapCurrentZoom, bcl_large_minimap_current_zoom, 500, 20, 2400, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Last used large minimap zoom percentage")
 MACRO_CONFIG_INT(BclLargeMinimapAlpha, bcl_large_minimap_alpha, 92, 0, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Large minimap alpha")
 MACRO_CONFIG_INT(BclLargeMinimapProgress, bcl_large_minimap_progress, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Display map progress")
+
+// ActivityHud
+MACRO_CONFIG_INT(BclActivityHud, bcl_activity_hud, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show jump, hit, save and freeze counters in the HUD")
+MACRO_CONFIG_INT(BclActivityHudShowJumps, bcl_activity_hud_show_jumps, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show jump counts in the counter HUD")
+MACRO_CONFIG_INT(BclActivityHudShowHits, bcl_activity_hud_show_hits, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show hammer hit counts in the counter HUD")
+MACRO_CONFIG_INT(BclActivityHudShowSaves, bcl_activity_hud_show_saves, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show save counts in the counter HUD")
+MACRO_CONFIG_INT(BclActivityHudShowFreezes, bcl_activity_hud_show_freezes, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show freeze counts in the counter HUD")
+MACRO_CONFIG_INT(BclActivityHudTeam0, bcl_activity_hud_team0, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show visible team 0 players in the counter HUD")

@@ -210,6 +210,12 @@
 	{"Status bar height", SETTINGS_NAV_LEAF_TC_STATUS_BAR, "Status Bar", &g_Config.m_TcStatusBarHeight, nullptr},
 	{"Status bar alpha", SETTINGS_NAV_LEAF_TC_STATUS_BAR, "Status Bar", &g_Config.m_TcStatusBarAlpha, nullptr},
 
+	{"Enable stats counter", SETTINGS_NAV_LEAF_BC_TOOLS, "Tools", &g_Config.m_BclActivityHud, nullptr},
+	{"Show jumps", SETTINGS_NAV_LEAF_BC_TOOLS, "Stats counter", &g_Config.m_BclActivityHudShowJumps, &g_Config.m_BclActivityHud},
+	{"Show hits", SETTINGS_NAV_LEAF_BC_TOOLS, "Stats counter", &g_Config.m_BclActivityHudShowHits, &g_Config.m_BclActivityHud},
+	{"Show saves", SETTINGS_NAV_LEAF_BC_TOOLS, "Stats counter", &g_Config.m_BclActivityHudShowSaves, &g_Config.m_BclActivityHud},
+	{"Show freezes", SETTINGS_NAV_LEAF_BC_TOOLS, "Stats counter", &g_Config.m_BclActivityHudShowFreezes, &g_Config.m_BclActivityHud},
+	{"Enable in team 0", SETTINGS_NAV_LEAF_BC_TOOLS, "Stats counter", &g_Config.m_BclActivityHudTeam0, &g_Config.m_BclActivityHud},
 	{"Enable minimap", SETTINGS_NAV_LEAF_BC_TOOLS, "Tools", &g_Config.m_BclMinimap, nullptr},
 	{"Show minimap in HUD", SETTINGS_NAV_LEAF_BC_TOOLS, "Minimap", &g_Config.m_BclMinimapHud, &g_Config.m_BclMinimap},
 	{"Minimap zoom", SETTINGS_NAV_LEAF_BC_TOOLS, "Minimap", &g_Config.m_BclMinimapZoom, &g_Config.m_BclMinimap},

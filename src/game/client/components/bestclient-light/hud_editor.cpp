@@ -525,6 +525,14 @@ CHudEditor::SModuleVisual CHudEditor::GetModuleVisual(HudLayout::EModule Module)
 		Visual.m_Rect = GameClient()->m_Minimap.GetHudEditorRect();
 		Visual.m_Rounding = 4.0f;
 		break;
+	case HudLayout::MODULE_ACTIVITY_HUD:
+	{
+		Visual.m_Rect = GameClient()->m_ActivityHud.GetHudEditorRect();
+		const auto ActivityLayout = HudLayout::Get(HudLayout::MODULE_ACTIVITY_HUD, Width, Height);
+		const float ActivityScale = std::clamp(ActivityLayout.m_Scale / 100.0f, 0.25f, 3.0f);
+		Visual.m_Rounding = std::clamp(4.0f * ActivityScale, 2.0f, 8.0f);
+		break;
+	}
 	case HudLayout::MODULE_KEYSTROKES_KEYBOARD:
 		Visual.m_Rect = GameClient()->m_Keystrokes.GetKeyboardHudEditorRect();
 		Visual.m_Rounding = 4.0f;
@@ -572,6 +580,7 @@ void CHudEditor::CollectModuleVisuals(SModuleVisual *pOut, int &Count) const
 	AddModule(HudLayout::MODULE_EDGE_INFO);
 	AddModule(HudLayout::MODULE_FINISH_PREDICTION);
 	AddModule(HudLayout::MODULE_MINIMAP);
+	AddModule(HudLayout::MODULE_ACTIVITY_HUD);
 	AddModule(HudLayout::MODULE_KEYSTROKES_KEYBOARD);
 }
 
@@ -670,6 +679,66 @@ void CHudEditor::ApplyDraggedPosition(HudLayout::EModule Module, const CUIRect &
 		const float AnchorOffsetX = CurrentRect.w > 0.0f ? (CurrentRect.x - Layout.m_X) : 0.0f;
 		const float BaseX = Rect.x - AnchorOffsetX;
 		HudLayout::SetPosition(Module, BaseX * CanvasScale, Rect.y);
+	}
+	else if(Module == HudLayout::MODULE_ACTIVITY_HUD)
+	{
+		int Anchor = 0;
+		if(m_ResizingModule == Module)
+		{
+			switch(m_ResizeCorner)
+			{
+			case RESIZE_CORNER_TL: Anchor = 3; break;
+			case RESIZE_CORNER_TR: Anchor = 2; break;
+			case RESIZE_CORNER_BL: Anchor = 1; break;
+			case RESIZE_CORNER_BR: Anchor = 0; break;
+			default: Anchor = 0; break;
+			}
+		}
+		else
+		{
+			const auto Layout = HudLayout::Get(Module, HudWidth(), HudHeight());
+			const int Previous = Layout.m_Mode >= HudLayout::POSITION_MODE_ACTIVITY_TL && Layout.m_Mode <= HudLayout::POSITION_MODE_ACTIVITY_BR ? Layout.m_Mode - HudLayout::POSITION_MODE_ACTIVITY_TL : 0;
+			bool Left = false;
+			bool Right = false;
+			bool Top = false;
+			bool Bottom = false;
+			auto Near = [](float A, float B) {
+				return absolute(A - B) <= 0.75f;
+			};
+			const float Width = HudWidth();
+			const float Height = HudHeight();
+			if(Near(Rect.x, 0.0f))
+				Left = true;
+			if(Near(Rect.x + Rect.w, Width))
+				Right = true;
+			if(Near(Rect.y, 0.0f))
+				Top = true;
+			if(Near(Rect.y + Rect.h, Height))
+				Bottom = true;
+			SModuleVisual aVisuals[MAX_MODULE_VISUALS];
+			int Count = 0;
+			CollectModuleVisuals(aVisuals, Count);
+			for(int i = 0; i < Count; ++i)
+			{
+				if(aVisuals[i].m_Module == Module)
+					continue;
+				const CUIRect &Other = aVisuals[i].m_Rect;
+				if(Near(Rect.x, Other.x) || Near(Rect.x, Other.x + Other.w))
+					Left = true;
+				if(Near(Rect.x + Rect.w, Other.x) || Near(Rect.x + Rect.w, Other.x + Other.w))
+					Right = true;
+				if(Near(Rect.y, Other.y) || Near(Rect.y, Other.y + Other.h))
+					Top = true;
+				if(Near(Rect.y + Rect.h, Other.y) || Near(Rect.y + Rect.h, Other.y + Other.h))
+					Bottom = true;
+			}
+			const bool PrevRight = Previous == 1 || Previous == 3;
+			const bool PrevBottom = Previous == 2 || Previous == 3;
+			const bool UseRight = Right && !Left ? true : (Left && !Right ? false : PrevRight);
+			const bool UseBottom = Bottom && !Top ? true : (Top && !Bottom ? false : PrevBottom);
+			Anchor = (UseBottom ? 2 : 0) + (UseRight ? 1 : 0);
+		}
+		GameClient()->m_ActivityHud.SetEditorRect(Rect, Anchor);
 	}
 	else
 		HudLayout::SetPosition(Module, Rect.x * CanvasScale, Rect.y);
@@ -1169,6 +1238,7 @@ void CHudEditor::RenderOverlay(vec2 MousePos)
 	GameClient()->m_EdgeHelper.RenderPreview();
 	GameClient()->m_FinishPrediction.RenderPreview();
 	GameClient()->m_Minimap.RenderEditorPreview();
+	GameClient()->m_ActivityHud.RenderEditorPreview();
 	GameClient()->m_Keystrokes.RenderKeyboardPreview();
 
 	Graphics()->MapScreenToSize(Width, Height);

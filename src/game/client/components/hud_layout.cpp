@@ -42,6 +42,7 @@ static const SModuleLayout gs_aModuleLayouts[MODULE_COUNT] = {
 	{250.0f, 258.0f, 100, 0, true, true, 0x66000000U, 100},
 	{200.0f, 168.0f, 100, 0, true, true, 0xE6000033U, 100},
 	{0.0f, 0.0f, 100, 0, true, true, 0x66000000U, 100}, // bestclient-light
+	{3.5f, 0.0f, 70, POSITION_MODE_ACTIVITY_TL, true, true, 0x66000000U, 100}, // bestclient-light
 };
 
 static const char *gs_apModuleIds[MODULE_COUNT] = {
@@ -67,6 +68,7 @@ static const char *gs_apModuleIds[MODULE_COUNT] = {
 	"swap_timer",
 	"edge_info",
 	"minimap", // bestclient-light
+	"activity_hud", // bestclient-light
 };
 
 static const char *gs_apModuleNames[MODULE_COUNT] = {
@@ -92,6 +94,7 @@ static const char *gs_apModuleNames[MODULE_COUNT] = {
 	"Swap timer",
 	"Edge Info",
 	"Minimap", // bestclient-light
+	"Stats counter", // bestclient-light
 };
 
 static SModuleLayout gs_aRuntimeModuleLayouts[MODULE_COUNT];
@@ -200,12 +203,9 @@ SModuleLayout DynamicDefaultLayout(EModule Module, float HudWidth, float HudHeig
 		break;
 	// bestclient-light
 	case MODULE_MINIMAP:
-	{
-		const float Size = 86.0f * std::clamp(Layout.m_Scale / 100.0f, 0.25f, 3.0f);
-		Layout.m_X = HudWidth - Size - 2.0f;
-		Layout.m_Y = (HudHeight - Size - 4.0f) * 0.12f + 2.0f;
+		Layout.m_X = 57.5f;
+		Layout.m_Y = 0.0f;
 		break;
-	}
 	// bestclient-light
 	case MODULE_MUSIC_PLAYER:
 	{
@@ -238,6 +238,26 @@ SModuleLayout DynamicDefaultLayout(EModule Module, float HudWidth, float HudHeig
 
 SModuleLayout ResolveBaseLayout(EModule Module, float HudWidth, float HudHeight)
 {
+	// bestclient-light
+	if(Module == MODULE_ACTIVITY_HUD)
+	{
+		EnsureRuntimeLayouts();
+		SModuleLayout &Runtime = gs_aRuntimeModuleLayouts[Module];
+		if(Runtime.m_BackgroundColor == 0xB0000000u)
+			Runtime.m_BackgroundColor = 0x66000000u;
+		if(Runtime.m_Mode < POSITION_MODE_ACTIVITY_TL &&
+			absolute(Runtime.m_X - 4.0f) < 0.05f &&
+			absolute(Runtime.m_Y - 28.0f) < 0.05f)
+		{
+			if(Runtime.m_Scale == 100)
+				Runtime.m_Scale = gs_aModuleLayouts[Module].m_Scale;
+			Runtime.m_X = gs_aModuleLayouts[Module].m_X;
+			Runtime.m_Y = gs_aModuleLayouts[Module].m_Y;
+			Runtime.m_Mode = gs_aModuleLayouts[Module].m_Mode;
+		}
+		return Runtime;
+	}
+	// bestclient-light
 	SModuleLayout Layout;
 	if(HasDynamicDefault(Module) && !HasRuntimeOverrideInternal(Module))
 	{
@@ -469,6 +489,7 @@ bool IsEditorModule(EModule Module)
 	case MODULE_EDGE_INFO:
 	// bestclient-light
 	case MODULE_MINIMAP:
+	case MODULE_ACTIVITY_HUD:
 	case MODULE_FINISH_PREDICTION:
 	case MODULE_KEYSTROKES_KEYBOARD:
 	// bestclient-light

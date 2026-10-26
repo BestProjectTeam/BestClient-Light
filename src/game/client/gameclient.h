@@ -29,6 +29,7 @@
 
 // components
 #include "components/background.h"
+#include "components/bestclient-light/activity_hud.h" // bestclient-light
 #include "components/bestclient-light/admin_panel.h" // bestclient-light
 #include "components/bestclient-light/aspect_ratio.h" // bestclient-light
 #include "components/bestclient-light/bestclient-light.h" // bestclient-light
@@ -252,6 +253,7 @@ public:
 	CFreezeMarker m_FreezeMarker; // bestclient-light
 	CKeystrokes m_Keystrokes; // bestclient-light
 	CMinimap m_Minimap; // bestclient-light
+	CActivityHud m_ActivityHud; // bestclient-light
 	// bestclient-light
 	CFgfWeather m_FgfWeather;
 	// bestclient-light

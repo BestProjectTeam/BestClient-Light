@@ -2699,6 +2699,65 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 
 	RightColumn.HSplitTop(MarginBetweenViews, nullptr, &RightColumn);
 
+	{
+		const bool CountersExpanded = g_Config.m_BclActivityHud != 0;
+		const float CountersRow = LineSize + MarginSmall;
+		const float CountersHeaderHeight = LineSize + MarginSmall + LineSize;
+		const float CountersExpandedTarget = 5.0f * CountersRow;
+		const float CountersExpandedHeight = BC_MODULE_REVEAL(CountersExpanded, CountersExpandedTarget, Client()->RenderFrameTime());
+		const float CountersBlockHeight = CountersHeaderHeight + CountersExpandedHeight;
+		CUIRect CountersBlock;
+		RightColumn.HSplitTop(CountersBlockHeight, &CountersBlock, &RightColumn);
+		CUIRect CountersBg = CountersBlock;
+		CountersBg.w += BlockPadding;
+		CountersBg.h += BlockPadding;
+		CountersBg.x -= BlockPadding * 0.5f;
+		CountersBg.y -= BlockPadding * 0.5f;
+		BestClientLightUiTheme::DrawUiBlock(&CountersBg, IGraphics::CORNER_ALL, 10.0f);
+		BestClientLightSettingsSearch::DrawBlockHighlight(&g_Config.m_BclActivityHud, &CountersBg);
+
+		CountersBlock.HSplitTop(LineSize, &Label, &CountersBlock);
+		CUIRect CountersTitleLabel, CountersHudEditorButton;
+		Label.VSplitRight(LineSize + 8.0f, &CountersTitleLabel, &CountersHudEditorButton);
+		CountersTitleLabel.VSplitRight(MarginSmall, &CountersTitleLabel, nullptr);
+		BcMenuBadges::DrawNew(Graphics(), Ui(), TextRender(), &CountersTitleLabel, MarginSmall);
+		static CButtonContainer s_CountersHudEditorButton;
+		const bool CountersCanOpenHudEditor = Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK;
+		const bool CountersHudEditorClicked = Ui()->DoButton_FontIcon(&s_CountersHudEditorButton, FontIcon::UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER, CountersCanOpenHudEditor ? 0 : -1, &CountersHudEditorButton, BUTTONFLAG_LEFT);
+		GameClient()->m_Tooltips.DoToolTip(&s_CountersHudEditorButton, &CountersHudEditorButton, CountersCanOpenHudEditor ? BcLocalize("Open in HUD editor") : BcLocalize("Join a game first"));
+		GameClient()->m_Tooltips.SetFadeTime(&s_CountersHudEditorButton, 0.0f);
+		if(CountersHudEditorClicked && CountersCanOpenHudEditor)
+		{
+			SetActive(false);
+			GameClient()->m_HudEditor.Activate();
+		}
+		Ui()->DoLabel(&CountersTitleLabel, BcLocalize("Stats counter"), HeadlineFontSize, TEXTALIGN_ML);
+		CountersBlock.HSplitTop(MarginSmall, nullptr, &CountersBlock);
+		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclActivityHud, BcLocalize("Enable stats counter"), &g_Config.m_BclActivityHud, &CountersBlock, LineSize);
+		HudLayout::SetEnabled(HudLayout::MODULE_ACTIVITY_HUD, g_Config.m_BclActivityHud != 0);
+
+		if(CountersExpandedHeight > 0.5f)
+		{
+			CUIRect Visible;
+			CountersBlock.HSplitTop(CountersExpandedHeight, &Visible, &CountersBlock);
+			Ui()->ClipEnable(&Visible);
+			CUIRect Expanded = {Visible.x, Visible.y, Visible.w, CountersExpandedTarget};
+			Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclActivityHudShowJumps, BcLocalize("Show jumps"), &g_Config.m_BclActivityHudShowJumps, &Expanded, LineSize);
+			Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclActivityHudShowHits, BcLocalize("Show hits"), &g_Config.m_BclActivityHudShowHits, &Expanded, LineSize);
+			Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclActivityHudShowSaves, BcLocalize("Show saves"), &g_Config.m_BclActivityHudShowSaves, &Expanded, LineSize);
+			Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclActivityHudShowFreezes, BcLocalize("Show freezes"), &g_Config.m_BclActivityHudShowFreezes, &Expanded, LineSize);
+			Expanded.HSplitTop(MarginSmall, nullptr, &Expanded);
+			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclActivityHudTeam0, BcLocalize("Enable in team 0"), &g_Config.m_BclActivityHudTeam0, &Expanded, LineSize);
+			Ui()->ClipDisable();
+		}
+	}
+
+	RightColumn.HSplitTop(MarginBetweenViews, nullptr, &RightColumn);
+
 	const bool FastActionsExpanded = g_Config.m_BclFastActions != 0;
 	const float FastActionsHeaderHeight = LineSize + MarginSmall + LineSize;
 	const float FastActionsExpandedTargetHeight = MarginSmall + WheelPreviewHeight + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize * 0.8f + MarginSmall + LineSize;

@@ -8,6 +8,9 @@ namespace FontIcon
 
 	inline const char *const ARROW_ROTATE_LEFT = "\uF0E2";
 	inline const char *const ARROW_ROTATE_RIGHT = "\uF01E";
+	// bestclient-light
+	inline const char *const ARROW_UP = "\uF062";
+	// bestclient-light
 	inline const char *const ARROW_UP_RIGHT_FROM_SQUARE = "\uF08E";
 	inline const char *const ARROWS_LEFT_RIGHT = "\uF337";
 	inline const char *const ARROWS_ROTATE = "\uF021";
@@ -58,6 +61,7 @@ namespace FontIcon
 	inline const char *const FORWARD_STEP = "\uF051";
 	inline const char *const GEAR = "\uF013";
 	// bestclient-light
+	inline const char *const HAMMER = "\uF6E3";
 	inline const char *const HEADPHONES = "\uF025";
 	// bestclient-light
 	inline const char *const HEART = "\uF004";
@@ -90,6 +94,9 @@ namespace FontIcon
 	inline const char *const RIGHT_FROM_BRACKET = "\uF2F5";
 	inline const char *const RIGHT_TO_BRACKET = "\uF2F6";
 	inline const char *const SLASH = "\uF715";
+	// bestclient-light
+	inline const char *const SNOWFLAKE = "\uF2DC";
+	// bestclient-light
 	inline const char *const SORT_DOWN = "\uF0DD";
 	inline const char *const SORT_UP = "\uF0DE";
 	inline const char *const SQUARE_MINUS = "\uF146";

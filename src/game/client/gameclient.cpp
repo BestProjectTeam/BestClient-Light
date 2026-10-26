@@ -189,6 +189,7 @@ void CGameClient::OnConsoleInit()
 					      &m_ClientIndicator, // bestclient-light
 					      &m_Hud,
 					      &m_Minimap, // bestclient-light
+					      &m_ActivityHud, // bestclient-light
 					      &m_BestClientLight, // bestclient-light
 					      &m_BcConfigPresets, // bestclient-light
 					      &m_Translate, // bestclient-light
@@ -1605,6 +1606,9 @@ void CGameClient::OnStartRound()
 
 	// Restart automatic race demo recording
 	m_RaceDemo.OnReset();
+	// bestclient-light
+	m_ActivityHud.Reset();
+	// bestclient-light
 }
 
 void CGameClient::OnFlagGrab(int TeamId)
