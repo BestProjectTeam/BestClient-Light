@@ -255,9 +255,11 @@ public:
 	void FindUserDirectory()
 	{
 #if defined(CONF_PLATFORM_ANDROID)
-		// See InitAndroid in android_main.cpp for details about Android storage handling.
-		// The current working directory is set to the app specific external storage location
-		// on Android. The user data is stored within a folder "user" in the external storage.
+		// bestclient-light
+		// See InitAndroid in android_main.cpp. The working directory is the public
+		// BestClient folder when storage access is granted, otherwise the app
+		// specific external storage. User data is the "user" folder inside it.
+		// bestclient-light
 		str_copy(m_aUserdir, "user");
 #else
 		char aFallbackUserdir[IO_MAX_PATH_LENGTH];

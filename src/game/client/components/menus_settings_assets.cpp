@@ -1067,7 +1067,18 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 	};
 
 	MainView.HSplitTop(20.0f, &TabBar, &MainView);
-	const float TabWidth = TabBar.w / (float)NUMBER_OF_ASSETS_TABS;
+	// bestclient-light
+#if defined(CONF_PLATFORM_ANDROID)
+	if(s_CurCustomTab == ASSETS_TAB_AUDIO)
+		s_CurCustomTab = ASSETS_TAB_ENTITIES;
+	const int VisibleAssetTabs = NUMBER_OF_ASSETS_TABS - 1;
+	const int LastAssetTab = ASSETS_TAB_ARROW;
+#else
+	const int VisibleAssetTabs = NUMBER_OF_ASSETS_TABS;
+	const int LastAssetTab = NUMBER_OF_ASSETS_TABS - 1;
+#endif
+	const float TabWidth = TabBar.w / (float)VisibleAssetTabs;
+	// bestclient-light
 	static CButtonContainer s_aPageTabs[NUMBER_OF_ASSETS_TABS] = {};
 	const char *apTabNames[NUMBER_OF_ASSETS_TABS] = {
 		Localize("Entities"),
@@ -1082,9 +1093,15 @@ void CMenus::RenderSettingsAssets(CUIRect MainView)
 
 	for(int Tab = ASSETS_TAB_ENTITIES; Tab < NUMBER_OF_ASSETS_TABS; ++Tab)
 	{
+		// bestclient-light
+#if defined(CONF_PLATFORM_ANDROID)
+		if(Tab == ASSETS_TAB_AUDIO)
+			continue;
+#endif
+		// bestclient-light
 		CUIRect Button;
 		TabBar.VSplitLeft(TabWidth, &Button, &TabBar);
-		const int Corners = Tab == ASSETS_TAB_ENTITIES ? IGraphics::CORNER_L : (Tab == NUMBER_OF_ASSETS_TABS - 1 ? IGraphics::CORNER_R : IGraphics::CORNER_NONE);
+		const int Corners = Tab == ASSETS_TAB_ENTITIES ? IGraphics::CORNER_L : (Tab == LastAssetTab ? IGraphics::CORNER_R : IGraphics::CORNER_NONE);
 		if(DoButton_MenuTab(&s_aPageTabs[Tab], apTabNames[Tab], s_CurCustomTab == Tab, &Button, Corners, nullptr, nullptr, nullptr, nullptr, 4.0f))
 		{
 			s_CurCustomTab = Tab;

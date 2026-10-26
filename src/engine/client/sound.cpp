@@ -709,6 +709,8 @@ int CSound::LoadOpus(const char *pFilename, int StorageType)
 	// bestclient-light: fallback chain custom → default → original.
 	// Determine which pack folder to load from (if any).
 	const char *pEffectivePack = nullptr;
+	// bestclient-light
+#if !defined(CONF_PLATFORM_ANDROID)
 	{
 		char aPackDir[256];
 		auto FolderExists = [&](const char *pPack) {
@@ -723,6 +725,8 @@ int CSound::LoadOpus(const char *pFilename, int StorageType)
 		else if(str_comp(g_Config.m_SndPack, "default") != 0 && FolderExists("default"))
 			pEffectivePack = "default";
 	}
+#endif
+	// bestclient-light
 	if(pEffectivePack != nullptr)
 	{
 		auto TryLoad = [&](const char *pPath) {
@@ -798,6 +802,8 @@ int CSound::LoadWV(const char *pFilename, int StorageType)
 	// bestclient-light: fallback chain custom → default → original.
 	// Determine which pack folder to load from (if any).
 	const char *pEffectivePack = nullptr;
+	// bestclient-light
+#if !defined(CONF_PLATFORM_ANDROID)
 	{
 		char aPackDir[256];
 		auto FolderExists = [&](const char *pPack) {
@@ -812,6 +818,8 @@ int CSound::LoadWV(const char *pFilename, int StorageType)
 		else if(str_comp(g_Config.m_SndPack, "default") != 0 && FolderExists("default"))
 			pEffectivePack = "default";
 	}
+#endif
+	// bestclient-light
 	if(pEffectivePack != nullptr)
 	{
 		auto TryLoad = [&](const char *pPath) {

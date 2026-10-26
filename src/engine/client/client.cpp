@@ -5384,6 +5384,15 @@ int main(int argc, const char **argv)
 	pConsole->ParseArguments(argc - 1, &argv[1]);
 	pConsole->SetUnknownCommandCallback(IConsole::EmptyUnknownCommandCallback, nullptr);
 
+	// bestclient-light
+#if defined(CONF_PLATFORM_ANDROID)
+	g_Config.m_BclMusicPlayer = 0;
+	g_Config.m_BclMenuMediaBackground = 0;
+	g_Config.m_BclGameMediaBackground = 0;
+	str_copy(g_Config.m_SndPack, "default", sizeof(g_Config.m_SndPack));
+#endif
+	// bestclient-light
+
 	if(pSteam->GetConnectAddress())
 	{
 		pClient->HandleConnectAddress(pSteam->GetConnectAddress());
@@ -5739,6 +5748,13 @@ bool CClient::ViewFile(const char *pFilename)
 	char aFileLink[IO_MAX_PATH_LENGTH];
 #if defined(CONF_PLATFORM_IOS)
 	str_format(aFileLink, sizeof(aFileLink), "shareddocuments://%s%s", aWorkingDir, pFilename);
+#elif defined(CONF_PLATFORM_ANDROID)
+	// bestclient-light
+	str_format(aFileLink, sizeof(aFileLink), "%s%s", aWorkingDir, pFilename);
+	if(fs_is_dir(aFileLink))
+		return OpenAndroidFolder(aFileLink);
+	str_format(aFileLink, sizeof(aFileLink), "file://%s%s", aWorkingDir, pFilename);
+	// bestclient-light
 #else
 	str_format(aFileLink, sizeof(aFileLink), "file://%s%s", aWorkingDir, pFilename);
 #endif

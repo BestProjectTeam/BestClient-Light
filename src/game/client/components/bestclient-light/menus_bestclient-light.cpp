@@ -937,6 +937,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 		Ui()->ClipDisable();
 	}
 
+#if !defined(CONF_PLATFORM_ANDROID)
 	Column.HSplitTop(MarginBetweenViews, nullptr, &Column);
 
 	const float MediaBackgroundBlockHeight = LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize + MarginSmall + LineSize;
@@ -1102,6 +1103,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 		TextRender()->TextColor(ColorRGBA(0.55f, 1.0f, 0.55f, 1.0f));
 	Ui()->DoLabel(&Button, pMediaStatusText, 11.0f, TEXTALIGN_ML);
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
+#endif
 
 	Column.HSplitTop(MarginBetweenViews, nullptr, &Column);
 
@@ -1664,6 +1666,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 		Ui()->ClipDisable();
 	}
 
+#if !defined(CONF_PLATFORM_ANDROID)
 	RightColumn.HSplitTop(MarginBetweenViews, nullptr, &RightColumn);
 
 	const float MusicPlayerColorPickerLineSize = 25.0f;
@@ -1815,6 +1818,7 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 
 		Ui()->ClipDisable();
 	}
+#endif
 
 	RightColumn.HSplitTop(MarginBetweenViews, nullptr, &RightColumn);
 

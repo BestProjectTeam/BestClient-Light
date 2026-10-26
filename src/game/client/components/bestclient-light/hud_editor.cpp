@@ -576,7 +576,9 @@ void CHudEditor::CollectModuleVisuals(SModuleVisual *pOut, int &Count) const
 	AddModule(HudLayout::MODULE_LOCAL_TIME);
 	AddModule(HudLayout::MODULE_FROZEN_HUD);
 	AddModule(HudLayout::MODULE_NOTIFY_LAST);
+#if !defined(CONF_PLATFORM_ANDROID)
 	AddModule(HudLayout::MODULE_MUSIC_PLAYER);
+#endif
 	AddModule(HudLayout::MODULE_EDGE_INFO);
 	AddModule(HudLayout::MODULE_FINISH_PREDICTION);
 	AddModule(HudLayout::MODULE_MINIMAP);

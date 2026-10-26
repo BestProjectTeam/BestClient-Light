@@ -228,8 +228,8 @@ copy_project_files scripts/android/files/AndroidManifest.xml src/main/AndroidMan
 rm -rf src/main/res
 cp -R ../scripts/android/files/res src/main/
 mkdir -p src/main/res/mipmap
-cp ../other/icons/DDNet_256x256x32.png src/main/res/mipmap/ic_launcher.png
-cp ../other/icons/DDNet_256x256x32.png src/main/res/mipmap/ic_launcher_round.png
+cp ../data/bestclient-light/bc_icon.png src/main/res/mipmap/ic_launcher.png
+cp ../data/bestclient-light/bc_icon.png src/main/res/mipmap/ic_launcher_round.png
 chmod +x ./gradlew
 
 log_info "Copying libraries..."

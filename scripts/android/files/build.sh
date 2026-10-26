@@ -22,6 +22,11 @@ APK_BASENAME="$1"
 APK_PACKAGE_NAME="$2"
 APK_BUILD_TYPE="$3"
 
+if [[ "${APK_PACKAGE_NAME}" == "org.ddnet.client" ]]; then
+	APK_PACKAGE_NAME="org.bestclient.client"
+	printf "%s\n" "Package org.ddnet.client belongs to DDNet. Using org.bestclient.client."
+fi
+
 if [[ "${APK_BUILD_TYPE}" == "Debug" ]]; then
 	RELEASE_TYPE_NAME=debug
 elif [[ "${APK_BUILD_TYPE}" == "Release" ]]; then
@@ -54,11 +59,15 @@ done
 
 sed -i "s/org.ddnet.client/${APK_PACKAGE_NAME}/g" src/main/res/xml/shortcuts.xml
 
-sed -i "s/\"DDNet\"/\"${APK_BASENAME}\"/g" src/main/AndroidManifest.xml
 sed -i "s/org.ddnet.client/${APK_PACKAGE_NAME}/g" src/main/AndroidManifest.xml
 
 if [ "${APK_PACKAGE_FOLDER}" != "org/ddnet/client" ]; then
-	mv src/main/java/org/ddnet/client src/main/java/"${APK_PACKAGE_FOLDER}"
+	mkdir -p "src/main/java/$(dirname "${APK_PACKAGE_FOLDER}")"
+	if ! mv src/main/java/org/ddnet/client "src/main/java/${APK_PACKAGE_FOLDER}"; then
+		printf "${COLOR_RED}%s${COLOR_RESET}\n" "Failed to move Java sources to ${APK_PACKAGE_FOLDER}"
+		exit 1
+	fi
+	rmdir src/main/java/org/ddnet 2>/dev/null || true
 fi
 
 sed -i "s/org.ddnet.client/${APK_PACKAGE_NAME}/g" src/main/java/"${APK_PACKAGE_FOLDER}"/ClientActivity.java

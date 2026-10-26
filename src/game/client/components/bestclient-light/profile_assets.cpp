@@ -87,6 +87,7 @@ void BestClientLightApplyProfileAssets(CGameClient *pGameClient, const CProfile 
 		str_copy(g_Config.m_ClAssetArrow, Profile.m_AssetArrow);
 		pGameClient->LoadArrowAsset(Profile.m_AssetArrow);
 	}
+#if !defined(CONF_PLATFORM_ANDROID)
 	if((Flags & BC_PROFILE_ASSET_AUDIO) && Profile.m_AssetAudio[0] != '\0')
 	{
 		if(str_comp(g_Config.m_SndPack, Profile.m_AssetAudio) != 0)
@@ -95,6 +96,7 @@ void BestClientLightApplyProfileAssets(CGameClient *pGameClient, const CProfile 
 			pGameClient->m_Sounds.Clear();
 		}
 	}
+#endif
 }
 
 void BestClientLightFillProfileAssets(CProfile &Profile)
@@ -290,5 +292,10 @@ void BestClientLightDoProfileAssetsDropDown(CUi *pUi, CMenus *pMenus, CUIRect *p
 		BC_PROFILE_ASSET_ARROW,
 		BC_PROFILE_ASSET_AUDIO,
 	};
-	g_Config.m_BclProfileAssets = DoMultiSelectDropDown(pUi, pMenus, pRect, g_Config.m_BclProfileAssets, apLabels, s_aBits, BC_PROFILE_ASSET_COUNT, s_State);
+#if defined(CONF_PLATFORM_ANDROID)
+	const int AssetCount = BC_PROFILE_ASSET_COUNT - 1;
+#else
+	const int AssetCount = BC_PROFILE_ASSET_COUNT;
+#endif
+	g_Config.m_BclProfileAssets = DoMultiSelectDropDown(pUi, pMenus, pRect, g_Config.m_BclProfileAssets, apLabels, s_aBits, AssetCount, s_State);
 }
