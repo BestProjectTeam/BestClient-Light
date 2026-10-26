@@ -4,6 +4,7 @@
 
 #include <engine/graphics.h>
 #include <engine/shared/protocol.h>
+#include <engine/textrender.h>
 
 #include <game/client/component.h>
 #include <game/client/ui_rect.h>
@@ -68,11 +69,21 @@ class CMinimap : public CComponent
 		int m_Count = 0;
 	};
 
+	struct SMarkerLabel
+	{
+		STextContainerIndex m_Text;
+		char m_aText[64]{};
+		int m_PixelSize = -1;
+		float m_TextH = 0.0f;
+	};
+
 	std::vector<SActivityMarker> m_vActivity;
 	std::unordered_map<uint64_t, int> m_ActivityIndex;
+	std::unordered_map<uint64_t, SMarkerLabel> m_MarkerLabels;
 	std::vector<IGraphics::CFreeformItem> m_vMarkerQuads;
 	SActivityPlayer m_aActivity[MAX_CLIENTS]{};
 	bool m_ActivityOn = false;
+	bool m_MarkerLabelsOn = false;
 	bool m_MenuExpanded = true;
 	bool m_ZoomSliderDrag = false;
 	float m_ZoomSliderGrab = 0.0f;
@@ -108,6 +119,8 @@ class CMinimap : public CComponent
 	bool FullMapChromeHit(float HudX, float HudY, float MapX, float MapY, float MapW, float MapH);
 	bool HudCursor(float &X, float &Y) const;
 	void ClearActivity();
+	void ReleaseMarkerLabels();
+	void DropMarkerLabel(uint64_t Key);
 	void ReleaseIdle();
 	void NoteActivity(int Tile, int ClientId, int Team, int Kind, int Amount = 1);
 	void SampleActivity();

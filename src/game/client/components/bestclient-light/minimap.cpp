@@ -419,6 +419,7 @@ void CMinimap::OnMapLoad()
 
 void CMinimap::OnRelease()
 {
+	ReleaseMarkerLabels();
 	CloseLarge();
 }
 
@@ -537,8 +538,28 @@ void CMinimap::SmallMapRect(float HudW, float HudH, float &X, float &Y, float &S
 	Y = std::clamp(Y, 0.0f, std::max(0.0f, HudH - Size));
 }
 
+void CMinimap::ReleaseMarkerLabels()
+{
+	for(auto &Label : m_MarkerLabels)
+		TextRender()->DeleteTextContainer(Label.second.m_Text);
+	m_MarkerLabels.clear();
+	m_MarkerLabelsOn = false;
+}
+
+void CMinimap::DropMarkerLabel(uint64_t Key)
+{
+	const auto Found = m_MarkerLabels.find(Key);
+	if(Found == m_MarkerLabels.end())
+		return;
+	TextRender()->DeleteTextContainer(Found->second.m_Text);
+	m_MarkerLabels.erase(Found);
+	if(m_MarkerLabels.empty())
+		m_MarkerLabelsOn = false;
+}
+
 void CMinimap::ClearActivity()
 {
+	ReleaseMarkerLabels();
 	m_vActivity.clear();
 	m_ActivityIndex.clear();
 	for(SActivityPlayer &Player : m_aActivity)
@@ -562,6 +583,7 @@ void CMinimap::RemoveActivity(int Index)
 {
 	if(Index < 0 || Index >= (int)m_vActivity.size())
 		return;
+	DropMarkerLabel(ActivityKey(m_vActivity[Index].m_Tile, m_vActivity[Index].m_ClientId, m_vActivity[Index].m_Kind));
 	m_vActivity.erase(m_vActivity.begin() + Index);
 	RebuildActivityIndex();
 	m_MarkerHoverValid = false;
@@ -570,6 +592,7 @@ void CMinimap::RemoveActivity(int Index)
 
 void CMinimap::ClearMarkers()
 {
+	ReleaseMarkerLabels();
 	m_vActivity.clear();
 	m_ActivityIndex.clear();
 	m_MarkerHoverValid = false;
@@ -828,7 +851,13 @@ void CMinimap::DrawActivity(float X, float Y, float W, float H, vec2 WorldMin, f
 
 void CMinimap::RenderWorldMarkers()
 {
-	if(g_Config.m_BclMinimapMarksInGame == 0 || m_vActivity.empty() || m_KindsWidth <= 0)
+	if(g_Config.m_BclMinimapMarksInGame == 0)
+	{
+		if(m_MarkerLabelsOn)
+			ReleaseMarkerLabels();
+		return;
+	}
+	if(m_vActivity.empty() || m_KindsWidth <= 0)
 		return;
 
 	const int LocalId = GameClient()->m_Snap.m_LocalClientId;
@@ -904,6 +933,9 @@ void CMinimap::RenderWorldMarkers()
 	const ColorRGBA PreviousOutlineColor = TextRender()->GetTextOutlineColor();
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
 	TextRender()->TextOutlineColor(TextRender()->DefaultTextOutlineColor());
+	const float WorldH = std::max(ScreenB - ScreenT, 1.0f);
+	const int LabelPixels = round_truncate(FontSize * (float)Graphics()->ScreenHeight() / WorldH);
+	m_MarkerLabelsOn = true;
 	for(const SActivityMarker &Marker : m_vActivity)
 	{
 		if(!ActivityKindEnabled(Marker.m_Kind))
@@ -922,9 +954,24 @@ void CMinimap::RenderWorldMarkers()
 			str_format(aLabel, sizeof(aLabel), "%s x%d", pNick, Marker.m_Count);
 		else
 			str_format(aLabel, sizeof(aLabel), "x%d", Marker.m_Count);
-		const float TextH = TextRender()->TextBoundingBox(FontSize, aLabel).m_H;
-		const float Stack = (float)(Marker.m_ClientId % 4) * (TextH + 1.0f);
-		TextRender()->Text(CenterX + 13.0f, CenterY - TextH * 0.5f - Stack, FontSize, aLabel);
+		const uint64_t Key = ActivityKey(Marker.m_Tile, Marker.m_ClientId, Marker.m_Kind);
+		SMarkerLabel &Label = m_MarkerLabels[Key];
+		if(!Label.m_Text.Valid() || Label.m_PixelSize != LabelPixels || str_comp(Label.m_aText, aLabel) != 0)
+		{
+			CTextCursor Cursor;
+			Cursor.m_FontSize = FontSize;
+			if(Label.m_Text.Valid())
+				TextRender()->RecreateTextContainerSoft(Label.m_Text, &Cursor, aLabel);
+			else if(!TextRender()->CreateTextContainer(Label.m_Text, &Cursor, aLabel))
+				continue;
+			str_copy(Label.m_aText, aLabel);
+			Label.m_PixelSize = LabelPixels;
+			Label.m_TextH = Label.m_Text.Valid() ? TextRender()->GetBoundingBoxTextContainer(Label.m_Text).m_H : 0.0f;
+		}
+		if(!Label.m_Text.Valid())
+			continue;
+		const float Stack = (float)(Marker.m_ClientId % 4) * (Label.m_TextH + 1.0f);
+		TextRender()->RenderTextContainer(Label.m_Text, TextRender()->DefaultTextColor(), TextRender()->DefaultTextOutlineColor(), CenterX + 13.0f, CenterY - Label.m_TextH * 0.5f - Stack);
 	}
 	TextRender()->TextColor(PreviousTextColor);
 	TextRender()->TextOutlineColor(PreviousOutlineColor);
