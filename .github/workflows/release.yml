@@ -2,7 +2,7 @@ name: Release Assets
 
 # Flow:
 #   1. git tag build-1.5 && git push origin build-1.5
-#   2. Actions builds and creates a DRAFT release (github-actions[bot])
+#   2. Actions builds desktop packages and an Android APK, then creates a DRAFT release
 #   3. Draft is invisible to the in-game updater (/releases API skips drafts)
 #   4. Edit the draft: change tag to v2.2, set title/notes, then Publish
 #
@@ -182,10 +182,99 @@ jobs:
         name: ${{ matrix.artifact-name }}
         path: artifacts/${{ matrix.asset-name }}
 
+  build-android:
+    name: Build Release (android)
+    runs-on: ubuntu-24.04
+    env:
+      CARGO_HTTP_MULTIPLEXING: false
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Validate Gradle Wrapper
+      uses: gradle/actions/wrapper-validation@v5
+
+    - name: Prepare Android SDK
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install ninja-build openjdk-21-jdk openssl
+        curl -LO https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1-Linux-x86_64.tar.gz
+        mkdir -p /home/runner/cmake
+        tar --strip-components 1 -C /home/runner/cmake -xf cmake-3.22.1-Linux-x86_64.tar.gz
+        rustup default 1.92.0
+        cargo install cargo-ndk
+        rustup target add armv7-linux-androideabi
+        rustup target add i686-linux-android
+        rustup target add aarch64-linux-android
+        rustup target add x86_64-linux-android
+        scripts/android/download_android_sdk.sh /home/runner
+
+    - name: Install Vulkan SDK
+      uses: humbletim/install-vulkan-sdk@v1.2
+      with:
+        version: 1.3.296.0
+        cache: true
+
+    - name: Cache Rust dependencies
+      uses: Swatinem/rust-cache@v2
+      with:
+        cache-bin: false
+        workspaces: |
+          ./
+
+    - name: Build Android APK
+      env:
+        OFFICIAL_CODE: ${{ secrets.BESTCLIENT_OFFICIAL_CODE }}
+        ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      run: |
+        if [ -z "$OFFICIAL_CODE" ]; then
+          echo "secrets.BESTCLIENT_OFFICIAL_CODE is required for official release builds" >&2
+          exit 1
+        fi
+        python3 - <<'PY'
+        import os
+        from pathlib import Path
+        code = os.environ["OFFICIAL_CODE"]
+        if any(ch in code for ch in ('\0', '\n', '\r', '"', '\\')):
+            raise SystemExit("BESTCLIENT_LIGHT_OFFICIAL_CODE must not contain quotes, backslashes, or newlines")
+        path = Path("versioninfo.h")
+        path.write_text(f'#define BESTCLIENT_LIGHT_OFFICIAL_CODE "{code}"\n', encoding="utf-8")
+        PY
+        export ANDROID_HOME="/home/runner/Android/Sdk"
+        unset ANDROID_SDK_ROOT
+        export PATH=/home/runner/cmake/bin:$PATH
+        export TW_KEY_NAME=/home/runner/bestclient-light.jks
+        if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+          if [ -z "$ANDROID_KEYSTORE_PASSWORD" ] || [ -z "$ANDROID_KEY_ALIAS" ]; then
+            echo "ANDROID_KEYSTORE_PASSWORD and ANDROID_KEY_ALIAS are required when ANDROID_KEYSTORE_BASE64 is set" >&2
+            exit 1
+          fi
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$TW_KEY_NAME"
+          export TW_KEY_PW="$ANDROID_KEYSTORE_PASSWORD"
+          export TW_KEY_ALIAS="$ANDROID_KEY_ALIAS"
+        else
+          export TW_KEY_ALIAS=bestclient-light
+          export TW_KEY_PW="$(openssl rand -base64 32)"
+          keytool -genkey -v -keystore "$TW_KEY_NAME" -keyalg RSA -keysize 2048 -validity 10000 -alias "$TW_KEY_ALIAS" -storepass "$TW_KEY_PW" -dname "CN=BestClient Light, OU=BestClient, O=BestClient"
+        fi
+        scripts/android/cmake_android.sh all DDNet org.bestclient.client Release build-android
+        mkdir artifacts
+        mv build-android/DDNet.apk artifacts/bestclient-light-android.apk
+
+    - name: Upload release package
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-android
+        path: artifacts/bestclient-light-android.apk
+
   publish:
     name: Publish Release Assets
     needs:
       - build-cmake
+      - build-android
     runs-on: ubuntu-latest
     steps:
     - name: Download release packages
@@ -212,6 +301,7 @@ jobs:
           artifacts/bestclient-light-linux.tar.xz
           artifacts/bestclient-light-windows.zip
           artifacts/bestclient-light-macos.dmg
+          artifacts/bestclient-light-android.apk
 
     - name: Create or update release manually
       if: github.event_name == 'workflow_dispatch'
@@ -225,3 +315,4 @@ jobs:
           artifacts/bestclient-light-linux.tar.xz
           artifacts/bestclient-light-windows.zip
           artifacts/bestclient-light-macos.dmg
+          artifacts/bestclient-light-android.apk
