@@ -11,7 +11,7 @@
 
 ## About
 
-BestClient Light is the lightweight BestClient client. It is built to stay close to vanilla DDNet performance on the same machine, and it keeps its own tools on top of that smaller base.
+BestClient Light is the lightweight BestClient. It is built to stay close to vanilla DDNet performance on the same machine, and it keeps its own tools on top of that smaller base.
 
 Heavy systems from the full client are not part of this build. What remains is optional: a feature that is turned off does not keep its work on the frame.
 
@@ -36,12 +36,6 @@ Heavy systems from the full client are not part of this build. What remains is o
 <p align="center">
   <img src="docs/screenshots/tools_1.png" width="49%" alt="Tools: inputs, optimizer, minimap, stats counter" />
   <img src="docs/screenshots/tools_2.png" width="49%" alt="Tools: chat, browser, finish prediction, edge info, focus mode" />
-</p>
-
-### Info
-
-<p align="center">
-  <img src="docs/screenshots/info.png" width="70%" alt="Info: links, developers, config file" />
 </p>
 
 ## Highlight: Minimap
