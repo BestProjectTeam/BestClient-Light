@@ -130,7 +130,9 @@ jobs:
           cmake -E env CXXFLAGS="-include$OFFICIAL_HEADER" \
             cmake -S . -B build-release ${{ matrix.cmake-args }} \
             -DPNG_LIBRARY="${GITHUB_WORKSPACE}/ddnet-libs/png/mac/libfat/libpng16.16.dylib" \
-            -DPNG_INCLUDEDIR="${GITHUB_WORKSPACE}/ddnet-libs/png/include"
+            -DPNG_INCLUDEDIR="${GITHUB_WORKSPACE}/ddnet-libs/png/include" \
+            -DSDL2_LIBRARY="${GITHUB_WORKSPACE}/ddnet-libs/sdl/mac/libfat/SDL2.framework/Versions/A/SDL2" \
+            -DSDL2_INCLUDEDIR="${GITHUB_WORKSPACE}/ddnet-libs/sdl/mac/libfat/SDL2.framework/Versions/A/Headers"
         else
           cmake -E env CXXFLAGS="-include$OFFICIAL_HEADER" \
             cmake -S . -B build-release ${{ matrix.cmake-args }}
