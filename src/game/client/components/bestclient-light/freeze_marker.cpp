@@ -11,7 +11,6 @@
 
 #include <game/client/gameclient.h>
 #include <game/collision.h>
-#include <game/mapitems.h>
 
 namespace
 {
@@ -71,64 +70,22 @@ bool CFreezeMarker::KeepLastTouch(int ClientId) const
 	return ClientData.m_Paused || ClientData.m_Spec;
 }
 
-bool CFreezeMarker::IsFrozen(int ClientId) const
+bool CFreezeMarker::IsFrozen(int ClientId, int CurTick) const
 {
 	const CGameClient::CClientData &ClientData = GameClient()->m_aClients[ClientId];
-	return ClientData.m_FreezeEnd != 0 || ClientData.m_LiveFrozen;
+	return ClientData.m_DeepFrozen || ClientData.m_LiveFrozen || (ClientData.m_FreezeEnd != 0 && ClientData.m_FreezeEnd > CurTick);
 }
 
-bool CFreezeMarker::IsFreezeTile(int ClientId, int TileIndex) const
+int CFreezeMarker::TileAt(vec2 Pos) const
 {
 	const CCollision *pCollision = Collision();
-	const int Tile = pCollision->GetTileIndex(TileIndex);
-	const int Front = pCollision->GetFrontTileIndex(TileIndex);
-	if(Tile == TILE_FREEZE || Tile == TILE_DFREEZE || Tile == TILE_LFREEZE ||
-		Front == TILE_FREEZE || Front == TILE_DFREEZE || Front == TILE_LFREEZE)
-		return true;
-
-	const int SwitchType = pCollision->GetSwitchType(TileIndex);
-	if(SwitchType != TILE_FREEZE && SwitchType != TILE_DFREEZE && SwitchType != TILE_LFREEZE)
-		return false;
-
-	const int Number = pCollision->GetSwitchNumber(TileIndex);
-	if(Number <= 0)
-		return true;
-
-	const std::vector<SSwitchers> &vSwitchers = GameClient()->Switchers();
-	if(Number >= (int)vSwitchers.size())
-		return false;
-	const int Team = GameClient()->m_Teams.Team(ClientId);
-	if(Team < 0 || Team >= NUM_DDRACE_TEAMS)
-		return false;
-	return vSwitchers[Number].m_aStatus[Team];
-}
-
-int CFreezeMarker::FindFreezeTile(int ClientId, vec2 From, vec2 To) const
-{
-	const float Dist = distance(From, To);
-	if(Dist > 32.0f * 48.0f)
+	if(!pCollision || pCollision->GetWidth() <= 0 || pCollision->GetHeight() <= 0)
 		return -1;
-
-	const CCollision *pCollision = Collision();
-	const int Steps = (int)Dist + 1;
-	int LastIndex = -1;
-	for(int i = 0; i <= Steps; i++)
-	{
-		float Mix = 0.0f;
-		if(Dist > 0.0f)
-		{
-			Mix = i / Dist;
-			if(Mix > 1.0f)
-				Mix = 1.0f;
-		}
-		const int Index = pCollision->GetMapIndex(mix(From, To, Mix));
-		if(Index < 0 || Index == LastIndex)
-			continue;
-		LastIndex = Index;
-		if(IsFreezeTile(ClientId, Index))
-			return Index;
-	}
-	return -1;
+	const int Tx = (int)Pos.x / 32;
+	const int Ty = (int)Pos.y / 32;
+	if(Tx < 0 || Ty < 0 || Tx >= pCollision->GetWidth() || Ty >= pCollision->GetHeight())
+		return -1;
+	return Ty * pCollision->GetWidth() + Tx;
 }
 
 void CFreezeMarker::EnsureCountText(SMarker &Marker)
@@ -184,38 +141,19 @@ void CFreezeMarker::SampleTee(int Slot, int ClientId)
 		return;
 	}
 
-	const CCollision *pCollision = Collision();
-	const int Width = pCollision->GetWidth();
-	if(Width <= 0 || pCollision->GetHeight() <= 0)
-		return;
-
 	const CNetObj_Character &Snapped = GameClient()->m_aClients[ClientId].m_Snapped;
 	const vec2 Pos(Snapped.m_X, Snapped.m_Y);
-	const bool Frozen = IsFrozen(ClientId);
-	const bool StartedFreeze = Frozen && (!Last.m_Valid || !Last.m_Frozen);
-	if(StartedFreeze)
+	const int CurTick = Client()->GameTick(Slot);
+	const bool Frozen = IsFrozen(ClientId, CurTick);
+	if(Last.m_Valid && !Last.m_Frozen && Frozen)
 	{
-		int TileIndex = -1;
-		if(Last.m_HasOlder)
-			TileIndex = FindFreezeTile(ClientId, Last.m_OlderPos, Last.m_Pos);
-		if(TileIndex < 0 && Last.m_HasPos)
-			TileIndex = FindFreezeTile(ClientId, Last.m_Pos, Pos);
-		if(TileIndex < 0)
-		{
-			const int CurIndex = pCollision->GetMapIndex(Pos);
-			if(CurIndex >= 0 && IsFreezeTile(ClientId, CurIndex))
-				TileIndex = CurIndex;
-		}
+		const int TileIndex = TileAt(Pos);
 		if(TileIndex >= 0)
+		{
+			const int Width = Collision()->GetWidth();
 			NoteTouch(TileIndex % Width, TileIndex / Width, TileIndex);
+		}
 	}
-	if(Last.m_HasPos)
-	{
-		Last.m_OlderPos = Last.m_Pos;
-		Last.m_HasOlder = true;
-	}
-	Last.m_Pos = Pos;
-	Last.m_HasPos = true;
 	Last.m_Valid = true;
 	Last.m_Frozen = Frozen;
 	m_HasData = true;

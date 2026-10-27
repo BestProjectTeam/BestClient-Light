@@ -41,10 +41,6 @@ private:
 	{
 		bool m_Valid = false;
 		bool m_Frozen = false;
-		bool m_HasPos = false;
-		bool m_HasOlder = false;
-		vec2 m_Pos{};
-		vec2 m_OlderPos{};
 	};
 
 	std::vector<SMarker> m_vMarkers;
@@ -55,9 +51,8 @@ private:
 	void Clear();
 	void EnsureCountText(SMarker &Marker);
 	bool KeepLastTouch(int ClientId) const;
-	bool IsFrozen(int ClientId) const;
-	bool IsFreezeTile(int ClientId, int TileIndex) const;
-	int FindFreezeTile(int ClientId, vec2 From, vec2 To) const;
+	bool IsFrozen(int ClientId, int CurTick) const;
+	int TileAt(vec2 Pos) const;
 	void SampleTee(int Slot, int ClientId);
 	void NoteTouch(int TileX, int TileY, int TileIndex);
 };
