@@ -341,6 +341,8 @@ void CVoting::OnMessage(int MsgType, void *pRawMsg)
 void CVoting::Render(bool ForcePreview)
 {
 	// bestclient-light
+	if(!ForcePreview && g_Config.m_BclShowVotePercentage == 0)
+		BestClientLightReleaseVotePercentages(TextRender());
 	if(!ForcePreview && !HudLayout::IsEnabled(HudLayout::MODULE_VOTES))
 		return;
 	if(!ForcePreview && ((!g_Config.m_ClShowVotesAfterVoting && !GameClient()->m_Scoreboard.IsActive() && TakenChoice()) || !IsVoting()))

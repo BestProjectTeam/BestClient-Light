@@ -6,9 +6,11 @@
 #include <base/time.h>
 
 #include <engine/client.h>
+#include <engine/engine.h>
 #include <engine/http.h>
 #include <engine/serverbrowser.h>
 #include <engine/shared/config.h>
+#include <engine/shared/jobs.h>
 #include <engine/shared/json.h>
 
 #include <game/client/gameclient.h>
@@ -77,6 +79,58 @@ namespace
 	}
 }
 
+class CShowPointsParseJob : public IJob
+{
+	std::shared_ptr<IHttpRequest> m_pTask;
+	CShowPoints::EProvider m_Provider = CShowPoints::EProvider::None;
+
+public:
+	bool m_Success = false;
+	bool m_Failed = false;
+	int m_Points = 0;
+
+	CShowPointsParseJob(std::shared_ptr<IHttpRequest> pTask, CShowPoints::EProvider Provider) :
+		m_pTask(std::move(pTask)), m_Provider(Provider)
+	{
+		Abortable(true);
+	}
+
+	void Run() override
+	{
+		if(State() == STATE_ABORTED || !m_pTask)
+			return;
+		if(m_pTask->State() != EHttpState::DONE || m_pTask->StatusCode() != 200)
+		{
+			m_Failed = true;
+			return;
+		}
+		json_value *pRoot = m_pTask->ResultJson();
+		if(State() == STATE_ABORTED)
+		{
+			if(pRoot)
+				json_value_free(pRoot);
+			return;
+		}
+		int Points = 0;
+		if(pRoot && ParsePoints(m_Provider, pRoot, &Points))
+		{
+			if(State() == STATE_ABORTED)
+			{
+				json_value_free(pRoot);
+				return;
+			}
+			m_Success = true;
+			m_Points = Points;
+		}
+		else
+		{
+			m_Failed = true;
+		}
+		if(pRoot)
+			json_value_free(pRoot);
+	}
+};
+
 bool CShowPoints::Enabled() const
 {
 	return g_Config.m_BclShowPointsInTab != 0;
@@ -128,6 +182,16 @@ const char *CShowPoints::CurrentCommunityId() const
 }
 
 CShowPoints::EProvider CShowPoints::CurrentProvider() const
+{
+	const int Tick = Client()->GameTick(g_Config.m_ClDummy);
+	if(m_ProviderCacheTick == Tick)
+		return m_ProviderCache;
+	m_ProviderCache = ComputeCurrentProvider();
+	m_ProviderCacheTick = Tick;
+	return m_ProviderCache;
+}
+
+CShowPoints::EProvider CShowPoints::ComputeCurrentProvider() const
 {
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return EProvider::None;
@@ -258,11 +322,29 @@ void CShowPoints::ClearPending()
 {
 	for(SInFlight &InFlight : m_vInFlight)
 	{
+		if(InFlight.m_pParseJob)
+			InFlight.m_pParseJob->Abort();
 		if(InFlight.m_pTask)
 			InFlight.m_pTask->Abort();
 	}
 	m_vInFlight.clear();
 	m_Queue.clear();
+}
+
+void CShowPoints::PublishParse(const SInFlight &Job)
+{
+	SCacheEntry Entry;
+	Entry.m_FetchedAt = time_get();
+	if(Job.m_pParseJob && Job.m_pParseJob->m_Success)
+	{
+		Entry.m_HasPoints = true;
+		Entry.m_Points = Job.m_pParseJob->m_Points;
+	}
+	else
+	{
+		Entry.m_Failed = true;
+	}
+	m_aCache[ProviderIndex(Job.m_Provider)][Job.m_Name] = std::move(Entry);
 }
 
 void CShowPoints::OnReset()
@@ -317,40 +399,46 @@ void CShowPoints::StartRequest(const std::string &Name, EProvider Provider)
 
 void CShowPoints::ProcessInFlight()
 {
+	int Published = 0;
 	for(size_t i = 0; i < m_vInFlight.size();)
 	{
 		SInFlight &Job = m_vInFlight[i];
+		if(Job.m_pParseJob)
+		{
+			if(!Job.m_pParseJob->Done())
+			{
+				++i;
+				continue;
+			}
+			if(Job.m_pParseJob->State() == IJob::STATE_DONE)
+			{
+				if(Published >= MAX_CONCURRENT)
+					return;
+				PublishParse(Job);
+				++Published;
+			}
+			m_vInFlight.erase(m_vInFlight.begin() + i);
+			continue;
+		}
+
 		if(!Job.m_pTask || !Job.m_pTask->Done())
 		{
 			++i;
 			continue;
 		}
 
+		if(Job.m_pTask->State() == EHttpState::DONE)
+		{
+			Job.m_pParseJob = std::make_shared<CShowPointsParseJob>(Job.m_pTask, Job.m_Provider);
+			Engine()->AddJob(Job.m_pParseJob);
+			++i;
+			continue;
+		}
+
 		SCacheEntry Entry;
 		Entry.m_FetchedAt = time_get();
-
-		if(Job.m_pTask->State() == EHttpState::DONE && Job.m_pTask->StatusCode() == 200)
-		{
-			json_value *pRoot = Job.m_pTask->ResultJson();
-			int Points = 0;
-			if(pRoot && ParsePoints(Job.m_Provider, pRoot, &Points))
-			{
-				Entry.m_HasPoints = true;
-				Entry.m_Points = Points;
-			}
-			else
-			{
-				Entry.m_Failed = true;
-			}
-			if(pRoot)
-				json_value_free(pRoot);
-		}
-		else
-		{
-			Entry.m_Failed = true;
-		}
-
-		m_aCache[ProviderIndex(Job.m_Provider)][Job.m_Name] = Entry;
+		Entry.m_Failed = true;
+		m_aCache[ProviderIndex(Job.m_Provider)][Job.m_Name] = std::move(Entry);
 		m_vInFlight.erase(m_vInFlight.begin() + i);
 	}
 }
@@ -389,16 +477,26 @@ void CShowPoints::OnUpdate()
 {
 	if(!Enabled())
 	{
-		ClearPending();
+		if(m_WasEnabled)
+		{
+			ClearPending();
+			for(auto &Cache : m_aCache)
+				Cache.clear();
+			m_LastProvider = EProvider::None;
+			m_ProviderCacheTick = -1;
+		}
+		m_WasEnabled = false;
 		return;
 	}
+	m_WasEnabled = true;
 
 	if(m_vInFlight.empty() && !GameClient()->m_Scoreboard.IsActive())
 		return;
 
 	if(CurrentProvider() == EProvider::None)
 	{
-		ClearPending();
+		if(!m_vInFlight.empty() || !m_Queue.empty())
+			ClearPending();
 		m_LastProvider = EProvider::None;
 		return;
 	}

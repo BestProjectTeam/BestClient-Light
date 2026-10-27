@@ -105,6 +105,21 @@ void CHud::ResetHudContainers()
 		TextRender()->DeleteTextContainer(m_aPlayerPositionContainers[i]);
 		m_aPlayerPrevPosition[i] = -INFINITY;
 	}
+	// bestclient-light
+	TextRender()->DeleteTextContainer(m_CheckpointLabelContainer);
+	TextRender()->DeleteTextContainer(m_CheckpointValueContainer);
+	m_CheckpointFontSize = -1.0f;
+	m_CheckpointBuiltId = -100000;
+	m_CheckpointTextActive = false;
+	m_aCheckpointLabel[0] = '\0';
+	HudExtras::InvalidatePlayerBelowText(TextRender());
+	m_SpectatorEye.Reset(TextRender());
+	m_SpectatorCountText.Reset(TextRender());
+	for(CCachedText &Name : m_aSpectatorNames)
+		Name.Reset(TextRender());
+	m_SpectatorNameLines = -1;
+	m_SpectatorNamesActive = false;
+	// bestclient-light
 }
 
 void CHud::OnWindowResize()
@@ -1362,8 +1377,36 @@ void CHud::RenderNinjaBarPos(const float x, float y, const float Width, const fl
 }
 
 // bestclient-light
+void CHud::UpdateSpectatorCountTexts(const HudExtras::SSpectatorCountState &State, float Fontsize)
+{
+	TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
+	m_SpectatorEye.Update(TextRender(), FontIcon::EYE, Fontsize);
+	TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
+	m_SpectatorCountText.Update(TextRender(), State.m_aCountBuf, Fontsize);
+	const int NameLines = std::clamp(State.m_NumNameLines, 0, 6);
+	if(NameLines > 0)
+		m_SpectatorNamesActive = true;
+	for(int i = 0; i < NameLines; i++)
+		m_aSpectatorNames[i].Update(TextRender(), State.m_aaNameLines[i], Fontsize);
+	if(m_SpectatorNameLines != NameLines)
+	{
+		for(int i = NameLines; i < 6; i++)
+			m_aSpectatorNames[i].Reset(TextRender());
+		m_SpectatorNameLines = NameLines;
+		if(NameLines == 0)
+			m_SpectatorNamesActive = false;
+	}
+}
+
 void CHud::RenderSpectatorCount(bool ForcePreview)
 {
+	if(!ForcePreview && g_Config.m_BclShowSpectatorNames == 0 && m_SpectatorNamesActive)
+	{
+		for(CCachedText &Name : m_aSpectatorNames)
+			Name.Reset(TextRender());
+		m_SpectatorNameLines = 0;
+		m_SpectatorNamesActive = false;
+	}
 	if(!HudLayout::IsEnabled(HudLayout::MODULE_SPECTATOR_COUNT))
 		return;
 
@@ -1390,16 +1433,16 @@ void CHud::RenderSpectatorCount(bool ForcePreview)
 
 	float y = Rect.y + PaddingY;
 	const float X = Rect.x + PaddingX;
+	const ColorRGBA TextColor = TextRender()->DefaultTextColor();
 
-	TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
-	TextRender()->Text(X, y, Fontsize, FontIcon::EYE, -1.0f);
-	TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
-	TextRender()->Text(X + Fontsize + 3.0f * Scale, y, Fontsize, State.m_aCountBuf, -1.0f);
+	m_SpectatorEye.Render(TextRender(), vec2(X, y), TextColor);
+	m_SpectatorCountText.Render(TextRender(), vec2(X + Fontsize + 3.0f * Scale, y), TextColor);
 
 	y += LineHeight;
-	for(int i = 0; i < State.m_NumNameLines; i++)
+	const int NameLines = std::clamp(State.m_NumNameLines, 0, 6);
+	for(int i = 0; i < NameLines; i++)
 	{
-		TextRender()->Text(X, y, Fontsize, State.m_aaNameLines[i], -1.0f);
+		m_aSpectatorNames[i].Render(TextRender(), vec2(X, y), TextColor);
 		y += LineHeight;
 	}
 }
@@ -1419,9 +1462,11 @@ CUIRect CHud::GetSpectatorCountRect(bool ForcePreview)
 	const float LineHeight = Fontsize + 2.0f * Scale;
 	const float PaddingX = 2.0f * Scale;
 	const float PaddingY = 2.0f * Scale;
-	float MaxLineWidth = Fontsize + 3.0f * Scale + TextRender()->TextWidth(Fontsize, State.m_aCountBuf);
-	for(int i = 0; i < State.m_NumNameLines; i++)
-		MaxLineWidth = std::max(MaxLineWidth, TextRender()->TextWidth(Fontsize, State.m_aaNameLines[i]));
+	UpdateSpectatorCountTexts(State, Fontsize);
+	float MaxLineWidth = Fontsize + 3.0f * Scale + m_SpectatorCountText.Width();
+	const int NameLines = std::clamp(State.m_NumNameLines, 0, 6);
+	for(int i = 0; i < NameLines; i++)
+		MaxLineWidth = std::max(MaxLineWidth, m_aSpectatorNames[i].Width());
 
 	const float BoxHeight = PaddingY * 2.0f + LineHeight * (1 + State.m_NumNameLines);
 	const float BoxWidth = PaddingX * 2.0f + MaxLineWidth;
@@ -1832,16 +1877,47 @@ void CHud::RenderMovementInformation(bool ForcePreview)
 			return;
 		const int LiveCheckpoint = HudExtras::GetCheckpointId(GameClient());
 		const int Checkpoint = (ForcePreview && LiveCheckpoint < 0) ? 1 : LiveCheckpoint;
-		TextRender()->Text(LeftX, y, Fontsize, Localize("Checkpoint:"), -1.0f);
-		if(Checkpoint < 0)
+		const char *pLabel = Localize("Checkpoint:");
+		char aLabel[sizeof(m_aCheckpointLabel)];
+		str_copy(aLabel, pLabel);
+		const bool FontChanged = m_CheckpointFontSize != Fontsize;
+		if(FontChanged || !m_CheckpointLabelContainer.Valid() || str_comp(m_aCheckpointLabel, aLabel) != 0)
 		{
-			TextRender()->Text(RightX - TextRender()->TextWidth(Fontsize, "No Info", -1, -1.0f), y, Fontsize, "No Info", -1.0f);
+			CTextCursor Cursor;
+			Cursor.m_FontSize = Fontsize;
+			if(m_CheckpointLabelContainer.Valid())
+				TextRender()->RecreateTextContainerSoft(m_CheckpointLabelContainer, &Cursor, aLabel);
+			else
+				TextRender()->CreateTextContainer(m_CheckpointLabelContainer, &Cursor, aLabel);
+			str_copy(m_aCheckpointLabel, aLabel);
 		}
-		else
+		if(FontChanged || !m_CheckpointValueContainer.Valid() || m_CheckpointBuiltId != Checkpoint)
 		{
 			char aBuf[32];
-			str_format(aBuf, sizeof(aBuf), "%d", Checkpoint);
-			TextRender()->Text(RightX - TextRender()->TextWidth(Fontsize, aBuf), y, Fontsize, aBuf, -1.0f);
+			const char *pValue = "No Info";
+			if(Checkpoint >= 0)
+			{
+				str_format(aBuf, sizeof(aBuf), "%d", Checkpoint);
+				pValue = aBuf;
+			}
+			CTextCursor Cursor;
+			Cursor.m_FontSize = Fontsize;
+			if(m_CheckpointValueContainer.Valid())
+				TextRender()->RecreateTextContainerSoft(m_CheckpointValueContainer, &Cursor, pValue);
+			else
+				TextRender()->CreateTextContainer(m_CheckpointValueContainer, &Cursor, pValue);
+			m_CheckpointBuiltId = Checkpoint;
+		}
+		m_CheckpointFontSize = Fontsize;
+		m_CheckpointTextActive = true;
+		const ColorRGBA TextColor = TextRender()->DefaultTextColor();
+		const ColorRGBA OutlineColor = TextRender()->DefaultTextOutlineColor();
+		if(m_CheckpointLabelContainer.Valid())
+			TextRender()->RenderTextContainer(m_CheckpointLabelContainer, TextColor, OutlineColor, LeftX, y);
+		if(m_CheckpointValueContainer.Valid())
+		{
+			const float ValueW = TextRender()->GetBoundingBoxTextContainer(m_CheckpointValueContainer).m_W;
+			TextRender()->RenderTextContainer(m_CheckpointValueContainer, TextColor, OutlineColor, RightX - ValueW, y);
 		}
 		y += LineHeight;
 	};
@@ -2449,6 +2525,15 @@ void CHud::OnRender()
 			RenderRecord();
 	}
 	// bestclient-light
+	if(g_Config.m_BclShowCorrectCheckpoint == 0 && m_CheckpointTextActive)
+	{
+		TextRender()->DeleteTextContainer(m_CheckpointLabelContainer);
+		TextRender()->DeleteTextContainer(m_CheckpointValueContainer);
+		m_CheckpointFontSize = -1.0f;
+		m_CheckpointBuiltId = -100000;
+		m_CheckpointTextActive = false;
+		m_aCheckpointLabel[0] = '\0';
+	}
 	GameClient()->m_BestClientLight.RenderSpecMovedNotify();
 	HudExtras::RenderPlayerBelowIndicator(GameClient(), Graphics(), TextRender(), m_Width, m_Height, Client()->RenderFrameTime());
 	// bestclient-light

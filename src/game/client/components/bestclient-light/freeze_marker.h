@@ -5,6 +5,7 @@
 #include <base/vmath.h>
 
 #include <engine/client/enums.h>
+#include <engine/textrender.h>
 
 #include <game/client/component.h>
 
@@ -28,6 +29,12 @@ private:
 		int m_TileX = 0;
 		int m_TileY = 0;
 		int m_Count = 0;
+		int m_BuiltCount = -1;
+		int m_BuiltScreenW = -1;
+		int m_BuiltScreenH = -1;
+		float m_BuiltZoom = -1.0f;
+		float m_TextH = 0.0f;
+		STextContainerIndex m_TextContainer;
 	};
 
 	struct SLastTouch
@@ -46,6 +53,7 @@ private:
 	bool m_HasData = false;
 
 	void Clear();
+	void EnsureCountText(SMarker &Marker);
 	bool KeepLastTouch(int ClientId) const;
 	bool IsFrozen(int ClientId) const;
 	bool IsFreezeTile(int ClientId, int TileIndex) const;

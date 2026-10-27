@@ -95,17 +95,6 @@ void CEmoticon::OnRender()
 		return std::fmod(x + y, y);
 	};
 
-	// bestclient-light
-	const float WheelScale = std::clamp(g_Config.m_BclWheelScale / 100.0f, 0.5f, 1.0f);
-	const float s_InnerMouseLimitRadius = 40.0f * WheelScale;
-	const float s_InnerOuterMouseBoundaryRadius = 110.0f * WheelScale;
-	const float s_OuterMouseLimitRadius = 170.0f * WheelScale;
-	const float s_InnerItemRadius = 70.0f * WheelScale;
-	const float s_OuterItemRadius = 150.0f * WheelScale;
-	const float s_InnerCircleRadius = 100.0f * WheelScale;
-	const float s_OuterCircleRadius = 190.0f * WheelScale;
-	// bestclient-light
-
 	const float AnimationTime = (float)g_Config.m_TcAnimateWheelTime / 1000.0f;
 	const float ItemAnimationTime = AnimationTime / 2.0f;
 
@@ -158,6 +147,17 @@ void CEmoticon::OnRender()
 		m_Active = false;
 		m_WasActive = false;
 	}
+
+	// bestclient-light
+	const float WheelScale = std::clamp(g_Config.m_BclWheelScale / 100.0f, 0.5f, 1.0f);
+	const float s_InnerMouseLimitRadius = 40.0f * WheelScale;
+	const float s_InnerOuterMouseBoundaryRadius = 110.0f * WheelScale;
+	const float s_OuterMouseLimitRadius = 170.0f * WheelScale;
+	const float s_InnerItemRadius = 70.0f * WheelScale;
+	const float s_OuterItemRadius = 150.0f * WheelScale;
+	const float s_InnerCircleRadius = 100.0f * WheelScale;
+	const float s_OuterCircleRadius = 190.0f * WheelScale;
+	// bestclient-light
 
 	const CUIRect Screen = *Ui()->Screen();
 

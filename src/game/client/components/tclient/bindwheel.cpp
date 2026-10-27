@@ -169,16 +169,6 @@ void CBindWheel::OnRender()
 		return std::fmod(x + y, y);
 	};
 
-	// bestclient-light
-	const float WheelScale = std::clamp(g_Config.m_BclWheelScale / 100.0f, 0.5f, 1.0f);
-	const float s_InnerOuterMouseBoundaryRadius = 110.0f * WheelScale;
-	const float s_OuterMouseLimitRadius = 170.0f * WheelScale;
-	const float s_OuterItemRadius = 140.0f * WheelScale;
-	const float s_OuterCircleRadius = 190.0f * WheelScale;
-	const float s_FontSize = 12.0f * WheelScale;
-	const float s_FontSizeSelected = 18.0f * WheelScale;
-	// bestclient-light
-
 	const float AnimationTime = (float)g_Config.m_TcAnimateWheelTime / 1000.0f;
 	const float ItemAnimationTime = AnimationTime / 2.0f;
 
@@ -216,6 +206,16 @@ void CBindWheel::OnRender()
 			m_AnimationTime = AnimationTime;
 		m_WasActive = true;
 	}
+
+	// bestclient-light
+	const float WheelScale = std::clamp(g_Config.m_BclWheelScale / 100.0f, 0.5f, 1.0f);
+	const float s_InnerOuterMouseBoundaryRadius = 110.0f * WheelScale;
+	const float s_OuterMouseLimitRadius = 170.0f * WheelScale;
+	const float s_OuterItemRadius = 140.0f * WheelScale;
+	const float s_OuterCircleRadius = 190.0f * WheelScale;
+	const float s_FontSize = 12.0f * WheelScale;
+	const float s_FontSizeSelected = 18.0f * WheelScale;
+	// bestclient-light
 
 	const CUIRect Screen = *Ui()->Screen();
 

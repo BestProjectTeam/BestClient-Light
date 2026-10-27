@@ -10,7 +10,15 @@
 
 #include <game/client/component.h>
 #include <game/client/render.h>
+#include <game/client/ui.h> // bestclient-light
 #include <game/client/ui_rect.h> // bestclient-light
+
+// bestclient-light
+namespace HudExtras
+{
+class SSpectatorCountState;
+}
+// bestclient-light
 
 struct SScoreInfo
 {
@@ -91,7 +99,23 @@ class CHud : public CComponent
 	float m_PracticeLine1Width = -1.0f;
 	float m_PracticeLine2Width = -1.0f;
 	int m_LastMovementInfoTick = -1;
+	// bestclient-light
+	STextContainerIndex m_CheckpointLabelContainer;
+	STextContainerIndex m_CheckpointValueContainer;
+	float m_CheckpointFontSize = -1.0f;
+	int m_CheckpointBuiltId = -100000;
+	bool m_CheckpointTextActive = false;
+	char m_aCheckpointLabel[64] = {};
+	// bestclient-light
 	void RenderSpectatorCount(bool ForcePreview = false); // bestclient-light
+	// bestclient-light
+	CCachedText m_SpectatorEye;
+	CCachedText m_SpectatorCountText;
+	CCachedText m_aSpectatorNames[6];
+	int m_SpectatorNameLines = -1;
+	bool m_SpectatorNamesActive = false;
+	void UpdateSpectatorCountTexts(const HudExtras::SSpectatorCountState &State, float Fontsize);
+	// bestclient-light
 	void RenderDummyActions(bool ForcePreview = false); // bestclient-light
 	void RenderMovementInformation(bool ForcePreview = false); // bestclient-light
 

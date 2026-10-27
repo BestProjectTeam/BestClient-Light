@@ -3,6 +3,9 @@
 
 #include "ui_animations.h"
 
+#include <base/color.h>
+#include <base/str.h>
+
 #include <engine/client.h>
 #include <engine/graphics.h>
 #include <engine/shared/config.h>
@@ -64,15 +67,43 @@ int HudExtras::GetCheckpointId(CGameClient *pGameClient)
 	return Char.m_ExtendedData.m_TeleCheckpoint;
 }
 
+struct SPlayerBelowLabel
+{
+	float m_Phase = 0.0f;
+	bool m_WasEnabled = false;
+	STextContainerIndex m_Container;
+	float m_TextW = 0.0f;
+	float m_CanvasW = -1.0f;
+	float m_CanvasH = -1.0f;
+	char m_aText[128] = "";
+};
+
+SPlayerBelowLabel s_PlayerBelowLabel;
+
+void HudExtras::InvalidatePlayerBelowText(ITextRender *pTextRender)
+{
+	if(pTextRender)
+		pTextRender->DeleteTextContainer(s_PlayerBelowLabel.m_Container);
+	s_PlayerBelowLabel.m_TextW = 0.0f;
+	s_PlayerBelowLabel.m_CanvasW = -1.0f;
+	s_PlayerBelowLabel.m_CanvasH = -1.0f;
+	s_PlayerBelowLabel.m_aText[0] = '\0';
+}
+
 void HudExtras::RenderPlayerBelowIndicator(CGameClient *pGameClient, IGraphics *pGraphics, ITextRender *pTextRender, float Width, float Height, float Dt)
 {
-	static float s_Phase = 0.0f;
-
-	if(!pGameClient || !pGraphics || !pTextRender || !g_Config.m_BclShowhudDummyCoordIndicator)
+	const bool Enabled = pGameClient && pGraphics && pTextRender && g_Config.m_BclShowhudDummyCoordIndicator != 0;
+	if(!Enabled)
 	{
-		s_Phase = 0.0f;
+		if(s_PlayerBelowLabel.m_WasEnabled)
+		{
+			s_PlayerBelowLabel.m_Phase = 0.0f;
+			InvalidatePlayerBelowText(pTextRender);
+		}
+		s_PlayerBelowLabel.m_WasEnabled = false;
 		return;
 	}
+	s_PlayerBelowLabel.m_WasEnabled = true;
 
 	const int ClientId = pGameClient->m_Snap.m_SpecInfo.m_Active ? pGameClient->m_Snap.m_SpecInfo.m_SpectatorId : pGameClient->m_Snap.m_LocalClientId;
 	bool Active = false;
@@ -99,17 +130,33 @@ void HudExtras::RenderPlayerBelowIndicator(CGameClient *pGameClient, IGraphics *
 	}
 
 	constexpr float AnimDuration = 0.2f;
-	BCUiAnimations::UpdatePhase(s_Phase, Active ? 1.0f : 0.0f, Dt, AnimDuration);
+	BCUiAnimations::UpdatePhase(s_PlayerBelowLabel.m_Phase, Active ? 1.0f : 0.0f, Dt, AnimDuration);
 
-	if(s_Phase <= 0.001f)
+	if(s_PlayerBelowLabel.m_Phase <= 0.001f)
 		return;
 
-	const float Alpha = BCUiAnimations::EaseOutCubic(s_Phase);
+	const float Alpha = BCUiAnimations::EaseOutCubic(s_PlayerBelowLabel.m_Phase);
 	const float Slide = (1.0f - Alpha) * 10.0f;
 
 	const char *pText = Localize("you below \\/");
 	const float Fontsize = 8.0f;
-	const float TextWidth = pTextRender->TextWidth(Fontsize, pText);
+	char aText[sizeof(s_PlayerBelowLabel.m_aText)];
+	str_copy(aText, pText);
+	if(!s_PlayerBelowLabel.m_Container.Valid() || s_PlayerBelowLabel.m_CanvasW != Width || s_PlayerBelowLabel.m_CanvasH != Height || str_comp(s_PlayerBelowLabel.m_aText, aText) != 0)
+	{
+		CTextCursor Cursor;
+		Cursor.m_FontSize = Fontsize;
+		Cursor.SetPosition(vec2(0.0f, 0.0f));
+		pTextRender->DeleteTextContainer(s_PlayerBelowLabel.m_Container);
+		pTextRender->CreateOrAppendTextContainer(s_PlayerBelowLabel.m_Container, &Cursor, aText);
+		if(!s_PlayerBelowLabel.m_Container.Valid())
+			return;
+		s_PlayerBelowLabel.m_TextW = pTextRender->GetBoundingBoxTextContainer(s_PlayerBelowLabel.m_Container).m_W;
+		s_PlayerBelowLabel.m_CanvasW = Width;
+		s_PlayerBelowLabel.m_CanvasH = Height;
+		str_copy(s_PlayerBelowLabel.m_aText, aText);
+	}
+	const float TextWidth = s_PlayerBelowLabel.m_TextW;
 	const float PaddingX = 8.0f;
 	const float PaddingY = 4.0f;
 	const float BoxWidth = TextWidth + PaddingX * 2.0f;
@@ -120,10 +167,18 @@ void HudExtras::RenderPlayerBelowIndicator(CGameClient *pGameClient, IGraphics *
 
 	pGraphics->DrawRect(BoxX, BoxY, BoxWidth, BoxHeight, ColorRGBA(0.0f, 0.0f, 0.0f, 0.5f * Alpha), IGraphics::CORNER_ALL, 5.0f);
 
-	pTextRender->TextColor(0.2f, 1.0f, 0.2f, Alpha);
-	pTextRender->Text(BoxX + PaddingX, BoxY + PaddingY, Fontsize, pText, -1.0f);
-	pTextRender->TextColor(pTextRender->DefaultTextColor());
+	pTextRender->RenderTextContainer(s_PlayerBelowLabel.m_Container, ColorRGBA(0.2f, 1.0f, 0.2f, Alpha), pTextRender->DefaultTextOutlineColor(), BoxX + PaddingX, BoxY + PaddingY);
 }
+
+struct SSpectatorCountCache
+{
+	int m_Tick = -100000;
+	bool m_Valid = false;
+	bool m_Names = false;
+	HudExtras::SSpectatorCountState m_State;
+};
+
+SSpectatorCountCache s_SpectatorCountCache;
 
 bool HudExtras::GetSpectatorCountState(CGameClient *pGameClient, IClient *pClient, int &LastSpectatorCountTick, SSpectatorCountState &State, bool ForcePreview)
 {
@@ -145,6 +200,15 @@ bool HudExtras::GetSpectatorCountState(CGameClient *pGameClient, IClient *pClien
 	}
 	if(!g_Config.m_ClShowhudSpectatorCount)
 		return false;
+
+	const int Tick = pClient->GameTick(g_Config.m_ClDummy);
+	const bool ShowNames = g_Config.m_BclShowSpectatorNames != 0;
+	if(s_SpectatorCountCache.m_Valid && s_SpectatorCountCache.m_Names == ShowNames && Tick < s_SpectatorCountCache.m_Tick + pClient->GameTickSpeed())
+	{
+		State = s_SpectatorCountCache.m_State;
+		LastSpectatorCountTick = s_SpectatorCountCache.m_Tick;
+		return State.m_Count > 0;
+	}
 
 	int aSpectatorIds[MAX_CLIENTS];
 	bool aSpectatorAdded[MAX_CLIENTS] = {};
@@ -184,7 +248,7 @@ bool HudExtras::GetSpectatorCountState(CGameClient *pGameClient, IClient *pClien
 		}
 		Count = pSpectatorCount->m_NumSpectators;
 
-		if(pGameClient->m_Snap.m_NumSpectatorWatchers > 0)
+		if(ShowNames && pGameClient->m_Snap.m_NumSpectatorWatchers > 0)
 		{
 			for(int i = 0; i < MAX_CLIENTS; i++)
 			{
@@ -193,7 +257,7 @@ bool HudExtras::GetSpectatorCountState(CGameClient *pGameClient, IClient *pClien
 			}
 			HasExactSpectatorNames = true;
 		}
-		else
+		else if(ShowNames)
 		{
 			for(int i = 0; i < MAX_CLIENTS; i++)
 			{
@@ -214,13 +278,15 @@ bool HudExtras::GetSpectatorCountState(CGameClient *pGameClient, IClient *pClien
 
 	if(Count == 0)
 	{
-		LastSpectatorCountTick = pClient->GameTick(g_Config.m_ClDummy);
+		s_SpectatorCountCache.m_Tick = Tick;
+		s_SpectatorCountCache.m_Valid = true;
+		s_SpectatorCountCache.m_Names = ShowNames;
+		s_SpectatorCountCache.m_State = State;
+		LastSpectatorCountTick = Tick;
 		return false;
 	}
-	if(pClient->GameTick(g_Config.m_ClDummy) < LastSpectatorCountTick + pClient->GameTickSpeed())
-		return false;
 
-	if(g_Config.m_BclShowSpectatorNames && (HasExactSpectatorNames || HasReliableFallbackSpectatorNames) && NumSpectatorIds > 0)
+	if(ShowNames && (HasExactSpectatorNames || HasReliableFallbackSpectatorNames) && NumSpectatorIds > 0)
 	{
 		const int MaxVisibleNames = 5;
 		const int VisibleNames = std::min(NumSpectatorIds, MaxVisibleNames);
@@ -246,5 +312,10 @@ bool HudExtras::GetSpectatorCountState(CGameClient *pGameClient, IClient *pClien
 
 	State.m_Count = Count;
 	str_format(State.m_aCountBuf, sizeof(State.m_aCountBuf), "%d", Count);
+	s_SpectatorCountCache.m_Tick = Tick;
+	s_SpectatorCountCache.m_Valid = true;
+	s_SpectatorCountCache.m_Names = ShowNames;
+	s_SpectatorCountCache.m_State = State;
+	LastSpectatorCountTick = Tick;
 	return true;
 }

@@ -765,6 +765,24 @@ protected:
 	}
 
 public:
+	void Update(CGameClient &This, const CNamePlateData &Data) override
+	{
+		if(!Data.m_ShowTeeCoords)
+		{
+			Clear(This);
+			return;
+		}
+		CNamePlatePartText::Update(This, Data);
+	}
+	void Clear(CGameClient &This)
+	{
+		m_Visible = false;
+		if(!m_TextContainerIndex.Valid())
+			return;
+		m_X100 = -1;
+		m_FontSize = -INFINITY;
+		This.TextRender()->DeleteTextContainer(m_TextContainerIndex);
+	}
 	CNamePlatePartTeeCoord(CGameClient &This) :
 		CNamePlatePartText(This) {}
 };
@@ -808,6 +826,9 @@ private:
 	bool m_Inited = false;
 	bool m_InGame = false;
 	PartsVector m_vpParts;
+	// bestclient-light
+	CNamePlatePartTeeCoord *m_pTeeCoord = nullptr;
+	// bestclient-light
 	void RenderLine(CGameClient &This,
 		vec2 Pos, vec2 Size,
 		const PartsVector::iterator &Start, const PartsVector::iterator &End)
@@ -854,6 +875,7 @@ private:
 			AddPart<CNamePlatePartNewLine>(This);
 			// bestclient-light
 			AddPart<CNamePlatePartTeeCoord>(This);
+			m_pTeeCoord = static_cast<CNamePlatePartTeeCoord *>(m_vpParts.back().get());
 			AddPart<CNamePlatePartNewLine>(This);
 			AddPart<CNamePlatePartBClientVersion>(This);
 			AddPart<CNamePlatePartNewLine>(This);
@@ -880,6 +902,11 @@ private:
 public:
 	// bestclient-light
 	bool IsInited() const { return m_Inited; }
+	void ClearTeeCoord(CGameClient &This)
+	{
+		if(m_pTeeCoord != nullptr)
+			m_pTeeCoord->Clear(This);
+	}
 	// bestclient-light
 	CNamePlate() = default;
 	CNamePlate(CGameClient &This, const CNamePlateData &Data)
@@ -973,6 +1000,9 @@ public:
 	int m_aLastUpdateTick[MAX_CLIENTS];
 	float m_aLastAlpha[MAX_CLIENTS];
 	int m_InitedThisFrame = 0;
+	// bestclient-light
+	bool m_TeeCoordsWereEnabled = false;
+	// bestclient-light
 
 	CNamePlatesData()
 	{
@@ -1136,7 +1166,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 		Data.m_FontSizeBClientVersion = std::max(10.0f, Data.m_FontSize * 0.75f);
 	}
 	Data.m_ShowTeeCoords = g_Config.m_BclShowTeeCoords != 0;
-	Data.m_TeeCoordX100 = round_to_int(Position.x / 32.0f * 100.0f);
+	Data.m_TeeCoordX100 = Data.m_ShowTeeCoords ? round_to_int(Position.x / 32.0f * 100.0f) : 0;
 	Data.m_FontSizeTeeCoords = Data.m_FontSize;
 	// bestclient-light
 
@@ -1177,8 +1207,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	// bestclient-light
 	const bool NeedsUpdate = !NamePlate.IsInited() ||
 				 (CurTick != m_pData->m_aLastUpdateTick[ClientId]) ||
-				 (absolute(Alpha - m_pData->m_aLastAlpha[ClientId]) > 0.05f) ||
-				 g_Config.m_BclShowTeeCoords != 0;
+				 (absolute(Alpha - m_pData->m_aLastAlpha[ClientId]) > 0.05f);
 	// bestclient-light
 
 	if(NeedsUpdate)
@@ -1328,6 +1357,16 @@ float CNamePlates::GetNamePlateOffset(int ClientId) const
 void CNamePlates::OnRender()
 {
 	m_pData->m_InitedThisFrame = 0;
+
+	// bestclient-light
+	const bool ShowTeeCoords = g_Config.m_BclShowTeeCoords != 0;
+	if(m_pData->m_TeeCoordsWereEnabled && !ShowTeeCoords)
+	{
+		for(CNamePlate &NamePlate : m_pData->m_aNamePlates)
+			NamePlate.ClearTeeCoord(*GameClient());
+	}
+	m_pData->m_TeeCoordsWereEnabled = ShowTeeCoords;
+	// bestclient-light
 
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;

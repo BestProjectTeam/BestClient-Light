@@ -16,6 +16,7 @@ namespace HudExtras
 bool HasPlayerBelowOnSameX(CGameClient *pGameClient, int ClientId, const vec2 &PosBlocks);
 int GetCheckpointId(CGameClient *pGameClient);
 void RenderPlayerBelowIndicator(CGameClient *pGameClient, IGraphics *pGraphics, ITextRender *pTextRender, float Width, float Height, float Dt);
+void InvalidatePlayerBelowText(ITextRender *pTextRender);
 
 class SSpectatorCountState
 {

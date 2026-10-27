@@ -564,24 +564,85 @@ void BestClientLightRenderRealHitbox(IGraphics *pGraphics, CGameClient *pGameCli
 	pGraphics->QuadsEnd();
 }
 
+struct SVotePctText
+{
+	bool m_WasEnabled = false;
+	STextContainerIndex m_Yes;
+	STextContainerIndex m_No;
+	int m_YesPct = -1;
+	int m_NoPct = -1;
+	float m_Font = -1.0f;
+	float m_ScreenW = -1.0f;
+	float m_ScreenH = -1.0f;
+	float m_YesW = 0.0f;
+	float m_YesH = 0.0f;
+	float m_NoW = 0.0f;
+	float m_NoH = 0.0f;
+};
+
+SVotePctText s_VotePct;
+
+void BestClientLightReleaseVotePercentages(ITextRender *pTextRender)
+{
+	if(!s_VotePct.m_WasEnabled)
+		return;
+	if(pTextRender)
+	{
+		pTextRender->DeleteTextContainer(s_VotePct.m_Yes);
+		pTextRender->DeleteTextContainer(s_VotePct.m_No);
+	}
+	s_VotePct = {};
+}
+
 void BestClientLightRenderVotePercentages(CUi *pUi, ITextRender *pTextRender, const CUIRect &Bars, int Yes, int No, int Total)
 {
 	if(!pUi || !pTextRender || !g_Config.m_BclShowVotePercentage || Total <= 0)
+	{
+		BestClientLightReleaseVotePercentages(pTextRender);
 		return;
+	}
 
 	const int YesPct = (Yes * 100 + Total / 2) / Total;
 	const int NoPct = (No * 100 + Total / 2) / Total;
 	const float FontSize = Bars.h;
-	char aBuf[16];
+	const CUIRect *pScreen = pUi->Screen();
+	const float ScreenW = pScreen ? pScreen->w : 0.0f;
+	const float ScreenH = pScreen ? pScreen->h : 0.0f;
+	const bool FontOrScreenChanged = s_VotePct.m_Font != FontSize || s_VotePct.m_ScreenW != ScreenW || s_VotePct.m_ScreenH != ScreenH;
+	auto Ensure = [&](STextContainerIndex &Index, int Pct, int &Built, float &W, float &H) {
+		if(!FontOrScreenChanged && Built == Pct && Index.Valid())
+			return;
+		char aBuf[16];
+		str_format(aBuf, sizeof(aBuf), "%d%%", Pct);
+		CTextCursor Cursor;
+		Cursor.m_FontSize = FontSize;
+		if(Index.Valid() && !FontOrScreenChanged)
+			pTextRender->RecreateTextContainerSoft(Index, &Cursor, aBuf);
+		else
+		{
+			pTextRender->DeleteTextContainer(Index);
+			pTextRender->CreateTextContainer(Index, &Cursor, aBuf);
+		}
+		if(!Index.Valid())
+			return;
+		const STextBoundingBox Box = pTextRender->GetBoundingBoxTextContainer(Index);
+		W = Box.m_W;
+		H = Box.m_H;
+		Built = Pct;
+	};
+	Ensure(s_VotePct.m_Yes, YesPct, s_VotePct.m_YesPct, s_VotePct.m_YesW, s_VotePct.m_YesH);
+	Ensure(s_VotePct.m_No, NoPct, s_VotePct.m_NoPct, s_VotePct.m_NoW, s_VotePct.m_NoH);
+	s_VotePct.m_Font = FontSize;
+	s_VotePct.m_ScreenW = ScreenW;
+	s_VotePct.m_ScreenH = ScreenH;
+	s_VotePct.m_WasEnabled = true;
 
-	str_format(aBuf, sizeof(aBuf), "%d%%", YesPct);
-	pTextRender->TextColor(ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-	pUi->DoLabel(&Bars, aBuf, FontSize, TEXTALIGN_ML);
-
-	str_format(aBuf, sizeof(aBuf), "%d%%", NoPct);
-	pUi->DoLabel(&Bars, aBuf, FontSize, TEXTALIGN_MR);
-
-	pTextRender->TextColor(pTextRender->DefaultTextColor());
+	const ColorRGBA TextColor(1.0f, 1.0f, 1.0f, 1.0f);
+	const ColorRGBA OutlineColor = pTextRender->DefaultTextOutlineColor();
+	if(s_VotePct.m_Yes.Valid())
+		pTextRender->RenderTextContainer(s_VotePct.m_Yes, TextColor, OutlineColor, Bars.x, Bars.y + (Bars.h - s_VotePct.m_YesH) * 0.5f);
+	if(s_VotePct.m_No.Valid())
+		pTextRender->RenderTextContainer(s_VotePct.m_No, TextColor, OutlineColor, Bars.x + Bars.w - s_VotePct.m_NoW, Bars.y + (Bars.h - s_VotePct.m_NoH) * 0.5f);
 }
 
 void BestClientLightRenderIndicatorIcon(IGraphics *pGraphics, const CUIRect &Rect, bool Developer, bool Fake, bool Light, ColorRGBA Color)

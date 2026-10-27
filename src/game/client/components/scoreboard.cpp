@@ -132,6 +132,7 @@ void CScoreboard::ResetTexts()
 		Player.m_MuteMark.Reset(TextRender());
 		// bestclient-light
 		Player.m_FriendMark.Reset(TextRender());
+		Player.m_Points.Reset(TextRender());
 		// bestclient-light
 		Player.m_ReadyMark.Reset(TextRender());
 		Player.m_Clan.Reset(TextRender());
@@ -143,6 +144,11 @@ void CScoreboard::ResetTexts()
 	m_HeadlineName.Reset(TextRender());
 	m_HeadlineClan.Reset(TextRender());
 	m_HeadlinePing.Reset(TextRender());
+	// bestclient-light
+	m_HeadlinePoints.Reset(TextRender());
+	m_FriendMarkWasActive = false;
+	m_PointsTextWasActive = false;
+	// bestclient-light
 }
 
 void CScoreboard::OnShutdown()
@@ -601,8 +607,10 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 	// bestclient-light
 	if(ShowPoints)
 	{
+		m_PointsTextWasActive = true;
 		const char *pPointsLabel = Localize("Points");
-		TextRender()->Text(PointsOffset + (PointsLength - TextRender()->TextWidth(HeadlineFontsize, pPointsLabel)) / 2.0f, HeadlineY, HeadlineFontsize, pPointsLabel);
+		m_HeadlinePoints.Update(TextRender(), pPointsLabel, HeadlineFontsize);
+		m_HeadlinePoints.Render(TextRender(), vec2(PointsOffset + (PointsLength - m_HeadlinePoints.Width()) / 2.0f, HeadlineY), HeadlineColor);
 	}
 	// bestclient-light
 	m_HeadlineClan.Render(TextRender(), vec2(ClanOffset + (ClanLength - m_HeadlineClan.Width()) / 2.0f, HeadlineY), HeadlineColor);
@@ -615,6 +623,9 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 
 	char aBuf[64];
 	int MaxTeamSize = GameClient()->MaxTeamSize();
+	// bestclient-light
+	float FriendMarkSpaceWidth = -1.0f;
+	// bestclient-light
 
 	for(int RenderDead = 0; RenderDead < 2; RenderDead++)
 	{
@@ -904,13 +915,16 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 
 				float NameTextOffset = NameOffset;
 				// bestclient-light
-				if(pInfo->m_ClientId >= 0 && GameClient()->m_aClients[pInfo->m_ClientId].m_Friend && g_Config.m_BclScoreboardFriendMark)
+				if(g_Config.m_BclScoreboardFriendMark && pInfo->m_ClientId >= 0 && GameClient()->m_aClients[pInfo->m_ClientId].m_Friend)
 				{
+					m_FriendMarkWasActive = true;
 					TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
 					Player.m_FriendMark.Update(TextRender(), FontIcon::HEART, FontSize);
 					TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
 					Player.m_FriendMark.Render(TextRender(), vec2(NameTextOffset, TextY), ColorRGBA(1.0f, 0.0f, 0.0f, TextColor.a));
-					NameTextOffset += Player.m_FriendMark.Width() + TextRender()->TextWidth(FontSize, " ");
+					if(FriendMarkSpaceWidth < 0.0f)
+						FriendMarkSpaceWidth = TextRender()->TextWidth(FontSize, " ");
+					NameTextOffset += Player.m_FriendMark.Width() + FriendMarkSpaceWidth;
 				}
 				// bestclient-light
 				const bool Muted = pInfo->m_ClientId >= 0 && (GameClient()->m_aClients[pInfo->m_ClientId].m_Foe || GameClient()->m_aClients[pInfo->m_ClientId].m_ChatIgnore);
@@ -936,14 +950,16 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 			// bestclient-light
 			if(ShowPoints)
 			{
+				m_PointsTextWasActive = true;
 				GameClient()->m_ShowPoints.RequestPoints(ClientData.m_aName);
 				int Points = 0;
 				if(GameClient()->m_ShowPoints.TryGetPoints(ClientData.m_aName, &Points))
 				{
 					str_format(aBuf, sizeof(aBuf), "%d", Points);
-					TextRender()->TextColor(TextColor.r, TextColor.g, TextColor.b, TextColor.a * 0.75f);
-					TextRender()->Text(PointsOffset + (PointsLength - std::min(TextRender()->TextWidth(FontSize, aBuf), PointsLength)) / 2.0f, TextY, FontSize, aBuf);
-					TextRender()->TextColor(TextColor);
+					Player.m_Points.Update(TextRender(), aBuf, FontSize);
+					const float PointsW = std::min(Player.m_Points.Width(), PointsLength);
+					const ColorRGBA PointsColor = ColorRGBA(TextColor.r, TextColor.g, TextColor.b, TextColor.a * 0.75f);
+					Player.m_Points.Render(TextRender(), vec2(PointsOffset + (PointsLength - PointsW) / 2.0f, TextY), PointsColor);
 				}
 			}
 			// bestclient-light
@@ -1095,6 +1111,22 @@ void CScoreboard::OnRender()
 {
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;
+
+	// bestclient-light
+	if(g_Config.m_BclScoreboardFriendMark == 0 && m_FriendMarkWasActive)
+	{
+		for(CPlayerElement &Player : m_aPlayers)
+			Player.m_FriendMark.Reset(TextRender());
+		m_FriendMarkWasActive = false;
+	}
+	if(g_Config.m_BclShowPointsInTab == 0 && m_PointsTextWasActive)
+	{
+		for(CPlayerElement &Player : m_aPlayers)
+			Player.m_Points.Reset(TextRender());
+		m_HeadlinePoints.Reset(TextRender());
+		m_PointsTextWasActive = false;
+	}
+	// bestclient-light
 
 	if(!IsActive())
 	{

@@ -102,6 +102,7 @@ class CScoreboard : public CComponent
 		CCachedText m_MuteMark;
 		// bestclient-light
 		CCachedText m_FriendMark;
+		CCachedText m_Points;
 		// bestclient-light
 		CCachedText m_ReadyMark;
 		CCachedText m_Clan;
@@ -115,6 +116,11 @@ class CScoreboard : public CComponent
 	CCachedText m_HeadlineName;
 	CCachedText m_HeadlineClan;
 	CCachedText m_HeadlinePing;
+	// bestclient-light
+	CCachedText m_HeadlinePoints;
+	bool m_FriendMarkWasActive = false;
+	bool m_PointsTextWasActive = false;
+	// bestclient-light
 
 public:
 	CScoreboard();

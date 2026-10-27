@@ -42,6 +42,8 @@ void DrawDiamond(IGraphics *pGraphics, vec2 Center)
 
 void CFreezeMarker::Clear()
 {
+	for(SMarker &Marker : m_vMarkers)
+		TextRender()->DeleteTextContainer(Marker.m_TextContainer);
 	m_vMarkers.clear();
 	m_MarkerByTile.clear();
 	for(SLastTouch &Touch : m_aLastTouch)
@@ -127,6 +129,31 @@ int CFreezeMarker::FindFreezeTile(int ClientId, vec2 From, vec2 To) const
 			return Index;
 	}
 	return -1;
+}
+
+void CFreezeMarker::EnsureCountText(SMarker &Marker)
+{
+	const int ScreenW = Graphics()->ScreenWidth();
+	const int ScreenH = Graphics()->ScreenHeight();
+	const float Zoom = GameClient()->m_Camera.m_Zoom;
+	if(Marker.m_TextContainer.Valid() && Marker.m_BuiltCount == Marker.m_Count && Marker.m_BuiltScreenW == ScreenW && Marker.m_BuiltScreenH == ScreenH && Marker.m_BuiltZoom == Zoom)
+		return;
+
+	char aBuf[16];
+	str_format(aBuf, sizeof(aBuf), "x%d", Marker.m_Count);
+	CTextCursor Cursor;
+	Cursor.m_FontSize = 8.0f;
+	Cursor.SetPosition(vec2(0.0f, 0.0f));
+	TextRender()->DeleteTextContainer(Marker.m_TextContainer);
+	TextRender()->CreateOrAppendTextContainer(Marker.m_TextContainer, &Cursor, aBuf);
+	if(!Marker.m_TextContainer.Valid())
+		return;
+
+	Marker.m_TextH = TextRender()->GetBoundingBoxTextContainer(Marker.m_TextContainer).m_H;
+	Marker.m_BuiltCount = Marker.m_Count;
+	Marker.m_BuiltScreenW = ScreenW;
+	Marker.m_BuiltScreenH = ScreenH;
+	Marker.m_BuiltZoom = Zoom;
 }
 
 void CFreezeMarker::NoteTouch(int TileX, int TileY, int TileIndex)
@@ -250,24 +277,17 @@ void CFreezeMarker::OnRender()
 	Graphics()->QuadsEnd();
 	Graphics()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-	constexpr float FontSize = 8.0f;
-	const ColorRGBA PreviousTextColor = TextRender()->GetTextColor();
-	const ColorRGBA PreviousOutlineColor = TextRender()->GetTextOutlineColor();
-	TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
-	TextRender()->TextOutlineColor(0.0f, 0.0f, 0.0f, 0.45f);
-	for(const SMarker &Marker : m_vMarkers)
+	for(SMarker &Marker : m_vMarkers)
 	{
 		const float CenterX = Marker.m_TileX * 32.0f + 16.0f;
 		const float CenterY = Marker.m_TileY * 32.0f + 16.0f;
 		if(CenterX < ScreenL - 24.0f || CenterX > ScreenR + 48.0f || CenterY < ScreenT - 24.0f || CenterY > ScreenB + 24.0f)
 			continue;
-		char aBuf[16];
-		str_format(aBuf, sizeof(aBuf), "x%d", Marker.m_Count);
-		const float TextH = TextRender()->TextBoundingBox(FontSize, aBuf).m_H;
-		TextRender()->Text(CenterX + 13.0f, CenterY - TextH * 0.5f, FontSize, aBuf);
+		EnsureCountText(Marker);
+		if(!Marker.m_TextContainer.Valid())
+			continue;
+		TextRender()->RenderTextContainer(Marker.m_TextContainer, ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f), ColorRGBA(0.0f, 0.0f, 0.0f, 0.45f), CenterX + 13.0f, CenterY - Marker.m_TextH * 0.5f);
 	}
-	TextRender()->TextColor(PreviousTextColor);
-	TextRender()->TextOutlineColor(PreviousOutlineColor);
 
 	Graphics()->MapScreen(PreviousScreen);
 }

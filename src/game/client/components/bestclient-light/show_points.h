@@ -61,16 +61,22 @@ private:
 		std::string m_Name;
 		EProvider m_Provider = EProvider::None;
 		std::shared_ptr<IHttpRequest> m_pTask;
+		std::shared_ptr<class CShowPointsParseJob> m_pParseJob;
 	};
 
 	std::unordered_map<std::string, SCacheEntry> m_aCache[PROVIDER_COUNT];
 	std::deque<std::string> m_Queue;
 	std::vector<SInFlight> m_vInFlight;
 	EProvider m_LastProvider = EProvider::None;
+	bool m_WasEnabled = false;
+	mutable int m_ProviderCacheTick = -1;
+	mutable EProvider m_ProviderCache = EProvider::None;
 	mutable char m_aCommunityIdBuf[COMMUNITY_ID_LENGTH] = "";
 
 	static int ProviderIndex(EProvider Provider);
 	const char *CurrentCommunityId() const;
+	EProvider ComputeCurrentProvider() const;
+	void PublishParse(const SInFlight &Job);
 	bool IsCacheFresh(const SCacheEntry &Entry) const;
 	bool IsQueuedOrInFlight(const std::string &Name) const;
 	void ClearPending();
