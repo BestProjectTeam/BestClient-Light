@@ -119,6 +119,14 @@ void CHud::ResetHudContainers()
 		Name.Reset(TextRender());
 	m_SpectatorNameLines = -1;
 	m_SpectatorNamesActive = false;
+	m_GameTimerText.Reset(TextRender());
+	for(int i = 0; i < 2; i++)
+	{
+		m_aScoreValueText[i].Reset(TextRender());
+		m_aScoreNameText[i].Reset(TextRender());
+		m_aScoreRankText[i].Reset(TextRender());
+	}
+	m_ScoreSampleText.Reset(TextRender());
 	// bestclient-light
 }
 
@@ -221,13 +229,16 @@ void CHud::RenderGameTimer()
 		static float s_TextWidth000D = TextRender()->TextWidth(FontSize, "000d 00:00:00", -1, -1.0f);
 		float w = Time >= 3600 * 24 * 100 ? s_TextWidth000D : (Time >= 3600 * 24 * 10 ? s_TextWidth00D : (Time >= 3600 * 24 ? s_TextWidth0D : (Time >= 3600 ? s_TextWidthH : s_TextWidthM)));
 		// last 60 sec red, last 10 sec blink
+		ColorRGBA Color(1.0f, 1.0f, 1.0f, 1.0f);
 		if(GameClient()->m_Snap.m_pGameInfoObj->m_TimeLimit && Time <= 60 && (GameClient()->m_Snap.m_pGameInfoObj->m_WarmupTimer <= 0))
 		{
-			float Alpha = Time <= 10 && (2 * time() / time_freq()) % 2 ? 0.5f : 1.0f;
-			TextRender()->TextColor(1.0f, 0.25f, 0.25f, Alpha);
+			const float Alpha = Time <= 10 && (2 * time() / time_freq()) % 2 ? 0.5f : 1.0f;
+			Color = ColorRGBA(1.0f, 0.25f, 0.25f, Alpha);
 		}
-		TextRender()->Text(Half - w / 2, 2, FontSize, aBuf, -1.0f);
-		TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
+		// bestclient-light
+		m_GameTimerText.Update(TextRender(), aBuf, FontSize);
+		m_GameTimerText.Render(TextRender(), vec2(Half - w / 2.0f, 2.0f), Color);
+		// bestclient-light
 	}
 }
 
@@ -289,25 +300,27 @@ void CHud::RenderScoreHud(bool ForcePreview)
 		Graphics()->DrawRect(X, Y, W, H, Color.WithMultipliedAlpha(ModuleAlpha), Corners, Rounding);
 	};
 
-	auto RenderPlayerName = [&](float X, float Y, float Size, const char *pName) {
-		CTextCursor Cursor;
-		Cursor.SetPosition(vec2(X, Y));
-		Cursor.m_FontSize = Size;
-		TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
-		TextRender()->TextEx(&Cursor, pName);
-		TextRender()->TextColor(TextRender()->DefaultTextColor());
-	};
-
 	if(GameClient()->IsTeamPlay() && GameClient()->m_Snap.m_pGameDataObj)
 	{
 		char aScoreTeam[2][16];
 		str_format(aScoreTeam[TEAM_RED], sizeof(aScoreTeam[TEAM_RED]), "%d", GameClient()->m_Snap.m_pGameDataObj->m_TeamscoreRed);
 		str_format(aScoreTeam[TEAM_BLUE], sizeof(aScoreTeam[TEAM_BLUE]), "%d", GameClient()->m_Snap.m_pGameDataObj->m_TeamscoreBlue);
 
-		const float aScoreTextWidth[2] = {
-			TextRender()->TextWidth(ScoreTextSize, aScoreTeam[TEAM_RED], -1, -1.0f),
-			TextRender()->TextWidth(ScoreTextSize, aScoreTeam[TEAM_BLUE], -1, -1.0f)};
-		const float ScoreWidthMax = std::max({aScoreTextWidth[0], aScoreTextWidth[1], TextRender()->TextWidth(ScoreTextSize, "100", -1, -1.0f)});
+		// bestclient-light
+		float aScoreTextWidth[2];
+		for(int t = 0; t < 2; ++t)
+		{
+			if(aScoreTeam[t][0] == '\0')
+				aScoreTextWidth[t] = 0.0f;
+			else
+			{
+				m_aScoreValueText[t].Update(TextRender(), aScoreTeam[t], ScoreTextSize);
+				aScoreTextWidth[t] = m_aScoreValueText[t].Width();
+			}
+		}
+		m_ScoreSampleText.Update(TextRender(), "100", ScoreTextSize);
+		const float ScoreWidthMax = std::max({aScoreTextWidth[0], aScoreTextWidth[1], m_ScoreSampleText.Width()});
+		// bestclient-light
 		const float ImageSize = (GameClient()->m_Snap.m_pGameInfoObj->m_GameFlags & GAMEFLAG_FLAGS) ? 16.0f * Scale : Split;
 		const int aFlagCarrier[2] = {
 			GameClient()->m_Snap.m_pGameDataObj->m_FlagCarrierRed,
@@ -325,14 +338,12 @@ void CHud::RenderScoreHud(bool ForcePreview)
 				ScoreSingleBoxHeight,
 				t == TEAM_RED ? ColorRGBA(0.975f, 0.17f, 0.17f, 0.3f) : ColorRGBA(0.17f, 0.46f, 0.975f, 0.3f));
 
-			TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
-			TextRender()->Text(
-				RightEdge - ScoreWidthMax + (ScoreWidthMax - aScoreTextWidth[t]) / 2.0f - Split,
-				RowY + (ScoreSingleBoxHeight - ScoreTextSize) / 2.0f,
-				ScoreTextSize,
-				aScoreTeam[t],
-				-1.0f);
-			TextRender()->TextColor(TextRender()->DefaultTextColor());
+			// bestclient-light
+			if(aScoreTeam[t][0] != '\0')
+			{
+				m_aScoreValueText[t].Render(TextRender(), vec2(RightEdge - ScoreWidthMax + (ScoreWidthMax - aScoreTextWidth[t]) / 2.0f - Split, RowY + (ScoreSingleBoxHeight - ScoreTextSize) / 2.0f), ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			// bestclient-light
 
 			if(GameClient()->m_Snap.m_pGameInfoObj->m_GameFlags & GAMEFLAG_FLAGS)
 			{
@@ -350,12 +361,11 @@ void CHud::RenderScoreHud(bool ForcePreview)
 				{
 					const int Id = aFlagCarrier[t] % MAX_CLIENTS;
 					const char *pName = GameClient()->m_aClients[Id].m_aName;
-					const float NameWidth = TextRender()->TextWidth(NameTextSize, pName, -1, -1.0f);
-					RenderPlayerName(
-						std::min(RightEdge - NameWidth - 1.0f * Scale, BoxX),
-						RowY + 20.0f * Scale - 2.0f * Scale,
-						NameTextSize,
-						pName);
+					// bestclient-light
+					m_aScoreNameText[t].Update(TextRender(), pName, NameTextSize);
+					const float NameWidth = m_aScoreNameText[t].Width();
+					m_aScoreNameText[t].Render(TextRender(), vec2(std::min(RightEdge - NameWidth - 1.0f * Scale, BoxX), RowY + 20.0f * Scale - 2.0f * Scale), ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+					// bestclient-light
 
 					CTeeRenderInfo TeeInfo = GameClient()->m_aClients[Id].m_RenderInfo;
 					TeeInfo.m_Size = ScoreSingleBoxHeight;
@@ -428,10 +438,21 @@ void CHud::RenderScoreHud(bool ForcePreview)
 			aScore[t][0] = 0;
 	}
 
-	const float aScoreTextWidth[2] = {
-		TextRender()->TextWidth(ScoreTextSize, aScore[0], -1, -1.0f),
-		TextRender()->TextWidth(ScoreTextSize, aScore[1], -1, -1.0f)};
-	const float ScoreWidthMax = std::max({aScoreTextWidth[0], aScoreTextWidth[1], TextRender()->TextWidth(ScoreTextSize, "10", -1, -1.0f)});
+	// bestclient-light
+	float aScoreTextWidth[2];
+	for(int t = 0; t < 2; ++t)
+	{
+		if(aScore[t][0] == '\0')
+			aScoreTextWidth[t] = 0.0f;
+		else
+		{
+			m_aScoreValueText[t].Update(TextRender(), aScore[t], ScoreTextSize);
+			aScoreTextWidth[t] = m_aScoreValueText[t].Width();
+		}
+	}
+	m_ScoreSampleText.Update(TextRender(), "10", ScoreTextSize);
+	const float ScoreWidthMax = std::max({aScoreTextWidth[0], aScoreTextWidth[1], m_ScoreSampleText.Width()});
+	// bestclient-light
 	const float ImageSize = 16.0f * Scale;
 	const float PosSize = 16.0f * Scale;
 
@@ -447,14 +468,12 @@ void CHud::RenderScoreHud(bool ForcePreview)
 			ScoreSingleBoxHeight,
 			t == Local ? ColorRGBA(1.0f, 1.0f, 1.0f, 0.25f) : ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f));
 
-		TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
-		TextRender()->Text(
-			RightEdge - ScoreWidthMax + (ScoreWidthMax - aScoreTextWidth[t]) - Split,
-			RowY + (ScoreSingleBoxHeight - ScoreTextSize) / 2.0f,
-			ScoreTextSize,
-			aScore[t],
-			-1.0f);
-		TextRender()->TextColor(TextRender()->DefaultTextColor());
+		// bestclient-light
+		if(aScore[t][0] != '\0')
+		{
+			m_aScoreValueText[t].Render(TextRender(), vec2(RightEdge - ScoreWidthMax + (ScoreWidthMax - aScoreTextWidth[t]) - Split, RowY + (ScoreSingleBoxHeight - ScoreTextSize) / 2.0f), ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		// bestclient-light
 
 		if(apPlayerInfo[t])
 		{
@@ -462,12 +481,11 @@ void CHud::RenderScoreHud(bool ForcePreview)
 			if(Id >= 0 && Id < MAX_CLIENTS)
 			{
 				const char *pName = GameClient()->m_aClients[Id].m_aName;
-				const float NameWidth = TextRender()->TextWidth(NameTextSize, pName, -1, -1.0f);
-				RenderPlayerName(
-					std::min(RightEdge - NameWidth - 1.0f * Scale, BoxX),
-					RowY + 20.0f * Scale - 2.0f * Scale,
-					NameTextSize,
-					pName);
+				// bestclient-light
+				m_aScoreNameText[t].Update(TextRender(), pName, NameTextSize);
+				const float NameWidth = m_aScoreNameText[t].Width();
+				m_aScoreNameText[t].Render(TextRender(), vec2(std::min(RightEdge - NameWidth - 1.0f * Scale, BoxX), RowY + 20.0f * Scale - 2.0f * Scale), ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+				// bestclient-light
 
 				CTeeRenderInfo TeeInfo = GameClient()->m_aClients[Id].m_RenderInfo;
 				TeeInfo.m_Size = ScoreSingleBoxHeight;
@@ -481,14 +499,10 @@ void CHud::RenderScoreHud(bool ForcePreview)
 
 		char aBuf[16];
 		str_format(aBuf, sizeof(aBuf), "%d.", aPos[t]);
-		TextRender()->TextColor(1.0f, 1.0f, 1.0f, 1.0f);
-		TextRender()->Text(
-			RightEdge - ScoreWidthMax - ImageSize - Split - PosSize,
-			RowY + (ScoreSingleBoxHeight - RankTextSize) / 2.0f,
-			RankTextSize,
-			aBuf,
-			-1.0f);
-		TextRender()->TextColor(TextRender()->DefaultTextColor());
+		// bestclient-light
+		m_aScoreRankText[t].Update(TextRender(), aBuf, RankTextSize);
+		m_aScoreRankText[t].Render(TextRender(), vec2(RightEdge - ScoreWidthMax - ImageSize - Split - PosSize, RowY + (ScoreSingleBoxHeight - RankTextSize) / 2.0f), ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+		// bestclient-light
 	}
 }
 

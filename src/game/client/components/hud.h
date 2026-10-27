@@ -112,6 +112,11 @@ class CHud : public CComponent
 	CCachedText m_SpectatorEye;
 	CCachedText m_SpectatorCountText;
 	CCachedText m_aSpectatorNames[6];
+	CCachedText m_GameTimerText;
+	CCachedText m_aScoreValueText[2];
+	CCachedText m_aScoreNameText[2];
+	CCachedText m_aScoreRankText[2];
+	CCachedText m_ScoreSampleText;
 	int m_SpectatorNameLines = -1;
 	bool m_SpectatorNamesActive = false;
 	void UpdateSpectatorCountTexts(const HudExtras::SSpectatorCountState &State, float Fontsize);
