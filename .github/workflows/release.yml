@@ -138,7 +138,7 @@ jobs:
             -DOPUSFILE_LIBRARY="${GITHUB_WORKSPACE}/ddnet-libs/opus/mac/libfat/libopusfile.a" \
             -DOPUSFILE_INCLUDEDIR="${GITHUB_WORKSPACE}/ddnet-libs/opus/include" \
             -DOPUS_LIBRARY="${GITHUB_WORKSPACE}/ddnet-libs/opus/mac/libfat/libopus.a" \
-            -DOPUS_INCLUDEDIR="${GITHUB_WORKSPACE}/ddnet-libs/opus/include" \
+            -DOPUS_INCLUDEDIR="${GITHUB_WORKSPACE}/ddnet-libs/opus/include/opus" \
             -DOGG_LIBRARY="${GITHUB_WORKSPACE}/ddnet-libs/opus/mac/libfat/libogg.a" \
             -DOGG_INCLUDEDIR="${GITHUB_WORKSPACE}/ddnet-libs/opus/include"
         else
