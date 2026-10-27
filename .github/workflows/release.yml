@@ -209,7 +209,7 @@ jobs:
         rustup target add i686-linux-android
         rustup target add aarch64-linux-android
         rustup target add x86_64-linux-android
-        scripts/android/download_android_sdk.sh /home/runner
+        bash scripts/android/download_android_sdk.sh /home/runner
 
     - name: Install Vulkan SDK
       uses: humbletim/install-vulkan-sdk@v1.2
@@ -260,7 +260,7 @@ jobs:
           export TW_KEY_PW="$(openssl rand -base64 32)"
           keytool -genkey -v -keystore "$TW_KEY_NAME" -keyalg RSA -keysize 2048 -validity 10000 -alias "$TW_KEY_ALIAS" -storepass "$TW_KEY_PW" -dname "CN=BestClient Light, OU=BestClient, O=BestClient"
         fi
-        scripts/android/cmake_android.sh all DDNet org.bestclient.client Release build-android
+        bash scripts/android/cmake_android.sh all DDNet org.bestclient.client Release build-android
         mkdir artifacts
         mv build-android/DDNet.apk artifacts/bestclient-light-android.apk
 
