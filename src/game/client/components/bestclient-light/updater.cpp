@@ -14,6 +14,7 @@
 #include <engine/shared/json.h>
 #include <engine/storage.h>
 
+#include <game/client/components/bestclient-light/subsystem_runtime.h>
 #include <game/client/components/bestclient-light/version.h>
 #include <game/client/gameclient.h>
 #include <game/version.h>
@@ -528,7 +529,7 @@ void CUpdater::ApplyUpdateAndRestart()
 
 void CUpdater::Update()
 {
-	if(g_Config.m_BclAutoUpdate != 0)
+	if(g_Config.m_BclAutoUpdate != 0 && CSubsystemTicker::ShouldRunPeriodic(time_get(), m_LastAutoActionTick, time_freq() / 4))
 	{
 		const EUpdaterState State = GetCurrentState();
 		if(State == IUpdater::VERSION_AVAILABLE)

@@ -35,9 +35,11 @@ class CBestClientLight : public CComponent
 	int m_aAutoTeamLockLastTeam[NUM_DUMMIES] = {TEAM_FLOCK, TEAM_FLOCK};
 	int64_t m_aAutoTeamLockDeadlineTick[NUM_DUMMIES] = {};
 	bool m_aAutoTeamLockPending[NUM_DUMMIES] = {};
+	bool m_AutoTeamLockLive = false;
 	int m_SpecMovedActiveTick = -1;
 	int m_SpecMovedLastTick = -1;
 	float m_SpecMovedNotifyTime = -999.0f;
+	bool m_SpecMovedLive = false;
 	bool m_SavesNotifySchedule = false;
 	bool m_SavesNotifyLive = false;
 	int m_SavesNotifyGeneration = 0;

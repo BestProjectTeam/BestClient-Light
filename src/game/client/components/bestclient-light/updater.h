@@ -33,6 +33,7 @@ class CUpdater : public IUpdater
 	std::shared_ptr<IHttpRequest> m_pCurrentTask;
 	ETaskKind m_TaskKind = ETaskKind::NONE;
 	bool m_AutoCheckPending = false;
+	int64_t m_LastAutoActionTick = 0;
 
 	char m_aLatestVersion[64];
 	char m_aArchiveName[128];

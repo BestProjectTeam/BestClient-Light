@@ -3146,6 +3146,21 @@ void CGameClient::OnPredict()
 	int FinalTickSelf = FinalTickRegular + FastInputTicks; // the final tick for just our local tee
 	int FinalTickOthers = FinalTickRegular + FastInputTicksOthers; // bestclient-light
 
+	// bestclient-light
+	const bool EgoTiles = g_Config.m_TcEgoTilesAntiLag != 0;
+	int EgoRoundStartTick = 0;
+	int EgoTickSpeed = 0;
+	if(EgoTiles)
+	{
+		if(m_Snap.m_pGameInfoObj)
+			EgoRoundStartTick = m_Snap.m_pGameInfoObj->m_RoundStartTick;
+		EgoTickSpeed = Client()->GameTickSpeed();
+		m_PredictedWorld.m_pEgoTilesPrediction = &m_EgoTilesPrediction;
+	}
+	else if(m_PredictedWorld.m_pEgoTilesPrediction)
+		m_PredictedWorld.m_pEgoTilesPrediction = nullptr;
+	// bestclient-light
+
 	int LocalTee = g_Config.m_ClDummy ^ m_IsDummySwapping;
 	int DummyTee = LocalTee ^ 1;
 
@@ -3227,11 +3242,8 @@ void CGameClient::OnPredict()
 		ApplyPreInputs(Tick, false, m_PredictedWorld);
 
 		// bestclient-light
-		int RoundStartTick = 0;
-		if(m_Snap.m_pGameInfoObj)
-			RoundStartTick = m_Snap.m_pGameInfoObj->m_RoundStartTick;
-		m_EgoTilesPrediction.UpdateForTick(Tick, RoundStartTick, Client()->GameTickSpeed());
-		m_PredictedWorld.m_pEgoTilesPrediction = &m_EgoTilesPrediction;
+		if(EgoTiles)
+			m_EgoTilesPrediction.UpdateForTick(Tick, EgoRoundStartTick, EgoTickSpeed);
 		// bestclient-light
 
 		m_PredictedWorld.Tick();
@@ -3343,7 +3355,10 @@ void CGameClient::OnPredict()
 	{
 		m_ExtraPredictedWorld.CopyWorldClean(&m_PredictedWorld);
 		// bestclient-light
-		m_ExtraPredictedWorld.m_pEgoTilesPrediction = &m_EgoTilesPrediction;
+		if(EgoTiles)
+			m_ExtraPredictedWorld.m_pEgoTilesPrediction = &m_EgoTilesPrediction;
+		else if(m_ExtraPredictedWorld.m_pEgoTilesPrediction)
+			m_ExtraPredictedWorld.m_pEgoTilesPrediction = nullptr;
 		// bestclient-light
 
 		// Remove other tees to reduce lag and because they aren't really important in this case
@@ -3497,7 +3512,10 @@ void CGameClient::OnPredict()
 			pSmoothDummyChar->OnPredictedInput(pDummyInputData);
 		ApplyPreInputs(SmoothTick, false, m_PredSmoothingWorld);
 		// bestclient-light
-		m_PredSmoothingWorld.m_pEgoTilesPrediction = &m_EgoTilesPrediction;
+		if(EgoTiles)
+			m_PredSmoothingWorld.m_pEgoTilesPrediction = &m_EgoTilesPrediction;
+		else if(m_PredSmoothingWorld.m_pEgoTilesPrediction)
+			m_PredSmoothingWorld.m_pEgoTilesPrediction = nullptr;
 		// bestclient-light
 		m_PredSmoothingWorld.Tick();
 

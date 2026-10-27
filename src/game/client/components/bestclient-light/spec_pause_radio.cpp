@@ -160,6 +160,13 @@ void CSpecPauseRadio::SyncSpectateBinds(bool EnableBetterSpectate)
 
 void CSpecPauseRadio::OnRender()
 {
+	if(!g_Config.m_BclBetterSpectate)
+	{
+		if(m_Active || m_WasActive)
+			OnReset();
+		return;
+	}
+
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;
 
@@ -264,6 +271,11 @@ void CSpecPauseRadio::ConOpenRadio(IConsole::IResult *pResult, void *pUserData)
 	CSpecPauseRadio *pSelf = static_cast<CSpecPauseRadio *>(pUserData);
 	if(pSelf->Client()->State() == IClient::STATE_DEMOPLAYBACK)
 		return;
+	if(!g_Config.m_BclBetterSpectate)
+	{
+		pSelf->OnReset();
+		return;
+	}
 
 	const bool Open = pResult->GetInteger(0) != 0;
 	if(!Open)

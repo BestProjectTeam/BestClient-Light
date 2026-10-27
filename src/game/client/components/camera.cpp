@@ -336,14 +336,16 @@ void CCamera::OnRender()
 		else
 		{
 			m_Center = TargetCenter;
-			CCameraExtras::ResetCinematic(m_CinematicCameraSmoothing);
+			if(m_CinematicCameraSmoothing)
+				CCameraExtras::ResetCinematic(m_CinematicCameraSmoothing);
 		}
 		// bestclient-light
 	}
 	else
 	{
 		// bestclient-light
-		CCameraExtras::ResetCinematic(m_CinematicCameraSmoothing);
+		if(m_CinematicCameraSmoothing)
+			CCameraExtras::ResetCinematic(m_CinematicCameraSmoothing);
 		// bestclient-light
 		if(m_CamType != CAMTYPE_PLAYER)
 		{

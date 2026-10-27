@@ -32,6 +32,7 @@ public:
 	int Sizeof() const override { return sizeof(*this); }
 
 	void OnMapLoad() override;
+	void OnUpdate() override;
 	void OnStateChange(int NewState, int OldState) override;
 
 	void Reset();

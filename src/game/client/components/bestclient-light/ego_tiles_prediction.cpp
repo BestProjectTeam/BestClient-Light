@@ -96,7 +96,24 @@ void CEgoTilesPrediction::OnStateChange(int NewState, int OldState)
 
 void CEgoTilesPrediction::OnMapLoad()
 {
+	if(!g_Config.m_TcEgoTilesAntiLag)
+	{
+		Reset();
+		return;
+	}
 	LoadQuads();
+}
+
+void CEgoTilesPrediction::OnUpdate()
+{
+	if(!g_Config.m_TcEgoTilesAntiLag)
+	{
+		if(m_pMap != nullptr || !m_vQuads.empty())
+			Reset();
+		return;
+	}
+	if(m_pMap == nullptr && Client()->State() == IClient::STATE_ONLINE)
+		LoadQuads();
 }
 
 void CEgoTilesPrediction::LoadQuads()

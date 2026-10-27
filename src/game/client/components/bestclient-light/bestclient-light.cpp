@@ -394,9 +394,11 @@ void CBestClientLight::OnReset()
 		m_aAutoTeamLockDeadlineTick[Dummy] = 0;
 		m_aAutoTeamLockPending[Dummy] = false;
 	}
+	m_AutoTeamLockLive = false;
 	m_SpecMovedActiveTick = -1;
 	m_SpecMovedLastTick = -1;
 	m_SpecMovedNotifyTime = -999.0f;
+	m_SpecMovedLive = false;
 	if(!m_SavesNotifySchedule)
 	{
 		m_SavesNotifyDeadline = 0;
@@ -435,6 +437,22 @@ void CBestClientLight::OnClientNameChanged(int ClientId, const char *pNewName, c
 
 void CBestClientLight::UpdateAutoTeamLock()
 {
+	if(!g_Config.m_BclAutoTeamLock)
+	{
+		if(m_AutoTeamLockLive)
+		{
+			for(int Dummy = 0; Dummy < NUM_DUMMIES; ++Dummy)
+			{
+				m_aAutoTeamLockLastTeam[Dummy] = TEAM_FLOCK;
+				m_aAutoTeamLockDeadlineTick[Dummy] = 0;
+				m_aAutoTeamLockPending[Dummy] = false;
+			}
+			m_AutoTeamLockLive = false;
+		}
+		return;
+	}
+	m_AutoTeamLockLive = true;
+
 	if(Client()->State() != IClient::STATE_ONLINE)
 	{
 		for(int Dummy = 0; Dummy < NUM_DUMMIES; ++Dummy)
@@ -460,14 +478,6 @@ void CBestClientLight::UpdateAutoTeamLock()
 	const bool TeamCanBeLocked = Team > TEAM_FLOCK && Team < TEAM_SUPER;
 	const bool LastTeamCanBeLocked = m_aAutoTeamLockLastTeam[Dummy] > TEAM_FLOCK && m_aAutoTeamLockLastTeam[Dummy] < TEAM_SUPER;
 
-	if(!g_Config.m_BclAutoTeamLock)
-	{
-		m_aAutoTeamLockLastTeam[Dummy] = Team;
-		m_aAutoTeamLockDeadlineTick[Dummy] = 0;
-		m_aAutoTeamLockPending[Dummy] = false;
-		return;
-	}
-
 	if(TeamCanBeLocked && (!LastTeamCanBeLocked || Team != m_aAutoTeamLockLastTeam[Dummy]))
 	{
 		const int DelayTicks = g_Config.m_BclAutoTeamLockDelay * Client()->GameTickSpeed();
@@ -491,6 +501,19 @@ void CBestClientLight::UpdateAutoTeamLock()
 
 void CBestClientLight::UpdateSpecMovedNotify()
 {
+	if(!g_Config.m_BclSpecMovedNotify)
+	{
+		if(m_SpecMovedLive)
+		{
+			m_SpecMovedActiveTick = -1;
+			m_SpecMovedLastTick = -1;
+			m_SpecMovedNotifyTime = -999.0f;
+			m_SpecMovedLive = false;
+		}
+		return;
+	}
+	m_SpecMovedLive = true;
+
 	if(Client()->State() != IClient::STATE_ONLINE)
 	{
 		m_SpecMovedActiveTick = -1;
