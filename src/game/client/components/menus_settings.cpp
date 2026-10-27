@@ -95,7 +95,7 @@ void CMenus::RenderSettings(CUIRect MainView)
 	// bestclient-light
 	MainView.Margin(20.0f, &MainView);
 
-	const bool NeedRestart = m_NeedRestartGraphics || m_NeedRestartSound || m_NeedRestartUpdate;
+	const bool NeedRestart = m_NeedRestartGraphics || m_NeedRestartSound || m_NeedRestartUpdate || m_NeedRestartDiscord; // bestclient-light
 	if(NeedRestart)
 	{
 		MainView.HSplitBottom(20.0f, &MainView, &RestartBar);

@@ -680,7 +680,11 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowSpectatorNames, BcLocalize("Show spectator nicknames"), &g_Config.m_BclShowSpectatorNames, &VisualsQoLBlock, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowVotePercentage, BcLocalize("Show vote percentage"), &g_Config.m_BclShowVotePercentage, &VisualsQoLBlock, LineSize);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclDisplayMaxFps, BcLocalize("Display max FPS"), &g_Config.m_BclDisplayMaxFps, &VisualsQoLBlock, LineSize);
-	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclDiscordRPC, BcLocalize("discord rpc (restart requires)"), &g_Config.m_BclDiscordRPC, &VisualsQoLBlock, LineSize);
+	static int s_DiscordRpcApplied = -1;
+	if(s_DiscordRpcApplied < 0)
+		s_DiscordRpcApplied = g_Config.m_BclDiscordRPC;
+	if(DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclDiscordRPC, BcLocalize("discord rpc (restart requires)"), &g_Config.m_BclDiscordRPC, &VisualsQoLBlock, LineSize))
+		m_NeedRestartDiscord = g_Config.m_BclDiscordRPC != s_DiscordRpcApplied;
 	VisualsQoLBlock.HSplitTop(LineSize, &Button, &VisualsQoLBlock);
 	Ui()->DoScrollbarOption(&g_Config.m_BclWheelScale, &g_Config.m_BclWheelScale, &Button, BcLocalize("Bind/Emote wheel scale"), 50, 100, &CUi::ms_LinearScrollbarScale, CUi::SCROLLBAR_OPTION_DELAYUPDATE, "%");
 	VisualsQoLBlock.HSplitTop(LineSize, &Button, &VisualsQoLBlock);

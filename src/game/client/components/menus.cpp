@@ -75,6 +75,7 @@ CMenus::CMenus()
 	m_NeedRestartGraphics = false;
 	m_NeedRestartSound = false;
 	m_NeedRestartUpdate = false; // bestclient-light
+	m_NeedRestartDiscord = false; // bestclient-light
 	m_NeedSendinfo = false;
 	m_NeedSendDummyinfo = false;
 	m_MenuActive = true;
