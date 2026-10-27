@@ -69,6 +69,7 @@ void CBinds::Bind(int KeyId, const char *pStr, bool FreeOnly, int ModifierCombin
 		str_copy(m_aapKeyBindings[ModifierCombination][KeyId], pStr, Size);
 		log_info_color(BIND_PRINT_COLOR, "binds", "bound %s = %s", aBindName, m_aapKeyBindings[ModifierCombination][KeyId]);
 	}
+	++m_BindRevision; // bestclient-light
 }
 
 int CBinds::GetModifierMask(IInput *pInput)
@@ -223,6 +224,7 @@ bool CBinds::OnInput(const IInput::CEvent &Event)
 
 void CBinds::UnbindAll()
 {
+	++m_BindRevision; // bestclient-light
 	for(auto &apKeyBinding : m_aapKeyBindings)
 	{
 		for(auto &pKeyBinding : apKeyBinding)

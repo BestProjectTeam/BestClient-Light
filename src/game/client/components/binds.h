@@ -78,6 +78,7 @@ public:
 	const char *Get(int KeyId, int ModifierCombination) const;
 	const char *Get(const CBindSlot &BindSlot) const;
 	void GetKey(const char *pBindStr, char *pBuf, size_t BufSize) const;
+	int BindRevision() const { return m_BindRevision; } // bestclient-light
 	static int GetModifierMask(IInput *pInput);
 	static int GetModifierMaskOfKey(int Key);
 	static const char *GetModifierName(int Modifier);
@@ -92,6 +93,7 @@ public:
 
 private:
 	char *m_aapKeyBindings[KeyModifier::COMBINATION_COUNT][KEY_LAST];
+	int m_BindRevision = 0; // bestclient-light
 	std::vector<CBindSlot> m_vActiveBinds;
 };
 #endif

@@ -332,7 +332,7 @@ namespace
 		return Layout;
 	}
 
-	void DrawKeystrokesMcKey(IGraphics *pGraphics, ITextRender *pTextRender, float X, float Y, float W, float H, bool Active, const char *pLabel)
+	void DrawKeystrokesMcKey(IGraphics *pGraphics, float X, float Y, float W, float H, bool Active, bool Line)
 	{
 		if(W <= 0.0f || H <= 0.0f)
 			return;
@@ -341,32 +341,158 @@ namespace
 		const ColorRGBA Bg = Active ? ColorRGBA(1.0f, 1.0f, 1.0f, PressedOpacity) : ColorRGBA(0.0f, 0.0f, 0.0f, 0.55f);
 		pGraphics->DrawRect(X, Y, W, H, Bg, IGraphics::CORNER_NONE, 0.0f);
 
-		if(pLabel == nullptr)
-		{
-			const ColorRGBA LineColor = Active ? ColorRGBA(0.0f, 0.0f, 0.0f, 0.85f) : ColorRGBA(1.0f, 1.0f, 1.0f, 0.9f);
-			const float LineW = W * 0.35f;
-			const float LineH = std::max(2.0f, H * 0.08f);
-			pGraphics->DrawRect(X + (W - LineW) * 0.5f, Y + (H - LineH) * 0.5f, LineW, LineH, LineColor, IGraphics::CORNER_NONE, 0.0f);
+		if(!Line)
 			return;
-		}
 
-		const ColorRGBA TextColor = Active ? ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f) : ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
-		const float FontSize = H * (str_length(pLabel) > 1 ? 0.32f : 0.45f);
-		pTextRender->TextColor(TextColor);
-		const float TextW = pTextRender->TextWidth(FontSize, pLabel, -1, -1.0f);
-		pTextRender->Text(X + (W - TextW) * 0.5f, Y + (H - FontSize) * 0.5f, FontSize, pLabel);
-		pTextRender->TextColor(pTextRender->DefaultTextColor());
+		const ColorRGBA LineColor = Active ? ColorRGBA(0.0f, 0.0f, 0.0f, 0.85f) : ColorRGBA(1.0f, 1.0f, 1.0f, 0.9f);
+		const float LineW = W * 0.35f;
+		const float LineH = std::max(2.0f, H * 0.08f);
+		pGraphics->DrawRect(X + (W - LineW) * 0.5f, Y + (H - LineH) * 0.5f, LineW, LineH, LineColor, IGraphics::CORNER_NONE, 0.0f);
 	}
 
 } // namespace
 
+void CKeystrokes::ReleaseText()
+{
+	for(SCachedKey &Key : m_aKeys)
+	{
+		if(Key.m_Text.Valid())
+			TextRender()->DeleteTextContainer(Key.m_Text);
+		Key.m_FontSize = -1.0f;
+		Key.m_TextWidth = 0.0f;
+	}
+}
+
+void CKeystrokes::ReleaseCached()
+{
+	ReleaseText();
+	m_LayoutValid = false;
+	m_CachedBindRevision = -1;
+	m_CachedLayoutMode = -1;
+	m_CachedShowLmb = -1;
+	m_CachedShowRmb = -1;
+	m_CachedShowSpace = -1;
+	m_NumKeys = 0;
+	m_OverlayWidth = 0.0f;
+	m_OverlayHeight = 0.0f;
+	for(SCachedKey &Key : m_aKeys)
+	{
+		Key.m_aLabel[0] = '\0';
+		Key.m_ShowLabel = true;
+	}
+}
+
+void CKeystrokes::EnsureLayout(const CBinds *pBinds)
+{
+	const int LayoutMode = g_Config.m_BclKeystrokesMcLayout;
+	const int ShowLmb = g_Config.m_BclKeystrokesMcShowLmb;
+	const int ShowRmb = g_Config.m_BclKeystrokesMcShowRmb;
+	const int ShowSpace = g_Config.m_BclKeystrokesMcShowSpace;
+	const bool ConfigChanged = !m_LayoutValid || m_CachedLayoutMode != LayoutMode || m_CachedShowLmb != ShowLmb || m_CachedShowRmb != ShowRmb || m_CachedShowSpace != ShowSpace;
+	const bool BindsChanged = pBinds != nullptr && pBinds->BindRevision() != m_CachedBindRevision;
+	if(!ConfigChanged && !BindsChanged)
+		return;
+
+	const SKeystrokesMcLayout Layout = BuildKeystrokesMcLayout(pBinds);
+	const bool ResetText = ConfigChanged || m_NumKeys != Layout.m_NumKeys;
+	if(ResetText)
+		ReleaseText();
+
+	m_OverlayWidth = Layout.m_OverlayWidth;
+	m_OverlayHeight = Layout.m_OverlayHeight;
+	m_NumKeys = std::min(Layout.m_NumKeys, MAX_CACHED_KEYS);
+	for(int i = 0; i < m_NumKeys; ++i)
+	{
+		const SKeystrokesMcKey &Src = Layout.m_aKeys[i];
+		SCachedKey &Dst = m_aKeys[i];
+		Dst.m_Action = static_cast<int>(Src.m_Action);
+		Dst.m_X = Src.m_X;
+		Dst.m_Y = Src.m_Y;
+		Dst.m_W = Src.m_W;
+		Dst.m_H = Src.m_H;
+		if(ResetText || Dst.m_ShowLabel != Src.m_ShowLabel || str_comp(Dst.m_aLabel, Src.m_aLabel) != 0)
+		{
+			str_copy(Dst.m_aLabel, Src.m_aLabel, sizeof(Dst.m_aLabel));
+			Dst.m_ShowLabel = Src.m_ShowLabel;
+			Dst.m_FontSize = -1.0f;
+		}
+	}
+
+	m_LayoutValid = true;
+	m_CachedLayoutMode = LayoutMode;
+	m_CachedShowLmb = ShowLmb;
+	m_CachedShowRmb = ShowRmb;
+	m_CachedShowSpace = ShowSpace;
+	if(pBinds != nullptr)
+		m_CachedBindRevision = pBinds->BindRevision();
+	else if(ConfigChanged)
+		m_CachedBindRevision = -1;
+}
+
+void CKeystrokes::EnsureKeyText(SCachedKey &Key, float FontSize)
+{
+	if(!Key.m_ShowLabel || Key.m_aLabel[0] == '\0')
+	{
+		if(Key.m_Text.Valid())
+			TextRender()->DeleteTextContainer(Key.m_Text);
+		Key.m_FontSize = -1.0f;
+		Key.m_TextWidth = 0.0f;
+		return;
+	}
+
+	if(Key.m_Text.Valid() && Key.m_FontSize == FontSize)
+		return;
+
+	CTextCursor Cursor;
+	Cursor.SetPosition(vec2(0.0f, 0.0f));
+	Cursor.m_FontSize = FontSize;
+	Cursor.m_Flags = TEXTFLAG_RENDER;
+	Cursor.m_LineWidth = -1.0f;
+	if(Key.m_Text.Valid())
+		TextRender()->RecreateTextContainerSoft(Key.m_Text, &Cursor, Key.m_aLabel);
+	else if(!TextRender()->CreateTextContainer(Key.m_Text, &Cursor, Key.m_aLabel))
+	{
+		Key.m_FontSize = -1.0f;
+		Key.m_TextWidth = 0.0f;
+		return;
+	}
+
+	if(!Key.m_Text.Valid())
+	{
+		Key.m_FontSize = -1.0f;
+		Key.m_TextWidth = 0.0f;
+		return;
+	}
+
+	Key.m_TextWidth = TextRender()->GetBoundingBoxTextContainer(Key.m_Text).m_W;
+	Key.m_FontSize = FontSize;
+}
+
 void CKeystrokes::OnReset()
 {
 	m_Mouse1EndTime = 0;
+	ReleaseCached();
+}
+
+void CKeystrokes::OnWindowResize()
+{
+	ReleaseText();
+}
+
+void CKeystrokes::OnShutdown()
+{
+	ReleaseCached();
 }
 
 void CKeystrokes::OnRender()
 {
+	if(g_Config.m_BclKeystrokesKeyboard == 0 || !HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_KEYBOARD))
+	{
+		if(m_LayoutValid && !GameClient()->m_HudEditor.IsActive())
+			ReleaseCached();
+		return;
+	}
+
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;
 	if(GameClient()->m_HudEditor.IsActive())
@@ -381,9 +507,6 @@ void CKeystrokes::OnRender()
 	if(g_Config.m_ClFocusMode && (g_Config.m_ClFocusModeHideHud || g_Config.m_ClFocusModeHideUI))
 		return;
 
-	if(!HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_KEYBOARD) || g_Config.m_BclKeystrokesKeyboard == 0)
-		return;
-
 	const float HudHeight = HudLayout::CANVAS_HEIGHT;
 	const float HudWidth = HudHeight * Graphics()->ScreenAspect();
 	Graphics()->MapScreenToSize(HudWidth, HudHeight);
@@ -391,7 +514,7 @@ void CKeystrokes::OnRender()
 	RenderKeyboardInternal(false, false);
 }
 
-CUIRect CKeystrokes::GetKeyboardRectInternal(bool IgnoreModuleEnabled) const
+CUIRect CKeystrokes::GetKeyboardRectInternal(bool IgnoreModuleEnabled)
 {
 	if(!IgnoreModuleEnabled && (!HudLayout::IsEnabled(HudLayout::MODULE_KEYSTROKES_KEYBOARD) || g_Config.m_BclKeystrokesKeyboard == 0))
 		return {};
@@ -400,8 +523,8 @@ CUIRect CKeystrokes::GetKeyboardRectInternal(bool IgnoreModuleEnabled) const
 	const float HudWidth = HudHeight * Graphics()->ScreenAspect();
 	const auto Layout = HudLayout::Get(HudLayout::MODULE_KEYSTROKES_KEYBOARD, HudWidth, HudHeight);
 	const float Scale = GetKeystrokesScale(Layout);
-	const auto McLayout = BuildKeystrokesMcLayout();
-	const HudLayout::SModuleRect RawRect = {Layout.m_X, Layout.m_Y, McLayout.m_OverlayWidth * Scale, McLayout.m_OverlayHeight * Scale, 0.0f};
+	EnsureLayout(nullptr);
+	const HudLayout::SModuleRect RawRect = {Layout.m_X, Layout.m_Y, m_OverlayWidth * Scale, m_OverlayHeight * Scale, 0.0f};
 	const auto Rect = HudLayout::ClampRectToScreen(RawRect, HudWidth, HudHeight);
 	return {Rect.m_X, Rect.m_Y, Rect.m_W, Rect.m_H};
 }
@@ -468,26 +591,33 @@ void CKeystrokes::RenderKeyboardInternal(bool ForcePreview, bool IgnoreModuleEna
 		m_Mouse1EndTime = Now + HighlightDuration;
 	}
 
-	const auto McLayout = BuildKeystrokesMcLayout(&GameClient()->m_Binds);
-	for(int i = 0; i < McLayout.m_NumKeys; ++i)
+	EnsureLayout(&GameClient()->m_Binds);
+	for(int i = 0; i < m_NumKeys; ++i)
 	{
-		const auto &Key = McLayout.m_aKeys[i];
+		SCachedKey &Key = m_aKeys[i];
+		const auto Action = static_cast<SKeystrokesMcKey::EAction>(Key.m_Action);
 		bool Active = false;
 		if(!ForcePreview)
 		{
 			Active = HasTrackedPlayer ?
-					 IsKeystrokesMcActionActiveTracked(Key.m_Action, pTrackedInput, pPrevTrackedCharacter, pTrackedCharacter, Now, m_Mouse1EndTime) :
-					 IsKeystrokesMcActionActiveLocal(GameClient(), Key.m_Action);
+					 IsKeystrokesMcActionActiveTracked(Action, pTrackedInput, pPrevTrackedCharacter, pTrackedCharacter, Now, m_Mouse1EndTime) :
+					 IsKeystrokesMcActionActiveLocal(GameClient(), Action);
 		}
 
-		DrawKeystrokesMcKey(
-			Graphics(),
-			TextRender(),
-			Rect.x + Key.m_X * Scale,
-			Rect.y + Key.m_Y * Scale,
-			Key.m_W * Scale,
-			Key.m_H * Scale,
-			Active,
-			Key.m_ShowLabel ? Key.m_aLabel : nullptr);
+		const float X = Rect.x + Key.m_X * Scale;
+		const float Y = Rect.y + Key.m_Y * Scale;
+		const float W = Key.m_W * Scale;
+		const float H = Key.m_H * Scale;
+		DrawKeystrokesMcKey(Graphics(), X, Y, W, H, Active, !Key.m_ShowLabel);
+		if(!Key.m_ShowLabel)
+			continue;
+
+		const float FontSize = H * (str_length(Key.m_aLabel) > 1 ? 0.32f : 0.45f);
+		EnsureKeyText(Key, FontSize);
+		if(!Key.m_Text.Valid())
+			continue;
+
+		const ColorRGBA TextColor = Active ? ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f) : ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
+		TextRender()->RenderTextContainer(Key.m_Text, TextColor, TextRender()->DefaultTextOutlineColor(), X + (W - Key.m_TextWidth) * 0.5f, Y + (H - FontSize) * 0.5f);
 	}
 }
