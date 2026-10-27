@@ -20,11 +20,7 @@
 #include <cmath>
 
 static constexpr float VIEW_MARGIN = 120.0f;
-
-void CFgfWeather::OnInit()
-{
-	m_GlowTexture = FgfGlow::CreateGlowTexture(Graphics());
-}
+static constexpr int MASK_CELL_BUDGET = 2048;
 
 void CFgfWeather::OnReset()
 {
@@ -32,8 +28,117 @@ void CFgfWeather::OnReset()
 	m_NumSplashes = 0;
 	m_SpawnAccumulator = 0.0f;
 	m_MaskReady = false;
-	m_Solid.clear();
+	m_ScanActive = false;
 	m_AirTiles.clear();
+	m_ScanAir.clear();
+}
+
+bool CFgfWeather::TileOpen(int TileX, int TileY) const
+{
+	const int Tile = Collision()->GetTile(TileX * 32 + 16, TileY * 32 + 16);
+	return Tile != TILE_SOLID && Tile != TILE_NOHOOK;
+}
+
+void CFgfWeather::AppendOpenRow(int OriginX, int OriginY, int Width, int LocalY, std::vector<int> &Air) const
+{
+	const int TileY = OriginY + LocalY;
+	for(int LocalX = 0; LocalX < Width; LocalX++)
+	{
+		if(TileOpen(OriginX + LocalX, TileY))
+			Air.push_back(LocalY * Width + LocalX);
+	}
+}
+
+void CFgfWeather::ShiftAir(int OriginX, int OriginY, int Width, int Height, int Dx, int Dy)
+{
+	m_ScanAir.clear();
+	if(m_ScanAir.capacity() < m_AirTiles.size())
+		m_ScanAir.reserve(m_AirTiles.size());
+
+	for(int Index : m_AirTiles)
+	{
+		const int LocalX = Index % m_MaskWidth;
+		const int LocalY = Index / m_MaskWidth;
+		const int NewX = LocalX - Dx;
+		const int NewY = LocalY - Dy;
+		if(NewX < 0 || NewY < 0 || NewX >= Width || NewY >= Height)
+			continue;
+		m_ScanAir.push_back(NewY * Width + NewX);
+	}
+
+	const int RowY0 = Dy >= 0 ? Height - Dy : 0;
+	const int RowY1 = Dy >= 0 ? Height : -Dy;
+	for(int LocalY = RowY0; LocalY < RowY1; LocalY++)
+		AppendOpenRow(OriginX, OriginY, Width, LocalY, m_ScanAir);
+
+	const int ColX0 = Dx >= 0 ? Width - Dx : 0;
+	const int ColX1 = Dx >= 0 ? Width : -Dx;
+	const int BodyY0 = Dy >= 0 ? 0 : -Dy;
+	const int BodyY1 = Dy >= 0 ? Height - Dy : Height;
+	for(int LocalY = BodyY0; LocalY < BodyY1; LocalY++)
+	{
+		const int TileY = OriginY + LocalY;
+		for(int LocalX = ColX0; LocalX < ColX1; LocalX++)
+		{
+			if(TileOpen(OriginX + LocalX, TileY))
+				m_ScanAir.push_back(LocalY * Width + LocalX);
+		}
+	}
+
+	m_AirTiles.swap(m_ScanAir);
+	m_ScanAir.clear();
+	m_MaskOriginX = OriginX;
+	m_MaskOriginY = OriginY;
+	m_MaskWidth = Width;
+	m_MaskHeight = Height;
+	m_MaskReady = true;
+}
+
+void CFgfWeather::BeginAirScan(int OriginX, int OriginY, int Width, int Height)
+{
+	m_ScanActive = true;
+	m_ScanOriginX = OriginX;
+	m_ScanOriginY = OriginY;
+	m_ScanWidth = Width;
+	m_ScanHeight = Height;
+	m_ScanRow = 0;
+	m_ScanAir.clear();
+	m_MaskReady = false;
+	m_AirTiles.clear();
+	StepAirScan();
+}
+
+void CFgfWeather::StepAirScan()
+{
+	if(m_ScanWidth <= 0 || m_ScanHeight <= 0)
+	{
+		m_ScanActive = false;
+		return;
+	}
+
+	int Budget = MASK_CELL_BUDGET;
+	while(m_ScanRow < m_ScanHeight && Budget >= m_ScanWidth)
+	{
+		AppendOpenRow(m_ScanOriginX, m_ScanOriginY, m_ScanWidth, m_ScanRow, m_ScanAir);
+		Budget -= m_ScanWidth;
+		m_ScanRow++;
+	}
+	if(m_ScanRow < m_ScanHeight && Budget == MASK_CELL_BUDGET)
+	{
+		AppendOpenRow(m_ScanOriginX, m_ScanOriginY, m_ScanWidth, m_ScanRow, m_ScanAir);
+		m_ScanRow++;
+	}
+	if(m_ScanRow < m_ScanHeight)
+		return;
+
+	m_AirTiles.swap(m_ScanAir);
+	m_ScanAir.clear();
+	m_MaskOriginX = m_ScanOriginX;
+	m_MaskOriginY = m_ScanOriginY;
+	m_MaskWidth = m_ScanWidth;
+	m_MaskHeight = m_ScanHeight;
+	m_MaskReady = true;
+	m_ScanActive = false;
 }
 
 void CFgfWeather::BuildMask(const CScreenRect &View)
@@ -51,65 +156,67 @@ void CFgfWeather::BuildMask(const CScreenRect &View)
 	if(Width <= 0 || Height <= 0 || Width > 400 || Height > 400)
 	{
 		m_MaskReady = false;
-		m_Solid.clear();
+		m_ScanActive = false;
 		m_AirTiles.clear();
+		m_ScanAir.clear();
 		return;
 	}
+
+	if(m_ScanActive)
+	{
+		if(m_ScanOriginX != X0 || m_ScanOriginY != Y0 || m_ScanWidth != Width || m_ScanHeight != Height)
+			BeginAirScan(X0, Y0, Width, Height);
+		else
+			StepAirScan();
+		return;
+	}
+
 	if(m_MaskReady && m_MaskOriginX == X0 && m_MaskOriginY == Y0 && m_MaskWidth == Width && m_MaskHeight == Height)
 		return;
 
-	const float SpawnLeft = View.m_TopLeft.x - VIEW_MARGIN;
-	const float SpawnRight = View.m_BottomRight.x + VIEW_MARGIN;
-	const float SpawnTop = View.m_TopLeft.y - VIEW_MARGIN;
-	const float SpawnBottom = View.m_BottomRight.y + VIEW_MARGIN;
-
-	m_MaskOriginX = X0;
-	m_MaskOriginY = Y0;
-	m_MaskWidth = Width;
-	m_MaskHeight = Height;
-	m_Solid.assign((size_t)Width * Height, 0);
-	m_AirTiles.clear();
-	m_AirTiles.reserve((size_t)Width * Height / 2);
-
-	for(int y = 0; y < Height; y++)
+	if(m_MaskReady && m_MaskWidth == Width && m_MaskHeight == Height)
 	{
-		for(int x = 0; x < Width; x++)
+		const int Dx = X0 - m_MaskOriginX;
+		const int Dy = Y0 - m_MaskOriginY;
+		const int AbsDx = Dx < 0 ? -Dx : Dx;
+		const int AbsDy = Dy < 0 ? -Dy : Dy;
+		if(AbsDx < Width && AbsDy < Height)
 		{
-			const int TileX = X0 + x;
-			const int TileY = Y0 + y;
-			const int Tile = Collision()->GetTile(TileX * 32 + 16, TileY * 32 + 16);
-			const bool Solid = Tile == TILE_SOLID || Tile == TILE_NOHOOK;
-			const int Index = y * Width + x;
-			m_Solid[Index] = Solid ? 1 : 0;
-			if(Solid)
-				continue;
-			const float TileLeft = TileX * 32.0f;
-			const float TileRight = TileLeft + 31.0f;
-			const float TileTop = TileY * 32.0f;
-			const float TileBottom = TileTop + 31.0f;
-			if(TileRight > SpawnLeft && TileLeft < SpawnRight && TileBottom > SpawnTop && TileTop < SpawnBottom)
-				m_AirTiles.push_back(Index);
+			const int NewCells = Width * AbsDy + (Height - AbsDy) * AbsDx;
+			if(NewCells <= MASK_CELL_BUDGET)
+			{
+				ShiftAir(X0, Y0, Width, Height, Dx, Dy);
+				return;
+			}
 		}
 	}
-	m_MaskReady = true;
+
+	if(Width * Height <= MASK_CELL_BUDGET)
+	{
+		m_ScanAir.clear();
+		for(int LocalY = 0; LocalY < Height; LocalY++)
+			AppendOpenRow(X0, Y0, Width, LocalY, m_ScanAir);
+		m_AirTiles.swap(m_ScanAir);
+		m_ScanAir.clear();
+		m_MaskOriginX = X0;
+		m_MaskOriginY = Y0;
+		m_MaskWidth = Width;
+		m_MaskHeight = Height;
+		m_MaskReady = true;
+		return;
+	}
+
+	BeginAirScan(X0, Y0, Width, Height);
 }
 
 bool CFgfWeather::SolidAt(vec2 Pos) const
 {
-	if(!m_MaskReady)
-		return Collision()->CheckPoint(Pos);
-	const int TileX = round_to_int(Pos.x) / 32;
-	const int TileY = round_to_int(Pos.y) / 32;
-	const int LocalX = TileX - m_MaskOriginX;
-	const int LocalY = TileY - m_MaskOriginY;
-	if(LocalX < 0 || LocalY < 0 || LocalX >= m_MaskWidth || LocalY >= m_MaskHeight)
-		return Collision()->CheckPoint(Pos);
-	return m_Solid[LocalY * m_MaskWidth + LocalX] != 0;
+	return Collision()->CheckPoint(Pos);
 }
 
 bool CFgfWeather::RandomAirPoint(const CScreenRect &View, vec2 &Pos) const
 {
-	if(m_AirTiles.empty())
+	if(!m_MaskReady || m_AirTiles.empty())
 		return false;
 	const float SpawnLeft = View.m_TopLeft.x - VIEW_MARGIN;
 	const float SpawnRight = View.m_BottomRight.x + VIEW_MARGIN;
@@ -325,6 +432,10 @@ static ColorRGBA WeatherColor(int Kind)
 
 void CFgfWeather::Draw(float Time)
 {
+	if(!m_GlowTexture.IsValid())
+		m_GlowTexture = FgfGlow::CreateGlowTexture(Graphics());
+	if(!m_GlowTexture.IsValid())
+		return;
 	Graphics()->TextureSet(m_GlowTexture);
 	const ColorRGBA Color = WeatherColor(m_Kind);
 
@@ -445,6 +556,20 @@ void CFgfWeather::AmbientDust()
 
 void CFgfWeather::OnRender()
 {
+	if(!g_Config.m_BclAtmosphere)
+	{
+		if(m_WasActive)
+		{
+			OnReset();
+			m_AirTiles.shrink_to_fit();
+			m_ScanAir.shrink_to_fit();
+			m_GlowTexture = IGraphics::CTextureHandle();
+			m_WasActive = false;
+		}
+		return;
+	}
+	m_WasActive = true;
+
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;
 	if(BcFxSuppressed(GameClient()))
@@ -453,13 +578,6 @@ void CFgfWeather::OnRender()
 	const float Time = LocalTime();
 	const float Passed = std::clamp(Time - m_LastTime, 0.0f, 0.1f) * GameClient()->GetAnimationPlaybackSpeed();
 	m_LastTime = Time;
-
-	if(!g_Config.m_BclAtmosphere)
-	{
-		if(m_NumDrops != 0 || m_NumSplashes != 0)
-			OnReset();
-		return;
-	}
 
 	const int Kind = std::clamp(g_Config.m_BclWeather, 0, (int)FGF_WEATHER_DUST);
 	if(Kind != m_Kind)
