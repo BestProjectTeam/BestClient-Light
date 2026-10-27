@@ -34,6 +34,37 @@ bool CAspectRatio::ConfirmNeeded(const CAspectConfig &Cfg)
 	return Cfg.m_ApplyMode == 1 && (Cfg.m_Mode > 0 || (Cfg.m_Mode < 0 && Cfg.m_Ratio > 0));
 }
 
+bool CAspectRatio::CustomAspectConfigured()
+{
+	const int AspectMode = g_Config.m_BclCustomAspectRatioMode >= 0 ? g_Config.m_BclCustomAspectRatioMode : (g_Config.m_BclCustomAspectRatio > 0 ? 1 : 0);
+	return AspectMode > 0 && g_Config.m_BclCustomAspectRatio >= 100;
+}
+
+CAspectRatio::SForcedKey CAspectRatio::ReadForcedKey() const
+{
+	SForcedKey Key;
+	Key.m_State = Client()->State();
+	Key.m_Menu = GameClient()->m_Menus.IsActive() ? 1 : 0;
+	Key.m_AllowZoom = GameClient()->m_GameInfo.m_AllowZoom ? 1 : 0;
+	Key.m_Spec = GameClient()->m_Snap.m_SpecInfo.m_Active ? 1 : 0;
+	Key.m_Mode = g_Config.m_BclCustomAspectRatioMode;
+	Key.m_Ratio = g_Config.m_BclCustomAspectRatio;
+	Key.m_Apply = g_Config.m_BclCustomAspectRatioApplyMode;
+	Key.m_Num = g_Config.m_BclCustomAspectRatioNum;
+	Key.m_Den = g_Config.m_BclCustomAspectRatioDen;
+	Key.m_AnyRes = g_Config.m_TcAllowAnyRes;
+	return Key;
+}
+
+void CAspectRatio::OnReset()
+{
+	m_ForcedKeyValid = false;
+	m_CursorScaleValid = false;
+	m_HudAspectDisabled = false;
+	m_MusicPlayerAspectDisabled = false;
+	m_CachedUseGameNoHudAspect = false;
+}
+
 void CAspectRatio::ResetToPrevious()
 {
 	g_Config.m_BclCustomAspectRatioMode = m_Prev.m_Mode;
@@ -52,11 +83,14 @@ bool CAspectRatio::IsBlockedByFng() const
 	if(State != IClient::STATE_ONLINE && State != IClient::STATE_DEMOPLAYBACK)
 		return false;
 
+	if(GameClient()->m_GameInfo.m_PredictFNG || GameClient()->m_GameInfo.m_EntitiesFNG)
+		return true;
+
 	auto ContainsFng = [](const char *pText) -> bool {
 		return pText != nullptr && pText[0] != '\0' && str_find_nocase(pText, "fng") != nullptr;
 	};
 
-	CServerInfo ServerInfo = Client()->ServerInfo();
+	const CServerInfo &ServerInfo = Client()->ServerInfo();
 	const CServerInfo *apInfos[3] = {&ServerInfo, nullptr, nullptr};
 	int NumInfos = 1;
 	if(GameClient()->m_ConnectServerInfo.has_value())
@@ -80,10 +114,7 @@ bool CAspectRatio::IsBlockedByFng() const
 		}
 	}
 
-	if(ContainsFng(GameClient()->m_GameInfo.m_aGameType))
-		return true;
-
-	return GameClient()->m_GameInfo.m_PredictFNG || GameClient()->m_GameInfo.m_EntitiesFNG;
+	return ContainsFng(GameClient()->m_GameInfo.m_aGameType);
 }
 
 bool CAspectRatio::IsAspectBlocked() const
@@ -93,6 +124,9 @@ bool CAspectRatio::IsAspectBlocked() const
 
 bool CAspectRatio::UseGameNoHudAspect() const
 {
+	if(!CustomAspectConfigured())
+		return false;
+
 	const int State = Client()->State();
 	const bool IsActiveGameplay = State == IClient::STATE_ONLINE || State == IClient::STATE_DEMOPLAYBACK;
 	return IsActiveGameplay && !IsAspectBlocked() && g_Config.m_BclCustomAspectRatioApplyMode == 2;
@@ -107,6 +141,8 @@ void CAspectRatio::ScaleIngameCursorDelta(float &X, float &Y) const
 {
 	if(!g_Config.m_BclCustomAspectRatioCursorNative)
 		return;
+	if(!CustomAspectConfigured())
+		return;
 
 	const int State = Client()->State();
 	const bool IsActiveGameplay = State == IClient::STATE_ONLINE || State == IClient::STATE_DEMOPLAYBACK;
@@ -114,36 +150,70 @@ void CAspectRatio::ScaleIngameCursorDelta(float &X, float &Y) const
 		return;
 
 	const int AspectMode = g_Config.m_BclCustomAspectRatioMode >= 0 ? g_Config.m_BclCustomAspectRatioMode : (g_Config.m_BclCustomAspectRatio > 0 ? 1 : 0);
-	if(AspectMode <= 0 || g_Config.m_BclCustomAspectRatio < 100)
-		return;
-
-	float ForcedAspect;
-	if(AspectMode == 2 && g_Config.m_BclCustomAspectRatioNum > 0 && g_Config.m_BclCustomAspectRatioDen > 0)
-		ForcedAspect = (float)g_Config.m_BclCustomAspectRatioNum / (float)g_Config.m_BclCustomAspectRatioDen;
-	else
-		ForcedAspect = g_Config.m_BclCustomAspectRatio / 100.0f;
+	const int Ratio = g_Config.m_BclCustomAspectRatio;
 
 	const int ScreenW = Graphics()->ScreenWidth();
 	const int ScreenH = Graphics()->ScreenHeight();
 	if(ScreenW <= 0 || ScreenH <= 0)
 		return;
 
-	float ForcedW, ForcedH, NativeW, NativeH;
-	Graphics()->CalcScreenParams(ForcedAspect, 1.0f, &ForcedW, &ForcedH);
-	Graphics()->CalcScreenParams((float)ScreenW / (float)ScreenH, 1.0f, &NativeW, &NativeH);
-	if(NativeW <= 0.001f || NativeH <= 0.001f)
-		return;
+	const int Num = g_Config.m_BclCustomAspectRatioNum;
+	const int Den = g_Config.m_BclCustomAspectRatioDen;
+	if(!m_CursorScaleValid || m_CursorScaleMode != AspectMode || m_CursorScaleRatio != Ratio || m_CursorScaleNum != Num || m_CursorScaleDen != Den || m_CursorScaleW != ScreenW || m_CursorScaleH != ScreenH)
+	{
+		float ForcedAspect;
+		if(AspectMode == 2 && Num > 0 && Den > 0)
+			ForcedAspect = (float)Num / (float)Den;
+		else
+			ForcedAspect = Ratio / 100.0f;
 
-	X *= ForcedW / NativeW;
-	Y *= ForcedH / NativeH;
+		float ForcedW, ForcedH, NativeW, NativeH;
+		Graphics()->CalcScreenParams(ForcedAspect, 1.0f, &ForcedW, &ForcedH);
+		Graphics()->CalcScreenParams((float)ScreenW / (float)ScreenH, 1.0f, &NativeW, &NativeH);
+		if(NativeW <= 0.001f || NativeH <= 0.001f)
+			return;
+
+		m_CursorScaleMode = AspectMode;
+		m_CursorScaleRatio = Ratio;
+		m_CursorScaleNum = Num;
+		m_CursorScaleDen = Den;
+		m_CursorScaleW = ScreenW;
+		m_CursorScaleH = ScreenH;
+		m_CursorScaleX = ForcedW / NativeW;
+		m_CursorScaleY = ForcedH / NativeH;
+		m_CursorScaleValid = true;
+	}
+
+	X *= m_CursorScaleX;
+	Y *= m_CursorScaleY;
 }
 
 void CAspectRatio::BeginFrame()
 {
+	if(!Graphics()->IsBackendInitialized())
+	{
+		m_ForcedKeyValid = false;
+		return;
+	}
+
+	if(m_CachedUseGameNoHudAspect)
+	{
+		Graphics()->SetScreenAspectOverrideEnabled(true);
+		m_HudAspectDisabled = false;
+		m_MusicPlayerAspectDisabled = false;
+	}
+
+	const SForcedKey Key = ReadForcedKey();
+	if(m_ForcedKeyValid && Key == m_ForcedKey)
+		return;
+
+	m_ForcedKey = Key;
+	m_ForcedKeyValid = true;
 	Graphics()->SetScreenAspectOverrideEnabled(true);
 	m_HudAspectDisabled = false;
 	m_MusicPlayerAspectDisabled = false;
 	m_CachedUseGameNoHudAspect = UseGameNoHudAspect();
+	m_CursorScaleValid = false;
 	GameClient()->m_TClient.SetForcedAspect();
 }
 
