@@ -68,7 +68,7 @@ The minimap is the main feature that belongs to BestClient Light.
 <ul>
 <li>In-game <strong>Move buttons</strong> overlay, next to the stock touch editor</li>
 <li>Drag a button to move it. Drag a corner to resize it</li>
-<li>Release saves the layout to <code>touch_controls.json</code>. Esc closes the overlay</li>
+<li>Release saves the layout to <code>touch_controls.json</code>.</li>
 </ul>
 </td>
 <td width="50%" valign="top" align="left">
@@ -77,7 +77,7 @@ The minimap is the main feature that belongs to BestClient Light.
 <ul>
 <li>HUD table of jumps, hammer hits, saves, and freezes</li>
 <li>Score on the right is saves &times; 2 minus freezes</li>
-<li>Own module in the HUD editor. Team 0 players are optional. Off by default</li>
+<li>Own module in the HUD editor.</li>
 </ul>
 </td>
 </tr>
