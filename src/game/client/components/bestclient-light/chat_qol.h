@@ -6,7 +6,11 @@ class CChat;
 class CGameClient;
 class CNetObj_PlayerInput;
 class CTextCursor;
+class IEngine;
+class IStorage;
 class ITextRender;
+
+struct CSavesNotifyWork;
 
 class CChatQoL
 {
@@ -15,7 +19,10 @@ public:
 	static void ApplySilentTyping(CNetObj_PlayerInput *pInputs, int Count, bool Enabled);
 
 	static void ClearSavesChatOnMapChange(CGameClient *pGameClient);
-	static void NotifySavesOnMapLoad(CGameClient *pGameClient);
+	static bool BeginSavesNotifyJob(CSavesNotifyWork *&pWork, IEngine *pEngine, IStorage *pStorage, const char *pMapName, int Generation);
+	static bool PollSavesNotifyJob(CSavesNotifyWork *&pWork, int Generation, const char *pMapName, int &Count);
+	static void StopSavesNotifyJob(CSavesNotifyWork *&pWork);
+	static void PublishSavesNotify(CGameClient *pGameClient, int Count);
 	static bool TryHandleBangCommand(CChat &Chat, const char *pText);
 	static bool TryBangCommandAutocomplete(CChat &Chat);
 	static void ListSavesForCurrentMap(CChat &Chat);

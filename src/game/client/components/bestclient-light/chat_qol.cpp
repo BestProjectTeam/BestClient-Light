@@ -6,7 +6,9 @@
 #include <base/str.h>
 
 #include <engine/client.h>
+#include <engine/engine.h>
 #include <engine/shared/config.h>
+#include <engine/shared/jobs.h>
 #include <engine/storage.h>
 #include <engine/textrender.h>
 #include <generated/protocol.h>
@@ -19,6 +21,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <memory>
 #include <vector>
 
 static constexpr int SAVES_CHAT_LIST_LIMIT = 10;
@@ -264,6 +267,89 @@ static bool ParseSaveRow(const char *pLine, SSaveRow &Out)
 	return true;
 }
 
+static int CountMapSaves(const char *pData, const char *pMapName, const IJob *pJob)
+{
+	if(!pData || !pMapName || pMapName[0] == '\0')
+		return 0;
+
+	int Count = 0;
+	const char *pLine = pData;
+	while(pLine && *pLine)
+	{
+		if(pJob && pJob->State() == IJob::STATE_ABORTED)
+			return -1;
+
+		const char *pNext = pLine;
+		while(*pNext && *pNext != '\n' && *pNext != '\r')
+			++pNext;
+
+		char aLine[512];
+		str_truncate(aLine, sizeof(aLine), pLine, pNext - pLine);
+
+		SSaveRow Row;
+		if(ParseSaveRow(aLine, Row) && str_comp(Row.m_aMap, pMapName) == 0)
+			++Count;
+
+		pLine = pNext;
+		if(*pLine == '\r')
+			++pLine;
+		if(*pLine == '\n')
+			++pLine;
+	}
+	return Count;
+}
+
+class CSavesCountJob : public IJob
+{
+public:
+	int m_Generation = 0;
+	int m_Count = 0;
+	bool m_Success = false;
+	char m_aMap[128]{};
+	char m_aPath[IO_MAX_PATH_LENGTH]{};
+
+	CSavesCountJob(const char *pPath, const char *pMap, int Generation) :
+		m_Generation(Generation)
+	{
+		Abortable(true);
+		str_copy(m_aPath, pPath);
+		str_copy(m_aMap, pMap);
+	}
+
+	void Run() override
+	{
+		if(State() == STATE_ABORTED)
+			return;
+
+		IOHANDLE File = io_open(m_aPath, IOFLAG_READ);
+		if(!File)
+			return;
+
+		char *pData = io_read_all_str(File);
+		io_close(File);
+		if(!pData)
+			return;
+		if(State() == STATE_ABORTED)
+		{
+			free(pData);
+			return;
+		}
+
+		const int Count = CountMapSaves(pData, m_aMap, this);
+		free(pData);
+		if(Count < 0 || State() == STATE_ABORTED)
+			return;
+
+		m_Count = Count;
+		m_Success = true;
+	}
+};
+
+struct CSavesNotifyWork
+{
+	std::shared_ptr<CSavesCountJob> m_pJob;
+};
+
 static bool CollectMapSaves(CGameClient *pGameClient, const char *pMapName, std::vector<SSaveRow> &vOut)
 {
 	vOut.clear();
@@ -321,24 +407,16 @@ void CChatQoL::AddSavesChatLine(CChat &Chat, const char *pLine, bool PlaySystemS
 		Line.m_BcSavesChat = true;
 }
 
-static void ShowMapSavesList(CChat &Chat, const std::vector<SSaveRow> &vSaves, bool NotifyOnly, const char *pMapName)
+static void ShowMapSavesList(CChat &Chat, const std::vector<SSaveRow> &vSaves, const char *pMapName)
 {
 	const int Total = (int)vSaves.size();
 	if(Total <= 0)
 	{
-		if(!NotifyOnly)
-			CChatQoL::AddSavesChatLine(Chat, Localize("No saves for this map"), true);
+		CChatQoL::AddSavesChatLine(Chat, Localize("No saves for this map"), true);
 		return;
 	}
 
 	char aBuf[256];
-	if(NotifyOnly)
-	{
-		str_format(aBuf, sizeof(aBuf), Localize("Found %d saves on %s. Type !saves to see them"), Total, pMapName);
-		CChatQoL::AddSavesChatLine(Chat, aBuf, true);
-		return;
-	}
-
 	str_format(aBuf, sizeof(aBuf), Localize("Saves on %s: %d"), pMapName, Total);
 	CChatQoL::AddSavesChatLine(Chat, aBuf, true);
 
@@ -381,23 +459,63 @@ void CChatQoL::ClearSavesChatOnMapChange(CGameClient *pGameClient)
 	}
 }
 
-void CChatQoL::NotifySavesOnMapLoad(CGameClient *pGameClient)
+bool CChatQoL::BeginSavesNotifyJob(CSavesNotifyWork *&pWork, IEngine *pEngine, IStorage *pStorage, const char *pMapName, int Generation)
 {
-	if(!pGameClient || !g_Config.m_BclNotifySavesOnMap)
+	if(pWork || !pEngine || !pStorage || !pMapName || pMapName[0] == '\0')
+		return false;
+
+	char aPath[IO_MAX_PATH_LENGTH];
+	aPath[0] = '\0';
+	pStorage->GetCompletePath(IStorage::TYPE_SAVE, SAVES_FILE, aPath, sizeof(aPath));
+	if(aPath[0] == '\0')
+		return false;
+
+	std::shared_ptr<CSavesCountJob> pJob = std::make_shared<CSavesCountJob>(aPath, pMapName, Generation);
+	pWork = new CSavesNotifyWork();
+	pWork->m_pJob = pJob;
+	pEngine->AddJob(pJob);
+	return true;
+}
+
+bool CChatQoL::PollSavesNotifyJob(CSavesNotifyWork *&pWork, int Generation, const char *pMapName, int &Count)
+{
+	Count = 0;
+	if(!pWork || !pWork->m_pJob || !pWork->m_pJob->Done())
+		return false;
+
+	CSavesCountJob *pJob = pWork->m_pJob.get();
+	if(pJob->State() == IJob::STATE_DONE && pJob->m_Success && pJob->m_Generation == Generation && pMapName && str_comp(pJob->m_aMap, pMapName) == 0)
+		Count = pJob->m_Count;
+
+	delete pWork;
+	pWork = nullptr;
+	return true;
+}
+
+void CChatQoL::StopSavesNotifyJob(CSavesNotifyWork *&pWork)
+{
+	if(!pWork)
 		return;
-	if(pGameClient->Client()->State() == IClient::STATE_DEMOPLAYBACK)
+	if(pWork->m_pJob)
+		pWork->m_pJob->Abort();
+	delete pWork;
+	pWork = nullptr;
+}
+
+void CChatQoL::PublishSavesNotify(CGameClient *pGameClient, int Count)
+{
+	if(!pGameClient || Count <= 0 || !g_Config.m_BclNotifySavesOnMap)
+		return;
+	if(pGameClient->Client()->State() != IClient::STATE_ONLINE)
 		return;
 
 	const char *pMapName = pGameClient->Map()->BaseName();
 	if(!pMapName || pMapName[0] == '\0')
 		return;
 
-	std::vector<SSaveRow> vSaves;
-	CollectMapSaves(pGameClient, pMapName, vSaves);
-	if(vSaves.empty())
-		return;
-
-	ShowMapSavesList(pGameClient->m_Chat, vSaves, true, pMapName);
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), Localize("Found %d saves on %s. Type !saves to see them"), Count, pMapName);
+	AddSavesChatLine(pGameClient->m_Chat, aBuf, true);
 }
 
 void CChatQoL::ListSavesForCurrentMap(CChat &Chat)
@@ -415,7 +533,7 @@ void CChatQoL::ListSavesForCurrentMap(CChat &Chat)
 
 	std::vector<SSaveRow> vSaves;
 	CollectMapSaves(pGameClient, pMapName, vSaves);
-	ShowMapSavesList(Chat, vSaves, false, pMapName);
+	ShowMapSavesList(Chat, vSaves, pMapName);
 }
 
 bool CChatQoL::TryHandleBangCommand(CChat &Chat, const char *pText)

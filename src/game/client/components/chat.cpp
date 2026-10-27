@@ -1827,7 +1827,12 @@ void CChat::OnRender()
 	OnPrepareLines(y);
 
 	// bestclient-light
-	CChatScroll::SActionFrame ActionFrame = CChatScroll::BeginActions(*this);
+	const bool MessageActions = g_Config.m_BclChatMessageActions != 0;
+	CChatScroll::SActionFrame ActionFrame;
+	if(MessageActions)
+		ActionFrame = CChatScroll::BeginActions(*this);
+	else if(m_ActionLineIndex != -1)
+		m_ActionLineIndex = -1;
 	m_TranslateMessageHoverLine = -1;
 	float RenderY = y + m_BacklogScrollOffset;
 	bool AllowTopClip = true;
@@ -1854,7 +1859,8 @@ void CChat::OnRender()
 		const float LineRenderY = RenderY + GameClient()->m_BcUiAnimations.ChatMessageYOffset(Line.m_Time, Now);
 		const float LineW = ChatWidth();
 		const int ArrayIndex = ((m_CurrentLine - i) + MAX_LINES) % MAX_LINES;
-		CChatScroll::NoteLineHover(ActionFrame, *this, ArrayIndex, x, LineW, LineRenderY, LineH, ChatInteractionActive);
+		if(MessageActions)
+			CChatScroll::NoteLineHover(ActionFrame, *this, ArrayIndex, x, LineW, LineRenderY, LineH, ChatInteractionActive);
 		if(g_Config.m_BclTranslateMessageButton && ChatInteractionActive && Line.m_ClientId >= 0 && Line.m_aName[0] != '\0' && Line.m_aText[0] != '\0')
 		{
 			bool OwnMessage = false;
@@ -1905,7 +1911,7 @@ void CChat::OnRender()
 		}
 
 		// bestclient-light
-		if(CChatScroll::ShouldHighlight(ActionFrame, *this, ArrayIndex))
+		if(MessageActions && CChatScroll::ShouldHighlight(ActionFrame, *this, ArrayIndex))
 			CChatScroll::DrawHighlight(*this, x, LineRenderY, LineW, LineH, Blend * ModuleAlpha);
 		// bestclient-light
 
@@ -1936,7 +1942,8 @@ void CChat::OnRender()
 	}
 
 	// bestclient-light
-	CChatScroll::EndActions(*this, ActionFrame, ModuleAlpha);
+	if(MessageActions)
+		CChatScroll::EndActions(*this, ActionFrame, ModuleAlpha);
 
 	// bestclient-light
 	if(m_Mode != MODE_NONE && Ui()->IsPopupOpen(&m_TranslateSettingsPopupId))

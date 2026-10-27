@@ -308,18 +308,45 @@ void CBestClientLight::OnConsoleInit()
 void CBestClientLight::OnMapLoad()
 {
 	CChatQoL::ClearSavesChatOnMapChange(GameClient());
-	m_SavesNotifySchedule = true;
+	CChatQoL::StopSavesNotifyJob(m_pSavesNotifyWork);
 	m_SavesNotifyDeadline = 0;
-}
-
-void CBestClientLight::OnUpdate()
-{
-	UpdateFindHours();
-
-	if(!g_Config.m_BclNotifySavesOnMap || Client()->State() == IClient::STATE_DEMOPLAYBACK)
+	++m_SavesNotifyGeneration;
+	if(g_Config.m_BclNotifySavesOnMap && Client()->State() != IClient::STATE_DEMOPLAYBACK)
+	{
+		m_SavesNotifySchedule = true;
+		m_SavesNotifyLive = true;
+	}
+	else
 	{
 		m_SavesNotifySchedule = false;
-		m_SavesNotifyDeadline = 0;
+		m_SavesNotifyLive = false;
+	}
+}
+
+void CBestClientLight::UpdateSavesNotify()
+{
+	const bool Enabled = g_Config.m_BclNotifySavesOnMap && Client()->State() != IClient::STATE_DEMOPLAYBACK;
+	if(!Enabled)
+	{
+		if(m_SavesNotifyLive)
+		{
+			m_SavesNotifySchedule = false;
+			m_SavesNotifyDeadline = 0;
+			CChatQoL::StopSavesNotifyJob(m_pSavesNotifyWork);
+			m_SavesNotifyLive = false;
+		}
+		return;
+	}
+
+	if(m_pSavesNotifyWork)
+	{
+		int Count = 0;
+		const char *pMapName = GameClient()->Map()->BaseName();
+		if(!CChatQoL::PollSavesNotifyJob(m_pSavesNotifyWork, m_SavesNotifyGeneration, pMapName, Count))
+			return;
+		m_SavesNotifyLive = false;
+		if(Count > 0)
+			CChatQoL::PublishSavesNotify(GameClient(), Count);
 		return;
 	}
 
@@ -330,13 +357,22 @@ void CBestClientLight::OnUpdate()
 	{
 		m_SavesNotifySchedule = false;
 		m_SavesNotifyDeadline = time_get() + time_freq() * 2;
+		m_SavesNotifyLive = true;
 	}
 
 	if(m_SavesNotifyDeadline > 0 && time_get() >= m_SavesNotifyDeadline)
 	{
 		m_SavesNotifyDeadline = 0;
-		CChatQoL::NotifySavesOnMapLoad(GameClient());
+		const char *pMapName = GameClient()->Map()->BaseName();
+		if(!pMapName || !CChatQoL::BeginSavesNotifyJob(m_pSavesNotifyWork, Engine(), Storage(), pMapName, m_SavesNotifyGeneration))
+			m_SavesNotifyLive = false;
 	}
+}
+
+void CBestClientLight::OnUpdate()
+{
+	UpdateFindHours();
+	UpdateSavesNotify();
 }
 
 void CBestClientLight::OnShutdown()
@@ -345,6 +381,8 @@ void CBestClientLight::OnShutdown()
 	m_MenuMediaBackground.Shutdown();
 	m_SavesNotifySchedule = false;
 	m_SavesNotifyDeadline = 0;
+	CChatQoL::StopSavesNotifyJob(m_pSavesNotifyWork);
+	m_SavesNotifyLive = false;
 }
 
 void CBestClientLight::OnReset()
@@ -360,7 +398,11 @@ void CBestClientLight::OnReset()
 	m_SpecMovedLastTick = -1;
 	m_SpecMovedNotifyTime = -999.0f;
 	if(!m_SavesNotifySchedule)
+	{
 		m_SavesNotifyDeadline = 0;
+		CChatQoL::StopSavesNotifyJob(m_pSavesNotifyWork);
+		m_SavesNotifyLive = false;
+	}
 }
 
 void CBestClientLight::OnClientNameChanged(int ClientId, const char *pNewName, const char *pNewClan)

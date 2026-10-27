@@ -39,7 +39,12 @@ class CBestClientLight : public CComponent
 	int m_SpecMovedLastTick = -1;
 	float m_SpecMovedNotifyTime = -999.0f;
 	bool m_SavesNotifySchedule = false;
+	bool m_SavesNotifyLive = false;
+	int m_SavesNotifyGeneration = 0;
 	int64_t m_SavesNotifyDeadline = 0;
+	struct CSavesNotifyWork *m_pSavesNotifyWork = nullptr;
+
+	void UpdateSavesNotify();
 
 	std::shared_ptr<IHttpRequest> m_pFindHoursTask;
 	char m_aFindHoursPlayer[MAX_NAME_LENGTH]{};
