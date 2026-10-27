@@ -24,9 +24,17 @@ private:
 	int m_aPrevLeft[NUM_DUMMIES] = {};
 	int m_aPrevRight[NUM_DUMMIES] = {};
 
+	bool m_WasEnabled = false;
+
+	mutable bool m_BlockCacheValid = false;
+	mutable bool m_Blocked = false;
+	mutable int m_BlockCacheState = -1;
+	mutable float m_BlockCacheTime = 0.0f;
+
 	bool IsActive() const;
 	void UpdateState(int Dummy, bool LeftPressed, bool RightPressed);
 	int ResolveDirection(int Dummy, bool LeftPressed, bool RightPressed);
+	bool ComputeBlockedByCommunity() const;
 };
 
 #endif

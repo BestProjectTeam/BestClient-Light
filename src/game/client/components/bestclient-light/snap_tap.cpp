@@ -13,6 +13,8 @@ void CSnapTap::OnReset()
 {
 	Reset(0);
 	Reset(1);
+	m_WasEnabled = false;
+	m_BlockCacheValid = false;
 }
 
 void CSnapTap::Reset(int Dummy)
@@ -31,16 +33,21 @@ bool CSnapTap::IsActive() const
 
 void CSnapTap::UpdateState(int Dummy, bool LeftPressed, bool RightPressed)
 {
-	const int64_t Now = time_get();
-	if(LeftPressed && !m_aPrevLeft[Dummy])
+	const bool LeftEdge = LeftPressed && !m_aPrevLeft[Dummy];
+	const bool RightEdge = RightPressed && !m_aPrevRight[Dummy];
+	if(LeftEdge || RightEdge)
 	{
-		m_aLastPressedDirection[Dummy] = -1;
-		m_aLastPressedTime[Dummy] = Now;
-	}
-	if(RightPressed && !m_aPrevRight[Dummy])
-	{
-		m_aLastPressedDirection[Dummy] = 1;
-		m_aLastPressedTime[Dummy] = Now;
+		const int64_t Now = time_get();
+		if(LeftEdge)
+		{
+			m_aLastPressedDirection[Dummy] = -1;
+			m_aLastPressedTime[Dummy] = Now;
+		}
+		if(RightEdge)
+		{
+			m_aLastPressedDirection[Dummy] = 1;
+			m_aLastPressedTime[Dummy] = Now;
+		}
 	}
 
 	m_aPrevLeft[Dummy] = LeftPressed ? 1 : 0;
@@ -49,6 +56,16 @@ void CSnapTap::UpdateState(int Dummy, bool LeftPressed, bool RightPressed)
 
 int CSnapTap::ResolveMovementDirection(int Dummy, bool LeftPressed, bool RightPressed, bool ShouldUpdateState)
 {
+	if(g_Config.m_BclSnapTap == 0)
+	{
+		if(m_WasEnabled)
+			OnReset();
+		if(LeftPressed == RightPressed)
+			return 0;
+		return LeftPressed ? -1 : 1;
+	}
+
+	m_WasEnabled = true;
 	if(ShouldUpdateState)
 		UpdateState(Dummy, LeftPressed, RightPressed);
 
@@ -78,8 +95,8 @@ int CSnapTap::ResolveDirection(int Dummy, bool LeftPressed, bool RightPressed)
 		}
 		else if(m_aAppliedDirection[Dummy] != CandidateDirection)
 		{
-			const int64_t Delay = (time_freq() * (int64_t)g_Config.m_BclSnapTapDelay) / 1000;
-			if(time_get() - m_aLastPressedTime[Dummy] >= Delay)
+			const int DelayMs = g_Config.m_BclSnapTapDelay;
+			if(DelayMs <= 0 || time_get() - m_aLastPressedTime[Dummy] >= (time_freq() * (int64_t)DelayMs) / 1000)
 				m_aAppliedDirection[Dummy] = CandidateDirection;
 		}
 
@@ -91,6 +108,23 @@ int CSnapTap::ResolveDirection(int Dummy, bool LeftPressed, bool RightPressed)
 }
 
 bool CSnapTap::IsBlockedByCommunity() const
+{
+	if(g_Config.m_BclSnapTap == 0)
+		return false;
+
+	const int State = Client()->State();
+	const float Time = Client()->LocalTime();
+	if(m_BlockCacheValid && m_BlockCacheState == State && m_BlockCacheTime == Time)
+		return m_Blocked;
+
+	m_Blocked = ComputeBlockedByCommunity();
+	m_BlockCacheState = State;
+	m_BlockCacheTime = Time;
+	m_BlockCacheValid = true;
+	return m_Blocked;
+}
+
+bool CSnapTap::ComputeBlockedByCommunity() const
 {
 	auto IsBlockedGameType = [](const char *pGameType) -> bool {
 		return pGameType != nullptr && pGameType[0] != '\0' &&
