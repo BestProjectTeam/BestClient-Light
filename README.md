@@ -1,6 +1,6 @@
 <div align="center">
   <img src="https://badges4noxy.vercel.app/badges/bestclient/bc_logo.webp" alt="BestClient Light" width="640" />
-  <p>Lightweight, higher-performance BestClient. Same DDNet servers, a smaller client, and features that exist only here.</p>
+  <p>Lightweight, higher-performance version of BestClient.</p>
 
   <p>
     <a href="https://bestclient.fun"><img src="https://badges4noxy.vercel.app/badges/bestclient/website.svg" alt="Website"/></a>
@@ -13,16 +13,14 @@
 
 BestClient Light is the lightweight BestClient client. It is built to stay close to vanilla DDNet performance on the same machine, and it keeps its own tools on top of that smaller base.
 
-Heavy systems from the full client are not part of this build. What remains is optional: a feature that is turned off does not keep its work on the frame. The client stays compatible with DDNet servers.
-
-Current release: **5.0 stable**. Settings live in `settings_BestClient-Light.cfg`. The Light page has three tabs — **Visuals**, **Tools**, and **Info** — plus a **Configs** page for saved presets. The header `src/engine/shared/config_variables_bestclient-light.h` holds **280** variables.
+Heavy systems from the full client are not part of this build. What remains is optional: a feature that is turned off does not keep its work on the frame.
 
 ## Links
 
 - Website: [bestclient.fun](https://bestclient.fun)
 - Telegram: [t.me/bestddnet](https://t.me/bestddnet)
 - Discord: [discord.gg/bestclient](https://discord.gg/bestclient)
-- Full client: [BestProjectTeam/BestClient](https://github.com/BestProjectTeam/BestClient)
+- Original client: [BestProjectTeam/BestClient](https://github.com/BestProjectTeam/BestClient)
 
 ## Settings (version 5.0)
 
@@ -48,7 +46,7 @@ Current release: **5.0 stable**. Settings live in `settings_BestClient-Light.cfg
 
 ## Highlight: Minimap
 
-The minimap is the main feature that belongs to BestClient Light. It is off until you enable it. While it is off, the map cache and the activity markers stay idle.
+The minimap is the main feature that belongs to BestClient Light.
 
 <p align="center">
   <img src="docs/screenshots/minimap.png" width="49%" alt="Small HUD minimap with route progress" />
@@ -130,10 +128,6 @@ The minimap is the main feature that belongs to BestClient Light. It is off unti
 - **Client Indicator** — BestClient Light mark on nameplates and the scoreboard, plus a browser filter
 - **Configs** — save, load, and transfer presets, including a one-time copy from `settings_BestClient.cfg`
 
-### Info
-
-- Discord, Telegram, the website, and the updater
-- Developers, hide Visuals or Tools, and a button that opens `settings_BestClient-Light.cfg`
 
 ### Outside the Light tabs
 
