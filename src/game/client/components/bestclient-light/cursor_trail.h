@@ -29,6 +29,9 @@ class CCursorTrail : public CComponent
 	vec2 m_PreviousPlayerPos;
 	bool m_AnchorValid = false;
 	int m_AnchorSource = -1;
+	bool m_WasActive = false;
+
+	void ReleaseIdle();
 
 public:
 	int Sizeof() const override { return sizeof(*this); }

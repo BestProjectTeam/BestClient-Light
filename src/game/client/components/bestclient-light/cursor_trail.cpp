@@ -26,6 +26,16 @@ void CCursorTrail::OnReset()
 	m_SampleTime = 0.0f;
 	m_AnchorValid = false;
 	m_AnchorSource = -1;
+	m_WasActive = false;
+}
+
+void CCursorTrail::ReleaseIdle()
+{
+	OnReset();
+	if(!m_Texture.IsNullTexture())
+		Graphics()->UnloadTexture(&m_Texture);
+	m_Texture = IGraphics::CTextureHandle();
+	m_aPath[0] = '\0';
 }
 
 void CCursorTrail::Reload()
@@ -34,13 +44,23 @@ void CCursorTrail::Reload()
 	if(!m_Texture.IsNullTexture())
 		Graphics()->UnloadTexture(&m_Texture);
 	m_Texture = IGraphics::CTextureHandle();
+	m_aPath[0] = '\0';
+	if(!g_Config.m_BclCursorTrail || g_Config.m_BclCursorTrailMode != 1 || g_Config.m_BclCursorTrailTrailImage[0] == '\0')
+		return;
 	str_copy(m_aPath, g_Config.m_BclCursorTrailTrailImage, sizeof(m_aPath));
-	if(m_aPath[0] != '\0')
-		m_Texture = Graphics()->LoadTexture(m_aPath, IStorage::TYPE_ALL);
+	m_Texture = Graphics()->LoadTexture(m_aPath, IStorage::TYPE_ALL);
 }
 
 void CCursorTrail::Render(vec2 TrailTargetPos, float Scale, float Alpha, int CurWeapon, int HudQuadContainerIndex, const int *pCursorOffsets)
 {
+	if(!g_Config.m_BclCursorTrail)
+	{
+		if(m_WasActive || m_aPath[0] != '\0' || m_Texture.IsValid() || !m_vPoints.empty())
+			ReleaseIdle();
+		return;
+	}
+	m_WasActive = true;
+
 	vec2 PlayerPos{};
 	bool HasPlayerPos = false;
 	int AnchorSource = -1;
@@ -94,7 +114,7 @@ void CCursorTrail::Render(vec2 TrailTargetPos, float Scale, float Alpha, int Cur
 		m_AnchorSource = -1;
 	}
 
-	if(str_comp(m_aPath, g_Config.m_BclCursorTrailTrailImage) != 0)
+	if(g_Config.m_BclCursorTrailMode == 1 && str_comp(m_aPath, g_Config.m_BclCursorTrailTrailImage) != 0)
 		Reload();
 	if(m_Mode != g_Config.m_BclCursorTrailMode || m_Frames != g_Config.m_BclCursorTrailNumberOfFrames || m_DisableMovement != g_Config.m_BclCursorTrailDisableMovement)
 	{
@@ -104,12 +124,7 @@ void CCursorTrail::Render(vec2 TrailTargetPos, float Scale, float Alpha, int Cur
 		m_Frames = g_Config.m_BclCursorTrailNumberOfFrames;
 		m_DisableMovement = g_Config.m_BclCursorTrailDisableMovement;
 	}
-	if(!g_Config.m_BclCursorTrail)
-	{
-		m_vPoints.clear();
-		m_SampleTime = 0.0f;
-	}
-	else if(g_Config.m_BclCursorTrailMode == 1 && (g_Config.m_BclCursorTrailTrailImage[0] == '\0' || m_Texture.IsNullTexture()))
+	if(g_Config.m_BclCursorTrailMode == 1 && (g_Config.m_BclCursorTrailTrailImage[0] == '\0' || m_Texture.IsNullTexture()))
 	{
 		m_vPoints.clear();
 		m_SampleTime = 0.0f;
