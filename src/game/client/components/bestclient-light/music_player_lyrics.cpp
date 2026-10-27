@@ -6,7 +6,9 @@
 #include <base/str.h>
 #include <base/time.h>
 
+#include <engine/engine.h>
 #include <engine/http.h>
+#include <engine/shared/jobs.h>
 #include <engine/shared/json.h>
 #include <engine/textrender.h>
 
@@ -22,6 +24,7 @@ namespace
 {
 	static constexpr float LYRICS_SLOT_WIDTH = 70.0f;
 	static constexpr float LYRICS_LINE_SLIDE_MS = 260.0f;
+	static constexpr int LYRICS_GLYPHS_PER_FRAME = 16;
 	static constexpr float LYRICS_TITLE_MARQUEE_GAP_FACTOR = 2.5f;
 	static constexpr ColorRGBA LYRICS_PASSED_COLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	static constexpr ColorRGBA LYRICS_UPCOMING_COLOR(0.45f, 0.45f, 0.48f, 1.0f);
@@ -74,6 +77,66 @@ namespace
 		}
 	}
 } // namespace
+
+class CMusicPlayerLyricsParseJob : public IJob
+{
+public:
+	std::string m_Key;
+	bool m_Publish = false;
+	CMusicPlayerLyrics::EDisplayState m_State = CMusicPlayerLyrics::EDisplayState::NotFound;
+	std::vector<CMusicPlayerLyrics::SLine> m_vLines;
+
+	CMusicPlayerLyricsParseJob(std::shared_ptr<IHttpRequest> pRequest, std::string Key) :
+		m_pRequest(std::move(pRequest)), m_Key(std::move(Key))
+	{
+		Abortable(true);
+	}
+
+	void Run() override
+	{
+		if(State() == STATE_ABORTED || !m_pRequest)
+			return;
+		if(m_pRequest->State() != EHttpState::DONE)
+			return;
+
+		json_value *pRoot = m_pRequest->ResultJson();
+		if(State() == STATE_ABORTED)
+		{
+			if(pRoot != nullptr && pRoot != &json_value_none)
+				json_value_free(pRoot);
+			return;
+		}
+
+		CMusicPlayerLyrics::EDisplayState ParsedState = CMusicPlayerLyrics::EDisplayState::NotFound;
+		std::vector<CMusicPlayerLyrics::SLine> vLines;
+		if(pRoot != nullptr && pRoot != &json_value_none && pRoot->type == json_object)
+		{
+			const json_value *pSyncedValue = json_object_get(pRoot, "syncedLyrics");
+			const char *pSynced = "";
+			if(pSyncedValue != nullptr && pSyncedValue != &json_value_none && pSyncedValue->type == json_string)
+			{
+				const char *pString = json_string_get(pSyncedValue);
+				if(pString != nullptr)
+					pSynced = pString;
+			}
+			if(CMusicPlayerLyrics::ParseSyncedLyrics(pSynced, vLines))
+				ParsedState = CMusicPlayerLyrics::EDisplayState::Ready;
+		}
+		if(pRoot != nullptr && pRoot != &json_value_none)
+			json_value_free(pRoot);
+		if(State() == STATE_ABORTED)
+			return;
+
+		m_vLines = std::move(vLines);
+		m_State = ParsedState;
+		m_Publish = true;
+	}
+
+private:
+	std::shared_ptr<IHttpRequest> m_pRequest;
+};
+
+CMusicPlayerLyrics::~CMusicPlayerLyrics() = default;
 
 float CMusicPlayerLyrics::LyricsTextSlotWidth(float Scale, float WidthScale)
 {
@@ -152,7 +215,11 @@ void CMusicPlayerLyrics::Reset()
 	m_RequestKey.clear();
 	m_DisplayState = EDisplayState::Idle;
 	m_vLines.clear();
+	m_Cache.clear();
+	m_FeatureLatched = false;
+	m_TrackLatched = false;
 	ClearActiveTrack();
+	InvalidateLyricsTextWidthCache();
 }
 
 void CMusicPlayerLyrics::ClearActiveTrack()
@@ -161,6 +228,7 @@ void CMusicPlayerLyrics::ClearActiveTrack()
 	m_OutgoingLineIndex = LINE_NONE;
 	m_LineTransitionT = 1.0f;
 	m_LayoutValid = false;
+	m_LayoutStarted = false;
 	m_LayoutText.clear();
 	m_vCharMetrics.clear();
 	m_BaseLineWidth = 0.0f;
@@ -179,21 +247,35 @@ void CMusicPlayerLyrics::ClearLayoutState()
 	m_OutgoingLineIndex = LINE_NONE;
 	m_LineTransitionT = 1.0f;
 	m_LayoutValid = false;
+	m_LayoutStarted = false;
 	m_LayoutText.clear();
 	m_vCharMetrics.clear();
 	m_BaseLineWidth = 0.0f;
 	InvalidateLyricsTextWidthCache();
 }
 
-void CMusicPlayerLyrics::Disable()
+void CMusicPlayerLyrics::SuspendTrack()
 {
-	if(!IsActive() && m_DisplayState == EDisplayState::Idle)
-		return;
 	AbortRequest();
 	m_ActiveKey.clear();
 	m_DisplayState = EDisplayState::Idle;
 	m_vLines.clear();
 	ClearActiveTrack();
+}
+
+void CMusicPlayerLyrics::Disable()
+{
+	m_FeatureLatched = false;
+	m_TrackLatched = false;
+	if(!IsActive() && m_DisplayState == EDisplayState::Idle && m_vLines.empty() && m_Cache.empty())
+		return;
+	AbortRequest();
+	m_ActiveKey.clear();
+	m_DisplayState = EDisplayState::Idle;
+	m_vLines.clear();
+	m_Cache.clear();
+	ClearActiveTrack();
+	InvalidateLyricsTextWidthCache();
 }
 
 void CMusicPlayerLyrics::AbortRequest()
@@ -202,6 +284,11 @@ void CMusicPlayerLyrics::AbortRequest()
 	{
 		m_pRequest->Abort();
 		m_pRequest.reset();
+	}
+	if(m_pParseJob)
+	{
+		m_pParseJob->Abort();
+		m_pParseJob.reset();
 	}
 	m_RequestKey.clear();
 }
@@ -411,13 +498,40 @@ void CMusicPlayerLyrics::StartRequest(IHttp *pHttp, const char *pTitle, const ch
 	pHttp->Run(m_pRequest);
 }
 
-void CMusicPlayerLyrics::ProcessRequest()
+void CMusicPlayerLyrics::ProcessRequest(IEngine *pEngine)
 {
+	if(m_pParseJob)
+	{
+		if(!m_pParseJob->Done())
+			return;
+
+		std::shared_ptr<CMusicPlayerLyricsParseJob> pJob = std::move(m_pParseJob);
+		if(pJob->State() != IJob::STATE_DONE || !pJob->m_Publish || pJob->m_Key.empty())
+		{
+			if(pJob->State() == IJob::STATE_DONE && !pJob->m_Key.empty() && pJob->m_Key == m_ActiveKey)
+			{
+				m_DisplayState = EDisplayState::Offline;
+				m_vLines.clear();
+				ClearActiveTrack();
+			}
+			return;
+		}
+
+		SCacheEntry Entry;
+		Entry.m_State = pJob->m_State;
+		Entry.m_vLines = std::move(pJob->m_vLines);
+		if(m_Cache.size() >= LYRICS_CACHE_MAX)
+			m_Cache.clear();
+		m_Cache[pJob->m_Key] = Entry;
+		if(pJob->m_Key == m_ActiveKey)
+			ApplyCacheEntry(m_Cache[pJob->m_Key]);
+		return;
+	}
+
 	if(!m_pRequest || !m_pRequest->Done())
 		return;
 
-	std::shared_ptr<IHttpRequest> pFinished = m_pRequest;
-	m_pRequest.reset();
+	std::shared_ptr<IHttpRequest> pFinished = std::move(m_pRequest);
 	const std::string FinishedKey = m_RequestKey;
 	m_RequestKey.clear();
 	const bool ApplyToActive = !FinishedKey.empty() && FinishedKey == m_ActiveKey;
@@ -430,7 +544,7 @@ void CMusicPlayerLyrics::ProcessRequest()
 		ClearActiveTrack();
 	};
 
-	if(pFinished->State() != EHttpState::DONE || pFinished->StatusCode() == 0)
+	if(!pFinished || pFinished->State() != EHttpState::DONE || pFinished->StatusCode() == 0)
 	{
 		FailOffline();
 		return;
@@ -443,29 +557,29 @@ void CMusicPlayerLyrics::ProcessRequest()
 		return;
 	}
 
-	SCacheEntry Entry;
-	Entry.m_State = EDisplayState::NotFound;
-	if(StatusCode != 404)
+	if(StatusCode == 404)
 	{
-		json_value *pRoot = pFinished->ResultJson();
-		if(pRoot != nullptr && pRoot != &json_value_none && pRoot->type == json_object)
+		SCacheEntry Entry;
+		Entry.m_State = EDisplayState::NotFound;
+		if(!FinishedKey.empty())
 		{
-			const char *pSynced = JsonStringOrEmpty(json_object_get(pRoot, "syncedLyrics"));
-			if(ParseSyncedLyrics(pSynced, Entry.m_vLines))
-				Entry.m_State = EDisplayState::Ready;
+			if(m_Cache.size() >= LYRICS_CACHE_MAX)
+				m_Cache.clear();
+			m_Cache[FinishedKey] = Entry;
 		}
-		if(pRoot)
-			json_value_free(pRoot);
+		if(ApplyToActive)
+			ApplyCacheEntry(Entry);
+		return;
 	}
 
-	if(!FinishedKey.empty())
+	if(pEngine == nullptr)
 	{
-		if(m_Cache.size() >= LYRICS_CACHE_MAX)
-			m_Cache.clear();
-		m_Cache[FinishedKey] = Entry;
+		FailOffline();
+		return;
 	}
-	if(ApplyToActive)
-		ApplyCacheEntry(Entry);
+
+	m_pParseJob = std::make_shared<CMusicPlayerLyricsParseJob>(std::move(pFinished), FinishedKey);
+	pEngine->AddJob(m_pParseJob);
 }
 
 int64_t CMusicPlayerLyrics::CurrentPositionMs() const
@@ -502,9 +616,33 @@ void CMusicPlayerLyrics::SyncMediaClock(int64_t SnapshotPositionMs, int64_t Dura
 		m_ClockPositionMs = std::min(m_ClockPositionMs, m_ClockDurationMs);
 }
 
-void CMusicPlayerLyrics::Update(IHttp *pHttp, const char *pTitle, const char *pArtist, const char *pAlbum, int64_t DurationMs, int64_t SnapshotPositionMs, bool Playing)
+void CMusicPlayerLyrics::SetActive(bool FeatureOn, bool TrackOn, IHttp *pHttp, IEngine *pEngine, const char *pTitle, const char *pArtist, const char *pAlbum, int64_t DurationMs, int64_t SnapshotPositionMs, bool Playing)
 {
-	ProcessRequest();
+	if(!FeatureOn)
+	{
+		if(m_FeatureLatched)
+			Disable();
+		return;
+	}
+
+	m_FeatureLatched = true;
+	if(!TrackOn)
+	{
+		if(m_TrackLatched)
+		{
+			SuspendTrack();
+			m_TrackLatched = false;
+		}
+		return;
+	}
+
+	m_TrackLatched = true;
+	Update(pHttp, pEngine, pTitle, pArtist, pAlbum, DurationMs, SnapshotPositionMs, Playing);
+}
+
+void CMusicPlayerLyrics::Update(IHttp *pHttp, IEngine *pEngine, const char *pTitle, const char *pArtist, const char *pAlbum, int64_t DurationMs, int64_t SnapshotPositionMs, bool Playing)
+{
+	ProcessRequest(pEngine);
 
 	if(pTitle != nullptr && pTitle[0] != '\0')
 		m_TrackTitle = pTitle;
@@ -656,39 +794,70 @@ void CMusicPlayerLyrics::EnsureLayout(ITextRender *pTextRender, float FontSize, 
 	else
 	{
 		m_LayoutValid = false;
+		m_LayoutStarted = false;
 		return;
 	}
 
 	if(Text.empty())
 	{
 		m_LayoutValid = false;
+		m_LayoutStarted = false;
 		return;
 	}
 
-	if(m_LayoutValid && m_LayoutText == Text && std::fabs(m_LayoutFontSize - FontSize) < 0.01f)
+	const bool NeedGlyphs = !IsFallbackIndex(LineIndex);
+	const bool SameLayout = m_LayoutStarted && m_LayoutText == Text && std::fabs(m_LayoutFontSize - FontSize) < 0.01f;
+	if(SameLayout && m_LayoutValid && (!NeedGlyphs || !m_vCharMetrics.empty()))
 		return;
 
-	m_LayoutText = Text;
-	m_LayoutFontSize = FontSize;
-	m_vCharMetrics.clear();
-	m_BaseLineWidth = pTextRender->TextWidth(FontSize, Text.c_str(), -1, -1.0f);
+	if(!SameLayout)
+	{
+		m_LayoutText = std::move(Text);
+		m_LayoutFontSize = FontSize;
+		m_vCharMetrics.clear();
+		m_BaseLineWidth = pTextRender->TextWidth(FontSize, m_LayoutText.c_str(), -1, -1.0f);
+		m_LayoutStarted = true;
+		m_LayoutValid = false;
+	}
 
-	const char *p = Text.c_str();
+	if(!NeedGlyphs)
+	{
+		m_LayoutValid = true;
+		return;
+	}
+
+	int Budget = LYRICS_GLYPHS_PER_FRAME;
+	const char *p = m_LayoutText.c_str();
+	int Index = 0;
+	bool Finished = true;
 	while(*p)
 	{
+		if(Index >= (int)m_vCharMetrics.size() && Budget <= 0)
+		{
+			Finished = false;
+			break;
+		}
+
 		const char *pPrev = p;
 		const int Code = str_utf8_decode(&p);
 		if(Code == 0)
 			break;
+		if(Index < (int)m_vCharMetrics.size())
+		{
+			++Index;
+			continue;
+		}
 
 		SCharMetric Metric;
-		Metric.m_ByteOffset = (int)(pPrev - Text.c_str());
+		Metric.m_ByteOffset = (int)(pPrev - m_LayoutText.c_str());
 		Metric.m_ByteLength = (int)(p - pPrev);
-		Metric.m_PrefixWidth = pTextRender->TextWidth(FontSize, Text.c_str(), Metric.m_ByteOffset, -1.0f);
+		Metric.m_PrefixWidth = pTextRender->TextWidth(FontSize, m_LayoutText.c_str(), Metric.m_ByteOffset, -1.0f);
 		m_vCharMetrics.push_back(Metric);
+		--Budget;
+		++Index;
 	}
 
-	m_LayoutValid = !m_vCharMetrics.empty();
+	m_LayoutValid = Finished && !m_vCharMetrics.empty();
 }
 
 void CMusicPlayerLyrics::BuildColorSplits(float ProgressChars, float Alpha, std::vector<STextColorSplit> &vOut) const
@@ -832,10 +1001,13 @@ void CMusicPlayerLyrics::Render(ITextRender *pTextRender, CUi *pUi, const CUIRec
 		return;
 
 	EnsureLayout(pTextRender, FontSize, m_CurrentLineIndex);
-	if(!m_LayoutValid || m_vCharMetrics.empty())
+	if(!m_LayoutStarted || m_LayoutText.empty())
+		return;
+	if(!IsFallbackIndex(m_CurrentLineIndex) && m_vCharMetrics.empty())
 		return;
 
 	const bool FallbackMode = IsFallbackIndex(m_CurrentLineIndex);
+	const bool GlyphsReady = m_LayoutValid && !m_vCharMetrics.empty();
 	const bool TitleMarquee = m_CurrentLineIndex == FALLBACK_TITLE && m_LineTransitionT >= 1.0f && m_BaseLineWidth > Area.w + 0.5f;
 	if(TitleMarquee)
 	{
@@ -853,15 +1025,15 @@ void CMusicPlayerLyrics::Render(ITextRender *pTextRender, CUi *pUi, const CUIRec
 
 	const float Progress = IsCountdownIndex(m_CurrentLineIndex) ?
 				       CountdownProgress(m_CurrentLineIndex, CountdownRemainingMs) :
-				       (FallbackMode ? 0.0f : LineProgress(m_CurrentLineIndex, PositionMs));
-	const float ProgressChars = Progress * (float)m_vCharMetrics.size();
+				       (FallbackMode || !GlyphsReady ? 0.0f : LineProgress(m_CurrentLineIndex, PositionMs));
+	const float ProgressChars = GlyphsReady ? Progress * (float)m_vCharMetrics.size() : 0.0f;
 	const float CenterX = Area.x + Area.w * 0.5f;
 	float TextStartX;
 	if(TitleMarquee)
 	{
 		TextStartX = Area.x - m_TitleMarqueeOffset;
 	}
-	else if(IsCountdownIndex(m_CurrentLineIndex) || FallbackMode)
+	else if(IsCountdownIndex(m_CurrentLineIndex) || FallbackMode || !GlyphsReady)
 	{
 		TextStartX = CenterX - m_BaseLineWidth * 0.5f;
 	}
@@ -967,7 +1139,7 @@ void CMusicPlayerLyrics::Render(ITextRender *pTextRender, CUi *pUi, const CUIRec
 
 	const float ActiveAlpha = m_OutgoingLineIndex != LINE_NONE ? SlideT : 1.0f;
 	int ActiveColorMode = 0;
-	if(IsMutedFallback(m_CurrentLineIndex))
+	if(IsMutedFallback(m_CurrentLineIndex) || (!FallbackMode && !IsCountdownIndex(m_CurrentLineIndex) && !GlyphsReady))
 		ActiveColorMode = 1;
 	else if(m_CurrentLineIndex == FALLBACK_TITLE || m_CurrentLineIndex == FALLBACK_BRAND)
 		ActiveColorMode = 2;

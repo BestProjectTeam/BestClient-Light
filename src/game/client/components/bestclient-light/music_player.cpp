@@ -4099,21 +4099,24 @@ void CMusicPlayer::OnUpdate()
 	}
 
 	m_pImpl->UpdateArtwork(this);
-	const bool LyricsAllowed = Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK;
-	if(LyricsAllowed && g_Config.m_BclMusicPlayerShowLyrics != 0 && m_pImpl->m_Snapshot.m_Valid)
+	if(g_Config.m_BclMusicPlayerShowLyrics == 0)
 	{
-		m_pImpl->m_Lyrics.Update(
+		m_pImpl->m_Lyrics.SetActive(false, false, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, false);
+	}
+	else
+	{
+		const bool LyricsAllowed = Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK;
+		m_pImpl->m_Lyrics.SetActive(
+			true,
+			LyricsAllowed && m_pImpl->m_Snapshot.m_Valid,
 			Http(),
+			Engine(),
 			m_pImpl->m_Snapshot.m_Title.c_str(),
 			m_pImpl->m_Snapshot.m_Artist.c_str(),
 			m_pImpl->m_Snapshot.m_Album.c_str(),
 			m_pImpl->m_Snapshot.m_DurationMs,
 			m_pImpl->DisplayPositionMs(),
 			m_pImpl->m_Snapshot.m_PlaybackState == EMusicPlaybackState::PLAYING);
-	}
-	else
-	{
-		m_pImpl->m_Lyrics.Disable();
 	}
 	m_pImpl->UpdateHudReservation(this);
 }

@@ -15,7 +15,9 @@
 class IHttpRequest;
 class CUi;
 class IHttp;
+class IEngine;
 class ITextRender;
+class CMusicPlayerLyricsParseJob;
 struct STextColorSplit;
 
 class CMusicPlayerLyrics
@@ -36,15 +38,19 @@ public:
 		std::string m_Text;
 	};
 
+	CMusicPlayerLyrics() = default;
+	~CMusicPlayerLyrics();
+
 	void Reset();
 	void ClearActiveTrack();
 	void ClearLayoutState();
 	void Disable();
-	void Update(IHttp *pHttp, const char *pTitle, const char *pArtist, const char *pAlbum, int64_t DurationMs, int64_t SnapshotPositionMs, bool Playing);
+	void SetActive(bool FeatureOn, bool TrackOn, IHttp *pHttp, IEngine *pEngine, const char *pTitle, const char *pArtist, const char *pAlbum, int64_t DurationMs, int64_t SnapshotPositionMs, bool Playing);
+	void Update(IHttp *pHttp, IEngine *pEngine, const char *pTitle, const char *pArtist, const char *pAlbum, int64_t DurationMs, int64_t SnapshotPositionMs, bool Playing);
 	void AbortRequest();
 
 	EDisplayState State() const { return m_DisplayState; }
-	bool IsActive() const { return !m_ActiveKey.empty() || m_pRequest != nullptr; }
+	bool IsActive() const { return !m_ActiveKey.empty() || m_pRequest != nullptr || m_pParseJob != nullptr; }
 	bool HasSyncedLines() const { return !m_vLines.empty(); }
 	int64_t CurrentPositionMs() const;
 
@@ -97,7 +103,8 @@ private:
 	int ResolveDisplayLineIndex() const;
 	void ApplyCacheEntry(const SCacheEntry &Entry);
 	void StartRequest(IHttp *pHttp, const char *pTitle, const char *pArtist, const char *pAlbum, int64_t DurationMs);
-	void ProcessRequest();
+	void ProcessRequest(IEngine *pEngine);
+	void SuspendTrack();
 	void SyncMediaClock(int64_t SnapshotPositionMs, int64_t DurationMs, bool Playing, bool ForceReset);
 	void EnsureLayout(ITextRender *pTextRender, float FontSize, int LineIndex);
 	int FindLineIndex(int64_t PositionMs) const;
@@ -113,7 +120,10 @@ private:
 	EDisplayState m_DisplayState = EDisplayState::Idle;
 	std::vector<SLine> m_vLines;
 	std::shared_ptr<IHttpRequest> m_pRequest;
+	std::shared_ptr<CMusicPlayerLyricsParseJob> m_pParseJob;
 	std::unordered_map<std::string, SCacheEntry> m_Cache;
+	bool m_FeatureLatched = false;
+	bool m_TrackLatched = false;
 	float m_NotFoundDisplayMs = 0.0f;
 	float m_OfflineDisplayMs = 0.0f;
 	float m_TitleMarqueeOffset = 0.0f;
@@ -129,6 +139,7 @@ private:
 
 	std::string m_LayoutText;
 	float m_LayoutFontSize = 0.0f;
+	bool m_LayoutStarted = false;
 	std::vector<SCharMetric> m_vCharMetrics;
 	std::vector<STextColorSplit> m_vColorSplits;
 	float m_BaseLineWidth = 0.0f;
