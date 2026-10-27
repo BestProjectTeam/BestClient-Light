@@ -52,12 +52,23 @@ class CChatBubbles : public CComponent
 	float GetOffset(int ClientId) const;
 	float GetAlpha(int64_t Time) const;
 
-	void UpdateBubbleOffsets(int ClientId, float InputBubbleHeight = 0.0f);
+	void UpdateBubbleOffsets(int ClientId);
 
 	void AddBubble(int ClientId, int Team, const char *pText);
 
+	void DeleteInputPreview();
+	bool EnsureInputPreview(const char *pText, int FontSize);
+	void ReleaseUnvisitedInputPreview();
+
 	void Reset();
 	int m_UseChatBubbles = 0;
+	bool m_InputPreviewVisited = false;
+	STextContainerIndex m_InputTextContainer;
+	char m_aInputText[MAX_CHAT_LENGTH] = "";
+	int m_InputFontSize = 0;
+	float m_InputTextW = 0.0f;
+	float m_InputTextH = 0.0f;
+	float m_InputBubbleHeight = 0.0f;
 
 	bool LineHighlighted(int ClientId, const char *pLine) const;
 	float BubbleRounding() const;

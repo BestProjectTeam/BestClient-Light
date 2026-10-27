@@ -72,11 +72,69 @@ void CChatBubbles::OnMessage(int MsgType, void *pRawMsg)
 	}
 }
 
-void CChatBubbles::UpdateBubbleOffsets(int ClientId, float InputBubbleHeight)
+void CChatBubbles::DeleteInputPreview()
+{
+	if(m_InputTextContainer.Valid())
+		TextRender()->DeleteTextContainer(m_InputTextContainer);
+	m_aInputText[0] = '\0';
+	m_InputFontSize = 0;
+	m_InputTextW = 0.0f;
+	m_InputTextH = 0.0f;
+	m_InputBubbleHeight = 0.0f;
+}
+
+bool CChatBubbles::EnsureInputPreview(const char *pText, int FontSize)
+{
+	if(m_InputTextContainer.Valid() && m_InputFontSize == FontSize && str_comp(m_aInputText, pText) == 0)
+		return true;
+
+	CTextCursor Cursor;
+	Cursor.SetPosition(vec2(0, 0));
+	Cursor.m_FontSize = FontSize;
+	Cursor.m_Flags = TEXTFLAG_RENDER;
+	Cursor.m_LineWidth = 500.0f - FontSize * 2.0f;
+
+	const CScreenRect ScreenRect = Graphics()->GetScreen();
+	Graphics()->MapScreenToInterface(GameClient()->m_Camera.m_Center.x, GameClient()->m_Camera.m_Center.y);
+	if(m_InputTextContainer.Valid())
+		TextRender()->RecreateTextContainerSoft(m_InputTextContainer, &Cursor, pText);
+	else
+		TextRender()->CreateTextContainer(m_InputTextContainer, &Cursor, pText);
+	Graphics()->MapScreen(ScreenRect);
+
+	if(!m_InputTextContainer.Valid())
+	{
+		m_aInputText[0] = '\0';
+		m_InputFontSize = 0;
+		m_InputTextW = 0.0f;
+		m_InputTextH = 0.0f;
+		return false;
+	}
+
+	const STextBoundingBox BoundingBox = TextRender()->GetBoundingBoxTextContainer(m_InputTextContainer);
+	m_InputTextW = BoundingBox.m_W;
+	m_InputTextH = BoundingBox.m_H;
+	str_copy(m_aInputText, pText, sizeof(m_aInputText));
+	m_InputFontSize = FontSize;
+	return true;
+}
+
+void CChatBubbles::ReleaseUnvisitedInputPreview()
+{
+	if(!m_InputTextContainer.Valid() && m_InputBubbleHeight <= 0.0f)
+		return;
+
+	const int LocalId = GameClient()->m_Snap.m_LocalClientId;
+	DeleteInputPreview();
+	if(LocalId >= 0 && LocalId < MAX_CLIENTS)
+		UpdateBubbleOffsets(LocalId);
+}
+
+void CChatBubbles::UpdateBubbleOffsets(int ClientId)
 {
 	float Offset = 0.0f;
-	if(InputBubbleHeight > 0.0f)
-		Offset += InputBubbleHeight + BcChatBubbleMarginBetween;
+	if(ClientId == GameClient()->m_Snap.m_LocalClientId && m_InputBubbleHeight > 0.0f)
+		Offset += m_InputBubbleHeight + BcChatBubbleMarginBetween;
 
 	const int FontSize = g_Config.m_BclChatBubbleSize;
 	for(CBcChatBubble &Bubble : m_aChatBubbles[ClientId])
@@ -178,64 +236,69 @@ void CChatBubbles::AddBubble(int ClientId, int Team, const char *pText)
 
 void CChatBubbles::RenderCurInput(float Y)
 {
-	if(!Chat()->IsActive())
+	m_InputPreviewVisited = true;
+
+	const int LocalId = GameClient()->m_Snap.m_LocalClientId;
+	const bool LocalOk = LocalId >= 0 && LocalId < MAX_CLIENTS;
+	if(!Chat()->IsActive() || !LocalOk)
+	{
+		if(m_InputTextContainer.Valid() || m_InputBubbleHeight > 0.0f)
+		{
+			DeleteInputPreview();
+			if(LocalOk)
+				UpdateBubbleOffsets(LocalId);
+		}
 		return;
+	}
 
 	const char *pText = Chat()->m_Input.GetString();
 	if(!pText || pText[0] == '\0')
 	{
-		UpdateBubbleOffsets(GameClient()->m_Snap.m_LocalClientId);
+		if(m_InputTextContainer.Valid() || m_InputBubbleHeight > 0.0f)
+		{
+			DeleteInputPreview();
+			UpdateBubbleOffsets(LocalId);
+		}
 		return;
 	}
 
 	const int FontSize = g_Config.m_BclChatBubbleSize;
-	const int LocalId = GameClient()->m_Snap.m_LocalClientId;
-	if(LocalId < 0 || LocalId >= MAX_CLIENTS)
+	if(!EnsureInputPreview(pText, FontSize))
+	{
+		if(m_InputBubbleHeight > 0.0f)
+		{
+			m_InputBubbleHeight = 0.0f;
+			UpdateBubbleOffsets(LocalId);
+		}
 		return;
+	}
 
 	vec2 Position = GameClient()->m_aClients[LocalId].m_RenderPos;
-	CTextCursor Cursor;
-	STextContainerIndex TextContainerIndex;
+	Position.x -= m_InputTextW / 2.0f + FontSize / 15.0f;
+	const float InputBubbleHeight = m_InputTextH + FontSize;
+	const float TargetY = Y - InputBubbleHeight;
+	const float Rounding = BubbleRounding();
 
-	const CScreenRect ScreenRect = Graphics()->GetScreen();
-	Graphics()->MapScreenToInterface(GameClient()->m_Camera.m_Center.x, GameClient()->m_Camera.m_Center.y);
-
-	Cursor.SetPosition(vec2(0, 0));
-	Cursor.m_FontSize = FontSize;
-	Cursor.m_Flags = TEXTFLAG_RENDER;
-	Cursor.m_LineWidth = 500.0f - FontSize * 2.0f;
-	TextRender()->CreateOrAppendTextContainer(TextContainerIndex, &Cursor, pText);
-	Graphics()->MapScreen(ScreenRect);
-
-	if(TextContainerIndex.Valid())
+	ColorRGBA BgColor(0.0f, 0.0f, 0.0f, 0.15f);
+	ColorRGBA TextColor(1.0f, 1.0f, 1.0f, 0.75f);
+	ColorRGBA OutlineColor(0.0f, 0.0f, 0.0f, 0.25f);
+	if(g_Config.m_BclChatBubbleCustomColors)
 	{
-		const STextBoundingBox BoundingBox = TextRender()->GetBoundingBoxTextContainer(TextContainerIndex);
-		Position.x -= BoundingBox.m_W / 2.0f + g_Config.m_BclChatBubbleSize / 15.0f;
-		const float InputBubbleHeight = BoundingBox.m_H + FontSize;
-		const float TargetY = Y - InputBubbleHeight;
-		const float Rounding = BubbleRounding();
-
-		ColorRGBA BgColor(0.0f, 0.0f, 0.0f, 0.15f);
-		ColorRGBA TextColor(1.0f, 1.0f, 1.0f, 0.75f);
-		ColorRGBA OutlineColor(0.0f, 0.0f, 0.0f, 0.25f);
-		if(g_Config.m_BclChatBubbleCustomColors)
-		{
-			BgColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleBgColor, true)).WithAlpha(0.15f);
-			TextColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleTextColor, true)).WithAlpha(0.75f);
-			OutlineColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleOutlineColor, true)).WithAlpha(0.25f);
-		}
-
-		Graphics()->DrawRect(Position.x - FontSize / 2.0f, TargetY - FontSize / 2.0f,
-			BoundingBox.m_W + FontSize * 1.20f, BoundingBox.m_H + FontSize,
-			BgColor, IGraphics::CORNER_ALL, Rounding);
-
-		TextRender()->RenderTextContainer(TextContainerIndex, TextColor, OutlineColor, Position.x, TargetY);
-		UpdateBubbleOffsets(LocalId, InputBubbleHeight);
+		BgColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleBgColor, true)).WithAlpha(0.15f);
+		TextColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleTextColor, true)).WithAlpha(0.75f);
+		OutlineColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_BclChatBubbleOutlineColor, true)).WithAlpha(0.25f);
 	}
-	else
-		UpdateBubbleOffsets(LocalId);
 
-	TextRender()->DeleteTextContainer(TextContainerIndex);
+	Graphics()->DrawRect(Position.x - FontSize / 2.0f, TargetY - FontSize / 2.0f,
+		m_InputTextW + FontSize * 1.20f, m_InputTextH + FontSize,
+		BgColor, IGraphics::CORNER_ALL, Rounding);
+
+	TextRender()->RenderTextContainer(m_InputTextContainer, TextColor, OutlineColor, Position.x, TargetY);
+	if(m_InputBubbleHeight != InputBubbleHeight)
+	{
+		m_InputBubbleHeight = InputBubbleHeight;
+		UpdateBubbleOffsets(LocalId);
+	}
 }
 
 void CChatBubbles::ExpireBubbles(int ClientId)
@@ -368,7 +431,12 @@ void CChatBubbles::OnRender()
 	if(!g_Config.m_BclChatBubbles)
 		return;
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
+	{
+		ReleaseUnvisitedInputPreview();
 		return;
+	}
+
+	m_InputPreviewVisited = false;
 
 	const CScreenRect ScreenRect = Graphics()->GetScreen();
 
@@ -390,11 +458,15 @@ void CChatBubbles::OnRender()
 		RenderChatBubbles(ClientId);
 	}
 
+	if(!m_InputPreviewVisited)
+		ReleaseUnvisitedInputPreview();
+
 	Graphics()->MapScreen(ScreenRect);
 }
 
 void CChatBubbles::Reset()
 {
+	DeleteInputPreview();
 	for(int ClientId = 0; ClientId < MAX_CLIENTS; ++ClientId)
 	{
 		for(CBcChatBubble &Bubble : m_aChatBubbles[ClientId])
