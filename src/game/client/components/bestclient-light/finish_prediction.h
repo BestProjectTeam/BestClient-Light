@@ -9,7 +9,11 @@
 #include <game/client/component.h>
 #include <game/client/ui_rect.h>
 
+#include <memory>
 #include <vector>
+
+struct SFinishPathBuild;
+class CFinishPredictionPathJob;
 
 class CFinishPrediction : public CComponent
 {
@@ -18,6 +22,7 @@ public:
 	{
 		bool m_Valid = false;
 		bool m_HasPredictedTime = false;
+		bool m_TimePending = false;
 		bool m_ShowPlayerName = false;
 		float m_Progress = 0.0f;
 		int64_t m_CurrentTimeMs = 0;
@@ -27,6 +32,7 @@ public:
 	};
 
 	int Sizeof() const override { return sizeof(*this); }
+	~CFinishPrediction() override;
 
 	CUIRect GetHudEditorRect() const { return GetRect(true); }
 	void RenderPreview() { Render(true); }
@@ -35,6 +41,7 @@ public:
 	void OnReset() override;
 	void OnRender() override;
 	void OnNewSnapshot() override;
+	void OnShutdown() override;
 	void OnMessage(int MsgType, void *pRawMsg) override;
 	void RequestPathRebuild();
 
@@ -42,9 +49,13 @@ private:
 	CUIRect GetRect(bool ForcePreview) const;
 	void Render(bool ForcePreview);
 
+	bool WantsPathData() const;
+	void ResetPathCache();
+	void DiscardPathJob();
+	void PollPathJob();
+	void PublishPath(SFinishPathBuild &Build);
 	bool RebuildPathData();
 	bool EnsurePathData();
-	void MarkJumpableFreezeWalls();
 	bool IsFreezeTileIndex(int Index) const;
 	float GetDistanceAtPos(vec2 Pos) const;
 	float GetStartDistance() const;
@@ -70,6 +81,10 @@ private:
 	bool m_PathBuildAttempted = false;
 	bool m_PathBuiltWithFreezeWalls = false;
 	bool m_PathRebuildPending = false;
+	int m_PathGeneration = 0;
+	float m_CachedMapSpan = -1.0f;
+	float m_CachedStartTileDistance = -1.0f;
+	std::shared_ptr<CFinishPredictionPathJob> m_pPathJob;
 	int m_TrackedClientId = -1;
 	int m_RaceStartTick = -1;
 	float m_RaceStartDistance = -1.0f;

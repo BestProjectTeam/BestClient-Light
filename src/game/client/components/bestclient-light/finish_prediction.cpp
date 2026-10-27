@@ -4,11 +4,14 @@
 #include "fast_practice.h"
 
 #include <base/math.h>
+#include <base/mem.h>
 #include <base/str.h>
 #include <base/time.h>
 
+#include <engine/engine.h>
 #include <engine/graphics.h>
 #include <engine/shared/config.h>
+#include <engine/shared/jobs.h>
 #include <generated/protocol.h>
 #include <generated/protocol7.h>
 
@@ -79,18 +82,9 @@ CFastPractice &FinishPredictionFastPractice(CGameClient *pGameClient)
 
 void CFinishPrediction::OnReset()
 {
-	m_vDistances.clear();
-	m_vPassable.clear();
-	m_vIsFreeze.clear();
-	m_vFreezeJumpable.clear();
-	m_vStartTiles.clear();
-	m_vFinishTiles.clear();
-	m_MapWidth = 0;
-	m_MapHeight = 0;
-	m_PathReady = false;
-	m_PathBuildAttempted = false;
-	m_PathBuiltWithFreezeWalls = false;
-	m_PathRebuildPending = false;
+	DiscardPathJob();
+	++m_PathGeneration;
+	ResetPathCache();
 	m_TrackedClientId = -1;
 	m_RaceStartTick = -1;
 	m_RaceStartDistance = -1.0f;
@@ -108,8 +102,19 @@ void CFinishPrediction::OnReset()
 
 void CFinishPrediction::OnNewSnapshot()
 {
-	if(g_Config.m_BclFinishPrediction != 0 || GameClient()->m_Minimap.ConsumesProgress())
+	if(WantsPathData())
 		EnsurePathData();
+	else if(m_pPathJob || m_PathReady || m_PathBuildAttempted || m_MapWidth != 0 || !m_vDistances.empty())
+	{
+		DiscardPathJob();
+		++m_PathGeneration;
+		ResetPathCache();
+	}
+}
+
+void CFinishPrediction::OnShutdown()
+{
+	DiscardPathJob();
 }
 
 void CFinishPrediction::OnMessage(int MsgType, void *pRawMsg)
@@ -158,10 +163,10 @@ void CFinishPrediction::ResetState(bool ClearFinishedRace)
 
 void CFinishPrediction::RequestPathRebuild()
 {
+	DiscardPathJob();
+	++m_PathGeneration;
+	ResetPathCache();
 	m_PathRebuildPending = true;
-	m_PathReady = false;
-	m_PathBuildAttempted = false;
-	m_CachedStateValid = false;
 }
 
 bool CFinishPrediction::IsFreezeTileIndex(int Index) const
@@ -169,12 +174,51 @@ bool CFinishPrediction::IsFreezeTileIndex(int Index) const
 	return Index >= 0 && Index < (int)m_vIsFreeze.size() && m_vIsFreeze[Index] != 0;
 }
 
-void CFinishPrediction::MarkJumpableFreezeWalls()
+struct SFinishPathBuild
 {
-	const int MapSize = m_MapWidth * m_MapHeight;
+	int m_Width = 0;
+	int m_Height = 0;
+	bool m_PreferJumpableFreeze = false;
+	std::vector<CTile> m_vGameTiles;
+	std::vector<CTile> m_vFrontTiles;
+	bool (*m_pfnAbort)(void *) = nullptr;
+	void *m_pAbortUser = nullptr;
+
+	std::vector<int> m_vDistances;
+	std::vector<unsigned char> m_vPassable;
+	std::vector<unsigned char> m_vIsFreeze;
+	std::vector<unsigned char> m_vFreezeJumpable;
+	std::vector<ivec2> m_vStartTiles;
+	std::vector<ivec2> m_vFinishTiles;
+	bool m_Ready = false;
+	float m_MapSpan = -1.0f;
+	float m_StartTileDistance = -1.0f;
+
+	bool AbortRequested() const
+	{
+		return m_pfnAbort != nullptr && m_pfnAbort(m_pAbortUser);
+	}
+
+	int GameTile(int Index) const
+	{
+		return m_vGameTiles[Index].m_Index;
+	}
+
+	int FrontTile(int Index) const
+	{
+		return m_vFrontTiles[Index].m_Index;
+	}
+
+	bool MarkJumpableFreezeWalls();
+	bool Execute();
+};
+
+bool SFinishPathBuild::MarkJumpableFreezeWalls()
+{
+	const int MapSize = m_Width * m_Height;
 	m_vFreezeJumpable.assign(MapSize, 0);
-	if(g_Config.m_BclFinishPredictionConsiderFreezeWalls == 0 || MapSize <= 0)
-		return;
+	if(!m_PreferJumpableFreeze || MapSize <= 0)
+		return !AbortRequested();
 
 	static const ivec2 s_aDirs4[] = {
 		{1, 0}, {-1, 0}, {0, 1}, {0, -1},
@@ -190,16 +234,18 @@ void CFinishPrediction::MarkJumpableFreezeWalls()
 	vFreezeIndices.reserve(MapSize / 8);
 
 	auto InBounds = [&](int X, int Y) {
-		return X >= 0 && X < m_MapWidth && Y >= 0 && Y < m_MapHeight;
+		return X >= 0 && X < m_Width && Y >= 0 && Y < m_Height;
 	};
-	auto Idx = [&](int X, int Y) { return Y * m_MapWidth + X; };
+	auto Idx = [&](int X, int Y) { return Y * m_Width + X; };
 
 	for(int Index = 0; Index < MapSize; ++Index)
 	{
-		const int GameTile = Collision()->GetTileIndex(Index);
-		const int FrontTile = Collision()->GetFrontTileIndex(Index);
-		const bool HardBlocked = IsFinishPredictionHardBlocked(GameTile, FrontTile);
-		const bool Freeze = !HardBlocked && IsFinishPredictionFreezeTile(GameTile, FrontTile);
+		if((Index & 255) == 0 && AbortRequested())
+			return false;
+		const int GameTileIndex = GameTile(Index);
+		const int FrontTileIndex = FrontTile(Index);
+		const bool HardBlocked = IsFinishPredictionHardBlocked(GameTileIndex, FrontTileIndex);
+		const bool Freeze = !HardBlocked && IsFinishPredictionFreezeTile(GameTileIndex, FrontTileIndex);
 		vIsFreeze[Index] = Freeze ? 1 : 0;
 		vBasePassable[Index] = (!HardBlocked && !Freeze) ? 1 : 0;
 		if(Freeze)
@@ -224,8 +270,8 @@ void CFinishPrediction::MarkJumpableFreezeWalls()
 		while(Head < Queue.size() && VisitedCount < MaxVisit)
 		{
 			const int Cur = Queue[Head++];
-			const int cx = Cur % m_MapWidth;
-			const int cy = Cur / m_MapWidth;
+			const int cx = Cur % m_Width;
+			const int cy = Cur / m_Width;
 			for(const ivec2 &Dir : s_aDirs4)
 			{
 				const int nx = cx + Dir.x;
@@ -247,8 +293,10 @@ void CFinishPrediction::MarkJumpableFreezeWalls()
 
 	for(int Index : vFreezeIndices)
 	{
-		const int x = Index % m_MapWidth;
-		const int y = Index / m_MapWidth;
+		if(AbortRequested())
+			return false;
+		const int x = Index % m_Width;
+		const int y = Index / m_Width;
 
 		bool HasSupport = false;
 		for(const ivec2 &Dir : s_aDirs8)
@@ -258,9 +306,7 @@ void CFinishPrediction::MarkJumpableFreezeWalls()
 			if(!InBounds(nx, ny))
 				continue;
 			const int nIndex = Idx(nx, ny);
-			const int GameTile = Collision()->GetTileIndex(nIndex);
-			const int FrontTile = Collision()->GetFrontTileIndex(nIndex);
-			if(IsFinishPredictionSupportTile(GameTile, FrontTile))
+			if(IsFinishPredictionSupportTile(GameTile(nIndex), FrontTile(nIndex)))
 			{
 				HasSupport = true;
 				break;
@@ -308,9 +354,10 @@ void CFinishPrediction::MarkJumpableFreezeWalls()
 		if(NeedsJump)
 			m_vFreezeJumpable[Index] = 1;
 	}
+	return !AbortRequested();
 }
 
-bool CFinishPrediction::RebuildPathData()
+bool SFinishPathBuild::Execute()
 {
 	m_vDistances.clear();
 	m_vPassable.clear();
@@ -318,20 +365,16 @@ bool CFinishPrediction::RebuildPathData()
 	m_vFreezeJumpable.clear();
 	m_vStartTiles.clear();
 	m_vFinishTiles.clear();
-	m_MapWidth = 0;
-	m_MapHeight = 0;
-	m_PathReady = false;
-	m_PathBuildAttempted = true;
-	m_PathBuiltWithFreezeWalls = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
-	m_PathRebuildPending = false;
-	m_CachedStateValid = false;
-
-	if(!Collision() || Collision()->GetWidth() <= 0 || Collision()->GetHeight() <= 0)
+	m_Ready = false;
+	m_MapSpan = -1.0f;
+	m_StartTileDistance = -1.0f;
+	if(AbortRequested())
 		return false;
 
-	m_MapWidth = Collision()->GetWidth();
-	m_MapHeight = Collision()->GetHeight();
-	const int MapSize = m_MapWidth * m_MapHeight;
+	const int MapSize = m_Width * m_Height;
+	if(MapSize <= 0 || (int)m_vGameTiles.size() != MapSize || (int)m_vFrontTiles.size() != MapSize)
+		return true;
+
 	m_vDistances.assign(MapSize, -1);
 	m_vPassable.assign(MapSize, 0);
 	m_vIsFreeze.assign(MapSize, 0);
@@ -339,20 +382,22 @@ bool CFinishPrediction::RebuildPathData()
 
 	using TDistanceNode = std::pair<int, int>;
 	std::priority_queue<TDistanceNode, std::vector<TDistanceNode>, std::greater<>> PriorityQueue;
-	for(int y = 0; y < m_MapHeight; ++y)
+	for(int y = 0; y < m_Height; ++y)
 	{
-		for(int x = 0; x < m_MapWidth; ++x)
+		if(AbortRequested())
+			return false;
+		for(int x = 0; x < m_Width; ++x)
 		{
-			const int Index = y * m_MapWidth + x;
-			const int GameTile = Collision()->GetTileIndex(Index);
-			const int FrontTile = Collision()->GetFrontTileIndex(Index);
-			const bool HardBlocked = IsFinishPredictionHardBlocked(GameTile, FrontTile);
-			const bool Freeze = !HardBlocked && IsFinishPredictionFreezeTile(GameTile, FrontTile);
+			const int Index = y * m_Width + x;
+			const int GameTileIndex = GameTile(Index);
+			const int FrontTileIndex = FrontTile(Index);
+			const bool HardBlocked = IsFinishPredictionHardBlocked(GameTileIndex, FrontTileIndex);
+			const bool Freeze = !HardBlocked && IsFinishPredictionFreezeTile(GameTileIndex, FrontTileIndex);
 			m_vPassable[Index] = HardBlocked ? 0 : 1;
 			m_vIsFreeze[Index] = Freeze ? 1 : 0;
 
-			const bool StartTile = GameTile == TILE_START || FrontTile == TILE_START;
-			const bool FinishTile = GameTile == TILE_FINISH || FrontTile == TILE_FINISH;
+			const bool StartTile = GameTileIndex == TILE_START || FrontTileIndex == TILE_START;
+			const bool FinishTile = GameTileIndex == TILE_FINISH || FrontTileIndex == TILE_FINISH;
 			if(StartTile)
 				m_vStartTiles.emplace_back(x, y);
 			if(FinishTile && m_vPassable[Index] != 0)
@@ -364,7 +409,8 @@ bool CFinishPrediction::RebuildPathData()
 		}
 	}
 
-	MarkJumpableFreezeWalls();
+	if(!MarkJumpableFreezeWalls())
+		return false;
 
 	if(PriorityQueue.empty())
 	{
@@ -372,7 +418,7 @@ bool CFinishPrediction::RebuildPathData()
 		m_vPassable.clear();
 		m_vIsFreeze.clear();
 		m_vFreezeJumpable.clear();
-		return false;
+		return true;
 	}
 
 	struct SDir
@@ -390,29 +436,30 @@ bool CFinishPrediction::RebuildPathData()
 		{{-1, 1}, 14},
 		{{-1, -1}, 14},
 	};
-	const bool PreferJumpableFreeze = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
 	while(!PriorityQueue.empty())
 	{
+		if(AbortRequested())
+			return false;
 		const auto [CurDist, Index] = PriorityQueue.top();
 		PriorityQueue.pop();
 		if(Index < 0 || Index >= MapSize || m_vDistances[Index] != CurDist)
 			continue;
-		const int TileX = Index % m_MapWidth;
-		const int TileY = Index / m_MapWidth;
+		const int TileX = Index % m_Width;
+		const int TileY = Index / m_Width;
 		for(const SDir &DirInfo : s_aDirs)
 		{
 			const ivec2 Dir = DirInfo.m_Dir;
 			const int NextX = TileX + Dir.x;
 			const int NextY = TileY + Dir.y;
-			if(NextX < 0 || NextX >= m_MapWidth || NextY < 0 || NextY >= m_MapHeight)
+			if(NextX < 0 || NextX >= m_Width || NextY < 0 || NextY >= m_Height)
 				continue;
-			const int NextIndex = NextY * m_MapWidth + NextX;
+			const int NextIndex = NextY * m_Width + NextX;
 			if(m_vPassable[NextIndex] == 0)
 				continue;
 			if(Dir.x != 0 && Dir.y != 0)
 			{
-				const int SideIndexX = TileY * m_MapWidth + NextX;
-				const int SideIndexY = NextY * m_MapWidth + TileX;
+				const int SideIndexX = TileY * m_Width + NextX;
+				const int SideIndexY = NextY * m_Width + TileX;
 				if(m_vPassable[SideIndexX] == 0 || m_vPassable[SideIndexY] == 0)
 					continue;
 			}
@@ -420,7 +467,7 @@ bool CFinishPrediction::RebuildPathData()
 			int StepCost = DirInfo.m_Cost;
 			if(m_vIsFreeze[NextIndex])
 			{
-				if(PreferJumpableFreeze && m_vFreezeJumpable[NextIndex])
+				if(m_PreferJumpableFreeze && m_vFreezeJumpable[NextIndex])
 					StepCost = FINISH_PREDICTION_FREEZE_JUMP_COST;
 				else
 					StepCost = DirInfo.m_Cost + 6;
@@ -433,29 +480,259 @@ bool CFinishPrediction::RebuildPathData()
 		}
 	}
 
-	m_PathReady = true;
+	if(AbortRequested())
+		return false;
+
+	int MaxDist = -1;
+	for(int Dist : m_vDistances)
+	{
+		if(Dist > MaxDist)
+			MaxDist = Dist;
+	}
+	m_MapSpan = MaxDist >= 0 ? MaxDist / 10.0f : -1.0f;
+
+	float BestStart = -1.0f;
+	for(const ivec2 &StartTile : m_vStartTiles)
+	{
+		const int Index = StartTile.y * m_Width + StartTile.x;
+		if(Index < 0 || Index >= (int)m_vDistances.size())
+			continue;
+		const int Dist = m_vDistances[Index];
+		if(Dist < 0)
+			continue;
+		const float DistanceTiles = Dist / 10.0f;
+		if(BestStart < 0.0f || DistanceTiles < BestStart)
+			BestStart = DistanceTiles;
+	}
+	m_StartTileDistance = BestStart > 0.0f ? BestStart : -1.0f;
+	m_Ready = true;
 	return true;
+}
+
+static bool FinishPredictionPathJobAbort(void *pUser);
+
+class CFinishPredictionPathJob : public IJob
+{
+public:
+	int m_Generation = 0;
+	bool m_Success = false;
+	SFinishPathBuild m_Build;
+
+	explicit CFinishPredictionPathJob(int Generation) :
+		m_Generation(Generation)
+	{
+		Abortable(true);
+	}
+
+	void Run() override
+	{
+		if(State() == STATE_ABORTED)
+			return;
+		m_Build.m_pfnAbort = FinishPredictionPathJobAbort;
+		m_Build.m_pAbortUser = this;
+		m_Success = m_Build.Execute();
+	}
+};
+
+static bool FinishPredictionPathJobAbort(void *pUser)
+{
+	return static_cast<CFinishPredictionPathJob *>(pUser)->State() == IJob::STATE_ABORTED;
+}
+
+static bool CopyFinishPathTiles(CCollision *pCollision, SFinishPathBuild &Build)
+{
+	if(pCollision == nullptr || pCollision->GameLayer() == nullptr)
+		return false;
+	Build.m_Width = pCollision->GetWidth();
+	Build.m_Height = pCollision->GetHeight();
+	const int MapSize = Build.m_Width * Build.m_Height;
+	if(MapSize <= 0)
+		return false;
+	Build.m_PreferJumpableFreeze = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
+	Build.m_vGameTiles.resize(MapSize);
+	mem_copy(Build.m_vGameTiles.data(), pCollision->GameLayer(), (size_t)MapSize * sizeof(CTile));
+	Build.m_vFrontTiles.resize(MapSize);
+	if(pCollision->FrontLayer() != nullptr)
+		mem_copy(Build.m_vFrontTiles.data(), pCollision->FrontLayer(), (size_t)MapSize * sizeof(CTile));
+	else
+		mem_zero(Build.m_vFrontTiles.data(), (size_t)MapSize * sizeof(CTile));
+	return true;
+}
+
+bool CFinishPrediction::WantsPathData() const
+{
+	return g_Config.m_BclFinishPrediction != 0 || GameClient()->m_Minimap.ConsumesProgress();
+}
+
+void CFinishPrediction::ResetPathCache()
+{
+	m_vDistances.clear();
+	m_vPassable.clear();
+	m_vIsFreeze.clear();
+	m_vFreezeJumpable.clear();
+	m_vStartTiles.clear();
+	m_vFinishTiles.clear();
+	m_MapWidth = 0;
+	m_MapHeight = 0;
+	m_PathReady = false;
+	m_PathBuildAttempted = false;
+	m_PathBuiltWithFreezeWalls = false;
+	m_PathRebuildPending = false;
+	m_CachedMapSpan = -1.0f;
+	m_CachedStartTileDistance = -1.0f;
+	m_CachedStateValid = false;
+}
+
+void CFinishPrediction::DiscardPathJob()
+{
+	if(m_pPathJob)
+	{
+		m_pPathJob->Abort();
+		m_pPathJob = nullptr;
+	}
+}
+
+CFinishPrediction::~CFinishPrediction()
+{
+	DiscardPathJob();
+}
+
+void CFinishPrediction::PublishPath(SFinishPathBuild &Build)
+{
+	m_vDistances = std::move(Build.m_vDistances);
+	m_vPassable = std::move(Build.m_vPassable);
+	m_vIsFreeze = std::move(Build.m_vIsFreeze);
+	m_vFreezeJumpable = std::move(Build.m_vFreezeJumpable);
+	m_vStartTiles = std::move(Build.m_vStartTiles);
+	m_vFinishTiles = std::move(Build.m_vFinishTiles);
+	m_MapWidth = Build.m_Width;
+	m_MapHeight = Build.m_Height;
+	m_PathReady = Build.m_Ready;
+	m_PathBuildAttempted = true;
+	m_PathBuiltWithFreezeWalls = Build.m_PreferJumpableFreeze;
+	m_PathRebuildPending = false;
+	m_CachedMapSpan = Build.m_Ready ? Build.m_MapSpan : -1.0f;
+	m_CachedStartTileDistance = Build.m_Ready ? Build.m_StartTileDistance : -1.0f;
+	m_CachedStateValid = false;
+}
+
+void CFinishPrediction::PollPathJob()
+{
+	if(!m_pPathJob || !m_pPathJob->Done())
+		return;
+
+	if(m_pPathJob->State() == IJob::STATE_DONE && m_pPathJob->m_Success && m_pPathJob->m_Generation == m_PathGeneration && !m_PathRebuildPending)
+	{
+		const bool FreezeNow = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
+		CCollision *pCollision = Collision();
+		if(pCollision != nullptr && pCollision->GetWidth() == m_pPathJob->m_Build.m_Width && pCollision->GetHeight() == m_pPathJob->m_Build.m_Height && m_pPathJob->m_Build.m_PreferJumpableFreeze == FreezeNow)
+			PublishPath(m_pPathJob->m_Build);
+	}
+	m_pPathJob = nullptr;
+}
+
+bool CFinishPrediction::RebuildPathData()
+{
+	m_PathBuildAttempted = true;
+	m_PathBuiltWithFreezeWalls = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
+	m_PathReady = false;
+	SFinishPathBuild Build;
+	if(!CopyFinishPathTiles(Collision(), Build))
+	{
+		if(Collision() != nullptr)
+		{
+			m_MapWidth = Collision()->GetWidth();
+			m_MapHeight = Collision()->GetHeight();
+		}
+		m_CachedMapSpan = -1.0f;
+		m_CachedStartTileDistance = -1.0f;
+		m_CachedStateValid = false;
+		return false;
+	}
+	if(!Build.Execute())
+	{
+		m_CachedMapSpan = -1.0f;
+		m_CachedStartTileDistance = -1.0f;
+		m_CachedStateValid = false;
+		return false;
+	}
+	PublishPath(Build);
+	return m_PathReady;
 }
 
 bool CFinishPrediction::EnsurePathData()
 {
-	if(!Collision() || Collision()->GetWidth() <= 0 || Collision()->GetHeight() <= 0)
+	PollPathJob();
+
+	if(!WantsPathData())
+	{
+		if(m_pPathJob || m_PathReady || m_PathBuildAttempted || m_MapWidth != 0 || !m_vDistances.empty())
+		{
+			DiscardPathJob();
+			++m_PathGeneration;
+			ResetPathCache();
+		}
+		return false;
+	}
+
+	if(Collision() == nullptr || Collision()->GetWidth() <= 0 || Collision()->GetHeight() <= 0)
 		return false;
 
-	const bool WantFreezeWalls = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
+	const bool WantFreeze = g_Config.m_BclFinishPredictionConsiderFreezeWalls != 0;
 	const int Width = Collision()->GetWidth();
 	const int Height = Collision()->GetHeight();
-	if(m_PathRebuildPending || m_MapWidth != Width || m_MapHeight != Height || m_PathBuiltWithFreezeWalls != WantFreezeWalls)
+	bool InputsChanged = m_PathRebuildPending;
+	if(m_pPathJob)
 	{
-		m_PathBuildAttempted = false;
-		m_PathReady = false;
-		return RebuildPathData();
+		InputsChanged = m_PathRebuildPending || m_pPathJob->m_Build.m_Width != Width || m_pPathJob->m_Build.m_Height != Height || m_pPathJob->m_Build.m_PreferJumpableFreeze != WantFreeze;
 	}
+	else if(m_PathReady || m_PathBuildAttempted)
+	{
+		InputsChanged = m_PathRebuildPending || m_MapWidth != Width || m_MapHeight != Height || m_PathBuiltWithFreezeWalls != WantFreeze;
+	}
+
+	if(InputsChanged)
+	{
+		DiscardPathJob();
+		++m_PathGeneration;
+		ResetPathCache();
+	}
+
 	if(m_PathReady)
 		return true;
+	if(m_pPathJob)
+		return false;
 	if(m_PathBuildAttempted)
 		return false;
-	return RebuildPathData();
+
+	if(Engine() == nullptr)
+		return RebuildPathData();
+
+	std::shared_ptr<CFinishPredictionPathJob> pJob = std::make_shared<CFinishPredictionPathJob>(m_PathGeneration);
+	if(!CopyFinishPathTiles(Collision(), pJob->m_Build))
+	{
+		m_MapWidth = Width;
+		m_MapHeight = Height;
+		m_PathBuiltWithFreezeWalls = WantFreeze;
+		m_PathBuildAttempted = true;
+		m_PathReady = false;
+		return false;
+	}
+
+	m_pPathJob = std::move(pJob);
+	Engine()->AddJob(m_pPathJob);
+	if(m_pPathJob->State() == IJob::STATE_ABORTED)
+	{
+		m_pPathJob = nullptr;
+		m_MapWidth = Width;
+		m_MapHeight = Height;
+		m_PathBuiltWithFreezeWalls = WantFreeze;
+		m_PathBuildAttempted = true;
+		m_PathReady = false;
+		return false;
+	}
+	PollPathJob();
+	return m_PathReady;
 }
 
 float CFinishPrediction::GetDistanceAtPos(vec2 Pos) const
@@ -493,37 +770,15 @@ float CFinishPrediction::GetDistanceAtPos(vec2 Pos) const
 
 float CFinishPrediction::GetMapSpanDistance() const
 {
-	if(m_vDistances.empty())
-		return -1.0f;
-	int MaxDist = -1;
-	for(int Dist : m_vDistances)
-	{
-		if(Dist > MaxDist)
-			MaxDist = Dist;
-	}
-	return MaxDist >= 0 ? MaxDist / 10.0f : -1.0f;
+	return m_CachedMapSpan;
 }
 
 float CFinishPrediction::GetStartDistance() const
 {
 	if(m_RaceStartDistance > 0.0f)
 		return m_RaceStartDistance;
-
-	float BestDistance = -1.0f;
-	for(const ivec2 &StartTile : m_vStartTiles)
-	{
-		const int Index = StartTile.y * m_MapWidth + StartTile.x;
-		if(Index < 0 || Index >= (int)m_vDistances.size())
-			continue;
-		const int Dist = m_vDistances[Index];
-		if(Dist < 0)
-			continue;
-		const float DistanceTiles = Dist / 10.0f;
-		if(BestDistance < 0.0f || DistanceTiles < BestDistance)
-			BestDistance = DistanceTiles;
-	}
-	if(BestDistance > 0.0f)
-		return BestDistance;
+	if(m_CachedStartTileDistance > 0.0f)
+		return m_CachedStartTileDistance;
 	return GetMapSpanDistance();
 }
 
@@ -816,6 +1071,7 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 		if(g_Config.m_BclFinishPredictionShowAlways == 0 && !m_ProgressQuery)
 			return CacheState(false);
 		State.m_HasPredictedTime = false;
+		State.m_TimePending = true;
 		State.m_Progress = 0.0f;
 		State.m_CurrentTimeMs = std::max<int64_t>(0, (int64_t)(CurrentTick - RaceStartTick) * 1000 / std::max(1, Client()->GameTickSpeed()));
 		State.m_PredictedFinishTimeMs = 0;
@@ -853,7 +1109,6 @@ bool CFinishPrediction::GetState(SFinishPredictionState &State, bool ForcePrevie
 	float Progress = std::clamp(1.0f - CurrentDistance / StartDistance, 0.0f, 1.0f);
 	if(CurrentDistance <= 0.5f)
 		Progress = 1.0f;
-	Progress = std::max(m_LastProgress, Progress);
 	State.m_Progress = Progress;
 	m_LastProgress = State.m_Progress;
 
@@ -1029,8 +1284,11 @@ void CFinishPrediction::Render(bool ForcePreview)
 	char aTime[32];
 	char aLabel[32];
 	char aProgress[32];
-	FormatPredictionTime(ShowRemaining ? State.m_RemainingTimeMs : State.m_PredictedFinishTimeMs, ShowMillis, aTime, sizeof(aTime));
-	str_copy(aLabel, ShowRemaining ? Localize("Left") : Localize("Finish"), sizeof(aLabel));
+	if(State.m_TimePending)
+		str_copy(aTime, "thinking...", sizeof(aTime));
+	else
+		FormatPredictionTime(ShowRemaining ? State.m_RemainingTimeMs : State.m_PredictedFinishTimeMs, ShowMillis, aTime, sizeof(aTime));
+	str_copy(aLabel, State.m_TimePending ? "" : (ShowRemaining ? Localize("Left") : Localize("Finish")), sizeof(aLabel));
 	str_format(aProgress, sizeof(aProgress), "%.1f%%", State.m_Progress * 100.0f);
 
 	float TextY = Rect.y + PaddingY;
@@ -1044,7 +1302,10 @@ void CFinishPrediction::Render(bool ForcePreview)
 	if(ShowTime)
 	{
 		char aTopLine[64];
-		str_format(aTopLine, sizeof(aTopLine), "%s %s", aLabel, aTime);
+		if(State.m_TimePending)
+			str_copy(aTopLine, aTime, sizeof(aTopLine));
+		else
+			str_format(aTopLine, sizeof(aTopLine), "%s %s", aLabel, aTime);
 		const float TopWidth = TextRender()->TextWidth(TitleFontSize, aTopLine, -1, -1.0f);
 		TextRender()->TextColor(1.0f, 1.0f, 1.0f, ModuleAlpha);
 		TextRender()->Text(Rect.x + std::max(PaddingX, (Rect.w - TopWidth) * 0.5f), TextY, TitleFontSize, aTopLine, -1.0f);
