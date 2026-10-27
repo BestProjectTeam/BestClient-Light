@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://badges4noxy.vercel.app/badges/bestclient/bc_logo.webp" alt="BestClient Light" width="640" />
+  <img src="BestClient-light-icon.png" alt="BestClient Light" width="180" />
   <p>Lightweight, higher-performance version of BestClient.</p>
 
   <p>
