@@ -165,6 +165,7 @@ tags
 !steam_api.dll
 # Bundled DDNet libraries. Runtime binaries must stay in the tree when
 # ddnet-libs is vendored instead of checked out as a submodule.
+!ddnet-libs/**/*.a
 !ddnet-libs/**/*.dll
 !ddnet-libs/**/*.dylib
 !ddnet-libs/**/*.so
