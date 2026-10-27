@@ -29,6 +29,17 @@ namespace
 	constexpr int MENU_MEDIA_MAX_VIDEO_FRAME_MS = 250;
 	constexpr int MENU_MEDIA_DEFAULT_VIDEO_FRAME_MS = 33;
 	constexpr int64_t MENU_MEDIA_PTS_UNSET = std::numeric_limits<int64_t>::min();
+	constexpr int MENU_VIDEO_OK = 0;
+	constexpr int MENU_VIDEO_ERR_OPEN = 1;
+	constexpr int MENU_VIDEO_ERR_INFO = 2;
+	constexpr int MENU_VIDEO_ERR_STREAM = 3;
+	constexpr int MENU_VIDEO_ERR_CODEC = 4;
+	constexpr int MENU_VIDEO_ERR_DECODER = 5;
+	constexpr int MENU_VIDEO_ERR_DIM = 6;
+	constexpr int MENU_VIDEO_ERR_ALLOC = 7;
+	constexpr int MENU_VIDEO_ERR_RGBA = 8;
+	constexpr int MENU_VIDEO_ERR_SCALE = 9;
+	constexpr int MENU_VIDEO_ERR_DECODE = 10;
 
 #if defined(CONF_VIDEORECORDER)
 	bool DecodeFirstFrameFromFile(const char *pAbsolutePath, CImageInfo &ImageOut)
@@ -177,6 +188,162 @@ namespace
 
 		return Success;
 	}
+
+	struct SFfmpegVideo
+	{
+		AVFormatContext *m_pFormatCtx = nullptr;
+		AVCodecContext *m_pCodecCtx = nullptr;
+		AVFrame *m_pFrame = nullptr;
+		AVFrame *m_pFrameRgba = nullptr;
+		AVPacket *m_pPacket = nullptr;
+		SwsContext *m_pSwsCtx = nullptr;
+		int m_VideoStream = -1;
+		int m_Width = 0;
+		int m_Height = 0;
+		int64_t m_LastVideoPts = MENU_MEDIA_PTS_UNSET;
+
+		~SFfmpegVideo() { Close(); }
+
+		void Close()
+		{
+			if(m_pPacket)
+				av_packet_free(&m_pPacket);
+			if(m_pFrameRgba)
+				av_frame_free(&m_pFrameRgba);
+			if(m_pFrame)
+				av_frame_free(&m_pFrame);
+			if(m_pSwsCtx)
+			{
+				sws_freeContext(m_pSwsCtx);
+				m_pSwsCtx = nullptr;
+			}
+			if(m_pCodecCtx)
+				avcodec_free_context(&m_pCodecCtx);
+			if(m_pFormatCtx)
+				avformat_close_input(&m_pFormatCtx);
+			m_pPacket = nullptr;
+			m_pFrameRgba = nullptr;
+			m_pFrame = nullptr;
+			m_pCodecCtx = nullptr;
+			m_pFormatCtx = nullptr;
+			m_pSwsCtx = nullptr;
+			m_VideoStream = -1;
+		}
+
+		int Open(const char *pPath)
+		{
+			Close();
+			if(pPath == nullptr || pPath[0] == '\0')
+				return MENU_VIDEO_ERR_OPEN;
+			if(avformat_open_input(&m_pFormatCtx, pPath, nullptr, nullptr) != 0)
+				return MENU_VIDEO_ERR_OPEN;
+			if(avformat_find_stream_info(m_pFormatCtx, nullptr) < 0)
+				return MENU_VIDEO_ERR_INFO;
+
+			m_VideoStream = av_find_best_stream(m_pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, nullptr, 0);
+			if(m_VideoStream < 0)
+				return MENU_VIDEO_ERR_STREAM;
+
+			const AVStream *pStream = m_pFormatCtx->streams[m_VideoStream];
+			const AVCodec *pCodec = avcodec_find_decoder(pStream->codecpar->codec_id);
+			if(!pCodec)
+				return MENU_VIDEO_ERR_CODEC;
+
+			m_pCodecCtx = avcodec_alloc_context3(pCodec);
+			if(!m_pCodecCtx || avcodec_parameters_to_context(m_pCodecCtx, pStream->codecpar) < 0 || avcodec_open2(m_pCodecCtx, pCodec, nullptr) < 0)
+				return MENU_VIDEO_ERR_DECODER;
+
+			m_Width = m_pCodecCtx->width;
+			m_Height = m_pCodecCtx->height;
+			if(m_Width <= 0 || m_Height <= 0)
+				return MENU_VIDEO_ERR_DIM;
+			if((size_t)m_Width > std::numeric_limits<size_t>::max() / ((size_t)m_Height * 4ull))
+				return MENU_VIDEO_ERR_DIM;
+
+			m_pFrame = av_frame_alloc();
+			m_pFrameRgba = av_frame_alloc();
+			m_pPacket = av_packet_alloc();
+			if(!m_pFrame || !m_pFrameRgba || !m_pPacket)
+				return MENU_VIDEO_ERR_ALLOC;
+
+			m_pFrameRgba->format = AV_PIX_FMT_RGBA;
+			m_pFrameRgba->width = m_Width;
+			m_pFrameRgba->height = m_Height;
+			if(av_frame_get_buffer(m_pFrameRgba, 1) < 0)
+				return MENU_VIDEO_ERR_RGBA;
+
+			m_pSwsCtx = sws_getContext(m_Width, m_Height, m_pCodecCtx->pix_fmt, m_Width, m_Height, AV_PIX_FMT_RGBA, SWS_BILINEAR, nullptr, nullptr, nullptr);
+			if(!m_pSwsCtx)
+				return MENU_VIDEO_ERR_SCALE;
+			return MENU_VIDEO_OK;
+		}
+
+		bool Decode(CMenuMediaBackground::SDecodedVideoFrame &OutFrame, const std::atomic<bool> &Stop)
+		{
+			if(!m_pFormatCtx || !m_pCodecCtx || !m_pPacket || !m_pFrame || !m_pFrameRgba || !m_pSwsCtx || m_Width <= 0 || m_Height <= 0)
+				return false;
+
+			bool SeekRestart = false;
+			while(!Stop.load(std::memory_order_relaxed))
+			{
+				while(avcodec_receive_frame(m_pCodecCtx, m_pFrame) == 0)
+				{
+					int DurationMs = MENU_MEDIA_DEFAULT_VIDEO_FRAME_MS;
+					int64_t DurationTs = 0;
+					if(m_LastVideoPts != MENU_MEDIA_PTS_UNSET && m_pFrame->best_effort_timestamp != AV_NOPTS_VALUE)
+						DurationTs = m_pFrame->best_effort_timestamp - m_LastVideoPts;
+					if(DurationTs > 0)
+					{
+						const int64_t Rescaled = av_rescale_q(DurationTs, m_pFormatCtx->streams[m_VideoStream]->time_base, AVRational{1, 1000});
+						if(Rescaled > 0)
+							DurationMs = (int)Rescaled;
+					}
+					m_LastVideoPts = m_pFrame->best_effort_timestamp;
+
+					const size_t FrameBytes = (size_t)m_Width * (size_t)m_Height * 4ull;
+					OutFrame.m_vData.resize(FrameBytes);
+					OutFrame.m_Width = m_Width;
+					OutFrame.m_Height = m_Height;
+					OutFrame.m_DurationMs = DurationMs;
+
+					if(av_frame_make_writable(m_pFrameRgba) < 0)
+						return false;
+
+					sws_scale(m_pSwsCtx, m_pFrame->data, m_pFrame->linesize, 0, m_Height, m_pFrameRgba->data, m_pFrameRgba->linesize);
+					for(int y = 0; y < m_Height; ++y)
+						mem_copy(OutFrame.m_vData.data() + (size_t)y * (size_t)m_Width * 4ull, m_pFrameRgba->data[0] + (size_t)y * (size_t)m_pFrameRgba->linesize[0], (size_t)m_Width * 4ull);
+
+					return true;
+				}
+
+				const int ReadResult = av_read_frame(m_pFormatCtx, m_pPacket);
+				if(ReadResult < 0)
+				{
+					if(SeekRestart || Stop.load(std::memory_order_relaxed))
+						return false;
+					if(av_seek_frame(m_pFormatCtx, m_VideoStream, 0, AVSEEK_FLAG_BACKWARD) < 0)
+						return false;
+					avcodec_flush_buffers(m_pCodecCtx);
+					m_LastVideoPts = MENU_MEDIA_PTS_UNSET;
+					SeekRestart = true;
+					continue;
+				}
+
+				SeekRestart = false;
+				if(m_pPacket->stream_index != m_VideoStream)
+				{
+					av_packet_unref(m_pPacket);
+					continue;
+				}
+
+				const int SendResult = avcodec_send_packet(m_pCodecCtx, m_pPacket);
+				av_packet_unref(m_pPacket);
+				if(SendResult < 0)
+					return false;
+			}
+			return false;
+		}
+	};
 #else
 	bool DecodeFirstFrameFromFile(const char *pAbsolutePath, CImageInfo &ImageOut)
 	{
@@ -185,6 +352,24 @@ namespace
 		return false;
 	}
 #endif
+
+	const char *MenuVideoErrorText(int Code)
+	{
+		switch(Code)
+		{
+		case MENU_VIDEO_ERR_OPEN: return BcLocalize("Failed to open video.");
+		case MENU_VIDEO_ERR_INFO: return BcLocalize("Failed to read video info.");
+		case MENU_VIDEO_ERR_STREAM: return BcLocalize("No video stream found.");
+		case MENU_VIDEO_ERR_CODEC: return BcLocalize("Unsupported video codec.");
+		case MENU_VIDEO_ERR_DECODER: return BcLocalize("Failed to initialize video decoder.");
+		case MENU_VIDEO_ERR_DIM: return BcLocalize("Invalid video dimensions.");
+		case MENU_VIDEO_ERR_ALLOC: return BcLocalize("Failed to allocate video frames.");
+		case MENU_VIDEO_ERR_RGBA: return BcLocalize("Failed to allocate RGBA frame.");
+		case MENU_VIDEO_ERR_SCALE: return BcLocalize("Failed to initialize video scaler.");
+		case MENU_VIDEO_ERR_DECODE: return BcLocalize("Failed while decoding video.");
+		default: return BcLocalize("Failed while decoding video.");
+		}
+	}
 }
 
 CMenuMediaBackground::~CMenuMediaBackground()
@@ -211,12 +396,18 @@ void CMenuMediaBackground::SetError(const char *pText)
 	str_copy(m_aStatus, pText, sizeof(m_aStatus));
 }
 
-void CMenuMediaBackground::ClearVideoState()
+void CMenuMediaBackground::RecycleVideoBuffer(std::vector<uint8_t> &Buffer)
 {
-#if defined(CONF_VIDEORECORDER)
-	m_StopRequested.store(true, std::memory_order_relaxed);
-	if(m_DecoderThread.joinable())
-		m_DecoderThread.join();
+	if(Buffer.empty())
+		return;
+	if(!m_FreeBufferQueue.try_enqueue(std::move(Buffer)))
+		Buffer.clear();
+}
+
+void CMenuMediaBackground::ReleaseMainVideoResources()
+{
+	if(m_pGraphics != nullptr)
+		m_pGraphics->UnloadTexture(&m_VideoTexture);
 
 	SDecodedVideoFrame Dummy;
 	while(m_FrameQueue.try_dequeue(Dummy))
@@ -227,60 +418,74 @@ void CMenuMediaBackground::ClearVideoState()
 	{
 	}
 
-	if(m_pGraphics != nullptr)
-		m_pGraphics->UnloadTexture(&m_VideoTexture);
-	if(m_pPacket)
-		av_packet_free(&m_pPacket);
-	if(m_pFrameRgba)
-		av_frame_free(&m_pFrameRgba);
-	if(m_pFrame)
-		av_frame_free(&m_pFrame);
-	if(m_pSwsCtx)
-		sws_freeContext(m_pSwsCtx);
-	if(m_pCodecCtx)
-		avcodec_free_context(&m_pCodecCtx);
-	if(m_pFormatCtx)
-		avformat_close_input(&m_pFormatCtx);
+	m_Width = 0;
+	m_Height = 0;
+	m_NextFrameTime = std::chrono::nanoseconds::zero();
+}
 
-	m_pFormatCtx = nullptr;
-	m_pCodecCtx = nullptr;
-	m_pFrame = nullptr;
-	m_pFrameRgba = nullptr;
-	m_pPacket = nullptr;
-	m_pSwsCtx = nullptr;
-	m_VideoStream = -1;
-	m_LastVideoPts = MENU_MEDIA_PTS_UNSET;
-	m_NextFrameTime = std::chrono::nanoseconds::zero();
-	m_vVideoUploadBuffer.clear();
-#else
-	if(m_pGraphics != nullptr)
-		m_pGraphics->UnloadTexture(&m_VideoTexture);
-	m_pFormatCtx = nullptr;
-	m_pCodecCtx = nullptr;
-	m_pFrame = nullptr;
-	m_pFrameRgba = nullptr;
-	m_pPacket = nullptr;
-	m_pSwsCtx = nullptr;
-	m_VideoStream = -1;
-	m_LastVideoPts = MENU_MEDIA_PTS_UNSET;
-	m_NextFrameTime = std::chrono::nanoseconds::zero();
-	m_vVideoUploadBuffer.clear();
-#endif
+void CMenuMediaBackground::FinishStoppedDecoder()
+{
+	if(!m_DecoderThread.joinable())
+		return;
+	if(!m_DecoderExited.load(std::memory_order_acquire))
+		return;
+
+	m_DecoderThread.detach();
+
+	const bool Failed = m_DecoderFailed.load(std::memory_order_relaxed);
+	const int ErrorCode = m_DecoderError.load(std::memory_order_relaxed);
+	const bool HadFrame = m_IsLoaded;
+	const bool Stopping = m_StopPending;
+	m_StopPending = false;
+	ReleaseMainVideoResources();
+	m_IsVideo = false;
+	m_IsLoaded = false;
+
+	if(Stopping)
+	{
+		if(!m_ReloadPending && m_LastConfigEnabled == 0)
+		{
+			SetStatus(BcLocalize("Disabled."));
+			m_LiveWork = false;
+		}
+	}
+	else if(Failed && !m_ReloadPending)
+	{
+		if(ErrorCode == MENU_VIDEO_ERR_DECODE && !HadFrame)
+			SetError(BcLocalize("Failed to decode first video frame."));
+		else
+			SetError(MenuVideoErrorText(ErrorCode));
+		if(m_LastConfigEnabled == 0)
+			m_LiveWork = false;
+	}
 }
 
 void CMenuMediaBackground::Unload()
 {
+	m_StopRequested.store(true, std::memory_order_relaxed);
+	m_ReloadPending = false;
+	m_StopPending = false;
+	if(m_DecoderThread.joinable())
+	{
+		if(m_DecoderExited.load(std::memory_order_acquire))
+			m_DecoderThread.detach();
+		else
+			m_DecoderThread.join();
+	}
+
+	ReleaseMainVideoResources();
 	MediaDecoder::UnloadFrames(m_pGraphics, m_vFrames);
-	ClearVideoState();
 
 	m_Animated = false;
-	m_Width = 0;
-	m_Height = 0;
 	m_AnimationStart = 0;
 	m_IsVideo = false;
 	m_IsLoaded = false;
 	m_HasError = false;
+	m_LiveWork = false;
 	m_aLoadedPath[0] = '\0';
+	m_aDecoderPath[0] = '\0';
+	m_aPendingPath[0] = '\0';
+	m_PendingEnabled = 0;
 	m_LastConfigEnabled = -1;
 	m_aLastConfigPath[0] = '\0';
 	m_LastDecodeStepTick = 0;
@@ -405,93 +610,57 @@ bool CMenuMediaBackground::LoadStaticMedia(const char *pPath, int StorageType)
 	return true;
 }
 
-bool CMenuMediaBackground::DecodeFrameInternal(SDecodedVideoFrame &OutFrame)
-{
-#if !defined(CONF_VIDEORECORDER)
-	(void)OutFrame;
-	return false;
-#else
-	if(!m_pFormatCtx || !m_pCodecCtx || !m_pPacket || !m_pFrame || !m_pFrameRgba || !m_pSwsCtx || m_Width <= 0 || m_Height <= 0)
-		return false;
-
-	while(!m_StopRequested.load(std::memory_order_relaxed))
-	{
-		while(avcodec_receive_frame(m_pCodecCtx, m_pFrame) == 0)
-		{
-			int DurationMs = MENU_MEDIA_DEFAULT_VIDEO_FRAME_MS;
-			int64_t DurationTs = 0;
-			if(m_LastVideoPts != MENU_MEDIA_PTS_UNSET && m_pFrame->best_effort_timestamp != AV_NOPTS_VALUE)
-				DurationTs = m_pFrame->best_effort_timestamp - m_LastVideoPts;
-			if(DurationTs > 0)
-			{
-				const int64_t Rescaled = av_rescale_q(DurationTs, m_pFormatCtx->streams[m_VideoStream]->time_base, AVRational{1, 1000});
-				if(Rescaled > 0)
-					DurationMs = (int)Rescaled;
-			}
-			m_LastVideoPts = m_pFrame->best_effort_timestamp;
-
-			const size_t FrameBytes = (size_t)m_Width * (size_t)m_Height * 4ull;
-			OutFrame.m_vData.resize(FrameBytes);
-			OutFrame.m_DurationMs = DurationMs;
-
-			if(av_frame_make_writable(m_pFrameRgba) < 0)
-				return false;
-
-			sws_scale(m_pSwsCtx, m_pFrame->data, m_pFrame->linesize, 0, m_Height, m_pFrameRgba->data, m_pFrameRgba->linesize);
-			for(int y = 0; y < m_Height; ++y)
-				mem_copy(OutFrame.m_vData.data() + (size_t)y * (size_t)m_Width * 4ull, m_pFrameRgba->data[0] + (size_t)y * (size_t)m_pFrameRgba->linesize[0], (size_t)m_Width * 4ull);
-
-			return true;
-		}
-
-		const int ReadResult = av_read_frame(m_pFormatCtx, m_pPacket);
-		if(ReadResult < 0)
-		{
-			av_seek_frame(m_pFormatCtx, m_VideoStream, 0, AVSEEK_FLAG_BACKWARD);
-			avcodec_flush_buffers(m_pCodecCtx);
-			m_LastVideoPts = MENU_MEDIA_PTS_UNSET;
-			continue;
-		}
-
-		if(m_pPacket->stream_index != m_VideoStream)
-		{
-			av_packet_unref(m_pPacket);
-			continue;
-		}
-
-		const int SendResult = avcodec_send_packet(m_pCodecCtx, m_pPacket);
-		av_packet_unref(m_pPacket);
-		if(SendResult < 0)
-			return false;
-	}
-	return false;
-#endif
-}
-
 void CMenuMediaBackground::DecoderThreadMain()
 {
 #if defined(CONF_VIDEORECORDER)
-	while(!m_StopRequested.load(std::memory_order_relaxed))
 	{
-		if(m_FrameQueue.size_approx() >= 3)
+		SFfmpegVideo Video;
+		const int OpenResult = Video.Open(m_aDecoderPath);
+		if(OpenResult != MENU_VIDEO_OK)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
-			continue;
-		}
-
-		SDecodedVideoFrame Frame;
-		std::vector<uint8_t> RecycledBuffer;
-		if(m_FreeBufferQueue.try_dequeue(RecycledBuffer))
-			Frame.m_vData = std::move(RecycledBuffer);
-
-		if(!DecodeFrameInternal(Frame))
-		{
+			m_DecoderError.store(OpenResult, std::memory_order_relaxed);
 			m_DecoderFailed.store(true, std::memory_order_relaxed);
-			break;
 		}
+		else
+		{
+			while(!m_StopRequested.load(std::memory_order_relaxed))
+			{
+				if(m_FrameQueue.size_approx() >= 3)
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(5));
+					continue;
+				}
 
-		m_FrameQueue.enqueue(std::move(Frame));
+				SDecodedVideoFrame Frame;
+				std::vector<uint8_t> RecycledBuffer;
+				if(m_FreeBufferQueue.try_dequeue(RecycledBuffer))
+					Frame.m_vData = std::move(RecycledBuffer);
+
+				if(!Video.Decode(Frame, m_StopRequested))
+				{
+					if(!m_StopRequested.load(std::memory_order_relaxed))
+					{
+						m_DecoderError.store(MENU_VIDEO_ERR_DECODE, std::memory_order_relaxed);
+						m_DecoderFailed.store(true, std::memory_order_relaxed);
+					}
+					break;
+				}
+
+				for(;;)
+				{
+					if(m_FrameQueue.try_enqueue(std::move(Frame)))
+						break;
+					if(m_StopRequested.load(std::memory_order_relaxed))
+						break;
+					std::this_thread::sleep_for(std::chrono::milliseconds(5));
+				}
+			}
+		}
 	}
+	m_DecoderExited.store(true, std::memory_order_release);
+#else
+	m_DecoderFailed.store(true, std::memory_order_relaxed);
+	m_DecoderExited.store(true, std::memory_order_release);
 #endif
 }
 
@@ -500,167 +669,133 @@ bool CMenuMediaBackground::LoadVideo(const char *pPath, int StorageType)
 #if !defined(CONF_VIDEORECORDER)
 	(void)pPath;
 	(void)StorageType;
-	m_IsVideo = true;
+	m_IsVideo = false;
 	SetError(BcLocalize("Video backgrounds are unavailable in this build."));
 	return false;
 #else
-	char aPath[IO_MAX_PATH_LENGTH];
-	m_pStorage->GetCompletePath(StorageType, pPath, aPath, sizeof(aPath));
-
-	if(avformat_open_input(&m_pFormatCtx, aPath, nullptr, nullptr) != 0)
+	if(m_pStorage == nullptr || m_pGraphics == nullptr || m_DecoderThread.joinable())
 	{
 		SetError(BcLocalize("Failed to open video."));
-		ClearVideoState();
-		return false;
-	}
-	if(avformat_find_stream_info(m_pFormatCtx, nullptr) < 0)
-	{
-		SetError(BcLocalize("Failed to read video info."));
-		ClearVideoState();
 		return false;
 	}
 
-	m_VideoStream = av_find_best_stream(m_pFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1, nullptr, 0);
-	if(m_VideoStream < 0)
+	char aPath[IO_MAX_PATH_LENGTH];
+	m_pStorage->GetCompletePath(StorageType, pPath, aPath, sizeof(aPath));
+	if(aPath[0] == '\0')
 	{
-		SetError(BcLocalize("No video stream found."));
-		ClearVideoState();
+		SetError(BcLocalize("Failed to open video."));
 		return false;
 	}
 
-	const AVStream *pStream = m_pFormatCtx->streams[m_VideoStream];
-	const AVCodec *pCodec = avcodec_find_decoder(pStream->codecpar->codec_id);
-	if(!pCodec)
-	{
-		SetError(BcLocalize("Unsupported video codec."));
-		ClearVideoState();
-		return false;
-	}
-
-	m_pCodecCtx = avcodec_alloc_context3(pCodec);
-	if(!m_pCodecCtx || avcodec_parameters_to_context(m_pCodecCtx, pStream->codecpar) < 0 || avcodec_open2(m_pCodecCtx, pCodec, nullptr) < 0)
-	{
-		SetError(BcLocalize("Failed to initialize video decoder."));
-		ClearVideoState();
-		return false;
-	}
-
-	m_Width = m_pCodecCtx->width;
-	m_Height = m_pCodecCtx->height;
-	if(m_Width <= 0 || m_Height <= 0)
-	{
-		SetError(BcLocalize("Invalid video dimensions."));
-		ClearVideoState();
-		return false;
-	}
-
-	m_pFrame = av_frame_alloc();
-	m_pFrameRgba = av_frame_alloc();
-	m_pPacket = av_packet_alloc();
-	if(!m_pFrame || !m_pFrameRgba || !m_pPacket)
-	{
-		SetError(BcLocalize("Failed to allocate video frames."));
-		ClearVideoState();
-		return false;
-	}
-
-	m_pFrameRgba->format = AV_PIX_FMT_RGBA;
-	m_pFrameRgba->width = m_Width;
-	m_pFrameRgba->height = m_Height;
-	if(av_frame_get_buffer(m_pFrameRgba, 1) < 0)
-	{
-		SetError(BcLocalize("Failed to allocate RGBA frame."));
-		ClearVideoState();
-		return false;
-	}
-
-	m_pSwsCtx = sws_getContext(m_Width, m_Height, m_pCodecCtx->pix_fmt, m_Width, m_Height, AV_PIX_FMT_RGBA, SWS_BILINEAR, nullptr, nullptr, nullptr);
-	if(!m_pSwsCtx)
-	{
-		SetError(BcLocalize("Failed to initialize video scaler."));
-		ClearVideoState();
-		return false;
-	}
-
+	str_copy(m_aDecoderPath, aPath, sizeof(m_aDecoderPath));
 	m_StopRequested.store(false, std::memory_order_relaxed);
 	m_DecoderFailed.store(false, std::memory_order_relaxed);
-	m_DecoderThread = std::thread([this]() { DecoderThreadMain(); });
-
-	SDecodedVideoFrame FirstFrame;
-	const auto StartWait = std::chrono::steady_clock::now();
-	while(!m_FrameQueue.try_dequeue(FirstFrame))
-	{
-		if(m_DecoderFailed.load(std::memory_order_relaxed) || std::chrono::steady_clock::now() - StartWait > std::chrono::milliseconds(1500))
-			break;
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
-	}
-
-	if(FirstFrame.m_vData.empty())
-	{
-		SetError(BcLocalize("Failed to decode first video frame."));
-		ClearVideoState();
-		return false;
-	}
-
-	CImageInfo Image;
-	Image.m_Width = m_Width;
-	Image.m_Height = m_Height;
-	Image.m_Format = CImageInfo::FORMAT_RGBA;
-	Image.m_pData = FirstFrame.m_vData.data();
-	m_VideoTexture = m_pGraphics->LoadTextureRaw(Image, 0, pPath);
-	if(!m_VideoTexture.IsValid())
-	{
-		SetError(BcLocalize("Failed to create video texture."));
-		ClearVideoState();
-		return false;
-	}
-
-	m_NextFrameTime = time_get_nanoseconds() + std::chrono::milliseconds(std::clamp(FirstFrame.m_DurationMs, 1, MENU_MEDIA_MAX_VIDEO_FRAME_MS));
+	m_DecoderError.store(MENU_VIDEO_OK, std::memory_order_relaxed);
+	m_DecoderExited.store(false, std::memory_order_relaxed);
 	m_IsVideo = true;
-	m_IsLoaded = true;
-	SetStatus(BcLocalize("Loaded video."));
+	m_IsLoaded = false;
+	m_LiveWork = true;
+	SetStatus(BcLocalize("Loading video."));
+	m_DecoderThread = std::thread([this]() { DecoderThreadMain(); });
 	return true;
 #endif
 }
 
-void CMenuMediaBackground::ReloadFromConfig(int Enabled, const char *pPath)
+void CMenuMediaBackground::ApplyLoad(int Enabled, const char *pPath)
 {
-	char aPath[IO_MAX_PATH_LENGTH];
-	str_copy(aPath, pPath, sizeof(aPath));
+	ReleaseMainVideoResources();
+	MediaDecoder::UnloadFrames(m_pGraphics, m_vFrames);
+	m_Animated = false;
+	m_AnimationStart = 0;
+	m_IsVideo = false;
+	m_IsLoaded = false;
+	m_aLoadedPath[0] = '\0';
+	m_LastDecodeStepTick = 0;
+	m_ReloadPending = false;
 
-	Unload();
-
-	m_LastConfigEnabled = Enabled;
-	str_copy(m_aLastConfigPath, aPath, sizeof(m_aLastConfigPath));
-
-	if(!Enabled)
+	if(Enabled == 0)
 	{
 		SetStatus(BcLocalize("Disabled."));
+		m_LiveWork = false;
 		return;
 	}
-	if(aPath[0] == '\0')
+	if(pPath == nullptr || pPath[0] == '\0')
 	{
 		SetError(BcLocalize("No media selected."));
+		m_LiveWork = false;
 		return;
 	}
 
-	const int StorageType = fs_is_relative_path(aPath) ? IStorage::TYPE_SAVE : IStorage::TYPE_ABSOLUTE;
-	const std::string Ext = MediaDecoder::ExtractExtensionLower(aPath);
-
-	bool Success = false;
-	if(MediaDecoder::IsLikelyVideoExtension(Ext))
-		Success = LoadVideo(aPath, StorageType);
-	else
-		Success = LoadStaticMedia(aPath, StorageType);
-
+	m_LiveWork = true;
+	const int StorageType = fs_is_relative_path(pPath) ? IStorage::TYPE_SAVE : IStorage::TYPE_ABSOLUTE;
+	const std::string Ext = MediaDecoder::ExtractExtensionLower(pPath);
+	const bool Success = MediaDecoder::IsLikelyVideoExtension(Ext) ? LoadVideo(pPath, StorageType) : LoadStaticMedia(pPath, StorageType);
 	if(Success)
-		str_copy(m_aLoadedPath, aPath, sizeof(m_aLoadedPath));
+		str_copy(m_aLoadedPath, pPath, sizeof(m_aLoadedPath));
+	else if(!m_DecoderThread.joinable())
+		m_LiveWork = false;
+}
+
+void CMenuMediaBackground::ReloadFromConfig(int Enabled, const char *pPath)
+{
+	if(pPath == nullptr)
+		pPath = "";
+
+	m_LastConfigEnabled = Enabled;
+	str_copy(m_aLastConfigPath, pPath, sizeof(m_aLastConfigPath));
+	m_PendingEnabled = Enabled;
+	str_copy(m_aPendingPath, pPath, sizeof(m_aPendingPath));
+
+	const bool WantLoad = Enabled != 0 && pPath[0] != '\0';
+	if(m_StopPending)
+	{
+		m_ReloadPending = WantLoad;
+		m_StopRequested.store(true, std::memory_order_relaxed);
+		return;
+	}
+
+	const bool ThreadRunning = m_DecoderThread.joinable() && !m_DecoderExited.load(std::memory_order_acquire);
+	if(ThreadRunning)
+	{
+		m_StopRequested.store(true, std::memory_order_relaxed);
+		m_StopPending = true;
+		m_ReloadPending = WantLoad;
+		m_IsLoaded = false;
+		m_LiveWork = true;
+		MediaDecoder::UnloadFrames(m_pGraphics, m_vFrames);
+		m_Animated = false;
+		if(m_pGraphics != nullptr && m_VideoTexture.IsValid())
+			m_pGraphics->UnloadTexture(&m_VideoTexture);
+		if(!WantLoad)
+			SetStatus(BcLocalize("Disabled."));
+		return;
+	}
+
+	FinishStoppedDecoder();
+	ApplyLoad(Enabled, pPath);
 }
 
 void CMenuMediaBackground::SyncFromConfig(int Enabled, const char *pPath)
 {
+	if(pPath == nullptr)
+		pPath = "";
+	if(Enabled == 0)
+	{
+		if(!m_LiveWork && m_LastConfigEnabled == 0)
+			return;
+		ReloadFromConfig(0, pPath);
+		return;
+	}
 	if(m_LastConfigEnabled != Enabled || str_comp(m_aLastConfigPath, pPath) != 0)
 		ReloadFromConfig(Enabled, pPath);
+}
+
+void CMenuMediaBackground::UpdateFromConfig(int Enabled, const char *pPath)
+{
+	if(Enabled == 0 && !m_LiveWork)
+		return;
+	SyncFromConfig(Enabled, pPath);
+	Update();
 }
 
 void CMenuMediaBackground::ReloadFromConfig()
@@ -670,35 +805,73 @@ void CMenuMediaBackground::ReloadFromConfig()
 
 void CMenuMediaBackground::Update()
 {
-	if(!m_IsLoaded || !m_IsVideo)
+	FinishStoppedDecoder();
+	if(m_ReloadPending && !m_DecoderThread.joinable())
+	{
+		char aPath[IO_MAX_PATH_LENGTH];
+		str_copy(aPath, m_aPendingPath, sizeof(aPath));
+		ApplyLoad(m_PendingEnabled, aPath);
+	}
+
+	if(!m_IsVideo || m_StopPending)
 		return;
 
 	if(!CSubsystemTicker::ShouldRunPeriodic(time_get(), m_LastDecodeStepTick, time_freq() / 120))
 		return;
 
-	const auto Now = time_get_nanoseconds();
-
-	if(m_DecoderFailed.load(std::memory_order_relaxed))
+	if(m_DecoderFailed.load(std::memory_order_relaxed) && m_DecoderExited.load(std::memory_order_acquire))
 	{
-		SetError(BcLocalize("Failed while decoding video."));
-		m_IsLoaded = false;
-		ClearVideoState();
+		FinishStoppedDecoder();
 		return;
 	}
 
-	if(Now >= m_NextFrameTime)
+	const auto Now = time_get_nanoseconds();
+	if(m_VideoTexture.IsValid() && Now < m_NextFrameTime)
+		return;
+
+	SDecodedVideoFrame Frame;
+	if(!m_FrameQueue.try_dequeue(Frame))
+		return;
+	if(m_pGraphics == nullptr || Frame.m_vData.empty() || Frame.m_Width <= 0 || Frame.m_Height <= 0)
 	{
-		SDecodedVideoFrame Frame;
-		if(m_FrameQueue.try_dequeue(Frame))
-		{
-			if(m_pGraphics != nullptr && m_VideoTexture.IsValid())
-			{
-				m_pGraphics->UpdateTextureRaw(m_VideoTexture, 0, 0, m_Width, m_Height, Frame.m_vData.data(), false);
-				m_NextFrameTime = Now + std::chrono::milliseconds(std::clamp(Frame.m_DurationMs, 1, MENU_MEDIA_MAX_VIDEO_FRAME_MS));
-			}
-			m_FreeBufferQueue.try_enqueue(std::move(Frame.m_vData));
-		}
+		RecycleVideoBuffer(Frame.m_vData);
+		return;
 	}
+
+	if(!m_VideoTexture.IsValid() || m_Width != Frame.m_Width || m_Height != Frame.m_Height)
+	{
+		if(m_VideoTexture.IsValid())
+			m_pGraphics->UnloadTexture(&m_VideoTexture);
+
+		CImageInfo Image;
+		Image.m_Width = Frame.m_Width;
+		Image.m_Height = Frame.m_Height;
+		Image.m_Format = CImageInfo::FORMAT_RGBA;
+		Image.m_pData = Frame.m_vData.data();
+		m_VideoTexture = m_pGraphics->LoadTextureRaw(Image, 0, m_aLoadedPath);
+		m_Width = Frame.m_Width;
+		m_Height = Frame.m_Height;
+		if(!m_VideoTexture.IsValid())
+		{
+			SetError(BcLocalize("Failed to create video texture."));
+			m_StopRequested.store(true, std::memory_order_relaxed);
+			m_StopPending = true;
+			m_ReloadPending = false;
+			m_IsLoaded = false;
+			m_LiveWork = true;
+			RecycleVideoBuffer(Frame.m_vData);
+			return;
+		}
+		SetStatus(BcLocalize("Loaded video."));
+	}
+	else
+	{
+		m_pGraphics->UpdateTextureRaw(m_VideoTexture, 0, 0, (size_t)m_Width, (size_t)m_Height, Frame.m_vData.data(), false);
+	}
+
+	m_IsLoaded = true;
+	m_NextFrameTime = Now + std::chrono::milliseconds(std::clamp(Frame.m_DurationMs, 1, MENU_MEDIA_MAX_VIDEO_FRAME_MS));
+	RecycleVideoBuffer(Frame.m_vData);
 }
 
 void CMenuMediaBackground::RenderTextureCover(IGraphics::CTextureHandle Texture, int Width, int Height, float TargetCenterX, float TargetCenterY, float TargetWidth, float TargetHeight)

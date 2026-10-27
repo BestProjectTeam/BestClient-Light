@@ -100,8 +100,10 @@ void CBackground::OnRender()
 	if(Client()->State() == IClient::STATE_ONLINE || Client()->State() == IClient::STATE_DEMOPLAYBACK)
 	{
 		CMenuMediaBackground &MediaBackground = GameClient()->m_BestClientLight.MenuMediaBackground();
-		MediaBackground.SyncFromConfig(g_Config.m_BclGameMediaBackground, g_Config.m_BclMenuMediaBackgroundPath);
-		MediaBackground.Update();
+		if(g_Config.m_BclGameMediaBackground || MediaBackground.HasLiveWork())
+		{
+			MediaBackground.UpdateFromConfig(g_Config.m_BclGameMediaBackground, g_Config.m_BclMenuMediaBackgroundPath);
+		}
 		if(g_Config.m_BclGameMediaBackground && g_Config.m_ClOverlayEntities > 0)
 		{
 			float ViewWidth = 0.0f;

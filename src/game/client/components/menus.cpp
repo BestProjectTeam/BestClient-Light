@@ -1140,9 +1140,10 @@ void CMenus::Render()
 		const float MediaScreenHeight = 300.0f;
 		const float MediaScreenWidth = MediaScreenHeight * Graphics()->ScreenAspect();
 		CMenuMediaBackground &MediaBackground = GameClient()->m_BestClientLight.MenuMediaBackground();
-		MediaBackground.SyncFromConfig(g_Config.m_BclMenuMediaBackground, g_Config.m_BclMenuMediaBackgroundPath);
-		MediaBackground.Update();
-		if(!MediaBackground.Render(MediaScreenWidth, MediaScreenHeight) && !GameClient()->m_MenuBackground.Render())
+		const bool MenuMediaEnabled = g_Config.m_BclMenuMediaBackground != 0;
+		if(MenuMediaEnabled || MediaBackground.HasLiveWork())
+			MediaBackground.UpdateFromConfig(g_Config.m_BclMenuMediaBackground, g_Config.m_BclMenuMediaBackgroundPath);
+		if((!MenuMediaEnabled || !MediaBackground.Render(MediaScreenWidth, MediaScreenHeight)) && !GameClient()->m_MenuBackground.Render())
 		{
 			RenderBackground();
 		}
