@@ -1561,12 +1561,17 @@ void CFastPractice::TickPracticeWorld()
 		return;
 	}
 
-	const bool CloudInputMode = GameClient()->IsCloudInputMode();
+	const bool SnapshotInputMode = GameClient()->IsSnapshotInputMode();
 	const bool Spectating = GameClient()->m_Snap.m_SpecInfo.m_Active ||
 				(GameClient()->m_Snap.m_pLocalInfo && GameClient()->m_Snap.m_pLocalInfo->m_Team == TEAM_SPECTATORS);
-	const float FastInputOffsetTicks = (CloudInputMode || Spectating) ? 0.0f : BclInputs::EffectiveOffsetTicks();
-	const int FastInputTicks = Spectating ? 0 : (CloudInputMode ? GameClient()->m_CloudInput.SelfTickOffset() : BclInputs::PredictionTicks(FastInputOffsetTicks));
-	const int FastInputOthersTicks = Spectating ? 0 : (CloudInputMode ? GameClient()->m_CloudInput.OthersTickOffset() : (BclInputs::AnyOthers() ? BclInputs::PredictionTicksOthers(FastInputOffsetTicks) : 0));
+	float UnusedOffsetTicks = 0.0f;
+	int FastInputTicks = 0;
+	bool UnusedAffectsOthers = false;
+	int FastInputOthersTicks = 0;
+	if(!Spectating)
+		GameClient()->GetInputPrediction(UnusedOffsetTicks, FastInputTicks, UnusedAffectsOthers, FastInputOthersTicks);
+	(void)UnusedOffsetTicks;
+	(void)UnusedAffectsOthers;
 	const int FinalTickRegular = Client()->PredGameTick(g_Config.m_ClDummy);
 	const int FinalTickSelf = FinalTickRegular + FastInputTicks;
 	const int FinalTickOthers = FinalTickRegular + FastInputOthersTicks;
@@ -1671,7 +1676,7 @@ void CFastPractice::TickPracticeWorld()
 			}
 
 			if(FastInputTicks > 0 && Tick > FinalTickRegular)
-				pInputData = CloudInputMode ? &GameClient()->m_CloudInput.Input(LocalTee) : &GameClient()->m_Controls.m_aFastInput[LocalTee];
+				pInputData = SnapshotInputMode ? GameClient()->SnapshotInputData(LocalTee) : &GameClient()->m_Controls.m_aFastInput[LocalTee];
 		}
 		const bool SuppressTransitionTick = Tick == BaseGameTick + 1 && (m_SuppressFireOnNextPredictTick || GameClient()->m_IsDummySwapping);
 		const bool SuppressCooldownTick = m_InputSuppressTicks > 0;

@@ -70,6 +70,8 @@ enum
 	BC_INPUTS_DELTA,
 	BC_INPUTS_F,
 	BC_INPUTS_CLOUD,
+	BC_INPUTS_LIGHT,
+	BC_INPUTS_AZURE,
 };
 // bestclient-light
 

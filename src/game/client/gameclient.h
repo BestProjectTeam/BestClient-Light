@@ -56,7 +56,9 @@
 #include "components/bestclient-light/automargin.h" // bestclient-light
 #include "components/bestclient-light/chat_bubbles.h" // bestclient-light
 #include "components/bestclient-light/clientindicator/client_indicator.h" // bestclient-light
+#include "components/bestclient-light/azure_input.h" // bestclient-light
 #include "components/bestclient-light/cloud_input.h" // bestclient-light
+#include "components/bestclient-light/light_input.h" // bestclient-light
 #include "components/bestclient-light/cursor_trail.h" // bestclient-light
 #include "components/bestclient-light/gif_bubbles.h" // bestclient-light
 #include "components/bestclient-light/hud_editor.h" // bestclient-light
@@ -241,6 +243,8 @@ public:
 	CFastActions m_FastActions; // bestclient-light
 	CSnapTap m_SnapTap; // bestclient-light
 	CCloudInput m_CloudInput; // bestclient-light
+	CLightInput m_LightInput; // bestclient-light
+	CAzureInput m_AzureInput; // bestclient-light
 	CFastPractice m_FastPractice; // bestclient-light
 	CBcAutoMargin m_BclAutoMargin; // bestclient-light
 	COptimizer m_Optimizer; // bestclient-light
@@ -834,6 +838,13 @@ public:
 	void ApplyPreInputs(int Tick, bool Direct, CGameWorld &GameWorld);
 	bool GetDummyFastInput(CNetObj_PlayerInput &DummyFastInput, const CNetObj_PlayerInput *pDummyInputData, const class CCharacter *pDummyChar, int LocalTee, int DummyTee) const;
 	bool IsCloudInputMode() const; // bestclient-light
+	bool IsLightInputMode() const; // bestclient-light
+	bool IsAzureInputMode() const; // bestclient-light
+	bool IsSnapshotInputMode() const; // bestclient-light
+	void GetInputPrediction(float &OffsetTicks, int &SelfTicks, bool &AffectsOthers, int &OthersTicks) const; // bestclient-light
+	CNetObj_PlayerInput *SnapshotInputData(int Dummy); // bestclient-light
+	void SnapshotApplyOffset(int ClientId, int &Tick, float &Intra) const; // bestclient-light
+	bool SnapshotTryGetPredPos(int ClientId, int Tick, float Intra, vec2 &OutPos) const; // bestclient-light
 	bool IsFastInputLocalClient(int ClientId) const; // bestclient-light
 
 	int m_aNextChangeInfo[NUM_DUMMIES];

@@ -2062,9 +2062,13 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 
 	const int InputsMode = g_Config.m_BclInputs;
 	const bool InputsEnabled = InputsMode != BC_INPUTS_OFF;
-	const bool InputsBestMode = InputsMode == BC_INPUTS_BEST;
-	const float InputsModeFieldsHeight = (InputsBestMode ? 6.0f : 2.0f) * (MarginSmall + LineSize);
-	const float InputsExpandedTargetHeight = (MarginSmall + LineSize) + InputsModeFieldsHeight;
+	float InputsFieldLines = 2.0f;
+	if(InputsMode == BC_INPUTS_BEST)
+		InputsFieldLines = 6.0f;
+	else if(InputsMode == BC_INPUTS_LIGHT)
+		InputsFieldLines = g_Config.m_BclLightInputHook ? 4.0f : 3.0f;
+	const float InputsModeFieldsHeight = InputsFieldLines * (MarginSmall + LineSize);
+	const float InputsExpandedTargetHeight = 2.0f * (MarginSmall + LineSize) + InputsModeFieldsHeight;
 	const float InputsExpandedHeight = BC_MODULE_REVEAL(InputsEnabled, InputsExpandedTargetHeight, Client()->RenderFrameTime());
 	const float InputsHeaderHeight = LineSize + MarginSmall + LineSize;
 	const float InputsFooterLines = g_Config.m_ClSubTickAiming ? 3.0f : 4.0f;
@@ -2141,6 +2145,25 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 				g_Config.m_BclInputs = BC_INPUTS_F;
 			if(DoButton_Menu(&s_InputsCloud, BcLocalize("Cloud"), InputsMode == BC_INPUTS_CLOUD, &CloudButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_R))
 				g_Config.m_BclInputs = BC_INPUTS_CLOUD;
+		}
+
+		InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+		InputsBlock.HSplitTop(LineSize, &Button, &InputsBlock);
+		{
+			static CButtonContainer s_InputsLight, s_InputsAzure;
+			CUIRect ButtonsRect = Button;
+			const float Spacing = 2.0f;
+			const float InputButtonWidth = (ButtonsRect.w - Spacing) / 2.0f;
+			CUIRect LightButton, AzureButton;
+			ButtonsRect.VSplitLeft(InputButtonWidth, &LightButton, &ButtonsRect);
+			ButtonsRect.VSplitLeft(Spacing, nullptr, &ButtonsRect);
+			AzureButton = ButtonsRect;
+			LightButton.HMargin(2.0f, &LightButton);
+			AzureButton.HMargin(2.0f, &AzureButton);
+			if(DoButton_Menu(&s_InputsLight, BcLocalize("Light"), InputsMode == BC_INPUTS_LIGHT, &LightButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_L))
+				g_Config.m_BclInputs = BC_INPUTS_LIGHT;
+			if(DoButton_Menu(&s_InputsAzure, BcLocalize("Azure"), InputsMode == BC_INPUTS_AZURE, &AzureButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_R))
+				g_Config.m_BclInputs = BC_INPUTS_AZURE;
 		}
 
 		if(InputsMode == BC_INPUTS_FAST)
@@ -2247,6 +2270,39 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
 			InputsBlock.HSplitTop(LineSize, &Content, &InputsBlock);
 			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclCloudInputOthers, BcLocalize("Cloud input others"), &g_Config.m_BclCloudInputOthers, &Content, LineSize);
+		}
+		else if(InputsMode == BC_INPUTS_LIGHT)
+		{
+			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+			InputsBlock.HSplitTop(LineSize, &Button, &InputsBlock);
+			DoTickAmountSlider(&g_Config.m_BclLightInputAmount, &Button, BcLocalize("Prediction offset"), 0, 500);
+
+			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+			InputsBlock.HSplitTop(LineSize, &Content, &InputsBlock);
+			const int OldLightHook = g_Config.m_BclLightInputHook;
+			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclLightInputHook, BcLocalize("Hook amount"), &g_Config.m_BclLightInputHook, &Content, LineSize);
+			if(!OldLightHook && g_Config.m_BclLightInputHook)
+				g_Config.m_BclLightInputHookAmount = std::clamp((g_Config.m_BclLightInputAmount + 2) / 5, 1, 100);
+			if(g_Config.m_BclLightInputHook)
+			{
+				InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+				InputsBlock.HSplitTop(LineSize, &Button, &InputsBlock);
+				DoSliderWithScaledValue(&g_Config.m_BclLightInputHookAmount, &g_Config.m_BclLightInputHookAmount, &Button, BcLocalize("Hook amount"), 1, 100, 1, &CUi::ms_LinearScrollbarScale, CUi::SCROLLBAR_OPTION_NOCLAMPVALUE, "ms");
+			}
+
+			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+			InputsBlock.HSplitTop(LineSize, &Content, &InputsBlock);
+			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclLightInputOthers, BcLocalize("Light input others"), &g_Config.m_BclLightInputOthers, &Content, LineSize);
+		}
+		else if(InputsMode == BC_INPUTS_AZURE)
+		{
+			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+			InputsBlock.HSplitTop(LineSize, &Button, &InputsBlock);
+			DoTickAmountSlider(&g_Config.m_BclAzureInputAmount, &Button, BcLocalize("Prediction offset"), 0, 500);
+
+			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+			InputsBlock.HSplitTop(LineSize, &Content, &InputsBlock);
+			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclAzureInputOthers, BcLocalize("Azure input others"), &g_Config.m_BclAzureInputOthers, &Content, LineSize);
 		}
 
 		Ui()->ClipDisable();

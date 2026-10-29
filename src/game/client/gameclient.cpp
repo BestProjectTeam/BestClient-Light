@@ -155,6 +155,8 @@ void CGameClient::OnConsoleInit()
 					      &m_Players,
 					      &m_MovingTilesBackground, // TClient
 					      &m_CloudInput, // bestclient-light
+					      &m_LightInput, // bestclient-light
+					      &m_AzureInput, // bestclient-light
 					      &m_FastPractice, // bestclient-light
 					      &m_BclAutoMargin, // bestclient-light
 					      &m_MapLayersForeground,
@@ -2990,6 +2992,90 @@ bool CGameClient::IsCloudInputMode() const
 	return m_CloudInput.IsActive();
 }
 
+bool CGameClient::IsLightInputMode() const
+{
+	return m_LightInput.IsActive();
+}
+
+bool CGameClient::IsAzureInputMode() const
+{
+	return m_AzureInput.IsActive();
+}
+
+bool CGameClient::IsSnapshotInputMode() const
+{
+	return IsCloudInputMode() || IsLightInputMode() || IsAzureInputMode();
+}
+
+void CGameClient::GetInputPrediction(float &OffsetTicks, int &SelfTicks, bool &AffectsOthers, int &OthersTicks) const
+{
+	if(IsCloudInputMode())
+	{
+		OffsetTicks = 0.0f;
+		SelfTicks = m_CloudInput.SelfTickOffset();
+		AffectsOthers = g_Config.m_BclCloudInputOthers != 0 && m_ReceivedPreInput;
+		OthersTicks = AffectsOthers ? m_CloudInput.OthersTickOffset() : 0;
+		return;
+	}
+	if(IsLightInputMode())
+	{
+		const int Offset = m_LightInput.UseHookLogic(*this) ? m_LightInput.HookTickOffset() : m_LightInput.PredictionTickOffset();
+		OffsetTicks = 0.0f;
+		SelfTicks = Offset;
+		AffectsOthers = m_LightInput.Others();
+		OthersTicks = AffectsOthers ? Offset : 0;
+		return;
+	}
+	if(IsAzureInputMode())
+	{
+		OffsetTicks = 0.0f;
+		SelfTicks = m_AzureInput.SelfTickOffset();
+		OthersTicks = m_AzureInput.OthersTickOffset();
+		AffectsOthers = OthersTicks > 0;
+		return;
+	}
+
+	OffsetTicks = BclInputs::EffectiveOffsetTicks();
+	SelfTicks = BclInputs::PredictionTicks(OffsetTicks);
+	AffectsOthers = BclInputs::AnyOthers();
+	OthersTicks = AffectsOthers ? BclInputs::PredictionTicksOthers(OffsetTicks) : 0;
+}
+
+CNetObj_PlayerInput *CGameClient::SnapshotInputData(int Dummy)
+{
+	if(IsCloudInputMode())
+		return &m_CloudInput.Input(Dummy);
+	if(IsLightInputMode())
+		return &m_LightInput.Input(Dummy);
+	if(IsAzureInputMode())
+		return &m_AzureInput.Input(Dummy);
+	return &m_Controls.m_aFastInput[Dummy];
+}
+
+void CGameClient::SnapshotApplyOffset(int ClientId, int &Tick, float &Intra) const
+{
+	if(IsCloudInputMode())
+		m_CloudInput.ApplyOffset(*this, ClientId, Tick, Intra);
+	else if(IsLightInputMode())
+		m_LightInput.ApplySampleOffset(*this, ClientId, Tick, Intra);
+	else if(IsAzureInputMode())
+		m_AzureInput.ApplySampleOffset(*this, ClientId, Tick, Intra);
+}
+
+bool CGameClient::SnapshotTryGetPredPos(int ClientId, int Tick, float Intra, vec2 &OutPos) const
+{
+	if(IsCloudInputMode())
+		return m_CloudInput.TryGetPredPos(*this, ClientId, Tick, Intra, OutPos);
+	if(IsLightInputMode())
+		return m_LightInput.TryGetPredPos(*this, ClientId, Tick, Intra, m_LightInput.SampleMaxTick(*this), OutPos);
+	if(IsAzureInputMode())
+	{
+		const int Ticks = IsFastInputLocalClient(ClientId) ? m_AzureInput.SelfTickOffset() : m_AzureInput.OthersTickOffset();
+		return m_AzureInput.TryGetPredPos(*this, ClientId, Tick, Intra, Client()->PredGameTick(g_Config.m_ClDummy) + Ticks, OutPos);
+	}
+	return false;
+}
+
 bool CGameClient::IsFastInputLocalClient(int ClientId) const
 {
 	return ClientId == m_Snap.m_LocalClientId || (PredictDummy() && ClientId == m_aLocalIds[!g_Config.m_ClDummy]);
@@ -3073,13 +3159,13 @@ void CGameClient::OnPredict()
 	}
 
 	// bestclient-light
-	const bool CloudInputMode = IsCloudInputMode();
+	const bool SnapshotInputMode = IsSnapshotInputMode();
 	vec2 aBeforeRender[MAX_CLIENTS];
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(!m_Snap.m_aCharacters[i].m_Active || i == m_Snap.m_LocalClientId || !m_aLastActive[i])
 			continue;
-		if(CloudInputMode)
+		if(SnapshotInputMode)
 			aBeforeRender[i] = mix(m_aClients[i].m_PrevPredicted.m_Pos, m_aClients[i].m_Predicted.m_Pos, Client()->PredIntraGameTick(g_Config.m_ClDummy));
 		else
 			aBeforeRender[i] = GetSmoothPos(i);
@@ -3135,10 +3221,11 @@ void CGameClient::OnPredict()
 	// predict
 
 	// bestclient-light
-	const float FastInputOffsetTicks = CloudInputMode ? 0.0f : BclInputs::EffectiveOffsetTicks();
-	const int FastInputTicks = CloudInputMode ? m_CloudInput.SelfTickOffset() : BclInputs::PredictionTicks(FastInputOffsetTicks);
-	const bool FastInputOthers = CloudInputMode ? (g_Config.m_BclCloudInputOthers != 0 && m_ReceivedPreInput) : BclInputs::AnyOthers();
-	const int FastInputTicksOthers = CloudInputMode ? (FastInputOthers ? m_CloudInput.OthersTickOffset() : 0) : (FastInputOthers ? BclInputs::PredictionTicksOthers(FastInputOffsetTicks) : 0);
+	float FastInputOffsetTicks = 0.0f;
+	int FastInputTicks = 0;
+	bool FastInputOthers = false;
+	int FastInputTicksOthers = 0;
+	GetInputPrediction(FastInputOffsetTicks, FastInputTicks, FastInputOthers, FastInputTicksOthers);
 	// bestclient-light
 
 	int FinalTickRegular = Client()->PredGameTick(g_Config.m_ClDummy); // The vanilla final tick disregarding fast input
@@ -3211,7 +3298,7 @@ void CGameClient::OnPredict()
 		}
 		else if(FastInputTicks > 0 && Tick > FinalTickRegular)
 		{
-			pInputData = CloudInputMode ? &m_CloudInput.Input(LocalTee) : &m_Controls.m_aFastInput[LocalTee];
+			pInputData = SnapshotInputMode ? SnapshotInputData(LocalTee) : &m_Controls.m_aFastInput[LocalTee];
 			if(g_Config.m_BclInputs != BC_INPUTS_SAIKO && GetDummyFastInput(DummyFastInput, pDummyInputData, pDummyChar, LocalTee, DummyTee))
 				pDummyInputData = &DummyFastInput;
 		}
@@ -3399,7 +3486,7 @@ void CGameClient::OnPredict()
 
 	// detect mispredictions of other players and make corrections smoother when possible
 	// bestclient-light
-	if(!CloudInputMode && g_Config.m_ClAntiPingSmooth &&
+	if(!SnapshotInputMode && g_Config.m_ClAntiPingSmooth &&
 		Predict() && AntiPingPlayers() &&
 		m_NewTick && m_PredictedTick >= MIN_TICK &&
 		absolute(m_PredictedTick - Client()->PredGameTick(g_Config.m_ClDummy)) <= 1 &&
@@ -3470,13 +3557,13 @@ void CGameClient::OnPredict()
 	CCharacter *pSmoothLocalChar = m_PredSmoothingWorld.GetCharacterById(m_Snap.m_LocalClientId);
 	// bestclient-light
 	if(g_Config.m_TcAntiPingImproved &&
-		(!CloudInputMode || FastInputOthers) &&
+		(!SnapshotInputMode || FastInputOthers) &&
 		Predict() && AntiPingPlayers() &&
 		pSmoothLocalChar &&
 		RealPredTick && m_PredictedTick >= MIN_TICK)
 	{
 		int PredTime = std::clamp(Client()->GetPredictionTime(), 0, 8000); // Milliseconds for some reason?? TODO: Use more precision
-		const int PredEndTick = CloudInputMode ? FinalTickRegular + FastInputTicksOthers : FinalTickRegular;
+		const int PredEndTick = SnapshotInputMode ? FinalTickRegular + FastInputTicksOthers : FinalTickRegular;
 		const int SmoothTick = PredEndTick;
 		// bestclient-light
 
@@ -3540,12 +3627,12 @@ void CGameClient::OnPredict()
 
 			// bestclient-light
 			vec2 PredPos = m_aClients[i].m_RegularPredicted.m_Pos;
-			if(CloudInputMode)
+			if(SnapshotInputMode)
 			{
 				int PredTick = Client()->PredGameTick(g_Config.m_ClDummy);
 				float PredIntra = Client()->PredIntraGameTick(g_Config.m_ClDummy);
-				m_CloudInput.ApplyOffset(*this, i, PredTick, PredIntra);
-				if(!m_CloudInput.TryGetPredPos(*this, i, PredTick, PredIntra, PredPos))
+				SnapshotApplyOffset(i, PredTick, PredIntra);
+				if(!SnapshotTryGetPredPos(i, PredTick, PredIntra, PredPos))
 					PredPos = mix(m_aClients[i].m_PrevPredicted.m_Pos, m_aClients[i].m_Predicted.m_Pos, Client()->PredIntraGameTick(g_Config.m_ClDummy));
 			}
 			// bestclient-light
@@ -4708,11 +4795,11 @@ void CGameClient::UpdateSpectatorCursor()
 void CGameClient::UpdateRenderedCharacters()
 {
 	// bestclient-light
-	const bool CloudInputMode = IsCloudInputMode();
-	const float FastInputOffsetTicks = CloudInputMode ? 0.0f : BclInputs::EffectiveOffsetTicks();
-	const int FastInputTicks = CloudInputMode ? m_CloudInput.SelfTickOffset() : BclInputs::PredictionTicks(FastInputOffsetTicks);
-	const bool FastInputOthers = CloudInputMode ? (g_Config.m_BclCloudInputOthers != 0 && m_ReceivedPreInput) : BclInputs::AnyOthers();
-	const int FastInputTicksOthers = CloudInputMode ? (FastInputOthers ? m_CloudInput.OthersTickOffset() : 0) : BclInputs::PredictionTicksOthers(FastInputOffsetTicks);
+	const bool SnapshotInputMode = IsSnapshotInputMode();
+	const float FastInputOffsetTicks = SnapshotInputMode ? 0.0f : BclInputs::EffectiveOffsetTicks();
+	const int FastInputTicks = SnapshotInputMode ? m_CloudInput.SelfTickOffset() : BclInputs::PredictionTicks(FastInputOffsetTicks);
+	const bool FastInputOthers = SnapshotInputMode ? (g_Config.m_BclCloudInputOthers != 0 && m_ReceivedPreInput) : BclInputs::AnyOthers();
+	const int FastInputTicksOthers = SnapshotInputMode ? (FastInputOthers ? m_CloudInput.OthersTickOffset() : 0) : BclInputs::PredictionTicksOthers(FastInputOffsetTicks);
 	const bool HasFastInput = FastInputTicks > 0;
 	const bool HasFastInputOthers = FastInputTicksOthers > 0;
 	// bestclient-light
@@ -4721,7 +4808,7 @@ void CGameClient::UpdateRenderedCharacters()
 	const int PracticePartnerId = PracticeActive ? m_FastPractice.PartnerPracticeId() : -1;
 	// bestclient-light
 
-	if(CloudInputMode)
+	if(SnapshotInputMode)
 	{
 		for(int i = 0; i < MAX_CLIENTS; i++)
 		{
@@ -4796,7 +4883,7 @@ void CGameClient::UpdateRenderedCharacters()
 				vec2(m_aClients[i].m_RenderCur.m_X, m_aClients[i].m_RenderCur.m_Y),
 				Client()->PredIntraGameTick(g_Config.m_ClDummy));
 			// bestclient-light
-			if(HasFastInput && !CloudInputMode && !m_Snap.m_SpecInfo.m_Active)
+			if(HasFastInput && !SnapshotInputMode && !m_Snap.m_SpecInfo.m_Active)
 			{
 				float PredIntraTick = Client()->PredIntraGameTick(g_Config.m_ClDummy);
 				int PredTick = Client()->PredGameTick(g_Config.m_ClDummy);
@@ -4856,7 +4943,8 @@ void CGameClient::UpdateRenderedCharacters()
 			{
 				// use unpredicted values for other players
 				// bestclient-light
-				if(!(CloudInputMode && FastInputOthers))
+				const bool LightHookLinked = IsLightInputMode() && m_LightInput.IsHookLinkedClient(*this, i);
+				if(!(SnapshotInputMode && FastInputOthers))
 				{
 					m_aClients[i].m_RenderPrev.m_Angle = m_Snap.m_aCharacters[i].m_Prev.m_Angle;
 					m_aClients[i].m_RenderCur.m_Angle = m_Snap.m_aCharacters[i].m_Cur.m_Angle;
@@ -4864,17 +4952,17 @@ void CGameClient::UpdateRenderedCharacters()
 				// bestclient-light
 
 				// bestclient-light
-				if(g_Config.m_ClAntiPingSmooth && !CloudInputMode)
+				if(g_Config.m_ClAntiPingSmooth && !SnapshotInputMode)
 					Pos = GetSmoothPos(i);
 
 				if(HasFastInputOthers && BclInputs::ImmediateOthers())
 					Pos = GetFastInputPos(i);
-				else if(g_Config.m_TcAntiPingImproved && ((CloudInputMode && FastInputOthers) || (!CloudInputMode && m_aClients[i].m_ValidAntipingSmooth)))
+				else if(g_Config.m_TcAntiPingImproved && !LightHookLinked && ((SnapshotInputMode && FastInputOthers) || (!SnapshotInputMode && m_aClients[i].m_ValidAntipingSmooth)))
 					Pos = mix(m_aClients[i].m_PrevImprovedPredPos, m_aClients[i].m_ImprovedPredPos, Client()->PredIntraGameTick(g_Config.m_ClDummy));
 
 				if(g_Config.m_TcRemoveAnti && m_pClient->m_IsLocalFrozen)
 					Pos = GetFreezePos(i);
-				else if(CloudInputMode && FastInputOthers && !g_Config.m_TcAntiPingImproved)
+				else if(SnapshotInputMode && (FastInputOthers || LightHookLinked) && (!g_Config.m_TcAntiPingImproved || LightHookLinked))
 					Pos = GetFastInputPos(i);
 				else if(HasFastInputOthers && FastInputOthers && !g_Config.m_TcAntiPingImproved)
 					Pos = GetFastInputPos(i);
@@ -5030,11 +5118,12 @@ void CGameClient::DetectStrongHook()
 vec2 CGameClient::GetSmoothPos(int ClientId)
 {
 	// bestclient-light
-	const bool CloudInputMode = IsCloudInputMode();
-	const float FastInputOffsetTicks = CloudInputMode ? 0.0f : BclInputs::EffectiveOffsetTicks();
-	const int FastInputTicks = CloudInputMode ? m_CloudInput.SelfTickOffset() : BclInputs::PredictionTicks(FastInputOffsetTicks);
-	const bool FastInputOthers = CloudInputMode ? (g_Config.m_BclCloudInputOthers != 0 && m_ReceivedPreInput) : BclInputs::AnyOthers();
-	const int FastInputTicksOthers = CloudInputMode ? (FastInputOthers ? m_CloudInput.OthersTickOffset() : 0) : (FastInputOthers ? BclInputs::PredictionTicksOthers(FastInputOffsetTicks) : 0);
+	const bool SnapshotInputMode = IsSnapshotInputMode();
+	float FastInputOffsetTicks = 0.0f;
+	int FastInputTicks = 0;
+	bool FastInputOthers = false;
+	int FastInputTicksOthers = 0;
+	GetInputPrediction(FastInputOffsetTicks, FastInputTicks, FastInputOthers, FastInputTicksOthers);
 	const int FastInputTicksClient = IsFastInputLocalClient(ClientId) ? FastInputTicks : FastInputTicksOthers;
 	const bool BestInputInterpolationEnabled = g_Config.m_BclInputs == BC_INPUTS_BEST && FastInputTicksClient > 0 && (ClientId == m_Snap.m_LocalClientId || FastInputOthers);
 	if(ClientId != m_Snap.m_LocalClientId && FastInputTicksClient > 0 && BclInputs::ImmediateOthers())
@@ -5052,15 +5141,15 @@ vec2 CGameClient::GetSmoothPos(int ClientId)
 			float SmoothIntra;
 			Client()->GetSmoothTick(&SmoothTick, &SmoothIntra, MixAmount);
 
-			if(CloudInputMode)
-				m_CloudInput.ApplyOffset(*this, ClientId, SmoothTick, SmoothIntra);
+			if(SnapshotInputMode)
+				SnapshotApplyOffset(ClientId, SmoothTick, SmoothIntra);
 			else if(ClientId != m_Snap.m_LocalClientId && FastInputTicksClient > 0 && FastInputOthers)
 				BclInputs::ApplyOffset(FastInputOffsetTicks, SmoothTick, SmoothIntra);
 
-			if(CloudInputMode)
+			if(SnapshotInputMode)
 			{
 				vec2 SmoothPos;
-				if(m_CloudInput.TryGetPredPos(*this, ClientId, SmoothTick, SmoothIntra, SmoothPos))
+				if(SnapshotTryGetPredPos(ClientId, SmoothTick, SmoothIntra, SmoothPos))
 					Pos[i] = SmoothPos[i];
 			}
 			else
@@ -5079,6 +5168,10 @@ vec2 CGameClient::GetSmoothPos(int ClientId)
 vec2 CGameClient::GetFastInputPos(int ClientId)
 {
 	// bestclient-light
+	if(IsLightInputMode())
+		return m_LightInput.FastInputPos(*this, ClientId);
+	if(IsAzureInputMode())
+		return m_AzureInput.FastInputPos(*this, ClientId);
 	if(IsCloudInputMode())
 	{
 		float PredIntraTick = Client()->PredIntraGameTick(g_Config.m_ClDummy);
@@ -5240,6 +5333,46 @@ vec2 CGameClient::GetFreezePos(int ClientId)
 		m_CloudInput.ApplyOffset(*this, ClientId, SmoothTick, SmoothIntra);
 		m_CloudInput.TryGetPredPos(*this, ClientId, SmoothTick, SmoothIntra, Pos);
 
+		return Pos;
+	}
+
+	if(IsLightInputMode() || IsAzureInputMode())
+	{
+		const bool Local = IsFastInputLocalClient(ClientId);
+		const bool LightHookLinked = IsLightInputMode() && m_LightInput.IsHookLinkedClient(*this, ClientId);
+		const bool OthersPos = IsAzureInputMode() ? m_AzureInput.Others() : (m_LightInput.Others() || LightHookLinked);
+		if(!Local && OthersPos)
+			return GetFastInputPos(ClientId);
+
+		vec2 Pos = mix(m_aClients[ClientId].m_PrevPredicted.m_Pos, m_aClients[ClientId].m_Predicted.m_Pos, Client()->PredIntraGameTick(g_Config.m_ClDummy));
+		CCharacter *pChar = m_PredictedWorld.GetCharacterById(m_Snap.m_LocalClientId);
+		CCharacter *pExtraChar = m_ExtraPredictedWorld.GetCharacterById(m_Snap.m_LocalClientId);
+
+		float MixAmount = 0.0f;
+		int SmoothTick;
+		float SmoothIntra;
+		int AdjustTicks = 0;
+		int DelayTicks = g_Config.m_TcUnfreezeLagDelayTicks;
+		int FreezeTime = 0;
+		if(pExtraChar && pChar)
+		{
+			AdjustTicks = pChar->m_FreezeAccumulation;
+			if(pExtraChar->m_AliveAccumulation > 0)
+				AdjustTicks -= pExtraChar->m_AliveAccumulation;
+			AdjustTicks = std::max(AdjustTicks, 0);
+			FreezeTime = pChar->m_FreezeTime;
+			AdjustTicks = std::min(FreezeTime, AdjustTicks);
+		}
+		if(g_Config.m_TcRemoveAnti && pChar && AdjustTicks > 0 && FreezeTime > 0)
+			MixAmount = mix(0.0f, 1.0f, 1.0f - AdjustTicks / (float)DelayTicks);
+		else
+			MixAmount = 1.f;
+
+		Client()->GetSmoothFreezeTick(&SmoothTick, &SmoothIntra, MixAmount);
+		m_SmoothTick = SmoothTick;
+		m_SmoothIntraTick = SmoothIntra;
+		SnapshotApplyOffset(ClientId, SmoothTick, SmoothIntra);
+		SnapshotTryGetPredPos(ClientId, SmoothTick, SmoothIntra, Pos);
 		return Pos;
 	}
 
@@ -5952,11 +6085,14 @@ void CGameClient::StoreSave(const char *pTeamMembers, const char *pGeneratedCode
 
 bool CGameClient::CheckNewInput()
 {
-	if(IsCloudInputMode()) // bestclient-light
-	{
-		const bool NewInput = m_CloudInput.CheckNewInput(m_Controls);
-		return NewInput;
-	}
+	// bestclient-light
+	if(IsCloudInputMode())
+		return m_CloudInput.CheckNewInput(m_Controls);
+	if(IsLightInputMode())
+		return m_LightInput.CheckNewInput(m_Controls);
+	if(IsAzureInputMode())
+		return m_AzureInput.CheckNewInput(m_Controls);
+	// bestclient-light
 	return m_Controls.CheckNewInput();
 }
 
@@ -6031,6 +6167,10 @@ const char *CGameClient::GetComponentName(const CComponent *pComp) const
 		return "MovingTilesBg";
 	if(pComp == &m_CloudInput)
 		return "CloudInput";
+	if(pComp == &m_LightInput)
+		return "LightInput";
+	if(pComp == &m_AzureInput)
+		return "AzureInput";
 	if(pComp == &m_FastPractice)
 		return "FastPractice";
 	if(pComp == &m_BclAutoMargin)

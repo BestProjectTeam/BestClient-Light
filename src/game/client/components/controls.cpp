@@ -302,6 +302,9 @@ int CControls::SnapInput(int *pData)
 
 		m_FastInputHookAction = false;
 		m_FastInputFireAction = false;
+		// bestclient-light
+		GameClient()->m_LightInput.ResetActions();
+		// bestclient-light
 
 		if(g_Config.m_TcScaleMouseDistance && !GameClient()->m_Snap.m_SpecInfo.m_Active)
 		{

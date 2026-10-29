@@ -2997,6 +2997,10 @@ if(CLIENT)
     components/bestclient-light/inputs.h
     components/bestclient-light/cloud_input.cpp
     components/bestclient-light/cloud_input.h
+    components/bestclient-light/light_input.cpp
+    components/bestclient-light/light_input.h
+    components/bestclient-light/azure_input.cpp
+    components/bestclient-light/azure_input.h
     components/bestclient-light/automargin.cpp
     components/bestclient-light/automargin.h # bestclient-light
     components/bestclient-light/subsystem_runtime.h
