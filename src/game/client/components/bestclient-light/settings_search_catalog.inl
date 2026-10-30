@@ -102,6 +102,18 @@
 	{"Better font", SETTINGS_NAV_LEAF_BC_VISUALS, "Better UI", &g_Config.m_BclMenuUiBetterFont, &g_Config.m_BclMenuUiStyle},
 
 	{"Inputs", SETTINGS_NAV_LEAF_BC_TOOLS, "Tools", &g_Config.m_BclInputs, nullptr},
+	{"Light", SETTINGS_NAV_LEAF_BC_TOOLS, "Inputs", &g_Config.m_BclInputs, &g_Config.m_BclInputs},
+	{"Azure", SETTINGS_NAV_LEAF_BC_TOOLS, "Inputs", &g_Config.m_BclInputs, &g_Config.m_BclInputs},
+	{"Ancient", SETTINGS_NAV_LEAF_BC_TOOLS, "Inputs", &g_Config.m_BclInputs, &g_Config.m_BclInputs},
+	{"Prediction offset", SETTINGS_NAV_LEAF_BC_TOOLS, "Light", &g_Config.m_BclLightInputAmount, &g_Config.m_BclInputs},
+	{"Hook amount", SETTINGS_NAV_LEAF_BC_TOOLS, "Light", &g_Config.m_BclLightInputHook, &g_Config.m_BclInputs},
+	{"Hook amount", SETTINGS_NAV_LEAF_BC_TOOLS, "Light", &g_Config.m_BclLightInputHookAmount, &g_Config.m_BclLightInputHook},
+	{"Light input others", SETTINGS_NAV_LEAF_BC_TOOLS, "Light", &g_Config.m_BclLightInputOthers, &g_Config.m_BclInputs},
+	{"Prediction offset", SETTINGS_NAV_LEAF_BC_TOOLS, "Azure", &g_Config.m_BclAzureInputAmount, &g_Config.m_BclInputs},
+	{"Azure input others", SETTINGS_NAV_LEAF_BC_TOOLS, "Azure", &g_Config.m_BclAzureInputOthers, &g_Config.m_BclInputs},
+	{"Prediction offset", SETTINGS_NAV_LEAF_BC_TOOLS, "Ancient", &g_Config.m_BclAncientInputAmount, &g_Config.m_BclInputs},
+	{"Others offset", SETTINGS_NAV_LEAF_BC_TOOLS, "Ancient", &g_Config.m_BclAncientInputOthersAmount, &g_Config.m_BclInputs},
+	{"Ancient input others", SETTINGS_NAV_LEAF_BC_TOOLS, "Ancient", &g_Config.m_BclAncientInputOthers, &g_Config.m_BclInputs},
 	{"Sub-Tick aiming", SETTINGS_NAV_LEAF_BC_TOOLS, "Inputs", &g_Config.m_ClSubTickAiming, nullptr},
 	{"Auto margin", SETTINGS_NAV_LEAF_BC_TOOLS, "Inputs", &g_Config.m_BclAutoMargin, nullptr},
 

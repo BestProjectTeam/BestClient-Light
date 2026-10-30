@@ -643,6 +643,18 @@ Cloud
 == Cloud
 
 [BestClient Light]
+Light
+== Light
+
+[BestClient Light]
+Azure
+== Azure
+
+[BestClient Light]
+Ancient
+== Ancient
+
+[BestClient Light]
 Prediction offset
 == 预测偏移
 
@@ -693,6 +705,26 @@ F input others
 [BestClient Light]
 Cloud input others
 == Cloud 输入（其他玩家）
+
+[BestClient Light]
+Hook amount
+== 钩索时间
+
+[BestClient Light]
+Light input others
+== Light 输入（其他玩家）
+
+[BestClient Light]
+Azure input others
+== Azure 输入（其他玩家）
+
+[BestClient Light]
+Others offset
+== 其他玩家偏移
+
+[BestClient Light]
+Ancient input others
+== Ancient 输入（其他玩家）
 
 [BestClient Light]
 Sub-Tick aiming

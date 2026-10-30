@@ -699,6 +699,18 @@ Cloud
 == Клауд
 
 [BestClient Light]
+Light
+== Лайт
+
+[BestClient Light]
+Azure
+== Азур
+
+[BestClient Light]
+Ancient
+== Эйншент
+
+[BestClient Light]
 Prediction offset
 == Предикшен оффсет
 
@@ -749,6 +761,26 @@ F input others
 [BestClient Light]
 Cloud input others
 == Клауд инпут других
+
+[BestClient Light]
+Hook amount
+== Оффсет хука
+
+[BestClient Light]
+Light input others
+== Лайт инпут других
+
+[BestClient Light]
+Azure input others
+== Азур инпут других
+
+[BestClient Light]
+Others offset
+== Оффсет других
+
+[BestClient Light]
+Ancient input others
+== Эйншент инпут других
 
 [BestClient Light]
 Sub-Tick aiming

@@ -3386,13 +3386,16 @@ void CGameClient::OnPredict()
 				m_aClients[m_aLocalIds[!g_Config.m_ClDummy]].m_Predicted = pDummyChar->GetCore();
 		}
 
+		// bestclient-light
+		const bool StoreLightHookPositions = Tick > FinalTickOthers && IsLightInputMode() && m_LightInput.UseHookLogic(*this) && Tick <= FinalTickRegular + m_LightInput.HookTickOffset();
+		// bestclient-light
 		for(int i = 0; i < MAX_CLIENTS; i++)
 			if(CCharacter *pChar = m_PredictedWorld.GetCharacterById(i))
 			{
 				// bestclient-light
 				if(PracticeActive && m_FastPractice.IsPracticeParticipant(i))
 					continue;
-				if(Tick > FinalTickOthers && !IsFastInputLocalClient(i))
+				if(Tick > FinalTickOthers && !IsFastInputLocalClient(i) && !(StoreLightHookPositions && m_LightInput.IsHookLinkedClient(*this, i)))
 					continue;
 				// bestclient-light
 				m_aClients[i].m_aPredPos[Tick % 200] = pChar->Core()->m_Pos;
@@ -5321,53 +5324,16 @@ vec2 CGameClient::GetFastInputPos(int ClientId)
 vec2 CGameClient::GetFreezePos(int ClientId)
 {
 	// bestclient-light
-	if(IsCloudInputMode())
+	if(IsSnapshotInputMode())
 	{
-		vec2 Pos = mix(m_aClients[ClientId].m_PrevPredicted.m_Pos, m_aClients[ClientId].m_Predicted.m_Pos, Client()->PredIntraGameTick(g_Config.m_ClDummy));
-		CCharacter *pChar = m_PredictedWorld.GetCharacterById(m_Snap.m_LocalClientId);
-		CCharacter *pExtraChar = m_ExtraPredictedWorld.GetCharacterById(m_Snap.m_LocalClientId);
-
-		float MixAmount = 0.0f;
-		int SmoothTick;
-		float SmoothIntra;
-
-		int AdjustTicks = 0;
-		int DelayTicks = g_Config.m_TcUnfreezeLagDelayTicks;
-		int FreezeTime = 0;
-		if(pExtraChar && pChar)
+		if(!IsCloudInputMode())
 		{
-			AdjustTicks = pChar->m_FreezeAccumulation;
-			if(pExtraChar->m_AliveAccumulation > 0)
-				AdjustTicks -= pExtraChar->m_AliveAccumulation;
-
-			AdjustTicks = std::max(AdjustTicks, 0);
-			FreezeTime = pChar->m_FreezeTime;
-
-			AdjustTicks = std::min(FreezeTime, AdjustTicks);
+			const bool Local = IsFastInputLocalClient(ClientId);
+			const bool LightHookLinked = IsLightInputMode() && m_LightInput.IsHookLinkedClient(*this, ClientId);
+			const bool OthersPos = IsAncientInputMode() ? m_AncientInput.Others() : (IsAzureInputMode() ? m_AzureInput.Others() : (m_LightInput.Others() || LightHookLinked));
+			if(!Local && OthersPos)
+				return GetFastInputPos(ClientId);
 		}
-		if(g_Config.m_TcRemoveAnti && pChar && AdjustTicks > 0 && FreezeTime > 0)
-			MixAmount = mix(0.0f, 1.0f, 1.0f - AdjustTicks / (float)DelayTicks);
-		else
-			MixAmount = 1.f;
-
-		Client()->GetSmoothFreezeTick(&SmoothTick, &SmoothIntra, MixAmount);
-
-		m_SmoothTick = SmoothTick;
-		m_SmoothIntraTick = SmoothIntra;
-
-		m_CloudInput.ApplyOffset(*this, ClientId, SmoothTick, SmoothIntra);
-		m_CloudInput.TryGetPredPos(*this, ClientId, SmoothTick, SmoothIntra, Pos);
-
-		return Pos;
-	}
-
-	if(IsLightInputMode() || IsAzureInputMode() || IsAncientInputMode())
-	{
-		const bool Local = IsFastInputLocalClient(ClientId);
-		const bool LightHookLinked = IsLightInputMode() && m_LightInput.IsHookLinkedClient(*this, ClientId);
-		const bool OthersPos = IsAncientInputMode() ? m_AncientInput.Others() : (IsAzureInputMode() ? m_AzureInput.Others() : (m_LightInput.Others() || LightHookLinked));
-		if(!Local && OthersPos)
-			return GetFastInputPos(ClientId);
 
 		vec2 Pos = mix(m_aClients[ClientId].m_PrevPredicted.m_Pos, m_aClients[ClientId].m_Predicted.m_Pos, Client()->PredIntraGameTick(g_Config.m_ClDummy));
 		CCharacter *pChar = m_PredictedWorld.GetCharacterById(m_Snap.m_LocalClientId);

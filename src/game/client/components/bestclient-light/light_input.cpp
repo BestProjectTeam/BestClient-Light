@@ -251,7 +251,8 @@ bool CLightInput::TryGetPredPos(const CGameClient &GameClient, int ClientId, int
 {
 	if(!IsActive() || Tick <= 0)
 		return false;
-	if(GameClient.m_aClients[ClientId].m_aPredTick[(Tick - 1) % 200] < GameClient.Client()->PrevGameTick(g_Config.m_ClDummy) ||
+	if(GameClient.m_aClients[ClientId].m_aPredTick[(Tick - 1) % 200] != Tick - 1 ||
+		GameClient.m_aClients[ClientId].m_aPredTick[Tick % 200] != Tick ||
 		GameClient.m_aClients[ClientId].m_aPredTick[Tick % 200] > MaxTick)
 		return false;
 
