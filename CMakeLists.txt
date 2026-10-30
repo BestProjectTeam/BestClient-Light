@@ -3001,6 +3001,8 @@ if(CLIENT)
     components/bestclient-light/light_input.h
     components/bestclient-light/azure_input.cpp
     components/bestclient-light/azure_input.h
+    components/bestclient-light/ancient_input.cpp
+    components/bestclient-light/ancient_input.h
     components/bestclient-light/automargin.cpp
     components/bestclient-light/automargin.h # bestclient-light
     components/bestclient-light/subsystem_runtime.h

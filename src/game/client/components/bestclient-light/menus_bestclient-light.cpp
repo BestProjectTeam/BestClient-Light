@@ -2067,6 +2067,8 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 		InputsFieldLines = 6.0f;
 	else if(InputsMode == BC_INPUTS_LIGHT)
 		InputsFieldLines = g_Config.m_BclLightInputHook ? 4.0f : 3.0f;
+	else if(InputsMode == BC_INPUTS_ANCIENT)
+		InputsFieldLines = 3.0f;
 	const float InputsModeFieldsHeight = InputsFieldLines * (MarginSmall + LineSize);
 	const float InputsExpandedTargetHeight = 2.0f * (MarginSmall + LineSize) + InputsModeFieldsHeight;
 	const float InputsExpandedHeight = BC_MODULE_REVEAL(InputsEnabled, InputsExpandedTargetHeight, Client()->RenderFrameTime());
@@ -2150,20 +2152,25 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 		InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
 		InputsBlock.HSplitTop(LineSize, &Button, &InputsBlock);
 		{
-			static CButtonContainer s_InputsLight, s_InputsAzure;
+			static CButtonContainer s_InputsLight, s_InputsAzure, s_InputsAncient;
 			CUIRect ButtonsRect = Button;
 			const float Spacing = 2.0f;
-			const float InputButtonWidth = (ButtonsRect.w - Spacing) / 2.0f;
-			CUIRect LightButton, AzureButton;
+			const float InputButtonWidth = (ButtonsRect.w - Spacing * 2.0f) / 3.0f;
+			CUIRect LightButton, AzureButton, AncientButton;
 			ButtonsRect.VSplitLeft(InputButtonWidth, &LightButton, &ButtonsRect);
 			ButtonsRect.VSplitLeft(Spacing, nullptr, &ButtonsRect);
-			AzureButton = ButtonsRect;
+			ButtonsRect.VSplitLeft(InputButtonWidth, &AzureButton, &ButtonsRect);
+			ButtonsRect.VSplitLeft(Spacing, nullptr, &ButtonsRect);
+			AncientButton = ButtonsRect;
 			LightButton.HMargin(2.0f, &LightButton);
 			AzureButton.HMargin(2.0f, &AzureButton);
+			AncientButton.HMargin(2.0f, &AncientButton);
 			if(DoButton_Menu(&s_InputsLight, BcLocalize("Light"), InputsMode == BC_INPUTS_LIGHT, &LightButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_L))
 				g_Config.m_BclInputs = BC_INPUTS_LIGHT;
-			if(DoButton_Menu(&s_InputsAzure, BcLocalize("Azure"), InputsMode == BC_INPUTS_AZURE, &AzureButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_R))
+			if(DoButton_Menu(&s_InputsAzure, BcLocalize("Azure"), InputsMode == BC_INPUTS_AZURE, &AzureButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_NONE))
 				g_Config.m_BclInputs = BC_INPUTS_AZURE;
+			if(DoButton_Menu(&s_InputsAncient, BcLocalize("Ancient"), InputsMode == BC_INPUTS_ANCIENT, &AncientButton, BUTTONFLAG_LEFT, nullptr, IGraphics::CORNER_R))
+				g_Config.m_BclInputs = BC_INPUTS_ANCIENT;
 		}
 
 		if(InputsMode == BC_INPUTS_FAST)
@@ -2303,6 +2310,20 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
 			InputsBlock.HSplitTop(LineSize, &Content, &InputsBlock);
 			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclAzureInputOthers, BcLocalize("Azure input others"), &g_Config.m_BclAzureInputOthers, &Content, LineSize);
+		}
+		else if(InputsMode == BC_INPUTS_ANCIENT)
+		{
+			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+			InputsBlock.HSplitTop(LineSize, &Button, &InputsBlock);
+			DoSliderWithScaledValue(&g_Config.m_BclAncientInputAmount, &g_Config.m_BclAncientInputAmount, &Button, BcLocalize("Prediction offset"), 0, 100, 1, &CUi::ms_LinearScrollbarScale, CUi::SCROLLBAR_OPTION_NOCLAMPVALUE, "ms");
+
+			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+			InputsBlock.HSplitTop(LineSize, &Button, &InputsBlock);
+			DoSliderWithScaledValue(&g_Config.m_BclAncientInputOthersAmount, &g_Config.m_BclAncientInputOthersAmount, &Button, BcLocalize("Others offset"), 0, 100, 1, &CUi::ms_LinearScrollbarScale, CUi::SCROLLBAR_OPTION_NOCLAMPVALUE, "ms");
+
+			InputsBlock.HSplitTop(MarginSmall, nullptr, &InputsBlock);
+			InputsBlock.HSplitTop(LineSize, &Content, &InputsBlock);
+			DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclAncientInputOthers, BcLocalize("Ancient input others"), &g_Config.m_BclAncientInputOthers, &Content, LineSize);
 		}
 
 		Ui()->ClipDisable();

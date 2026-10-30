@@ -72,6 +72,7 @@ enum
 	BC_INPUTS_CLOUD,
 	BC_INPUTS_LIGHT,
 	BC_INPUTS_AZURE,
+	BC_INPUTS_ANCIENT,
 };
 // bestclient-light
 

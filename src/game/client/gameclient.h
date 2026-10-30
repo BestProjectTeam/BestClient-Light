@@ -56,6 +56,7 @@
 #include "components/bestclient-light/automargin.h" // bestclient-light
 #include "components/bestclient-light/chat_bubbles.h" // bestclient-light
 #include "components/bestclient-light/clientindicator/client_indicator.h" // bestclient-light
+#include "components/bestclient-light/ancient_input.h" // bestclient-light
 #include "components/bestclient-light/azure_input.h" // bestclient-light
 #include "components/bestclient-light/cloud_input.h" // bestclient-light
 #include "components/bestclient-light/light_input.h" // bestclient-light
@@ -245,6 +246,7 @@ public:
 	CCloudInput m_CloudInput; // bestclient-light
 	CLightInput m_LightInput; // bestclient-light
 	CAzureInput m_AzureInput; // bestclient-light
+	CAncientInput m_AncientInput; // bestclient-light
 	CFastPractice m_FastPractice; // bestclient-light
 	CBcAutoMargin m_BclAutoMargin; // bestclient-light
 	COptimizer m_Optimizer; // bestclient-light
@@ -840,6 +842,7 @@ public:
 	bool IsCloudInputMode() const; // bestclient-light
 	bool IsLightInputMode() const; // bestclient-light
 	bool IsAzureInputMode() const; // bestclient-light
+	bool IsAncientInputMode() const; // bestclient-light
 	bool IsSnapshotInputMode() const; // bestclient-light
 	void GetInputPrediction(float &OffsetTicks, int &SelfTicks, bool &AffectsOthers, int &OthersTicks) const; // bestclient-light
 	CNetObj_PlayerInput *SnapshotInputData(int Dummy); // bestclient-light

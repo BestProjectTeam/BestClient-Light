@@ -97,7 +97,7 @@ MACRO_CONFIG_INT(BclToggleSmallSens, bcl_toggle_small_sens, 0, 0, 1, CFGFLAG_CLI
 
 // Inputs
 MACRO_CONFIG_INT(BclInputDebounce, bcl_input_debounce, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Preserve button presses shorter than one simulation tick")
-MACRO_CONFIG_INT(BclInputs, bcl_inputs, 0, 0, 8, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Input prediction mode (0 = off, 1 = fast, 2 = best, 3 = saiko, 4 = delta, 5 = f, 6 = cloud, 7 = light, 8 = azure)")
+MACRO_CONFIG_INT(BclInputs, bcl_inputs, 0, 0, 9, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Input prediction mode (0 = off, 1 = fast, 2 = best, 3 = saiko, 4 = delta, 5 = f, 6 = cloud, 7 = light, 8 = azure, 9 = ancient)")
 MACRO_CONFIG_INT(BclBestInputAmount, bcl_best_input_amount, 0, 0, 1000, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Best input prediction amount in 0.01 ticks")
 MACRO_CONFIG_INT(BclBestInputSmoothing, bcl_best_input_smoothing, 0, 0, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Best input smoothing amount (0-100%)")
 MACRO_CONFIG_INT(BclBestInputLatencyComp, bcl_best_input_latency_comp, 0, 0, 50, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Best input latency compensation (0-50%)")
@@ -117,6 +117,9 @@ MACRO_CONFIG_INT(BclLightInputHook, bcl_light_input_hook, 0, 0, 1, CFGFLAG_CLIEN
 MACRO_CONFIG_INT(BclLightInputHookAmount, bcl_light_input_hook_amount, 37, 1, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Light input hook amount in milliseconds")
 MACRO_CONFIG_INT(BclAzureInputAmount, bcl_azure_input_amount, 0, 0, 500, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Azure input amount in 0.01 ticks")
 MACRO_CONFIG_INT(BclAzureInputOthers, bcl_azure_input_others, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Apply Azure input to other tees")
+MACRO_CONFIG_INT(BclAncientInputAmount, bcl_ancient_input_amount, 0, 0, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Ancient input amount in milliseconds")
+MACRO_CONFIG_INT(BclAncientInputOthers, bcl_ancient_input_others, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Apply Ancient input to other tees")
+MACRO_CONFIG_INT(BclAncientInputOthersAmount, bcl_ancient_input_others_amount, 0, 0, 100, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Ancient input amount for other tees in milliseconds")
 MACRO_CONFIG_INT(BclAutoMargin, bcl_auto_margin, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Auto margin")
 
 // MuteOthers

@@ -81,6 +81,9 @@ bcl_light_input_hook
 bcl_light_input_hook_amount
 bcl_azure_input_amount
 bcl_azure_input_others
+bcl_ancient_input_amount
+bcl_ancient_input_others
+bcl_ancient_input_others_amount
 bcl_auto_margin
 bcl_mute_others_hook
 bcl_mute_others_hammer
