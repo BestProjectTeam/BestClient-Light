@@ -135,6 +135,7 @@ public:
 	void OnReset() override;
 	void OnMapLoad() override;
 	void OnRelease() override;
+	void OnWindowResize() override;
 	void OnNewSnapshot() override;
 	void OnRender() override;
 	bool OnInput(const IInput::CEvent &Event) override;

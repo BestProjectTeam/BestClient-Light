@@ -423,6 +423,11 @@ void CMinimap::OnRelease()
 	CloseLarge();
 }
 
+void CMinimap::OnWindowResize()
+{
+	ReleaseMarkerLabels();
+}
+
 bool CMinimap::IsLargeMapBind(int Key) const
 {
 	const int ActiveMask = CBinds::GetModifierMask(Input());
