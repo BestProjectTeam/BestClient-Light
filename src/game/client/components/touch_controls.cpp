@@ -372,7 +372,9 @@ void CTouchControls::CTouchButtonBehavior::Init(CTouchButton *pTouchButton)
 
 void CTouchControls::CTouchButtonBehavior::Reset()
 {
-	m_Active = false;
+	// bestclient-light
+	SetInactive(false);
+	// bestclient-light
 }
 
 void CTouchControls::CTouchButtonBehavior::SetActive(const IInput::CTouchFingerState &FingerState)
@@ -1210,10 +1212,16 @@ void CTouchControls::ResetButtons()
 	{
 		TouchButton.m_pBehavior->Reset();
 	}
-	for(CActionState &ActionState : m_aDirectTouchActionStates)
+	// bestclient-light
+	for(int Action = ACTION_AIM; Action < NUM_ACTIONS; ++Action)
 	{
-		ActionState.m_Active = false;
+		if(!m_aDirectTouchActionStates[Action].m_Active)
+			continue;
+		m_aDirectTouchActionStates[Action].m_Active = false;
+		if(Action != ACTION_AIM)
+			Console()->ExecuteLineStroked(0, ACTION_COMMANDS[Action], IConsole::CLIENT_ID_UNSPECIFIED);
 	}
+	// bestclient-light
 }
 
 void CTouchControls::RenderButtonsGame()

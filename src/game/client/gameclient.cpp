@@ -568,16 +568,15 @@ void CGameClient::OnUpdate()
 
 	// handle touch events
 	std::vector<IInput::CTouchFingerState> vTouchFingerStates = Input()->TouchFingerStates();
-	if(!vTouchFingerStates.empty())
+	// bestclient-light
+	for(auto &pComponent : m_vpInput)
 	{
-		for(auto &pComponent : m_vpInput)
+		if(pComponent->OnTouchState(vTouchFingerStates))
 		{
-			if(pComponent->OnTouchState(vTouchFingerStates))
-			{
-				Input()->ClearTouchDeltas();
-			}
+			Input()->ClearTouchDeltas();
 		}
 	}
+	// bestclient-light
 
 	// handle key presses
 	Input()->ConsumeEvents([&](const IInput::CEvent &Event) {

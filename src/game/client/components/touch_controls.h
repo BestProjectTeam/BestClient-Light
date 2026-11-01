@@ -224,7 +224,9 @@ public:
 		CTouchButton *m_pTouchButton;
 		CTouchControls *m_pTouchControls;
 
-		bool m_Active; // variables below must only be used when active
+		// bestclient-light
+		bool m_Active = false; // variables below must only be used when active
+		// bestclient-light
 		IInput::CTouchFinger m_Finger;
 		vec2 m_ActivePosition;
 		vec2 m_AccumulatedDelta;
