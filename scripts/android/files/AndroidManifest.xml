@@ -41,12 +41,6 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 	<uses-permission android:name="android.permission.INTERNET" />
 
-	<!-- bestclient-light: public BestClient folder survives uninstall -->
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
-	<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-	<!-- bestclient-light -->
-
 	<!-- Local server runs in a foreground service with a notification to control it -->
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
@@ -54,7 +48,6 @@
 
 	<!-- usesCleartextTraffic because unencrypted UDP packets -->
 	<application
-		android:requestLegacyExternalStorage="true"
 		android:usesCleartextTraffic="true"
 		android:label="@string/app_name"
 		android:hasCode="true"

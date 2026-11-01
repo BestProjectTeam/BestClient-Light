@@ -5751,13 +5751,6 @@ bool CClient::ViewFile(const char *pFilename)
 	char aFileLink[IO_MAX_PATH_LENGTH];
 #if defined(CONF_PLATFORM_IOS)
 	str_format(aFileLink, sizeof(aFileLink), "shareddocuments://%s%s", aWorkingDir, pFilename);
-#elif defined(CONF_PLATFORM_ANDROID)
-	// bestclient-light
-	str_format(aFileLink, sizeof(aFileLink), "%s%s", aWorkingDir, pFilename);
-	if(fs_is_dir(aFileLink))
-		return OpenAndroidFolder(aFileLink);
-	str_format(aFileLink, sizeof(aFileLink), "file://%s%s", aWorkingDir, pFilename);
-	// bestclient-light
 #else
 	str_format(aFileLink, sizeof(aFileLink), "file://%s%s", aWorkingDir, pFilename);
 #endif

@@ -25,20 +25,15 @@
  *
  * @ingroup Android
  *
- * This will change the current working directory to the public `BestClient`
- * folder when storage access is granted, otherwise to the app specific external
- * storage. Assets from the APK are unpacked to the `data` folder.
- * The folder `user` stores the user data. The public folder survives uninstall.
+ * This will change the current working directory to the app specific external
+ * storage location and unpack the assets from the APK file to the `data` folder.
+ * The folder `user` is created in the external storage to store the user data.
  *
  * Failure must be handled by exiting the app.
  *
  * @return `nullptr` on success, error message on failure.
  */
 const char *InitAndroid();
-
-// bestclient-light
-bool OpenAndroidFolder(const char *pPath);
-// bestclient-light
 
 /**
  * Sends an intent to the Android system to restart the app.
