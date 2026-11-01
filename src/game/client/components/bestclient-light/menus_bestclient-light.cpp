@@ -3252,7 +3252,7 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 
 	LeftColumn.HSplitTop(MarginBetweenViews, nullptr, &LeftColumn);
 
-	const float BrowserUtilsBlockHeight = 5.0f * LineSize + 4.0f * MarginSmall;
+	const float BrowserUtilsBlockHeight = 6.0f * LineSize + 5.0f * MarginSmall;
 
 	CUIRect BrowserUtilsBlock;
 	LeftColumn.HSplitTop(BrowserUtilsBlockHeight, &BrowserUtilsBlock, &LeftColumn);
@@ -3284,6 +3284,10 @@ void CMenus::RenderSettingsBestClientLightTools(CUIRect MainView)
 	BrowserUtilsBlock.HSplitTop(LineSize, &Content, &BrowserUtilsBlock);
 	BcMenuBadges::DrawNew(Graphics(), Ui(), TextRender(), &Content, MarginSmall);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclShowFinishedMapOnEgoLegit, BcLocalize("Show finished map on EGO/LEGIT-NET"), &g_Config.m_BclShowFinishedMapOnEgoLegit, &Content, LineSize);
+
+	BrowserUtilsBlock.HSplitTop(MarginSmall, nullptr, &BrowserUtilsBlock);
+	BrowserUtilsBlock.HSplitTop(LineSize, &Content, &BrowserUtilsBlock);
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_BclMastersrv, BcLocalize("Use BestClient MasterServer"), &g_Config.m_BclMastersrv, &Content, LineSize);
 
 	LeftColumn.HSplitTop(MarginBetweenViews, nullptr, &LeftColumn);
 

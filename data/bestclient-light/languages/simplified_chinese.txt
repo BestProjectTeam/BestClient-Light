@@ -1039,6 +1039,10 @@ Show finished map on EGO/LEGIT-NET
 == 在 EGO/LEGIT-NET 上显示已完成地图
 
 [BestClient Light]
+Use BestClient MasterServer
+== 使用 BestClient 主服务器
+
+[BestClient Light]
 Rollback Demo
 == 回滚演示
 
