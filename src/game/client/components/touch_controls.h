@@ -731,6 +731,9 @@ public:
 private:
 	CPopupParam m_PopupParam;
 	std::array<CIssueParam, (int)EIssueType::NUM_ISSUES> m_aIssueParam;
+	// bestclient-light
+	void OpenIngameMenuFromTouch();
+	// bestclient-light
 };
 
 #endif

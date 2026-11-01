@@ -34,6 +34,7 @@
 #include <game/client/render.h>
 #include <game/client/ui.h>
 #include <game/localization.h>
+#include <game/version.h>
 
 #include <algorithm>
 #if defined(CONF_FAMILY_UNIX) && !defined(CONF_PLATFORM_ANDROID)
@@ -88,6 +89,69 @@ void BestClientLightFormatDisplayVersion(const char *pVersion, char *pOut, int O
 	while(*pSrc != '\0')
 		*pDst++ = *pSrc++;
 	*pDst = '\0';
+}
+
+void BestClientLightFormatNetVersion(char *pOut, int OutSize, const char *pGitHash)
+{
+	if(pOut == nullptr || OutSize <= 0)
+		return;
+	pOut[0] = '\0';
+
+	constexpr int NET_VERSION_MAX_CHARS = 63;
+	const int Limit = std::min(OutSize - 1, NET_VERSION_MAX_CHARS);
+	if(Limit <= 0)
+		return;
+
+	if(pGitHash == nullptr || pGitHash[0] == '\0')
+	{
+		str_format(pOut, Limit + 1, "%s %s", CLIENT_NAME, CLIENT_RELEASE_VERSION);
+		return;
+	}
+
+	char aSuffix[128];
+	str_format(aSuffix, sizeof(aSuffix), " (%s)", pGitHash);
+	const int SuffixLen = str_length(aSuffix);
+	const int NameLen = str_length(CLIENT_NAME);
+	if(SuffixLen >= Limit)
+	{
+		str_copy(pOut, aSuffix + (SuffixLen - Limit), Limit + 1);
+		return;
+	}
+
+	int Room = Limit - SuffixLen - NameLen - 1;
+	if(Room < 0)
+	{
+		char aName[64];
+		str_truncate(aName, sizeof(aName), CLIENT_NAME, Limit - SuffixLen);
+		str_format(pOut, Limit + 1, "%s%s", aName, aSuffix);
+		return;
+	}
+
+	const char *pVersion = CLIENT_RELEASE_VERSION;
+	char aVersion[64];
+	if(str_length(pVersion) > Room)
+	{
+		const char *pClosed = str_find(pVersion, " closed-");
+		if(pClosed != nullptr)
+		{
+			char aHead[64];
+			str_truncate(aHead, sizeof(aHead), pVersion, (int)(pClosed - pVersion));
+			str_format(aVersion, sizeof(aVersion), "%s-%s", aHead, pClosed + str_length(" closed-"));
+			pVersion = aVersion;
+		}
+		if(str_length(pVersion) > Room)
+		{
+			char aCut[64];
+			str_truncate(aCut, sizeof(aCut), pVersion, Room);
+			str_copy(aVersion, aCut, sizeof(aVersion));
+			pVersion = aVersion;
+		}
+	}
+
+	if(pVersion[0] == '\0')
+		str_format(pOut, Limit + 1, "%s%s", CLIENT_NAME, aSuffix);
+	else
+		str_format(pOut, Limit + 1, "%s %s%s", CLIENT_NAME, pVersion, aSuffix);
 }
 
 #if defined(CONF_FAMILY_WINDOWS)

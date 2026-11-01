@@ -7,6 +7,7 @@
 #define BESTCLIENT_LIGHT_VERSION "5.0 closed-beta"
 
 void BestClientLightFormatDisplayVersion(const char *pVersion, char *pOut, int OutSize);
+void BestClientLightFormatNetVersion(char *pOut, int OutSize, const char *pGitHash);
 
 #ifndef BESTCLIENT_LIGHT_OFFICIAL_CODE
 #define BESTCLIENT_LIGHT_OFFICIAL_CODE ""

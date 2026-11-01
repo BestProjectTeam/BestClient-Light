@@ -439,15 +439,15 @@ CTouchControls::CButtonLabel CTouchControls::CIngameMenuTouchButtonBehavior::Get
 }
 
 // bestclient-light
-static void OpenTouchIngameMenu(CTouchControls *pTouchControls)
+void CTouchControls::OpenIngameMenuFromTouch()
 {
-	pTouchControls->GameClient()->m_Menus.SetActive(true);
-	pTouchControls->Ui()->SuppressHeldTouchClick();
+	GameClient()->m_Menus.SetActive(true);
+	Ui()->SuppressHeldTouchClick();
 }
 
 void CTouchControls::CIngameMenuTouchButtonBehavior::OnActivate()
 {
-	OpenTouchIngameMenu(m_pTouchControls);
+	m_pTouchControls->OpenIngameMenuFromTouch();
 }
 // bestclient-light
 
@@ -491,7 +491,7 @@ void CTouchControls::CExtraMenuTouchButtonBehavior::OnUpdate()
 	if(m_OpenedMenu || time_get_nanoseconds() - m_ActivationStartTime < LONG_TOUCH_DURATION)
 		return;
 	m_OpenedMenu = true;
-	OpenTouchIngameMenu(m_pTouchControls);
+	m_pTouchControls->OpenIngameMenuFromTouch();
 }
 // bestclient-light
 
@@ -501,7 +501,7 @@ void CTouchControls::CExtraMenuTouchButtonBehavior::OnDeactivate(bool ByFinger)
 	if(ByFinger && !m_OpenedMenu)
 	{
 		if(time_get_nanoseconds() - m_ActivationStartTime >= LONG_TOUCH_DURATION)
-			OpenTouchIngameMenu(m_pTouchControls);
+			m_pTouchControls->OpenIngameMenuFromTouch();
 		else
 			m_pTouchControls->m_aExtraMenuActive[m_Number] = !m_pTouchControls->m_aExtraMenuActive[m_Number];
 	}
