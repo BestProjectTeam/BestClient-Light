@@ -480,10 +480,16 @@ void CChatScroll::EndActions(CChat &Chat, SActionFrame &Frame, float ModuleAlpha
 			const CChat::CLine &Line = Chat.m_aLines[Chat.m_ActionLineIndex];
 			if(Line.m_ClientId >= 0 && Line.m_ClientId < MAX_CLIENTS)
 			{
+				char aPrefix[64];
+				str_format(aPrefix, sizeof(aPrefix), "%s: ", pClient->m_aClients[Line.m_ClientId].m_aName);
+				const char *pCurrent = Chat.m_Input.GetString();
 				char aBuf[MAX_CHAT_LENGTH];
-				str_format(aBuf, sizeof(aBuf), "%s: ", pClient->m_aClients[Line.m_ClientId].m_aName);
+				if(str_startswith(pCurrent, aPrefix))
+					str_copy(aBuf, pCurrent, sizeof(aBuf));
+				else
+					str_format(aBuf, sizeof(aBuf), "%s%s", aPrefix, pCurrent);
 				Chat.m_Input.Set(aBuf);
-				Chat.m_Input.SetCursorOffset(str_length(aBuf));
+				Chat.m_Input.SetCursorOffset(Chat.m_Input.GetLength());
 			}
 			Chat.m_ActionLineIndex = -1;
 		}
