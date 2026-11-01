@@ -310,6 +310,7 @@ void CMinimap::CloseLarge()
 	m_ZoomSliderGrab = 0.0f;
 	m_MapCursorActive = false;
 	m_PanOffset = vec2(0.0f, 0.0f);
+	m_LargeMapAnchorValid = false;
 	ResetLargeZoom();
 }
 
@@ -328,7 +329,10 @@ void CMinimap::OnConsoleInit()
 		}
 		pSelf->m_LargeActive = Active;
 		if(!Active)
+		{
 			pSelf->m_ForceFullSize = false;
+			pSelf->m_LargeMapAnchorValid = false;
+		}
 	}, this, "Show the large minimap while held");
 
 	Console()->Register("+bcl_large_minimap_full", "", CFGFLAG_CLIENT, [](IConsole::IResult *pResult, void *pUserData) {
@@ -799,13 +803,13 @@ void DrawMinimapHook(IGraphics *pGraphics, IGraphics::CTextureHandle Chain, IGra
 	const float LinkW = 24.0f * MapScale;
 	const float LinkH = 16.0f * MapScale;
 	const float Rotation = angle(From - To) + pi;
-	pGraphics->SetColor(1.0f, 1.0f, 1.0f, Alpha);
-	pGraphics->QuadsSetSubset(0.0f, 0.0f, 1.0f, 1.0f);
-	pGraphics->QuadsSetRotation(Rotation);
+	// QuadsBegin clears rotation, subset, and color. Set them inside the batch.
 	if(Chain.IsValid())
 	{
 		pGraphics->TextureSet(Chain);
 		pGraphics->QuadsBegin();
+		pGraphics->SetColor(1.0f, 1.0f, 1.0f, Alpha);
+		pGraphics->QuadsSetRotation(Rotation);
 		int Count = 0;
 		for(float Dist = LinkW; Dist < Len && Count < 64; Dist += LinkW, ++Count)
 			pGraphics->DrawSprite(To.x - Dir.x * Dist, To.y - Dir.y * Dist, LinkW, LinkH);
@@ -815,11 +819,12 @@ void DrawMinimapHook(IGraphics *pGraphics, IGraphics::CTextureHandle Chain, IGra
 	{
 		pGraphics->TextureSet(Head);
 		pGraphics->QuadsBegin();
+		pGraphics->SetColor(1.0f, 1.0f, 1.0f, Alpha);
+		pGraphics->QuadsSetRotation(Rotation);
 		pGraphics->DrawSprite(To.x, To.y, LinkW, LinkH);
 		pGraphics->QuadsEnd();
 	}
 	pGraphics->QuadsSetRotation(0.0f);
-	pGraphics->QuadsSetSubset(0.0f, 0.0f, 1.0f, 1.0f);
 	pGraphics->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
@@ -2085,6 +2090,17 @@ void CMinimap::RenderHud(bool EditorPreview)
 	const float MinimapW = LargeMinimap ? m_Width * LargeScale : Size;
 	const float MinimapH = LargeMinimap ? m_Height * LargeScale : Size;
 	const bool FullMap = LargeMinimap && m_ForceFullSize;
+	if(LargeMinimap)
+	{
+		if(!m_LargeMapAnchorValid)
+		{
+			m_LargeMapAnchor = Center;
+			m_LargeMapAnchorValid = true;
+		}
+	}
+	else
+		m_LargeMapAnchorValid = false;
+	const vec2 LargeAnchor = m_LargeMapAnchorValid ? m_LargeMapAnchor : Center;
 	const float AlphaMin = FullMap ? 0.0f : 0.1f;
 	const float ConfigAlpha = (FullMap ? g_Config.m_BclLargeMinimapAlpha : g_Config.m_BclMinimapAlpha) / 100.0f;
 	const float ModuleAlpha = LargeMinimap ? 1.0f : HudLayout::AlphaFactor(HudLayout::MODULE_MINIMAP);
@@ -2136,7 +2152,7 @@ void CMinimap::RenderHud(bool EditorPreview)
 			else if(length(Cursor - m_DragStart) > 4.0f)
 			{
 				if(m_FollowClientId >= 0 && m_FollowClientId < MAX_CLIENTS && GameClient()->m_Snap.m_aCharacters[m_FollowClientId].m_Active)
-					m_PanOffset = GameClient()->m_aClients[m_FollowClientId].m_RenderPos - Center;
+					m_PanOffset = GameClient()->m_aClients[m_FollowClientId].m_RenderPos - LargeAnchor;
 				m_FollowClientId = -1;
 				m_FollowArm = -1;
 				RestoreSpecLock();
@@ -2187,7 +2203,7 @@ void CMinimap::RenderHud(bool EditorPreview)
 
 	const float RangePixelsX = MinimapW / std::max(Scale, 0.0001f) * 0.5f;
 	const float RangePixelsY = MinimapH / std::max(Scale, 0.0001f) * 0.5f;
-	vec2 ViewCenter = Center;
+	vec2 ViewCenter = LargeMinimap ? LargeAnchor : Center;
 	if(LargeMinimap && m_ForceFullSize && m_FollowClientId >= 0 && m_FollowClientId < MAX_CLIENTS && GameClient()->m_Snap.m_aCharacters[m_FollowClientId].m_Active)
 		ViewCenter = GameClient()->m_aClients[m_FollowClientId].m_RenderPos;
 	else if(LargeMinimap && m_ForceFullSize)

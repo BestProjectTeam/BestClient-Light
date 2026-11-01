@@ -37,6 +37,8 @@ class CMinimap : public CComponent
 	bool m_FullBindWasPressed = false;
 	bool m_ForceFullSize = false;
 	vec2 m_PanOffset = vec2(0.0f, 0.0f);
+	vec2 m_LargeMapAnchor = vec2(0.0f, 0.0f);
+	bool m_LargeMapAnchorValid = false;
 	vec2 m_PrevMouse = vec2(0.0f, 0.0f);
 	bool m_Dragging = false;
 	int m_FollowClientId = -1;
