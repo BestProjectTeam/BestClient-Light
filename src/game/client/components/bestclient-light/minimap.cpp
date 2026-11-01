@@ -15,6 +15,7 @@
 #include <engine/shared/config.h>
 #include <engine/textrender.h>
 
+#include <generated/client_data.h>
 #include <generated/protocol.h>
 
 #include <game/client/animstate.h>
@@ -26,8 +27,11 @@
 #include <game/client/components/mapimages.h>
 #include <game/client/components/menus.h>
 #include <game/client/gameclient.h>
+#include <game/client/prediction/entities/projectile.h>
+#include <game/client/projectile_data.h>
 #include <game/client/render.h>
 #include <game/collision.h>
+#include <game/gamecore.h>
 #include <game/localization.h>
 #include <game/mapitems.h>
 #include <game/teamscore.h>
@@ -67,9 +71,6 @@ constexpr unsigned MINIMAP_COLOR_DEATH = 4278516234;
 constexpr unsigned MINIMAP_COLOR_TELE = 4289886470;
 constexpr unsigned MINIMAP_COLOR_START = 4280785037;
 constexpr unsigned MINIMAP_COLOR_FINISH = 4279252383;
-constexpr unsigned MINIMAP_COLOR_ALIVE = 0xFF0000FF;
-constexpr unsigned MINIMAP_COLOR_FROZEN = 0xFF15FF8C;
-constexpr unsigned MINIMAP_COLOR_CRITICAL = 0xFF00FF99;
 constexpr float LARGE_MAP_SCREEN_SCALE = 0.86f;
 
 static ColorRGBA MinimapConfigColor(unsigned Color, float Alpha)
@@ -686,7 +687,7 @@ void CMinimap::SampleActivity()
 				continue;
 			Attacker.m_Hits++;
 			NoteActivity(ActivityTile(pCollision, vec2((float)Other.m_X, (float)Other.m_Y)), i, AttackerTeam, 1);
-			if(FrozenNow(j))
+			if(FrozenNow(j) || m_aActivity[j].m_WasFrozen)
 				m_aActivity[j].m_LastInteractor = i;
 		}
 	}
@@ -766,6 +767,473 @@ static bool ActivityKindEnabled(int Kind)
 	}
 }
 
+static bool SaveCoversTile(const std::vector<int> &vTiles, int Tile)
+{
+	return std::find(vTiles.begin(), vTiles.end(), Tile) != vTiles.end();
+}
+
+namespace
+{
+void DrawMinimapSprite(IGraphics *pGraphics, IGraphics::CTextureHandle Texture, vec2 Pos, float Width, float Height, float Rotation, float Alpha, bool FlipY = false)
+{
+	if(!pGraphics || !Texture.IsValid() || Width <= 0.0f || Height <= 0.0f || Alpha <= 0.0f)
+		return;
+	pGraphics->TextureSet(Texture);
+	pGraphics->QuadsBegin();
+	pGraphics->SetColor(1.0f, 1.0f, 1.0f, Alpha);
+	pGraphics->QuadsSetSubset(0.0f, FlipY ? 1.0f : 0.0f, 1.0f, FlipY ? 0.0f : 1.0f);
+	pGraphics->QuadsSetRotation(Rotation);
+	pGraphics->DrawSprite(Pos.x, Pos.y, Width, Height);
+	pGraphics->QuadsEnd();
+	pGraphics->QuadsSetRotation(0.0f);
+	pGraphics->QuadsSetSubset(0.0f, 0.0f, 1.0f, 1.0f);
+}
+
+void DrawMinimapHook(IGraphics *pGraphics, IGraphics::CTextureHandle Chain, IGraphics::CTextureHandle Head, vec2 From, vec2 To, float MapScale, float Alpha)
+{
+	const vec2 Delta = To - From;
+	const float Len = length(Delta);
+	if(!pGraphics || Len < 0.5f || MapScale <= 0.0f || Alpha <= 0.0f)
+		return;
+	const vec2 Dir = Delta / Len;
+	const float LinkW = 24.0f * MapScale;
+	const float LinkH = 16.0f * MapScale;
+	const float Rotation = angle(From - To) + pi;
+	pGraphics->SetColor(1.0f, 1.0f, 1.0f, Alpha);
+	pGraphics->QuadsSetSubset(0.0f, 0.0f, 1.0f, 1.0f);
+	pGraphics->QuadsSetRotation(Rotation);
+	if(Chain.IsValid())
+	{
+		pGraphics->TextureSet(Chain);
+		pGraphics->QuadsBegin();
+		int Count = 0;
+		for(float Dist = LinkW; Dist < Len && Count < 64; Dist += LinkW, ++Count)
+			pGraphics->DrawSprite(To.x - Dir.x * Dist, To.y - Dir.y * Dist, LinkW, LinkH);
+		pGraphics->QuadsEnd();
+	}
+	if(Head.IsValid())
+	{
+		pGraphics->TextureSet(Head);
+		pGraphics->QuadsBegin();
+		pGraphics->DrawSprite(To.x, To.y, LinkW, LinkH);
+		pGraphics->QuadsEnd();
+	}
+	pGraphics->QuadsSetRotation(0.0f);
+	pGraphics->QuadsSetSubset(0.0f, 0.0f, 1.0f, 1.0f);
+	pGraphics->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+struct SMinimapFreeze
+{
+	bool m_FrozenSkin = false;
+	bool m_HideWeapon = false;
+	bool m_Flakes = false;
+};
+
+SMinimapFreeze MinimapFreezeState(CGameClient *pGameClient, int ClientId)
+{
+	SMinimapFreeze Out;
+	const CGameClient::CClientData &Client = pGameClient->m_aClients[ClientId];
+	const bool Practice = pGameClient->m_FastPractice.Active() && pGameClient->m_FastPractice.IsPracticeParticipant(ClientId);
+	if(Practice)
+	{
+		if(Client.m_Predicted.m_LiveFrozen)
+			Out.m_Flakes = true;
+		Out.m_FrozenSkin = pGameClient->m_FastPractice.ShouldShowPracticeFrozenSkin(ClientId);
+		if(Out.m_FrozenSkin)
+		{
+			Out.m_Flakes = true;
+			Out.m_HideWeapon = true;
+		}
+	}
+	else if(ClientId == pGameClient->m_aLocalIds[0] || ClientId == pGameClient->m_aLocalIds[1])
+	{
+		if(Client.m_Predicted.m_FreezeEnd != 0)
+		{
+			Out.m_Flakes = true;
+			Out.m_HideWeapon = true;
+		}
+		if(Client.m_Predicted.m_LiveFrozen)
+			Out.m_Flakes = true;
+		Out.m_FrozenSkin = Client.m_Predicted.m_FreezeEnd != 0;
+		if(g_Config.m_BclInputs != BC_INPUTS_OFF)
+			Out.m_FrozenSkin = Client.m_RegularPredicted.m_FreezeEnd != 0;
+		if(Out.m_FrozenSkin)
+		{
+			Out.m_Flakes = true;
+			Out.m_HideWeapon = true;
+		}
+	}
+	else
+	{
+		if(Client.m_FreezeEnd != 0)
+		{
+			Out.m_Flakes = true;
+			Out.m_HideWeapon = true;
+		}
+		if(Client.m_LiveFrozen)
+			Out.m_Flakes = true;
+		Out.m_FrozenSkin = pGameClient->m_Snap.m_aCharacters[ClientId].m_HasExtendedData && pGameClient->m_Snap.m_aCharacters[ClientId].m_ExtendedData.m_FreezeEnd != 0;
+	}
+	if(g_Config.m_TcFrozenKatana > 0 && Out.m_FrozenSkin)
+		Out.m_HideWeapon = false;
+	return Out;
+}
+
+void ApplyMinimapFrozenLook(CGameClient *pGameClient, CTeeRenderInfo &TeeInfo, int ClientId, int Weapon, bool FrozenSkin)
+{
+	const CTeeRenderInfo &Original = pGameClient->m_aClients[ClientId].m_RenderInfo;
+	const bool IsTeamPlay = pGameClient->IsTeamPlay();
+	if(!pGameClient->m_BestClientLight.ApplyFrozenSkin(TeeInfo, FrozenSkin) &&
+		(Weapon == WEAPON_NINJA || (FrozenSkin && !pGameClient->m_GameInfo.m_NoSkinChangeForFrozen)) && g_Config.m_ClShowNinja)
+	{
+		const std::shared_ptr<CManagedTeeRenderInfo> &pNinja = pGameClient->m_Players.NinjaTeeRenderInfo();
+		if(!pNinja)
+			return;
+		TeeInfo.m_aSixup[g_Config.m_ClDummy].Reset();
+		TeeInfo.ApplySkin(pNinja->TeeRenderInfo());
+		TeeInfo.m_CustomColoredSkin = IsTeamPlay;
+		if(!IsTeamPlay)
+		{
+			TeeInfo.m_ColorBody = ColorRGBA(1.0f, 1.0f, 1.0f);
+			TeeInfo.m_ColorFeet = ColorRGBA(1.0f, 1.0f, 1.0f);
+			if(g_Config.m_TcColorFreeze && FrozenSkin)
+			{
+				const bool CustomColor = Original.m_CustomColoredSkin;
+				TeeInfo.m_CustomColoredSkin = true;
+				TeeInfo.m_ColorFeet = g_Config.m_TcColorFreezeFeet ? Original.m_ColorFeet : ColorRGBA(1.0f, 1.0f, 1.0f);
+				const float Darken = (g_Config.m_TcColorFreezeDarken / 100.0f) * 0.5f + 0.5f;
+				TeeInfo.m_ColorBody = CustomColor ? Original.m_ColorBody : Original.m_BloodColor;
+				TeeInfo.m_ColorBody = ColorRGBA(TeeInfo.m_ColorBody.r * Darken, TeeInfo.m_ColorBody.g * Darken, TeeInfo.m_ColorBody.b * Darken, 1.0f);
+			}
+		}
+	}
+}
+
+CAnimState MinimapTeeAnim(const CNetObj_Character &Player, vec2 Pos, vec2 Dir, vec2 Vel, float LastAttackTime, bool Inactive, bool InAir)
+{
+	const bool Stationary = Player.m_VelX <= 1 && Player.m_VelX >= -1;
+	const bool Running = Player.m_VelX >= 5000 || Player.m_VelX <= -5000;
+	const bool WantOtherDir = (Player.m_Direction == -1 && Vel.x > 0.0f) || (Player.m_Direction == 1 && Vel.x < 0.0f);
+	float WalkTime = std::fmod(Pos.x, 100.0f) / 100.0f;
+	float RunTime = std::fmod(Pos.x, 200.0f) / 200.0f;
+	if(WalkTime < 0.0f)
+		WalkTime += 1.0f;
+	if(RunTime < 0.0f)
+		RunTime += 1.0f;
+
+	CAnimState State;
+	State.Set(&g_pData->m_aAnimations[ANIM_BASE], 0.0f);
+	if(InAir)
+		State.Add(&g_pData->m_aAnimations[ANIM_INAIR], 0.0f, 1.0f);
+	else if(Stationary)
+		State.Add(Inactive ? (Dir.x < 0.0f ? &g_pData->m_aAnimations[ANIM_SIT_LEFT] : &g_pData->m_aAnimations[ANIM_SIT_RIGHT]) : &g_pData->m_aAnimations[ANIM_IDLE], 0.0f, 1.0f);
+	else if(!WantOtherDir)
+		State.Add(Running ? (Player.m_VelX < 0 ? &g_pData->m_aAnimations[ANIM_RUN_LEFT] : &g_pData->m_aAnimations[ANIM_RUN_RIGHT]) : &g_pData->m_aAnimations[ANIM_WALK], Running ? RunTime : WalkTime, 1.0f);
+
+	if(Player.m_Weapon == WEAPON_HAMMER)
+		State.Add(&g_pData->m_aAnimations[ANIM_HAMMER_SWING], std::clamp(LastAttackTime * 5.0f, 0.0f, 1.0f), 1.0f);
+	if(Player.m_Weapon == WEAPON_NINJA)
+		State.Add(&g_pData->m_aAnimations[ANIM_NINJA_SWING], std::clamp(LastAttackTime * 2.0f, 0.0f, 1.0f), 1.0f);
+	return State;
+}
+
+void DrawMinimapWeapon(IGraphics *pGraphics, CGameClient *pGameClient, const CAnimState &State, vec2 Pos, vec2 Dir, int Weapon, float AttackTime, float LastAttackTime, float AttackTicksPassed, bool Inactive, bool InAir, bool Stationary, float TeeSize, float Alpha, bool Paused, vec2 CurWorld, vec2 PrevWorld)
+{
+	if(!pGraphics || !pGameClient || Weapon < 0 || Weapon >= NUM_WEAPONS)
+		return;
+	if(g_Config.m_TcRenderWeaponsAsGun && (Weapon == WEAPON_SHOTGUN || Weapon == WEAPON_GRENADE || Weapon == WEAPON_LASER))
+		Weapon = WEAPON_GUN;
+
+	const CDataWeaponspec &Spec = g_pData->m_Weapons.m_aId[Weapon];
+	if(!Spec.m_pSpriteBody || !pGameClient->m_GameSkin.m_aSpriteWeapons[Weapon].IsValid())
+		return;
+
+	const float WeaponScale = std::max(TeeSize / 64.0f, 0.02f);
+	const bool IsSit = Inactive && !InAir && Stationary;
+	const bool FlipY = Dir.x < 0.0f;
+	float ScaleX = 1.0f;
+	float ScaleY = 1.0f;
+	pGraphics->GetSpriteScale(Spec.m_pSpriteBody, ScaleX, ScaleY);
+	const float Width = Spec.m_VisualSize * ScaleX * WeaponScale;
+	const float Height = Spec.m_VisualSize * ScaleY * WeaponScale;
+	vec2 WeaponPos = Pos;
+	float Rotation = angle(Dir);
+
+	if(Weapon == WEAPON_HAMMER)
+	{
+		const float AttachAngle = State.GetAttach()->m_Angle * pi * 2.0f;
+		if(g_Config.m_TcHammerRotatesWithCursor == 2)
+		{
+			float Recoil = 0.0f;
+			const float Swing = AttackTicksPassed / 5.0f;
+			if(Swing < 1.0f)
+				Recoil = std::sin(Swing * pi);
+			WeaponPos = Pos - Dir * (Recoil * 10.0f - 5.0f) * WeaponScale;
+			Rotation = angle(Dir) + 2.0f * pi;
+		}
+		else
+		{
+			WeaponPos = Pos + vec2(State.GetAttach()->m_X, State.GetAttach()->m_Y) * WeaponScale;
+			WeaponPos.y += Spec.m_Offsety * WeaponScale;
+			if(FlipY)
+				WeaponPos.x -= Spec.m_Offsetx * WeaponScale;
+			Rotation = -pi / 2.0f + (FlipY ? -AttachAngle : AttachAngle);
+			if(g_Config.m_TcHammerRotatesWithCursor == 1)
+			{
+				Rotation += angle(Dir);
+				if(FlipY)
+					Rotation += pi;
+			}
+			else if(Inactive && LastAttackTime * 5.0f >= 1.0f)
+				Rotation = FlipY ? 100.0f : 500.0f;
+		}
+		if(IsSit)
+			WeaponPos.y += 3.0f * WeaponScale;
+	}
+	else if(Weapon == WEAPON_NINJA)
+	{
+		WeaponPos = Pos;
+		WeaponPos.y += Spec.m_Offsety * WeaponScale;
+		if(FlipY)
+			WeaponPos.x -= Spec.m_Offsetx * WeaponScale;
+		if(IsSit)
+			WeaponPos.y += 3.0f * WeaponScale;
+		const float AttachAngle = State.GetAttach()->m_Angle * pi * 2.0f;
+		Rotation = -pi / 2.0f + (FlipY ? -AttachAngle : AttachAngle);
+	}
+	else
+	{
+		float Recoil = 0.0f;
+		const float Swing = AttackTicksPassed / 5.0f;
+		if(Swing < 1.0f)
+			Recoil = std::sin(Swing * pi);
+		WeaponPos = Pos + Dir * (Spec.m_Offsetx - Recoil * 10.0f) * WeaponScale;
+		WeaponPos.y += Spec.m_Offsety * WeaponScale;
+		if(IsSit)
+			WeaponPos.y += 3.0f * WeaponScale;
+		if(Weapon == WEAPON_GUN && g_Config.m_ClOldGunPosition)
+			WeaponPos.y -= 8.0f * WeaponScale;
+		Rotation = State.GetAttach()->m_Angle * pi * 2.0f + angle(Dir);
+	}
+
+	DrawMinimapSprite(pGraphics, pGameClient->m_GameSkin.m_aSpriteWeapons[Weapon], WeaponPos, Width, Height, Rotation, Alpha, FlipY);
+
+	if(Weapon == WEAPON_NINJA && AttackTime <= 1.0f / 6.0f && Spec.m_NumSpriteMuzzles > 0)
+	{
+		const int MuzzleCount = Spec.m_NumSpriteMuzzles;
+		const int IteX = Paused || MuzzleCount <= 0 ? 0 : absolute((int)(AttackTicksPassed * 10.0f)) % MuzzleCount;
+		if(Spec.m_aSpriteMuzzles[IteX] && pGameClient->m_GameSkin.m_aaSpriteWeaponsMuzzles[Weapon][IteX].IsValid())
+		{
+			vec2 HadokenDir = CurWorld - PrevWorld;
+			float HadokenAngle = 0.0f;
+			if(absolute(HadokenDir.x) > 0.0001f || absolute(HadokenDir.y) > 0.0001f)
+			{
+				HadokenDir = normalize(HadokenDir);
+				HadokenAngle = angle(HadokenDir);
+			}
+			else
+				HadokenDir = vec2(1.0f, 0.0f);
+			float MuzzleScaleX = 1.0f;
+			float MuzzleScaleY = 1.0f;
+			pGraphics->GetSpriteScale(Spec.m_aSpriteMuzzles[IteX], MuzzleScaleX, MuzzleScaleY);
+			const vec2 MuzzlePos = Pos - HadokenDir * Spec.m_Muzzleoffsetx * WeaponScale;
+			DrawMinimapSprite(pGraphics, pGameClient->m_GameSkin.m_aaSpriteWeaponsMuzzles[Weapon][IteX], MuzzlePos, 160.0f * MuzzleScaleX * WeaponScale, 160.0f * MuzzleScaleY * WeaponScale, HadokenAngle, Alpha, false);
+		}
+	}
+	else if((Weapon == WEAPON_GUN || Weapon == WEAPON_SHOTGUN) && Spec.m_NumSpriteMuzzles > 0 && Spec.m_Muzzleduration > 0.0f && AttackTicksPassed < Spec.m_Muzzleduration + 3.0f)
+	{
+		const float MuzzleT = std::clamp(AttackTicksPassed / Spec.m_Muzzleduration, 0.0f, 1.0f);
+		const float MuzzleAlpha = std::min(mix(2.0f, 0.0f, MuzzleT), 1.0f) * Alpha;
+		const int IteX = absolute((int)AttackTicksPassed) % Spec.m_NumSpriteMuzzles;
+		if(MuzzleAlpha > 0.0f && Spec.m_aSpriteMuzzles[IteX] && pGameClient->m_GameSkin.m_aaSpriteWeaponsMuzzles[Weapon][IteX].IsValid())
+		{
+			float OffsetY = -Spec.m_Muzzleoffsety;
+			if(FlipY)
+				OffsetY = -OffsetY;
+			const vec2 DirY(-Dir.y, Dir.x);
+			const vec2 MuzzlePos = WeaponPos + (Dir * Spec.m_Muzzleoffsetx + DirY * OffsetY) * WeaponScale;
+			float MuzzleScaleX = 1.0f;
+			float MuzzleScaleY = 1.0f;
+			pGraphics->GetSpriteScaleImpl(96, 64, MuzzleScaleX, MuzzleScaleY);
+			const float MuzzleW = Spec.m_VisualSize * MuzzleScaleX * (4.0f / 3.0f) * WeaponScale;
+			const float MuzzleH = Spec.m_VisualSize * MuzzleScaleY * WeaponScale;
+			DrawMinimapSprite(pGraphics, pGameClient->m_GameSkin.m_aaSpriteWeaponsMuzzles[Weapon][IteX], MuzzlePos, MuzzleW, MuzzleH, Rotation, MuzzleAlpha, FlipY);
+		}
+	}
+}
+
+void DrawMinimapFreezeFlakes(IGraphics *pGraphics, IGraphics::CTextureHandle Texture, vec2 BodyPos, int ClientId, float MapScale, float Alpha, float Time)
+{
+	if(!Texture.IsValid() || MapScale <= 0.0f || Alpha <= 0.0f)
+		return;
+	for(int Flake = 0; Flake < 3; ++Flake)
+	{
+		const float Phase = std::fmod(Time * 0.65f + Flake * 0.37f + ClientId * 0.21f, 1.0f);
+		const float Ox = std::sin(Time * 1.7f + Flake * 2.1f + ClientId) * 14.0f * MapScale;
+		const float Oy = (Phase - 0.2f) * 36.0f * MapScale;
+		const float Size = (1.15f - 0.45f * Phase) * 16.0f * MapScale;
+		DrawMinimapSprite(pGraphics, Texture, BodyPos + vec2(Ox, Oy), Size, Size, (Time + Flake) * pi, (1.0f - Phase) * Alpha, false);
+	}
+}
+
+void DrawMinimapEmoticon(IGraphics *pGraphics, CGameClient *pGameClient, int Emoticon, vec2 Pos, float Width, float Height, float Rotation, float Alpha)
+{
+	if(Emoticon < 0 || Emoticon >= NUM_EMOTICONS)
+		return;
+	DrawMinimapSprite(pGraphics, pGameClient->m_EmoticonsSkin.m_aSpriteEmoticons[Emoticon], Pos, Width, Height, Rotation, Alpha, false);
+}
+
+bool MinimapProjectileVisible(CGameClient *pGameClient, int Owner, int LocalId, bool ShowOthers)
+{
+	if(Owner < 0 || Owner >= MAX_CLIENTS)
+		return true;
+	if(!pGameClient->m_Snap.m_apPlayerInfos[Owner])
+		return true;
+	const int LocalDDTeam = LocalId >= 0 ? pGameClient->m_Teams.Team(LocalId) : TEAM_FLOCK;
+	const int LocalTeam = LocalId >= 0 ? pGameClient->m_aClients[LocalId].m_Team : TEAM_SPECTATORS;
+	const int OtherDDTeam = pGameClient->m_Teams.Team(Owner);
+	const bool SameTeam = LocalDDTeam > TEAM_FLOCK ? OtherDDTeam == LocalDDTeam : pGameClient->m_aClients[Owner].m_Team == LocalTeam;
+	return SameTeam || ShowOthers;
+}
+
+float MinimapProjectileTime(CGameClient *pGameClient, const CProjectileData &Data, float PrevTickTime)
+{
+	bool LocalPlayerInGame = false;
+	if(pGameClient->m_Snap.m_pLocalInfo)
+		LocalPlayerInGame = pGameClient->m_aClients[pGameClient->m_Snap.m_pLocalInfo->m_ClientId].m_Team != TEAM_SPECTATORS;
+	const bool IsOtherTeam = Data.m_ExtraInfo && Data.m_Owner >= 0 && pGameClient->IsOtherTeam(Data.m_Owner);
+	float Ct;
+	if(pGameClient->Predict() && pGameClient->AntiPingGrenade() && LocalPlayerInGame && !IsOtherTeam)
+		Ct = ((float)(pGameClient->Client()->GetPredictionTick() - 1 - Data.m_StartTick) + pGameClient->Client()->PredIntraGameTick(g_Config.m_ClDummy)) / (float)pGameClient->Client()->GameTickSpeed();
+	else
+		Ct = (pGameClient->Client()->PrevGameTick(g_Config.m_ClDummy) - Data.m_StartTick) / (float)pGameClient->Client()->GameTickSpeed() + PrevTickTime;
+	if(Ct < 0.0f)
+	{
+		if(Ct > -PrevTickTime / 2.0f)
+			Ct = 0.0f;
+		else
+			return -1.0f;
+	}
+	return Ct;
+}
+
+void DrawMinimapProjectile(IGraphics *pGraphics, CGameClient *pGameClient, const CProjectileData &Data, int ItemId, vec2 ScreenOrigin, vec2 WorldMin, vec2 WorldMax, float Scale, float Alpha, int LocalId, bool ShowOthers, float PrevTickTime, float Spin)
+{
+	if(!MinimapProjectileVisible(pGameClient, Data.m_Owner, LocalId, ShowOthers))
+		return;
+	const int Weapon = std::clamp(Data.m_Type, 0, NUM_WEAPONS - 1);
+	if(!pGameClient->m_GameSkin.m_aSpriteWeaponProjectiles[Weapon].IsValid())
+		return;
+	const float Ct = MinimapProjectileTime(pGameClient, Data, PrevTickTime);
+	if(Ct < 0.0f)
+		return;
+
+	float Curvature = 0.0f;
+	float Speed = 0.0f;
+	const CTuningParams *pTuning = pGameClient->GetTuning(Data.m_TuneZone);
+	if(Weapon == WEAPON_GRENADE)
+	{
+		Curvature = pTuning->m_GrenadeCurvature;
+		Speed = pTuning->m_GrenadeSpeed;
+	}
+	else if(Weapon == WEAPON_SHOTGUN)
+	{
+		Curvature = pTuning->m_ShotgunCurvature;
+		Speed = pTuning->m_ShotgunSpeed;
+	}
+	else if(Weapon == WEAPON_GUN)
+	{
+		Curvature = pTuning->m_GunCurvature;
+		Speed = pTuning->m_GunSpeed;
+	}
+
+	const vec2 WorldPos = CalcPos(Data.m_StartPos, Data.m_StartVel, Curvature, Speed, Ct);
+	if(WorldPos.x < WorldMin.x || WorldPos.x > WorldMax.x || WorldPos.y < WorldMin.y || WorldPos.y > WorldMax.y)
+		return;
+	const vec2 PrevPos = CalcPos(Data.m_StartPos, Data.m_StartVel, Curvature, Speed, Ct - 0.001f);
+	const vec2 Dot = ScreenOrigin + (WorldPos - WorldMin) * Scale;
+	const vec2 Vel = WorldPos - PrevPos;
+	float Rotation = 0.0f;
+	if(Weapon == WEAPON_GRENADE)
+		Rotation = Spin * pi * 2.0f * 2.0f + ItemId;
+	else if(length(Vel) > 0.00001f)
+		Rotation = angle(Vel);
+	const float IconAlpha = (Data.m_Owner >= 0 && Data.m_Owner != LocalId) ? 0.9f : 1.0f;
+	DrawMinimapSprite(pGraphics, pGameClient->m_GameSkin.m_aSpriteWeaponProjectiles[Weapon], Dot, 32.0f * Scale, 32.0f * Scale, Rotation, IconAlpha * Alpha, false);
+}
+
+void DrawMinimapProjectiles(IGraphics *pGraphics, CGameClient *pGameClient, float X, float Y, vec2 WorldMin, vec2 WorldMax, float Scale, float Alpha, int LocalId)
+{
+	if(!pGraphics || !pGameClient || Scale <= 0.0f || Alpha <= 0.0f)
+		return;
+	const bool ShowOthers = g_Config.m_BclMinimapShowOthers != 0;
+	const bool Paused = pGameClient->IsWorldPaused() || pGameClient->IsDemoPlaybackPaused();
+	static float s_PrevTickTime = 0.0f;
+	static float s_Spin = 0.0f;
+	static float s_LastLocalTime = -1.0f;
+	const float Now = pGameClient->Client()->LocalTime();
+	if(!Paused)
+	{
+		s_PrevTickTime = pGameClient->Client()->GameTickTime(g_Config.m_ClDummy);
+		const float Step = Now - s_LastLocalTime;
+		if(s_LastLocalTime >= 0.0f && Step > 0.0f && Step < 0.25f)
+			s_Spin += Step * pGameClient->GetAnimationPlaybackSpeed();
+	}
+	s_LastLocalTime = Now;
+
+	const vec2 ScreenOrigin(X, Y);
+	auto DrawData = [&](const CProjectileData &Data, int ItemId) {
+		DrawMinimapProjectile(pGraphics, pGameClient, Data, ItemId, ScreenOrigin, WorldMin, WorldMax, Scale, Alpha, LocalId, ShowOthers, s_PrevTickTime, s_Spin);
+	};
+
+	const bool Practice = pGameClient->m_FastPractice.Active();
+	const bool UsePredicted = pGameClient->Predict() && pGameClient->AntiPingGunfire();
+	if(UsePredicted || Practice)
+	{
+		CGameWorld &PrevWorld = Practice ? pGameClient->m_FastPractice.PracticePrevWorld() : pGameClient->m_PrevPredictedWorld;
+		for(CEntity *pEnt = PrevWorld.FindFirst(CGameWorld::ENTTYPE_PROJECTILE); pEnt; pEnt = pEnt->NextEntity())
+		{
+			auto *pProj = static_cast<CProjectile *>(pEnt);
+			DrawData(pProj->GetData(), pProj->GetId());
+		}
+	}
+
+	for(const CSnapEntities &Ent : pGameClient->SnapEntities())
+	{
+		const IClient::CSnapItem Item = Ent.m_Item;
+		if(Item.m_Type != NETOBJTYPE_PROJECTILE && Item.m_Type != NETOBJTYPE_DDRACEPROJECTILE && Item.m_Type != NETOBJTYPE_DDNETPROJECTILE)
+			continue;
+		CProjectileData Data = ExtractProjectileInfo(Item.m_Type, Item.m_pData, &pGameClient->m_GameWorld, Ent.m_pDataEx);
+		if(UsePredicted || Practice)
+		{
+			if(auto *pProj = static_cast<CProjectile *>(pGameClient->m_GameWorld.FindMatch(Item.m_Id, Item.m_Type, Item.m_pData)))
+			{
+				if(pProj->GetOwner() < 0 || !pGameClient->IsOtherTeam(pProj->GetOwner()))
+					continue;
+			}
+		}
+		DrawData(Data, Item.m_Id);
+	}
+}
+}
+
+void CMinimap::CollectSaveTiles(int LocalDDTeam)
+{
+	m_vSaveTiles.clear();
+	if(!ActivityKindEnabled(2))
+		return;
+	for(const SActivityMarker &Marker : m_vActivity)
+	{
+		if(Marker.m_Kind != 2 || Marker.m_Tile < 0)
+			continue;
+		if(LocalDDTeam > TEAM_FLOCK && Marker.m_Team != LocalDDTeam)
+			continue;
+		if(std::find(m_vSaveTiles.begin(), m_vSaveTiles.end(), Marker.m_Tile) == m_vSaveTiles.end())
+			m_vSaveTiles.push_back(Marker.m_Tile);
+	}
+}
+
 void CMinimap::DrawActivity(float X, float Y, float W, float H, vec2 WorldMin, float Scale, float Alpha, int LocalId, float CursorX, float CursorY, bool CursorValid)
 {
 	m_MarkerHoverValid = false;
@@ -776,6 +1244,7 @@ void CMinimap::DrawActivity(float X, float Y, float W, float H, vec2 WorldMin, f
 		return;
 
 	const int LocalDDTeam = LocalId >= 0 ? GameClient()->m_Teams.Team(LocalId) : TEAM_FLOCK;
+	CollectSaveTiles(LocalDDTeam);
 	const float Outer = std::clamp(3.2f + Scale * 6.0f, 3.2f, 6.5f);
 	const float Inner = Outer * 0.78f;
 	static const ColorRGBA s_aColors[4] = {
@@ -817,6 +1286,8 @@ void CMinimap::DrawActivity(float X, float Y, float W, float H, vec2 WorldMin, f
 			if(LocalDDTeam > TEAM_FLOCK && Marker.m_Team != LocalDDTeam)
 				continue;
 			if(Marker.m_Tile < 0)
+				continue;
+			if(Kind == 1 && SaveCoversTile(m_vSaveTiles, Marker.m_Tile))
 				continue;
 			const int TileX = Marker.m_Tile % m_KindsWidth;
 			const int TileY = Marker.m_Tile / m_KindsWidth;
@@ -867,6 +1338,7 @@ void CMinimap::RenderWorldMarkers()
 
 	const int LocalId = GameClient()->m_Snap.m_LocalClientId;
 	const int LocalDDTeam = LocalId >= 0 ? GameClient()->m_Teams.Team(LocalId) : TEAM_FLOCK;
+	CollectSaveTiles(LocalDDTeam);
 	const CScreenRect PreviousScreen = Graphics()->GetScreen();
 	const CScreenRect World = Graphics()->MapScreenToWorld(
 		GameClient()->m_Camera.m_Center.x, GameClient()->m_Camera.m_Center.y,
@@ -898,6 +1370,8 @@ void CMinimap::RenderWorldMarkers()
 			if(LocalDDTeam > TEAM_FLOCK && Marker.m_Team != LocalDDTeam)
 				continue;
 			if(Marker.m_Tile < 0)
+				continue;
+			if(Kind == 1 && SaveCoversTile(m_vSaveTiles, Marker.m_Tile))
 				continue;
 			const float CenterX = (Marker.m_Tile % m_KindsWidth) * 32.0f + 16.0f;
 			const float CenterY = (Marker.m_Tile / m_KindsWidth) * 32.0f + 16.0f;
@@ -949,6 +1423,8 @@ void CMinimap::RenderWorldMarkers()
 			continue;
 		if(Marker.m_Tile < 0 || Marker.m_ClientId < 0 || Marker.m_ClientId >= MAX_CLIENTS)
 			continue;
+		if(Marker.m_Kind == 1 && SaveCoversTile(m_vSaveTiles, Marker.m_Tile))
+			continue;
 		const float CenterX = (Marker.m_Tile % m_KindsWidth) * 32.0f + 16.0f;
 		const float CenterY = (Marker.m_Tile / m_KindsWidth) * 32.0f + 16.0f;
 		if(CenterX < ScreenL - 24.0f || CenterX > ScreenR + 80.0f || CenterY < ScreenT - 40.0f || CenterY > ScreenB + 24.0f)
@@ -987,6 +1463,11 @@ void CMinimap::ReleaseIdle()
 {
 	if(m_ActivityOn || !m_vActivity.empty())
 		ClearActivity();
+	if(!m_vSaveTiles.empty())
+	{
+		m_vSaveTiles.clear();
+		m_vSaveTiles.shrink_to_fit();
+	}
 	if(m_KindsWidth == 0 && m_vKinds.empty() && m_vTileQuads.empty())
 		return;
 	m_vKinds.clear();
@@ -995,7 +1476,6 @@ void CMinimap::ReleaseIdle()
 	m_vSwitch.clear();
 	m_vPlatform.clear();
 	m_vTileQuads.clear();
-	m_vHookLines.clear();
 	m_vLaserLines.clear();
 	m_vMarkerQuads.clear();
 	m_vKinds.shrink_to_fit();
@@ -1004,7 +1484,6 @@ void CMinimap::ReleaseIdle()
 	m_vSwitch.shrink_to_fit();
 	m_vPlatform.shrink_to_fit();
 	m_vTileQuads.shrink_to_fit();
-	m_vHookLines.shrink_to_fit();
 	m_vLaserLines.shrink_to_fit();
 	m_vMarkerQuads.shrink_to_fit();
 	m_KindsCollision = nullptr;
@@ -1620,7 +2099,7 @@ void CMinimap::RenderHud(bool EditorPreview)
 	const float ScaleReferenceH = LargeMinimap ? m_Height : MinimapH;
 	const float FitScale = std::max(ScaleReferenceW / std::max(MapWorldW, 1.0f), ScaleReferenceH / std::max(MapWorldH, 1.0f));
 	const float Scale = FitScale * Zoom;
-	const float ConfiguredSmallZoom = std::clamp(g_Config.m_BclMinimapZoom / 100.0f, 3.0f, 24.0f);
+	const float TeeSize = std::max(32.0f * Scale * 1.2f * ((float)g_Config.m_BclMinimapTeeSize / 2.0f), 0.5f);
 
 	float CursorX = 0.0f;
 	float CursorY = 0.0f;
@@ -1740,7 +2219,6 @@ void CMinimap::RenderHud(bool EditorPreview)
 	const float XScale = Graphics()->ScreenWidth() / m_Width;
 	const float YScale = Graphics()->ScreenHeight() / m_Height;
 	Graphics()->ClipEnable((int)std::round(X * XScale), (int)std::round(Y * YScale), (int)std::round(MinimapW * XScale), (int)std::round(MinimapH * YScale));
-	DrawTiles(X, Y, MinimapW, MinimapH, WorldMin, WorldMax, Scale, Alpha, g_Config.m_BclMinimapPlatforms != 0);
 
 	auto WorldToMinimap = [&](vec2 Pos) {
 		return vec2(X + (Pos.x - WorldMin.x) * Scale, Y + (Pos.y - WorldMin.y) * Scale);
@@ -1749,7 +2227,63 @@ void CMinimap::RenderHud(bool EditorPreview)
 		return Pos.x >= X && Pos.x <= X + MinimapW && Pos.y >= Y && Pos.y <= Y + MinimapH;
 	};
 
-	DrawActivity(X, Y, MinimapW, MinimapH, WorldMin, Scale, Alpha, LocalId, CursorX, CursorY, HaveCursor && !UiBlocksDrag);
+	const int LocalDDTeam = LocalId >= 0 ? GameClient()->m_Teams.Team(LocalId) : TEAM_FLOCK;
+	const int LocalTeam = LocalId >= 0 ? GameClient()->m_aClients[LocalId].m_Team : TEAM_SPECTATORS;
+	const int CurTick = Client()->GameTick(g_Config.m_ClDummy);
+	const bool LocalAlive = LocalId >= 0 && !(GameClient()->m_aClients[LocalId].m_FreezeEnd != 0 && GameClient()->m_aClients[LocalId].m_FreezeEnd > CurTick);
+	bool AnyOtherAlive = false;
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(i == LocalId || !GameClient()->m_Snap.m_apPlayerInfos[i] || !GameClient()->m_Snap.m_aCharacters[i].m_Active)
+			continue;
+		const int OtherDDTeam = GameClient()->m_Teams.Team(i);
+		const bool SameTeam = LocalDDTeam > TEAM_FLOCK ? OtherDDTeam == LocalDDTeam : GameClient()->m_aClients[i].m_Team == LocalTeam;
+		const bool Frozen = GameClient()->m_aClients[i].m_DeepFrozen || (GameClient()->m_aClients[i].m_FreezeEnd != 0 && GameClient()->m_aClients[i].m_FreezeEnd > CurTick);
+		if(SameTeam && !Frozen)
+			AnyOtherAlive = true;
+	}
+	const bool LastManStanding = LocalAlive && !AnyOtherAlive;
+	if(g_Config.m_BclMinimapPlayers)
+	{
+		const float HookAlpha = 0.9f * Alpha;
+		for(int i = 0; i < MAX_CLIENTS; i++)
+		{
+			if(!GameClient()->m_Snap.m_apPlayerInfos[i] || !GameClient()->m_Snap.m_aCharacters[i].m_Active)
+				continue;
+			const int OtherDDTeam = GameClient()->m_Teams.Team(i);
+			const bool SameTeam = LocalDDTeam > TEAM_FLOCK ? OtherDDTeam == LocalDDTeam : GameClient()->m_aClients[i].m_Team == LocalTeam;
+			if(!SameTeam && !g_Config.m_BclMinimapShowOthers)
+				continue;
+			const SMinimapFreeze HookFreeze = MinimapFreezeState(GameClient(), i);
+			const bool Frozen = HookFreeze.m_FrozenSkin || HookFreeze.m_Flakes;
+			if(i != LocalId && SameTeam)
+			{
+				const bool ShowIcon = !Frozen ? g_Config.m_BclMinimapShowAlive != 0 : LastManStanding ? g_Config.m_BclMinimapShowCritical != 0 : g_Config.m_BclMinimapShowFrozen != 0;
+				if(!ShowIcon)
+					continue;
+			}
+			const CNetObj_Character &CurChar = GameClient()->m_aClients[i].m_RenderCur;
+			if(CurChar.m_HookState <= 0)
+				continue;
+			const vec2 Pos = GameClient()->m_aClients[i].m_RenderPos;
+			if(Pos.x < WorldMin.x || Pos.x > WorldMax.x || Pos.y < WorldMin.y || Pos.y > WorldMax.y)
+				continue;
+			const vec2 Dot = WorldToMinimap(Pos);
+			if(!InMinimapShape(Dot))
+				continue;
+			const CNetObj_Character &PrevChar = GameClient()->m_aClients[i].m_RenderPrev;
+			vec2 HookPos;
+			if(in_range(CurChar.m_HookedPlayer, MAX_CLIENTS - 1) && GameClient()->m_Snap.m_aCharacters[CurChar.m_HookedPlayer].m_Active)
+				HookPos = GameClient()->m_aClients[CurChar.m_HookedPlayer].m_RenderPos;
+			else
+				HookPos = mix(vec2(PrevChar.m_HookX, PrevChar.m_HookY), vec2(CurChar.m_HookX, CurChar.m_HookY), Client()->IntraGameTick(g_Config.m_ClDummy));
+			vec2 HookDot = WorldToMinimap(HookPos);
+			HookDot.x = std::clamp(HookDot.x, X + 1.0f, X + MinimapW - 1.0f);
+			HookDot.y = std::clamp(HookDot.y, Y + 1.0f, Y + MinimapH - 1.0f);
+			const float IconAlpha = i == LocalId ? 1.0f : (SameTeam ? 0.95f : 0.72f);
+			DrawMinimapHook(Graphics(), GameClient()->m_GameSkin.m_SpriteHookChain, GameClient()->m_GameSkin.m_SpriteHookHead, Dot, HookDot, Scale, HookAlpha * IconAlpha);
+		}
+	}
 
 	const bool FullHover = LargeMinimap && m_ForceFullSize && HaveCursor && !UiBlocksDrag;
 	const float HudMouseX = FullHover ? CursorX : 0.0f;
@@ -1761,28 +2295,18 @@ void CMinimap::RenderHud(bool EditorPreview)
 
 	if(g_Config.m_BclMinimapPlayers)
 	{
-		const int CurTick = Client()->GameTick(g_Config.m_ClDummy);
-		const int LocalDDTeam = LocalId >= 0 ? GameClient()->m_Teams.Team(LocalId) : TEAM_FLOCK;
-		const int LocalTeam = LocalId >= 0 ? GameClient()->m_aClients[LocalId].m_Team : TEAM_SPECTATORS;
-		const bool LocalAlive = LocalId >= 0 && !(GameClient()->m_aClients[LocalId].m_FreezeEnd != 0 && GameClient()->m_aClients[LocalId].m_FreezeEnd > CurTick);
-		bool AnyOtherAlive = false;
-		for(int i = 0; i < MAX_CLIENTS; i++)
+		const bool Paused = GameClient()->IsWorldPaused() || GameClient()->IsDemoPlaybackPaused();
+		const bool FreezeParticles = !GameClient()->OptimizerDisableParticles() && !(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideEffects);
+		static float s_LastGameTickTime = 0.0f;
+		static float s_LastPredIntraTick = 0.0f;
+		const float PrevGameTickTime = s_LastGameTickTime;
+		const float PrevPredIntra = s_LastPredIntraTick;
+		if(!Paused)
 		{
-			if(i == LocalId || !GameClient()->m_Snap.m_apPlayerInfos[i] || !GameClient()->m_Snap.m_aCharacters[i].m_Active)
-				continue;
-			const int OtherDDTeam = GameClient()->m_Teams.Team(i);
-			const bool SameTeam = LocalDDTeam > TEAM_FLOCK ? OtherDDTeam == LocalDDTeam : GameClient()->m_aClients[i].m_Team == LocalTeam;
-			const bool Frozen = GameClient()->m_aClients[i].m_DeepFrozen || (GameClient()->m_aClients[i].m_FreezeEnd != 0 && GameClient()->m_aClients[i].m_FreezeEnd > CurTick);
-			if(SameTeam && !Frozen)
-				AnyOtherAlive = true;
+			s_LastGameTickTime = Client()->GameTickTime(g_Config.m_ClDummy);
+			s_LastPredIntraTick = Client()->PredIntraGameTick(g_Config.m_ClDummy);
 		}
-		const bool LastManStanding = LocalAlive && !AnyOtherAlive;
 
-		static const ColorRGBA TintAlive = color_cast<ColorRGBA>(ColorHSLA(MINIMAP_COLOR_ALIVE, false));
-		static const ColorRGBA TintFrozen = color_cast<ColorRGBA>(ColorHSLA(MINIMAP_COLOR_FROZEN, false));
-		static const ColorRGBA TintCritical = color_cast<ColorRGBA>(ColorHSLA(MINIMAP_COLOR_CRITICAL, false));
-
-		m_vHookLines.clear();
 		m_vLaserLines.clear();
 		for(int i = 0; i < MAX_CLIENTS; i++)
 		{
@@ -1800,29 +2324,14 @@ void CMinimap::RenderHud(bool EditorPreview)
 			if(!InMinimapShape(Dot))
 				continue;
 
-			const bool Frozen = GameClient()->m_aClients[i].m_DeepFrozen || (GameClient()->m_aClients[i].m_FreezeEnd != 0 && GameClient()->m_aClients[i].m_FreezeEnd > CurTick);
+			const SMinimapFreeze Freeze = MinimapFreezeState(GameClient(), i);
+			const bool Frozen = Freeze.m_FrozenSkin || Freeze.m_Flakes;
 			const CNetObj_Character &PrevChar = GameClient()->m_aClients[i].m_RenderPrev;
 			const CNetObj_Character &CurChar = GameClient()->m_aClients[i].m_RenderCur;
-			if(CurChar.m_HookState > 0)
+			const float Intra = GameClient()->m_aClients[i].m_IsPredicted ? Client()->PredIntraGameTick(g_Config.m_ClDummy) : Client()->IntraGameTick(g_Config.m_ClDummy);
+			const float Angle = GameClient()->m_Players.GetPlayerTargetAngle(&PrevChar, &CurChar, i, Intra);
+			if(CurChar.m_Weapon == WEAPON_LASER && !Freeze.m_HideWeapon)
 			{
-				vec2 HookPos;
-				if(in_range(CurChar.m_HookedPlayer, MAX_CLIENTS - 1) && GameClient()->m_Snap.m_aCharacters[CurChar.m_HookedPlayer].m_Active)
-					HookPos = GameClient()->m_aClients[CurChar.m_HookedPlayer].m_RenderPos;
-				else
-					HookPos = mix(vec2(PrevChar.m_HookX, PrevChar.m_HookY), vec2(CurChar.m_HookX, CurChar.m_HookY), Client()->IntraGameTick(g_Config.m_ClDummy));
-				vec2 HookDot = WorldToMinimap(HookPos);
-				HookDot.x = std::clamp(HookDot.x, X + 1.0f, X + MinimapW - 1.0f);
-				HookDot.y = std::clamp(HookDot.y, Y + 1.0f, Y + MinimapH - 1.0f);
-				const vec2 HookDir = HookDot - Dot;
-				const float Len = length(HookDir);
-				const vec2 Perp = Len > 0.001f ? vec2(-HookDir.y / Len, HookDir.x / Len) * 0.45f : vec2(0.0f, 0.0f);
-				m_vHookLines.emplace_back(Dot.x, Dot.y, HookDot.x, HookDot.y);
-				m_vHookLines.emplace_back(Dot.x + Perp.x, Dot.y + Perp.y, HookDot.x + Perp.x, HookDot.y + Perp.y);
-				m_vHookLines.emplace_back(Dot.x - Perp.x, Dot.y - Perp.y, HookDot.x - Perp.x, HookDot.y - Perp.y);
-			}
-			if(CurChar.m_Weapon == WEAPON_LASER)
-			{
-				const float Angle = GameClient()->m_Players.GetPlayerTargetAngle(&PrevChar, &CurChar, i, Client()->IntraGameTick(g_Config.m_ClDummy));
 				vec2 LaserDot = WorldToMinimap(Pos + direction(Angle) * 800.0f);
 				LaserDot.x = std::clamp(LaserDot.x, X, X + MinimapW);
 				LaserDot.y = std::clamp(LaserDot.y, Y, Y + MinimapH);
@@ -1830,11 +2339,6 @@ void CMinimap::RenderHud(bool EditorPreview)
 			}
 
 			CTeeRenderInfo TeeInfo = GameClient()->m_aClients[i].m_RenderInfo;
-			float TeeSize = 32.0f * Scale * ((float)g_Config.m_BclMinimapTeeSize / 4.0f);
-			if(g_Config.m_BclMinimapTeeSizeFlexible)
-				TeeSize *= std::max(ConfiguredSmallZoom / 5.0f, 0.2f);
-			TeeInfo.m_Size = std::max(TeeSize, 0.5f);
-			TeeInfo.m_TeeRenderFlags |= TEE_NO_WEAPON;
 			const float IconAlpha = i == LocalId ? 1.0f : (SameTeam ? 0.95f : 0.72f);
 
 			bool ShowIcon = true;
@@ -1846,13 +2350,40 @@ void CMinimap::RenderHud(bool EditorPreview)
 					ShowIcon = g_Config.m_BclMinimapShowCritical != 0;
 				else
 					ShowIcon = g_Config.m_BclMinimapShowFrozen != 0;
-				const ColorRGBA Tint = !Frozen ? TintAlive : LastManStanding ? TintCritical : TintFrozen;
-				TeeInfo.m_CustomColoredSkin = true;
-				TeeInfo.m_ColorBody = Tint.WithAlpha(1.0f);
-				TeeInfo.m_ColorFeet = Tint.WithAlpha(1.0f);
 			}
 			if(!ShowIcon)
 				continue;
+
+			int Weapon = std::clamp((int)CurChar.m_Weapon, 0, NUM_WEAPONS - 1);
+			if(g_Config.m_TcFrozenKatana > 0 && Freeze.m_FrozenSkin)
+				Weapon = WEAPON_NINJA;
+			ApplyMinimapFrozenLook(GameClient(), TeeInfo, i, Weapon, Freeze.m_FrozenSkin);
+			TeeInfo.m_Size = TeeSize;
+
+			const float TickSpeed = (float)Client()->GameTickSpeed();
+			float AttackTime = (Client()->PrevGameTick(g_Config.m_ClDummy) - CurChar.m_AttackTick) / TickSpeed + Client()->GameTickTime(g_Config.m_ClDummy);
+			float LastAttackTime = (Client()->PrevGameTick(g_Config.m_ClDummy) - CurChar.m_AttackTick) / TickSpeed + PrevGameTickTime;
+			if(GameClient()->m_aClients[i].m_IsPredictedLocal && GameClient()->AntiPingGunfire())
+			{
+				AttackTime = (Client()->PredIntraGameTick(g_Config.m_ClDummy) + (Client()->PredGameTick(g_Config.m_ClDummy) - 1 - CurChar.m_AttackTick)) / TickSpeed;
+				LastAttackTime = (PrevPredIntra + (Client()->PredGameTick(g_Config.m_ClDummy) - 1 - CurChar.m_AttackTick)) / TickSpeed;
+			}
+			const float AttackTicksPassed = AttackTime * TickSpeed;
+			const vec2 Vel = mix(vec2(PrevChar.m_VelX / 256.0f, PrevChar.m_VelY / 256.0f), vec2(CurChar.m_VelX / 256.0f, CurChar.m_VelY / 256.0f), Intra);
+			bool InAir = !Collision()->CheckPoint(CurChar.m_X, CurChar.m_Y + 16);
+			if(g_Config.m_TcAntiPingImproved && i != LocalId)
+				InAir = !Collision()->CheckPoint(Pos.x, Pos.y + 16);
+			const bool Stationary = CurChar.m_VelX <= 1 && CurChar.m_VelX >= -1;
+			bool Inactive = GameClient()->m_aClients[i].m_Afk || GameClient()->m_aClients[i].m_Paused;
+			if(Inactive && GameClient()->m_FastPractice.Active() && GameClient()->m_FastPractice.IsPracticeParticipant(i))
+				Inactive = false;
+			TeeInfo.m_GotAirJump = (CurChar.m_Jumped & 2) == 0;
+			TeeInfo.m_FeetFlipped = Inactive && !InAir && Stationary;
+
+			CNetObj_Character AnimChar = CurChar;
+			AnimChar.m_Weapon = Weapon;
+			const vec2 Aim = direction(Angle);
+			const CAnimState State = MinimapTeeAnim(AnimChar, Pos, Aim, Vel, LastAttackTime, Inactive, InAir);
 
 			if(MouseOver)
 			{
@@ -1868,27 +2399,69 @@ void CMinimap::RenderHud(bool EditorPreview)
 				}
 			}
 
-			const float Angle = GameClient()->m_Players.GetPlayerTargetAngle(&PrevChar, &CurChar, i, Client()->IntraGameTick(g_Config.m_ClDummy));
-			RenderTools()->RenderTee(CAnimState::GetIdle(), &TeeInfo, Frozen ? EMOTE_PAIN : EMOTE_NORMAL, direction(Angle), Dot, IconAlpha * Alpha);
+			if(!Freeze.m_HideWeapon)
+				DrawMinimapWeapon(Graphics(), GameClient(), State, Dot, Aim, Weapon, AttackTime, LastAttackTime, AttackTicksPassed, Inactive, InAir, Stationary, TeeSize, IconAlpha * Alpha, Paused, vec2(CurChar.m_X, CurChar.m_Y), vec2(PrevChar.m_X, PrevChar.m_Y));
+
+			int Emote = CurChar.m_Emote;
+			if(Emote < 0 || Emote >= NUM_EMOTES)
+				Emote = EMOTE_NORMAL;
+			RenderTools()->RenderTee(&State, &TeeInfo, Emote, Aim, Dot, IconAlpha * Alpha);
+
+			if(Freeze.m_Flakes && FreezeParticles)
+			{
+				const float AnimScale = TeeSize / 64.0f;
+				const vec2 BodyPos = Dot + vec2(State.GetBody()->m_X, State.GetBody()->m_Y) * AnimScale;
+				DrawMinimapFreezeFlakes(Graphics(), GameClient()->m_ExtrasSkin.m_SpriteParticleSnowflake, BodyPos, i, Scale, IconAlpha * Alpha, LocalTime());
+			}
+
+			const float EmoteScale = TeeSize / 64.0f;
+			const float EmoteAlpha = IconAlpha * Alpha;
+			if((CurChar.m_PlayerFlags & PLAYERFLAG_CHATTING) && !GameClient()->m_aClients[i].m_Afk)
+				DrawMinimapEmoticon(Graphics(), GameClient(), SPRITE_DOTDOT - SPRITE_OOP, Dot + vec2(24.0f, -40.0f) * EmoteScale, 64.0f * EmoteScale, 64.0f * EmoteScale, 0.0f, EmoteAlpha);
+			if(g_Config.m_ClAfkEmote && GameClient()->m_aClients[i].m_Afk && i != GameClient()->m_aLocalIds[!g_Config.m_ClDummy] &&
+				!(GameClient()->m_FastPractice.Active() && GameClient()->m_FastPractice.IsPracticeParticipant(i)))
+				DrawMinimapEmoticon(Graphics(), GameClient(), SPRITE_ZZZ - SPRITE_OOP, Dot + vec2(24.0f, -40.0f) * EmoteScale, 64.0f * EmoteScale, 64.0f * EmoteScale, 0.0f, EmoteAlpha);
+			if(g_Config.m_ClShowEmotes && !GameClient()->m_aClients[i].m_EmoticonIgnore && GameClient()->m_aClients[i].m_EmoticonStartTick != -1)
+			{
+				const float SinceStart = (Client()->GameTick(g_Config.m_ClDummy) - GameClient()->m_aClients[i].m_EmoticonStartTick) + (Client()->IntraGameTickSincePrev(g_Config.m_ClDummy) - GameClient()->m_aClients[i].m_EmoticonStartFraction);
+				const float FromEnd = (2 * Client()->GameTickSpeed()) - SinceStart;
+				if(SinceStart >= 0.0f && FromEnd > 0.0f)
+				{
+					float EmoteFade = 1.0f;
+					if(FromEnd < Client()->GameTickSpeed() / 5.0f)
+						EmoteFade = FromEnd / (Client()->GameTickSpeed() / 5.0f);
+					float EmoteHeight = 1.0f;
+					if(SinceStart < Client()->GameTickSpeed() / 10.0f)
+						EmoteHeight = SinceStart / (Client()->GameTickSpeed() / 10.0f);
+					float Wiggle = 0.0f;
+					if(SinceStart < Client()->GameTickSpeed() / 5.0f)
+						Wiggle = SinceStart / (Client()->GameTickSpeed() / 5.0f);
+					const vec2 EmotePos = Dot + vec2(0.0f, -23.0f - 32.0f * EmoteHeight) * EmoteScale;
+					DrawMinimapEmoticon(Graphics(), GameClient(), GameClient()->m_aClients[i].m_Emoticon, EmotePos, 64.0f * EmoteScale, 64.0f * EmoteHeight * EmoteScale, pi / 6.0f * std::sin(5.0f * Wiggle), EmoteFade * EmoteAlpha);
+				}
+			}
 		}
 
-		if(!m_vLaserLines.empty() || !m_vHookLines.empty())
+		DrawMinimapProjectiles(Graphics(), GameClient(), X, Y, WorldMin, WorldMax, Scale, Alpha, LocalId);
+
+		if(!m_vLaserLines.empty())
 		{
 			Graphics()->TextureClear();
 			Graphics()->LinesBegin();
-			if(!m_vLaserLines.empty())
-			{
-				Graphics()->SetColor(ColorRGBA(0.45f, 0.78f, 1.0f, 0.42f * Alpha));
-				Graphics()->LinesDraw(m_vLaserLines.data(), m_vLaserLines.size());
-			}
-			if(!m_vHookLines.empty())
-			{
-				Graphics()->SetColor(ColorRGBA(1.0f, 1.0f, 1.0f, 0.72f * Alpha));
-				Graphics()->LinesDraw(m_vHookLines.data(), m_vHookLines.size());
-			}
+			Graphics()->SetColor(ColorRGBA(0.45f, 0.78f, 1.0f, 0.42f * Alpha));
+			Graphics()->LinesDraw(m_vLaserLines.data(), m_vLaserLines.size());
 			Graphics()->LinesEnd();
 		}
 	}
+
+	DrawTiles(X, Y, MinimapW, MinimapH, WorldMin, WorldMax, Scale, Alpha, g_Config.m_BclMinimapPlatforms != 0);
+
+	DrawActivity(X, Y, MinimapW, MinimapH, WorldMin, Scale, Alpha, LocalId, CursorX, CursorY, HaveCursor && !UiBlocksDrag);
+
+	const vec2 ScreenOrigin(X, Y);
+	GameClient()->m_Particles.RenderForMinimap(ScreenOrigin, WorldMin, WorldMax, Scale, Alpha);
+	GameClient()->m_DamageInd.RenderForMinimap(ScreenOrigin, WorldMin, WorldMax, Scale, Alpha);
+
 	m_HoveredPlayerId = HoveredPlayerId;
 
 	Graphics()->ClipDisable();

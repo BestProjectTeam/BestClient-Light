@@ -33,6 +33,9 @@ public:
 	int Sizeof() const override { return sizeof(*this); }
 
 	void Create(vec2 Pos, vec2 Dir, float Alpha);
+	// bestclient-light
+	void RenderForMinimap(vec2 ScreenOrigin, vec2 WorldMin, vec2 WorldMax, float Scale, float Alpha) const;
+	// bestclient-light
 	void OnReset() override;
 	void OnRender() override;
 	void OnInit() override;

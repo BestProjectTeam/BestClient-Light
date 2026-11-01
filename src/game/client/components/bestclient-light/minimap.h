@@ -29,8 +29,8 @@ class CMinimap : public CComponent
 	std::vector<uint16_t> m_vSwitch;
 	std::vector<uint8_t> m_vPlatform;
 	std::vector<IGraphics::CQuadItem> m_vTileQuads;
-	std::vector<IGraphics::CLineItem> m_vHookLines;
 	std::vector<IGraphics::CLineItem> m_vLaserLines;
+	std::vector<int> m_vSaveTiles;
 	bool m_HasSwitchTiles = false;
 
 	bool m_LargeActive = false;
@@ -123,6 +123,7 @@ class CMinimap : public CComponent
 	void DropMarkerLabel(uint64_t Key);
 	void ReleaseIdle();
 	void NoteActivity(int Tile, int ClientId, int Team, int Kind, int Amount = 1);
+	void CollectSaveTiles(int LocalDDTeam);
 	void SampleActivity();
 	void DrawActivity(float X, float Y, float W, float H, vec2 WorldMin, float Scale, float Alpha, int LocalId, float CursorX, float CursorY, bool CursorValid);
 	void RenderWorldMarkers();

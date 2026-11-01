@@ -6,6 +6,11 @@
 #include <base/math.h>
 #include <base/time.h>
 
+// bestclient-light
+#include <algorithm>
+#include <iterator>
+// bestclient-light
+
 #include <engine/demo.h>
 #include <engine/graphics.h>
 
@@ -141,6 +146,61 @@ void CParticles::Update(float TimePassed)
 		}
 	}
 }
+
+// bestclient-light
+void CParticles::RenderForMinimap(vec2 ScreenOrigin, vec2 WorldMin, vec2 WorldMax, float Scale, float Alpha) const
+{
+	if(Alpha <= 0.0f || Scale <= 0.0f || GameClient()->OptimizerDisableParticles())
+		return;
+	if(g_Config.m_ClFocusMode && g_Config.m_ClFocusModeHideEffects)
+		return;
+
+	const float Margin = 96.0f;
+	for(int Group = 0; Group < NUM_GROUPS; ++Group)
+	{
+		const bool Extra = Group == GROUP_EXTRA || Group == GROUP_TRAIL_EXTRA;
+		IGraphics::CTextureHandle *pSprites = Extra ? GameClient()->m_ExtrasSkin.m_aSpriteParticles : GameClient()->m_ParticlesSkin.m_aSpriteParticles;
+		const int FirstSprite = Extra ? SPRITE_PART_SNOWFLAKE : SPRITE_PART_SLICE;
+		const int SpriteCount = Extra ? (int)std::size(GameClient()->m_ExtrasSkin.m_aSpriteParticles) : (int)std::size(GameClient()->m_ParticlesSkin.m_aSpriteParticles);
+		int BatchTex = -2;
+		bool Open = false;
+		for(int i = m_aFirstPart[Group]; i != -1; i = m_aParticles[i].m_NextPart)
+		{
+			const CParticle &Part = m_aParticles[i];
+			if(Part.m_Spr == SPRITE_PART_SNOWFLAKE || Part.m_LifeSpan <= 0.0f)
+				continue;
+			if(Part.m_Pos.x < WorldMin.x - Margin || Part.m_Pos.x > WorldMax.x + Margin || Part.m_Pos.y < WorldMin.y - Margin || Part.m_Pos.y > WorldMax.y + Margin)
+				continue;
+			const float Life = std::clamp(Part.m_Life / Part.m_LifeSpan, 0.0f, 1.0f);
+			float PartAlpha = Part.m_UseAlphaFading ? mix(Part.m_StartAlpha, Part.m_EndAlpha, Life) : Part.m_Color.a;
+			PartAlpha *= Alpha;
+			const float Size = mix(Part.m_StartSize, Part.m_EndSize, Life) * Scale;
+			const int Sprite = Part.m_Spr - FirstSprite;
+			if(PartAlpha <= 0.01f || Size <= 0.2f || Sprite < 0 || Sprite >= SpriteCount || !pSprites[Sprite].IsValid())
+				continue;
+			if(!Open || BatchTex != pSprites[Sprite].Id())
+			{
+				if(Open)
+					Graphics()->QuadsEnd();
+				BatchTex = pSprites[Sprite].Id();
+				Graphics()->TextureSet(pSprites[Sprite]);
+				Graphics()->QuadsBegin();
+				Open = true;
+			}
+			const vec2 Dot = ScreenOrigin + (Part.m_Pos - WorldMin) * Scale;
+			Graphics()->QuadsSetSubset(0.0f, 0.0f, 1.0f, 1.0f);
+			Graphics()->QuadsSetRotation(Part.m_Rot);
+			Graphics()->SetColor(Part.m_Color.r, Part.m_Color.g, Part.m_Color.b, std::min(PartAlpha, 1.0f));
+			Graphics()->DrawSprite(Dot.x, Dot.y, Size, Size);
+		}
+		if(Open)
+			Graphics()->QuadsEnd();
+	}
+	Graphics()->QuadsSetRotation(0.0f);
+	Graphics()->QuadsSetSubset(0.0f, 0.0f, 1.0f, 1.0f);
+	Graphics()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+// bestclient-light
 
 void CParticles::OnRender()
 {
