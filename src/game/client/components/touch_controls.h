@@ -283,7 +283,9 @@ public:
 			CPredefinedTouchButtonBehavior(BEHAVIOR_ID) {}
 
 		CButtonLabel GetLabel() const override;
-		void OnDeactivate(bool ByFinger) override;
+		// bestclient-light
+		void OnActivate() override;
+		// bestclient-light
 	};
 
 	class CExtraMenuTouchButtonBehavior : public CPredefinedTouchButtonBehavior
@@ -294,6 +296,10 @@ public:
 		CExtraMenuTouchButtonBehavior(int Number);
 
 		CButtonLabel GetLabel() const override;
+		// bestclient-light
+		void OnActivate() override;
+		void OnUpdate() override;
+		// bestclient-light
 		void OnDeactivate(bool ByFinger) override;
 		int GetNumber() const { return m_Number; }
 		void WriteToConfiguration(CJsonWriter *pWriter) override;
@@ -301,6 +307,9 @@ public:
 	private:
 		int m_Number;
 		char m_aLabel[16];
+		// bestclient-light
+		bool m_OpenedMenu = false;
+		// bestclient-light
 	};
 
 	class CEmoticonTouchButtonBehavior : public CPredefinedTouchButtonBehavior

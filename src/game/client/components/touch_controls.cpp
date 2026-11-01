@@ -438,12 +438,18 @@ CTouchControls::CButtonLabel CTouchControls::CIngameMenuTouchButtonBehavior::Get
 	return {CButtonLabel::EType::ICON, "\xEF\x85\x8E"};
 }
 
-void CTouchControls::CIngameMenuTouchButtonBehavior::OnDeactivate(bool ByFinger)
+// bestclient-light
+static void OpenTouchIngameMenu(CTouchControls *pTouchControls)
 {
-	if(!ByFinger)
-		return;
-	m_pTouchControls->GameClient()->m_Menus.SetActive(true);
+	pTouchControls->GameClient()->m_Menus.SetActive(true);
+	pTouchControls->Ui()->SuppressHeldTouchClick();
 }
+
+void CTouchControls::CIngameMenuTouchButtonBehavior::OnActivate()
+{
+	OpenTouchIngameMenu(m_pTouchControls);
+}
+// bestclient-light
 
 // Extra menu button:
 // - Short press: show/hide additional buttons (toggle extra-menu visibilities)
@@ -474,18 +480,33 @@ CTouchControls::CButtonLabel CTouchControls::CExtraMenuTouchButtonBehavior::GetL
 	}
 }
 
+// bestclient-light
+void CTouchControls::CExtraMenuTouchButtonBehavior::OnActivate()
+{
+	m_OpenedMenu = false;
+}
+
+void CTouchControls::CExtraMenuTouchButtonBehavior::OnUpdate()
+{
+	if(m_OpenedMenu || time_get_nanoseconds() - m_ActivationStartTime < LONG_TOUCH_DURATION)
+		return;
+	m_OpenedMenu = true;
+	OpenTouchIngameMenu(m_pTouchControls);
+}
+// bestclient-light
+
 void CTouchControls::CExtraMenuTouchButtonBehavior::OnDeactivate(bool ByFinger)
 {
-	if(!ByFinger)
-		return;
-	if(time_get_nanoseconds() - m_ActivationStartTime >= LONG_TOUCH_DURATION)
+	// bestclient-light
+	if(ByFinger && !m_OpenedMenu)
 	{
-		m_pTouchControls->GameClient()->m_Menus.SetActive(true);
+		if(time_get_nanoseconds() - m_ActivationStartTime >= LONG_TOUCH_DURATION)
+			OpenTouchIngameMenu(m_pTouchControls);
+		else
+			m_pTouchControls->m_aExtraMenuActive[m_Number] = !m_pTouchControls->m_aExtraMenuActive[m_Number];
 	}
-	else
-	{
-		m_pTouchControls->m_aExtraMenuActive[m_Number] = !m_pTouchControls->m_aExtraMenuActive[m_Number];
-	}
+	m_OpenedMenu = false;
+	// bestclient-light
 }
 
 void CTouchControls::CExtraMenuTouchButtonBehavior::WriteToConfiguration(CJsonWriter *pWriter)

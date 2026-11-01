@@ -1579,7 +1579,9 @@ const char *CMenusIngameTouchControls::HelpMessageForPredefinedType(EPredefinedT
 {
 	switch(m_PredefinedBehaviorType)
 	{
-	case EPredefinedType::INGAME_MENU: return Localize("Opens the ingame menu immediately when released."); break;
+	// bestclient-light
+	case EPredefinedType::INGAME_MENU: return Localize("Opens the ingame menu when pressed."); break;
+	// bestclient-light
 	case EPredefinedType::EXTRA_MENU: return Localize("The extra menu button which toggles visibility of buttons with \"Extra Menu\" visibilities. Also opens the ingame menu on long press."); break;
 	case EPredefinedType::EMOTICON: return Localize("Opens the emoticon selector (this does not work with binds)."); break;
 	case EPredefinedType::SPECTATE: return Localize("Opens the spectator menu (this does not work with binds)."); break;

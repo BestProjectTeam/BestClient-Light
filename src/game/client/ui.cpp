@@ -433,6 +433,17 @@ void CUi::UpdateTouchState(CTouchState &State) const
 	}
 }
 
+// bestclient-light
+void CUi::SuppressHeldTouchClick()
+{
+	m_TouchState.m_AnyPressed = true;
+	m_TouchState.m_PrimaryPressed = false;
+	m_TouchState.m_SecondaryPressed = false;
+	m_TouchState.m_SecondaryPressedNext = false;
+	m_UpdatedMouseButtons &= ~3u;
+}
+// bestclient-light
+
 bool CUi::ConsumeHotkey(EHotkey Hotkey)
 {
 	const bool Pressed = m_HotkeysPressed & Hotkey;

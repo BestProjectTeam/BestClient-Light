@@ -2567,8 +2567,8 @@ Buttons with this behavior cycle between executing one of two or more specified 
 Buttons with this behavior execute some predefined actions.
 == Кнопки с этим поведением выполняют заранее определённые действия.
 
-Opens the ingame menu immediately when released.
-== Немедленно открывает внутриигровое меню при отпускании.
+Opens the ingame menu when pressed.
+== Открывает внутриигровое меню при нажатии.
 
 The extra menu button which toggles visibility of buttons with "Extra Menu" visibilities. Also opens the ingame menu on long press.
 == Дополнительная кнопка меню, которая переключает видимость кнопок с настройкой "Доп. меню". Также открывает внутриигровое меню при долгом нажатии.
