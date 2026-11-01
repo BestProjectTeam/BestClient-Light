@@ -47,6 +47,7 @@ void CTouchControlsEditor::Activate()
 	m_Active = true;
 	m_SuppressClick = true;
 	m_MouseDownLast = false;
+	m_OpenSettingsOnRelease = false;
 	m_Gesture = EGesture::NONE;
 	m_ResizeCorner = RESIZE_CORNER_NONE;
 	m_pSelected = nullptr;
@@ -59,6 +60,7 @@ void CTouchControlsEditor::StopOverlay()
 	m_Active = false;
 	m_SuppressClick = false;
 	m_MouseDownLast = false;
+	m_OpenSettingsOnRelease = false;
 	m_Gesture = EGesture::NONE;
 	m_ResizeCorner = RESIZE_CORNER_NONE;
 	m_pSelected = nullptr;
@@ -319,7 +321,7 @@ void CTouchControlsEditor::RenderOverlay(vec2 Mouse, const std::vector<CTouchCon
 	}
 
 	CUIRect Hint = {16.0f, 16.0f, m_ScreenW - 32.0f, 36.0f};
-	Ui()->DoLabel(&Hint, BcLocalize("Click for settings. Drag to move, corners to resize. Esc to close."), 20.0f, TEXTALIGN_ML);
+	Ui()->DoLabel(&Hint, BcLocalize("Click to select. Click again for settings. Drag to move, corners to resize. Esc to close."), 20.0f, TEXTALIGN_ML);
 	RenderTools()->RenderCursor(Mouse, 48.0f);
 }
 
@@ -340,12 +342,13 @@ void CTouchControlsEditor::OnRender()
 
 	const vec2 WindowSize(std::max(1.0f, (float)Graphics()->WindowWidth()), std::max(1.0f, (float)Graphics()->WindowHeight()));
 	const vec2 Mouse = Ui()->UpdatedMousePos() * vec2(m_ScreenW, m_ScreenH) / WindowSize;
-	const bool LeftDown = Ui()->MouseButton(0) != 0;
+	const bool FingerDown = !Input()->TouchFingerStates().empty();
+	const bool LeftDown = Ui()->MouseButton(0) != 0 || (m_Gesture != EGesture::NONE && FingerDown);
 	bool LeftClicked = Ui()->MouseButtonClicked(0) != 0;
 	if(m_SuppressClick)
 	{
 		LeftClicked = false;
-		if(!LeftDown)
+		if(!LeftDown && !FingerDown)
 			m_SuppressClick = false;
 	}
 
@@ -358,6 +361,7 @@ void CTouchControlsEditor::OnRender()
 	if(m_pSelected != nullptr && !m_pSelected->IsVisible())
 	{
 		m_pSelected = nullptr;
+		m_OpenSettingsOnRelease = false;
 		m_Gesture = EGesture::NONE;
 		m_ResizeCorner = RESIZE_CORNER_NONE;
 	}
@@ -385,6 +389,7 @@ void CTouchControlsEditor::OnRender()
 
 	if(LeftClicked && pHandleButton != nullptr)
 	{
+		m_OpenSettingsOnRelease = false;
 		m_pSelected = pHandleButton;
 		m_ResizeCorner = HandleCorner;
 		m_ResizeAnchor = pHandleButton->m_UnitRect;
@@ -392,6 +397,7 @@ void CTouchControlsEditor::OnRender()
 	}
 	else if(LeftClicked && pHovered != nullptr)
 	{
+		m_OpenSettingsOnRelease = pHovered == m_pSelected;
 		m_pSelected = pHovered;
 		m_DragOffsetX = UnitFromScreenX(Mouse.x) - pHovered->m_UnitRect.m_X;
 		m_DragOffsetY = UnitFromScreenY(Mouse.y) - pHovered->m_UnitRect.m_Y;
@@ -401,6 +407,7 @@ void CTouchControlsEditor::OnRender()
 	else if(LeftClicked)
 	{
 		m_pSelected = nullptr;
+		m_OpenSettingsOnRelease = false;
 		m_Gesture = EGesture::NONE;
 	}
 	else if(LeftDown && m_MouseDownLast && m_Gesture == EGesture::RESIZE)
@@ -410,18 +417,22 @@ void CTouchControlsEditor::OnRender()
 	else if(LeftDown && m_MouseDownLast && (m_Gesture == EGesture::PRESS || m_Gesture == EGesture::DRAG))
 	{
 		if(m_Gesture == EGesture::PRESS && distance(m_PressMouse, Mouse) > DRAG_THRESHOLD)
+		{
 			m_Gesture = EGesture::DRAG;
+			m_OpenSettingsOnRelease = false;
+		}
 		if(m_Gesture == EGesture::DRAG)
 			MoveSelected(UnitFromScreenX(Mouse.x), UnitFromScreenY(Mouse.y));
 	}
 	else if(!LeftDown && m_MouseDownLast)
 	{
-		if(m_Gesture == EGesture::PRESS && m_pSelected != nullptr)
+		if(m_Gesture == EGesture::PRESS && m_OpenSettingsOnRelease && m_pSelected != nullptr)
 		{
 			OpenOriginalSettings(m_pSelected);
 			Ui()->FinishCheck();
 			return;
 		}
+		m_OpenSettingsOnRelease = false;
 		if(m_Gesture == EGesture::DRAG || m_Gesture == EGesture::RESIZE)
 			Save();
 		m_Gesture = EGesture::NONE;

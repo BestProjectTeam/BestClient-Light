@@ -800,7 +800,10 @@ bool CTouchControls::OnTouchState(std::vector<IInput::CTouchFingerState> &vTouch
 {
 	// bestclient-light
 	if(GameClient()->m_TouchControlsEditor.IsActive())
+	{
 		vTouchFingerStates.clear();
+		return false;
+	}
 	// bestclient-light
 	if(!g_Config.m_ClTouchControls)
 		return false;

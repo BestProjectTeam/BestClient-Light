@@ -53,6 +53,7 @@ private:
 	bool m_Dirty = false;
 	bool m_SuppressClick = false;
 	bool m_MouseDownLast = false;
+	bool m_OpenSettingsOnRelease = false;
 	EGesture m_Gesture = EGesture::NONE;
 	int m_ResizeCorner = RESIZE_CORNER_NONE;
 	int m_DragOffsetX = 0;

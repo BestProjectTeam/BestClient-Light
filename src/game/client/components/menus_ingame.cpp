@@ -316,7 +316,7 @@ void CMenus::RenderGame(CUIRect MainView)
 			m_MenusIngameTouchControls.ResetButtonPointers();
 			GameClient()->m_TouchControlsEditor.Activate();
 		}
-		GameClient()->m_Tooltips.DoToolTip(&s_MoveTouchButtons, &Button, BcLocalize("Click a button for its settings. Drag to move, corners to resize."));
+		GameClient()->m_Tooltips.DoToolTip(&s_MoveTouchButtons, &Button, BcLocalize("Click a button to select it. Click it again for settings. Drag to move, corners to resize."));
 		// bestclient-light
 
 		ButtonBar2.VSplitRight(80.0f, &ButtonBar2, &Button);
