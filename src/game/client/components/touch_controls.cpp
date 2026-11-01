@@ -817,6 +817,20 @@ bool CTouchControls::OnTouchState(std::vector<IInput::CTouchFingerState> &vTouch
 		m_PreviewAllButtons)
 	{
 		ResetButtons();
+		// bestclient-light
+		m_vStaleFingers.erase(
+			std::remove_if(m_vStaleFingers.begin(), m_vStaleFingers.end(), [&](const IInput::CTouchFinger &Finger) {
+				return std::none_of(vTouchFingerStates.begin(), vTouchFingerStates.end(), [&](const IInput::CTouchFingerState &TouchFingerState) {
+					return TouchFingerState.m_Finger == Finger;
+				});
+			}),
+			m_vStaleFingers.end());
+		for(const IInput::CTouchFingerState &TouchFingerState : vTouchFingerStates)
+		{
+			if(std::find(m_vStaleFingers.begin(), m_vStaleFingers.end(), TouchFingerState.m_Finger) == m_vStaleFingers.end())
+				m_vStaleFingers.push_back(TouchFingerState.m_Finger);
+		}
+		// bestclient-light
 		return false;
 	}
 
