@@ -439,6 +439,11 @@ void CBestClientLight::OnUpdate()
 	UpdateSavesNotify();
 }
 
+void CBestClientLight::OnWindowResize()
+{
+	BestClientLightReleaseVotePercentages(TextRender());
+}
+
 void CBestClientLight::OnShutdown()
 {
 	ResetFindHours();

@@ -64,6 +64,7 @@ public:
 	void OnInit() override;
 	void OnShutdown() override;
 	void OnReset() override;
+	void OnWindowResize() override;
 	void OnMapLoad() override;
 	void OnUpdate() override;
 	void OnConsoleInit() override;

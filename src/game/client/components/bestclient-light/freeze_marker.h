@@ -19,6 +19,7 @@ public:
 
 	void OnReset() override;
 	void OnMapLoad() override;
+	void OnWindowResize() override;
 	void OnUpdate() override;
 	void OnNewSnapshot() override;
 	void OnRender() override;
@@ -49,6 +50,7 @@ private:
 	bool m_HasData = false;
 
 	void Clear();
+	void ReleaseCountText();
 	void EnsureCountText(SMarker &Marker);
 	bool KeepLastTouch(int ClientId) const;
 	bool IsFrozen(int ClientId, int CurTick) const;

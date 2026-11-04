@@ -60,6 +60,24 @@ void CFreezeMarker::OnMapLoad()
 	Clear();
 }
 
+void CFreezeMarker::ReleaseCountText()
+{
+	for(SMarker &Marker : m_vMarkers)
+	{
+		TextRender()->DeleteTextContainer(Marker.m_TextContainer);
+		Marker.m_BuiltCount = -1;
+		Marker.m_BuiltScreenW = -1;
+		Marker.m_BuiltScreenH = -1;
+		Marker.m_BuiltZoom = -1.0f;
+		Marker.m_TextH = 0.0f;
+	}
+}
+
+void CFreezeMarker::OnWindowResize()
+{
+	ReleaseCountText();
+}
+
 bool CFreezeMarker::KeepLastTouch(int ClientId) const
 {
 	if(GameClient()->m_Snap.m_SpecInfo.m_Active || GameClient()->IsWorldPaused() || GameClient()->IsDemoPlaybackPaused())
