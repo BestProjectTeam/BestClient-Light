@@ -1205,7 +1205,8 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	const int CurTick = Client()->GameTick(g_Config.m_ClDummy);
 
 	// bestclient-light
-	const bool NeedsUpdate = !NamePlate.IsInited() ||
+	const bool DemoPaused = Client()->State() == IClient::STATE_DEMOPLAYBACK && DemoPlayer()->BaseInfo()->m_Paused;
+	const bool NeedsUpdate = DemoPaused || !NamePlate.IsInited() ||
 				 (CurTick != m_pData->m_aLastUpdateTick[ClientId]) ||
 				 (absolute(Alpha - m_pData->m_aLastAlpha[ClientId]) > 0.05f);
 	// bestclient-light
