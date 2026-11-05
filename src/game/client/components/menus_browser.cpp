@@ -1620,7 +1620,7 @@ void CMenus::RenderServerbrowserBestClientLight(CUIRect View)
 		AllBestClientLightPlayers += ServerBrowser()->SortedGet(i)->m_NumBestClientLightPlayers;
 
 	char aLabel[128];
-	str_format(aLabel, sizeof(aLabel), Localize("All BestClient Light players: %d"), AllBestClientLightPlayers);
+	str_format(aLabel, sizeof(aLabel), Localize("All BestClient players: %d"), AllBestClientLightPlayers);
 	View.HSplitTop(RowHeight, &Button, &View);
 	Ui()->DoLabel(&Button, aLabel, FontSize, TEXTALIGN_ML);
 
@@ -1746,7 +1746,7 @@ void CMenus::RenderServerbrowserBestClientLight(CUIRect View)
 		return;
 	}
 
-	str_format(aLabel, sizeof(aLabel), Localize("BestClient Light players: %d"), pSelectedServer->m_NumBestClientLightPlayers);
+	str_format(aLabel, sizeof(aLabel), Localize("BestClient players: %d"), pSelectedServer->m_NumBestClientLightPlayers);
 	View.HSplitTop(RowHeight, &Button, &View);
 	Ui()->DoLabel(&Button, aLabel, FontSize, TEXTALIGN_ML);
 
