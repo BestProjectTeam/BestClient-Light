@@ -278,7 +278,6 @@ void CMinimap::ReleaseFollowInput()
 	{
 		Controls.m_aInputDirectionLeft[Dummy] = 0;
 		Controls.m_aInputDirectionRight[Dummy] = 0;
-		Controls.m_aInputDebounce[Dummy] = {};
 		CNetObj_PlayerInput &Input = Controls.m_aInputData[Dummy];
 		Input.m_Direction = 0;
 		Input.m_Jump = 0;

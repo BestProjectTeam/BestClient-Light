@@ -795,10 +795,6 @@ Auto margin
 == Автомаргин
 
 [BestClient Light]
-Input Debounce
-== Инпут дебаунс
-
-[BestClient Light]
 Snap Tap
 == Снап тап
 

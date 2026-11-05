@@ -60,7 +60,6 @@ bcl_prev_inp_mousesens_45_degrees
 bcl_toggle_45_degrees
 bcl_prev_inp_mousesens_small_sens
 bcl_toggle_small_sens
-bcl_input_debounce
 bcl_inputs
 bcl_best_input_amount
 bcl_best_input_smoothing

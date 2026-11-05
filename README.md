@@ -103,7 +103,7 @@ The minimap is the main feature that belongs to BestClient Light.
 
 ### Tools
 
-- **Inputs** — Fast, Best, Saiko, Delta, F, and Cloud, plus auto margin and input debounce
+- **Inputs** — Fast, Best, Saiko, Delta, F, and Cloud, plus auto margin
 - **Snap Tap** — opposite left/right switching, with an optional delay
 - **Gores mode** — entity-like mode, with auto-disable while holding a weapon
 - **Optimizer** — particles, quads, high-detail layers, and FPS fog
@@ -243,7 +243,6 @@ bcl_prev_inp_mousesens_45_degrees
 bcl_toggle_45_degrees
 bcl_prev_inp_mousesens_small_sens
 bcl_toggle_small_sens
-bcl_input_debounce
 bcl_inputs
 bcl_best_input_amount
 bcl_best_input_smoothing
