@@ -65,6 +65,7 @@ public:
 	float m_FpsFogHalfW = 0.0f;
 	float m_FpsFogHalfH = 0.0f;
 	bool m_DisableMapQuads = false;
+	float m_ExtraAlpha = 1.0f;
 	// bestclient-light
 };
 
@@ -79,6 +80,10 @@ public:
 	virtual bool DoRender(const CRenderLayerParams &Params) = 0;
 	virtual bool IsValid() const { return true; }
 	virtual bool IsGroup() const { return false; }
+	// bestclient-light
+	virtual bool IsDesignTileLayer() const { return false; }
+	virtual bool IsMapArtLayer() const { return false; }
+	// bestclient-light
 	virtual void Unload() = 0;
 
 	bool IsVisibleInClipRegion(const std::optional<CClipRegion> &ClipRegion) const;
@@ -112,6 +117,12 @@ public:
 	bool IsGroup() const override { return true; }
 	void Unload() override {}
 	void InitCallback() const override;
+	// bestclient-light
+	bool FlatVisibleWorld(vec2 WorldMin, vec2 WorldMax, vec2 &OutMin, vec2 &OutMax) const;
+	bool FlatWorldAligned() const;
+	CScreenRect FlatScreen(vec2 Center, float Zoom, float Aspect) const;
+	CScreenRect FlatBackdropScreen(vec2 Center, float CameraZoom, float GameAspect) const;
+	// bestclient-light
 
 protected:
 	IGraphics::CTextureHandle GetTexture() const override
@@ -129,6 +140,10 @@ public:
 	~CRenderLayerTile() override = default;
 	void Render(const CRenderLayerParams &Params) override;
 	bool DoRender(const CRenderLayerParams &Params) override;
+	// bestclient-light
+	bool IsDesignTileLayer() const override { return true; }
+	bool IsMapArtLayer() const override { return true; }
+	// bestclient-light
 	void Init() override;
 	void OnInit(IGraphics *pGraphics, ITextRender *pTextRender, CRenderMap *pRenderMap, std::shared_ptr<CEnvelopeManager> &pEnvelopeManager, IMap *pMap, IMapImages *pMapImages, std::optional<FCallbackLayerInit> &CallbackLayerInitOptional) override;
 
@@ -244,6 +259,10 @@ public:
 	bool IsValid() const override { return m_pLayerQuads->m_NumQuads > 0 && m_pQuads; }
 	void Render(const CRenderLayerParams &Params) override;
 	bool DoRender(const CRenderLayerParams &Params) override;
+	// bestclient-light
+	bool IsMapArtLayer() const override { return true; }
+	bool FlatClipScreen(CScreenRect &Out) const;
+	// bestclient-light
 	void Unload() override;
 
 protected:
@@ -296,6 +315,10 @@ public:
 	CRenderLayerEntityBase(int GroupId, int LayerId, int Flags, CMapItemLayerTilemap *pLayerTilemap);
 	~CRenderLayerEntityBase() override = default;
 	bool DoRender(const CRenderLayerParams &Params) override;
+	// bestclient-light
+	bool IsDesignTileLayer() const override { return false; }
+	bool IsMapArtLayer() const override { return false; }
+	// bestclient-light
 
 protected:
 	ColorRGBA GetRenderColor(const CRenderLayerParams &Params) const override { return ColorRGBA(1.0f, 1.0f, 1.0f, Params.m_EntityOverlayVal / 100.0f); }

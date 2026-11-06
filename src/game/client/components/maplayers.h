@@ -36,6 +36,9 @@ public:
 	virtual CCamera *GetCurCamera();
 
 	CEnvelopeState &EnvEvaluator() { return m_EnvEvaluator; }
+	// bestclient-light
+	void RenderFlatDesignTiles(vec2 WorldMin, vec2 WorldMax, int ViewportX, int ViewportY, int ViewportW, int ViewportH, float Alpha);
+	// bestclient-light
 
 private:
 	CRenderLayerParams m_Params;

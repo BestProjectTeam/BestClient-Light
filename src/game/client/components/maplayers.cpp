@@ -73,3 +73,27 @@ void CMapLayers::OnRender()
 
 	m_MapRenderer.Render(m_Params);
 }
+
+// bestclient-light
+void CMapLayers::RenderFlatDesignTiles(vec2 WorldMin, vec2 WorldMax, int ViewportX, int ViewportY, int ViewportW, int ViewportH, float Alpha)
+{
+	if(Alpha <= 0.0f || ViewportW <= 0 || ViewportH <= 0 || !Graphics()->IsTileBufferingEnabled())
+		return;
+	CRenderLayerParams Params = m_Params;
+	Params.m_EntityOverlayVal = 0;
+	Params.m_RenderTileBorder = false;
+	Params.m_TileAndQuadBuffering = true;
+	Params.m_FpsFogEnabled = false;
+	Params.m_FpsFogCullMapTiles = false;
+	Params.m_DisableMapQuads = false;
+	Params.m_ExtraAlpha = Alpha;
+	Params.m_DebugRenderGroupClips = false;
+	Params.m_DebugRenderQuadClips = false;
+	Params.m_DebugRenderClusterClips = false;
+	Params.m_DebugRenderTileClips = false;
+	Graphics()->BlendNormal();
+	Graphics()->WrapNormal();
+	m_MapRenderer.RenderFlatDesignTiles(WorldMin, WorldMax, ViewportX, ViewportY, ViewportW, ViewportH, Params);
+	Graphics()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+// bestclient-light

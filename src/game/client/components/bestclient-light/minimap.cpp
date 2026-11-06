@@ -25,6 +25,7 @@
 #include <game/client/components/console.h>
 #include <game/client/components/controls.h>
 #include <game/client/components/mapimages.h>
+#include <game/client/components/maplayers.h>
 #include <game/client/components/menus.h>
 #include <game/client/gameclient.h>
 #include <game/client/prediction/entities/projectile.h>
@@ -1249,7 +1250,7 @@ void CMinimap::DrawActivity(float X, float Y, float W, float H, vec2 WorldMin, f
 
 	const int LocalDDTeam = LocalId >= 0 ? GameClient()->m_Teams.Team(LocalId) : TEAM_FLOCK;
 	CollectSaveTiles(LocalDDTeam);
-	const float Outer = std::clamp(3.2f + Scale * 6.0f, 3.2f, 6.5f);
+	const float Outer = 16.0f * Scale;
 	const float Inner = Outer * 0.78f;
 	static const ColorRGBA s_aColors[4] = {
 		ColorRGBA(0.30f, 0.82f, 0.42f, 1.0f),
@@ -1765,6 +1766,27 @@ void CMinimap::DrawEntityQuads(const std::vector<uint16_t> &vCells, IGraphics::C
 	Graphics()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+void CMinimap::DrawMapDesignTiles(CMapLayers &Layers, float X, float Y, float W, float H, vec2 WorldMin, vec2 WorldMax, float Alpha)
+{
+	if(Alpha <= 0.0f || !Graphics()->IsTileBufferingEnabled())
+		return;
+	if(WorldMax.x <= WorldMin.x || WorldMax.y <= WorldMin.y || m_Width <= 0.0f || m_Height <= 0.0f)
+		return;
+
+	const CScreenRect PreviousScreen = Graphics()->GetScreen();
+	Graphics()->ClipDisable();
+	const float XScale = Graphics()->ScreenWidth() / m_Width;
+	const float YScale = Graphics()->ScreenHeight() / m_Height;
+	const int ViewportX = (int)std::round(X * XScale);
+	const int ViewportY = (int)std::round(Y * YScale);
+	const int ViewportW = std::max((int)std::round(W * XScale), 1);
+	const int ViewportH = std::max((int)std::round(H * YScale), 1);
+	Layers.RenderFlatDesignTiles(WorldMin, WorldMax, ViewportX, ViewportY, ViewportW, ViewportH, Alpha);
+	Graphics()->MapScreen(PreviousScreen);
+	Graphics()->ClipEnable(ViewportX, ViewportY, ViewportW, ViewportH);
+	Graphics()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
 void CMinimap::DrawTiles(float X, float Y, float W, float H, vec2 WorldMin, vec2 WorldMax, float Scale, float Alpha, bool Platforms)
 {
 	const int CollisionW = m_KindsWidth;
@@ -1774,16 +1796,12 @@ void CMinimap::DrawTiles(float X, float Y, float W, float H, vec2 WorldMin, vec2
 	const int EndTileX = std::min((int)std::ceil(WorldMax.x / 32.0f) + 1, CollisionW);
 	const int EndTileY = std::min((int)std::ceil(WorldMax.y / 32.0f) + 1, CollisionH);
 
-	const IGraphics::CTextureHandle Entities = GameClient()->m_MapImages.GetEntities(MAP_IMAGE_ENTITY_LAYER_TYPE_ALL_EXCEPT_SWITCH);
-	if(Entities.IsValid())
-	{
-		DrawEntityQuads(m_vVisual, Entities, StartTileX, StartTileY, EndTileX, EndTileY, X, Y, W, H, WorldMin, Scale, Alpha);
-		DrawEntityQuads(m_vFront, Entities, StartTileX, StartTileY, EndTileX, EndTileY, X, Y, W, H, WorldMin, Scale, Alpha);
-		if(m_HasSwitchTiles)
-			DrawEntityQuads(m_vSwitch, GameClient()->m_MapImages.GetEntities(MAP_IMAGE_ENTITY_LAYER_TYPE_SWITCH), StartTileX, StartTileY, EndTileX, EndTileY, X, Y, W, H, WorldMin, Scale, Alpha);
-	}
-	else
-	{
+	const int Overlay = std::clamp(g_Config.m_ClOverlayEntities, 0, 100);
+	const float DesignAlpha = Alpha * (100 - Overlay) / 100.0f;
+	const float EntityAlpha = Alpha * (float)Overlay / 100.0f;
+	const bool DesignBuffered = DesignAlpha > 0.0f && Graphics()->IsTileBufferingEnabled();
+
+	auto DrawKindColors = [&](float KindAlpha) {
 		Graphics()->TextureClear();
 		Graphics()->QuadsBegin();
 		const float ScreenW = std::max(Graphics()->GetScreen().Width(), 1.0f);
@@ -1798,7 +1816,7 @@ void CMinimap::DrawTiles(float X, float Y, float W, float H, vec2 WorldMin, vec2
 				if(TileX < 0 || TileY < 0 || TileX >= CollisionW || TileY >= CollisionH)
 					continue;
 				const EMinimapTileKind Kind = (EMinimapTileKind)m_vKinds[(size_t)TileY * (size_t)CollisionW + (size_t)TileX];
-				const ColorRGBA Color = MinimapTileColor(Kind, Alpha);
+				const ColorRGBA Color = MinimapTileColor(Kind, KindAlpha);
 				if(Color.a <= 0.0f)
 					continue;
 				const float DrawX = X + (TileX * 32.0f - WorldMin.x) * Scale - Bleed;
@@ -1809,7 +1827,23 @@ void CMinimap::DrawTiles(float X, float Y, float W, float H, vec2 WorldMin, vec2
 			}
 		}
 		Graphics()->QuadsEnd();
+	};
+
+	if(EntityAlpha > 0.0f)
+	{
+		const IGraphics::CTextureHandle Entities = GameClient()->m_MapImages.GetEntities(MAP_IMAGE_ENTITY_LAYER_TYPE_ALL_EXCEPT_SWITCH);
+		if(Entities.IsValid())
+		{
+			DrawEntityQuads(m_vVisual, Entities, StartTileX, StartTileY, EndTileX, EndTileY, X, Y, W, H, WorldMin, Scale, EntityAlpha);
+			DrawEntityQuads(m_vFront, Entities, StartTileX, StartTileY, EndTileX, EndTileY, X, Y, W, H, WorldMin, Scale, EntityAlpha);
+			if(m_HasSwitchTiles)
+				DrawEntityQuads(m_vSwitch, GameClient()->m_MapImages.GetEntities(MAP_IMAGE_ENTITY_LAYER_TYPE_SWITCH), StartTileX, StartTileY, EndTileX, EndTileY, X, Y, W, H, WorldMin, Scale, EntityAlpha);
+		}
+		else
+			DrawKindColors(EntityAlpha);
 	}
+	else if(DesignAlpha > 0.0f && !DesignBuffered)
+		DrawKindColors(Alpha);
 
 	auto DrawBlock = [&](float DrawX, float DrawY, float DrawW, float DrawH, ColorRGBA Color) {
 		if(DrawX >= X + W || DrawY >= Y + H || DrawX + DrawW <= X || DrawY + DrawH <= Y)
@@ -2235,6 +2269,11 @@ void CMinimap::RenderHud(bool EditorPreview)
 	const float YScale = Graphics()->ScreenHeight() / m_Height;
 	Graphics()->ClipEnable((int)std::round(X * XScale), (int)std::round(Y * YScale), (int)std::round(MinimapW * XScale), (int)std::round(MinimapH * YScale));
 
+	const int Overlay = std::clamp(g_Config.m_ClOverlayEntities, 0, 100);
+	const float DesignAlpha = Alpha * (100 - Overlay) / 100.0f;
+	if(DesignAlpha > 0.0f)
+		DrawMapDesignTiles(GameClient()->m_MapLayersBackground, X, Y, MinimapW, MinimapH, WorldMin, WorldMax, DesignAlpha);
+
 	auto WorldToMinimap = [&](vec2 Pos) {
 		return vec2(X + (Pos.x - WorldMin.x) * Scale, Y + (Pos.y - WorldMin.y) * Scale);
 	};
@@ -2468,6 +2507,9 @@ void CMinimap::RenderHud(bool EditorPreview)
 			Graphics()->LinesEnd();
 		}
 	}
+
+	if(DesignAlpha > 0.0f)
+		DrawMapDesignTiles(GameClient()->m_MapLayersForeground, X, Y, MinimapW, MinimapH, WorldMin, WorldMax, DesignAlpha);
 
 	DrawTiles(X, Y, MinimapW, MinimapH, WorldMin, WorldMax, Scale, Alpha, g_Config.m_BclMinimapPlatforms != 0);
 

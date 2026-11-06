@@ -290,6 +290,42 @@ void CRenderLayerGroup::Render(const CRenderLayerParams &Params)
 	Graphics()->MapScreen(ScreenRect);
 }
 
+// bestclient-light
+bool CRenderLayerGroup::FlatVisibleWorld(vec2 WorldMin, vec2 WorldMax, vec2 &OutMin, vec2 &OutMax) const
+{
+	OutMin = WorldMin;
+	OutMax = WorldMax;
+	if(m_pGroup == nullptr)
+		return false;
+	if(g_Config.m_GfxNoclip || m_pGroup->m_Version < 2 || !m_pGroup->m_UseClipping)
+		return true;
+	OutMin.x = std::max(WorldMin.x, (float)m_pGroup->m_ClipX);
+	OutMin.y = std::max(WorldMin.y, (float)m_pGroup->m_ClipY);
+	OutMax.x = std::min(WorldMax.x, (float)m_pGroup->m_ClipX + (float)m_pGroup->m_ClipW);
+	OutMax.y = std::min(WorldMax.y, (float)m_pGroup->m_ClipY + (float)m_pGroup->m_ClipH);
+	return OutMin.x < OutMax.x && OutMin.y < OutMax.y;
+}
+
+bool CRenderLayerGroup::FlatWorldAligned() const
+{
+	return m_pGroup != nullptr && m_pGroup->m_ParallaxX == 100 && m_pGroup->m_ParallaxY == 100;
+}
+
+CScreenRect CRenderLayerGroup::FlatScreen(vec2 Center, float Zoom, float Aspect) const
+{
+	const int ParallaxZoom = std::clamp(std::max(m_pGroup->m_ParallaxX, m_pGroup->m_ParallaxY), 0, 100);
+	return Graphics()->MapScreenToWorld(Center.x, Center.y, (float)m_pGroup->m_ParallaxX, (float)m_pGroup->m_ParallaxY, (float)ParallaxZoom, (float)m_pGroup->m_OffsetX, (float)m_pGroup->m_OffsetY, Aspect, Zoom);
+}
+
+CScreenRect CRenderLayerGroup::FlatBackdropScreen(vec2 Center, float CameraZoom, float GameAspect) const
+{
+	const int ParallaxZoom = std::clamp(std::max(m_pGroup->m_ParallaxX, m_pGroup->m_ParallaxY), 0, 100);
+	const float Zoom = CameraZoom > 0.0f ? CameraZoom : 1.0f;
+	const float Aspect = GameAspect > 0.0f ? GameAspect : 1.0f;
+	return Graphics()->MapScreenToWorld(Center.x, Center.y, (float)m_pGroup->m_ParallaxX, (float)m_pGroup->m_ParallaxY, (float)ParallaxZoom, (float)m_pGroup->m_OffsetX, (float)m_pGroup->m_OffsetY, Aspect, Zoom);
+}
+// bestclient-light
+
 /**************
  * Tile Layer *
  **************/
@@ -567,6 +603,9 @@ ColorRGBA CRenderLayerTile::GetRenderColor(const CRenderLayerParams &Params) con
 	ColorRGBA Color = m_Color;
 	if(Params.m_EntityOverlayVal && Params.m_RenderType != ERenderType::RENDERTYPE_BACKGROUND_FORCE)
 		Color.a *= (100 - Params.m_EntityOverlayVal) / 100.0f;
+	// bestclient-light
+	Color.a *= Params.m_ExtraAlpha;
+	// bestclient-light
 
 	ColorRGBA ColorEnv = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
 	m_pEnvelopeManager->EnvelopeEval()->EnvelopeEval(m_pLayerTilemap->m_ColorEnvOffset, m_pLayerTilemap->m_ColorEnv, ColorEnv, 4);
@@ -1440,12 +1479,28 @@ void CRenderLayerQuads::CalculateClipping(CQuadCluster &QuadCluster)
 	}
 }
 
+// bestclient-light
+bool CRenderLayerQuads::FlatClipScreen(CScreenRect &Out) const
+{
+	if(!m_LayerClip.has_value())
+		return false;
+	const CClipRegion &Clip = *m_LayerClip;
+	if(!(Clip.m_Width > 1.0f) || !(Clip.m_Height > 1.0f) || Clip.m_Width > 1.0e6f || Clip.m_Height > 1.0e6f)
+		return false;
+	Out = CScreenRect(Clip.m_X, Clip.m_Y, Clip.m_Width, Clip.m_Height);
+	return true;
+}
+// bestclient-light
+
 void CRenderLayerQuads::Render(const CRenderLayerParams &Params)
 {
 	UseTexture(GetTexture());
 
 	bool Force = Params.m_RenderType == ERenderType::RENDERTYPE_BACKGROUND_FORCE || Params.m_RenderType == ERenderType::RENDERTYPE_FULL_DESIGN;
 	float Alpha = Force ? 1.f : (100 - Params.m_EntityOverlayVal) / 100.0f;
+	// bestclient-light
+	Alpha *= Params.m_ExtraAlpha;
+	// bestclient-light
 	if(!Graphics()->IsQuadBufferingEnabled() || !Params.m_TileAndQuadBuffering)
 	{
 		RenderMap()->ForceRenderQuads(m_pQuads, m_pLayerQuads->m_NumQuads, LAYERRENDERFLAG_TRANSPARENT, m_pEnvelopeManager->EnvelopeEval(), Alpha);

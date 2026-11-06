@@ -7,6 +7,9 @@
 
 #include <game/map/envelope_manager.h>
 
+#include <algorithm>
+#include <cmath>
+
 const int LAYER_DEFAULT_TILESET = -1;
 
 void CMapRenderer::Clear()
@@ -183,6 +186,113 @@ void CMapRenderer::Render(const CRenderLayerParams &Params)
 		Graphics()->MapScreenToInterface(Params.m_Center.x, Params.m_Center.y, Params.m_Zoom);
 	}
 }
+
+// bestclient-light
+void CMapRenderer::RenderFlatDesignTiles(vec2 WorldMin, vec2 WorldMax, int ViewportX, int ViewportY, int ViewportW, int ViewportH, const CRenderLayerParams &Params)
+{
+	const CScreenRect PreviousScreen = Graphics()->GetScreen();
+	const float SpanX = WorldMax.x - WorldMin.x;
+	const float SpanY = WorldMax.y - WorldMin.y;
+	if(SpanX <= 0.0f || SpanY <= 0.0f || ViewportW <= 0 || ViewportH <= 0)
+		return;
+
+	float BaseW = 1.0f;
+	float BaseH = 1.0f;
+	const float Aspect = SpanX / SpanY;
+	Graphics()->CalcScreenParams(Aspect, 1.0f, &BaseW, &BaseH);
+	const float Zoom = BaseW > 0.0f ? SpanX / BaseW : 1.0f;
+	const vec2 Center = (WorldMin + WorldMax) * 0.5f;
+	const float GameAspect = Graphics()->ScreenAspect() > 0.0f ? Graphics()->ScreenAspect() : Aspect;
+	const float CameraZoom = Params.m_Zoom > 0.0f ? Params.m_Zoom : 1.0f;
+	const bool TileBuffer = Graphics()->IsTileBufferingEnabled();
+
+	bool Pushed = false;
+	bool WorldAligned = true;
+	for(auto &pRenderLayer : m_vpRenderLayers)
+	{
+		if(pRenderLayer->IsGroup())
+		{
+			if(Pushed)
+			{
+				Graphics()->PopPreviewViewport();
+				Pushed = false;
+			}
+			CRenderLayerGroup *pGroup = static_cast<CRenderLayerGroup *>(pRenderLayer.get());
+			vec2 VisibleMin;
+			vec2 VisibleMax;
+			if(!pGroup->FlatVisibleWorld(WorldMin, WorldMax, VisibleMin, VisibleMax))
+				continue;
+			const float Fx0 = (VisibleMin.x - WorldMin.x) / SpanX;
+			const float Fy0 = (VisibleMin.y - WorldMin.y) / SpanY;
+			const float Fx1 = (VisibleMax.x - WorldMin.x) / SpanX;
+			const float Fy1 = (VisibleMax.y - WorldMin.y) / SpanY;
+			const int SubX = std::clamp(ViewportX + (int)std::floor(Fx0 * (float)ViewportW), ViewportX, ViewportX + ViewportW);
+			const int SubY = std::clamp(ViewportY + (int)std::floor(Fy0 * (float)ViewportH), ViewportY, ViewportY + ViewportH);
+			const int SubR = std::clamp(ViewportX + (int)std::ceil(Fx1 * (float)ViewportW), ViewportX, ViewportX + ViewportW);
+			const int SubB = std::clamp(ViewportY + (int)std::ceil(Fy1 * (float)ViewportH), ViewportY, ViewportY + ViewportH);
+			if(SubR <= SubX || SubB <= SubY)
+				continue;
+			WorldAligned = pGroup->FlatWorldAligned();
+			Graphics()->ClipDisable();
+			Graphics()->PushPreviewViewport(SubX, SubY, SubR - SubX, SubB - SubY);
+			Pushed = true;
+			if(WorldAligned)
+			{
+				const CScreenRect GroupScreen = pGroup->FlatScreen(Center, Zoom, Aspect);
+				const float GroupW = GroupScreen.Width();
+				const float GroupH = GroupScreen.Height();
+				Graphics()->MapScreen(CScreenRect(GroupScreen.m_TopLeft.x + Fx0 * GroupW, GroupScreen.m_TopLeft.y + Fy0 * GroupH, (Fx1 - Fx0) * GroupW, (Fy1 - Fy0) * GroupH));
+			}
+			else
+				Graphics()->MapScreen(pGroup->FlatBackdropScreen(Params.m_Center, CameraZoom, GameAspect));
+			continue;
+		}
+		if(!Pushed)
+			continue;
+		if(pRenderLayer->IsDesignTileLayer())
+		{
+			if(!TileBuffer)
+				continue;
+		}
+		else if(!pRenderLayer->IsMapArtLayer())
+			continue;
+		else if(!WorldAligned)
+		{
+			CRenderLayerQuads *pQuads = static_cast<CRenderLayerQuads *>(pRenderLayer.get());
+			const CScreenRect Backdrop = Graphics()->GetScreen();
+			CScreenRect ClipScreen(0.0f, 0.0f, 0.0f, 0.0f);
+			bool Remap = false;
+			if(pQuads->FlatClipScreen(ClipScreen))
+			{
+				const float ClipW = ClipScreen.Width();
+				const float ClipH = ClipScreen.Height();
+				const bool ScreenSized = ClipW >= 400.0f && ClipH >= 250.0f && ClipW <= 20000.0f && ClipH <= 20000.0f;
+				if(ScreenSized)
+				{
+					const float ClipX = ClipScreen.m_TopLeft.x + ClipW * 0.5f;
+					const float ClipY = ClipScreen.m_TopLeft.y + ClipH * 0.5f;
+					const bool CenterOutside = ClipX < Backdrop.m_TopLeft.x || ClipX > Backdrop.m_BottomRight.x || ClipY < Backdrop.m_TopLeft.y || ClipY > Backdrop.m_BottomRight.y;
+					Remap = CenterOutside || !pRenderLayer->DoRender(Params);
+				}
+			}
+			if(Remap)
+				Graphics()->MapScreen(ClipScreen);
+			if(pRenderLayer->DoRender(Params))
+				pRenderLayer->Render(Params);
+			if(Remap)
+				Graphics()->MapScreen(Backdrop);
+			continue;
+		}
+		if(pRenderLayer->DoRender(Params))
+			pRenderLayer->Render(Params);
+	}
+
+	if(Pushed)
+		Graphics()->PopPreviewViewport();
+	Graphics()->ClipDisable();
+	Graphics()->MapScreen(PreviousScreen);
+}
+// bestclient-light
 
 int CMapRenderer::GetLayerType(const CMapItemLayer *pLayer) const
 {

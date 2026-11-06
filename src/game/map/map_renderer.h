@@ -17,6 +17,9 @@ public:
 	void Clear();
 	void Load(ERenderType Type, CLayers *pLayers, IMapImages *pMapImages, const IEnvelopeEval *pEnvelopeEval, std::optional<FCallbackMapRendererInit> CallbackMapRendererInitOptional);
 	void Render(const CRenderLayerParams &Params);
+	// bestclient-light
+	void RenderFlatDesignTiles(vec2 WorldMin, vec2 WorldMax, int ViewportX, int ViewportY, int ViewportW, int ViewportH, const CRenderLayerParams &Params);
+	// bestclient-light
 
 private:
 	int GetLayerType(const CMapItemLayer *pLayer) const;

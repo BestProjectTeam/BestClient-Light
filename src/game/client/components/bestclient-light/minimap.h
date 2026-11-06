@@ -14,6 +14,7 @@
 #include <vector>
 
 class CCollision;
+class CMapLayers;
 
 class CMinimap : public CComponent
 {
@@ -116,6 +117,7 @@ class CMinimap : public CComponent
 	bool IsLargeMapBind(int Key) const;
 	bool EnsureCache(CCollision *pCollision);
 	void DrawEntityQuads(const std::vector<uint16_t> &vCells, IGraphics::CTextureHandle Texture, int StartX, int StartY, int EndX, int EndY, float X, float Y, float W, float H, vec2 WorldMin, float Scale, float Alpha);
+	void DrawMapDesignTiles(CMapLayers &Layers, float X, float Y, float W, float H, vec2 WorldMin, vec2 WorldMax, float Alpha);
 	void DrawTiles(float X, float Y, float W, float H, vec2 WorldMin, vec2 WorldMax, float Scale, float Alpha, bool Platforms);
 	void RenderFullMapChrome(float MapX, float MapY, float MapW, float MapH, bool AllowClick);
 	bool FullMapChromeHit(float HudX, float HudY, float MapX, float MapY, float MapW, float MapH);
