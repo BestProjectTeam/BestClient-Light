@@ -24,12 +24,6 @@ void CMenus::RenderSettingsBestClientLightFx(CUIRect &Column)
 	const float BlockPadding = MarginBetweenViews * 0.6666f;
 	const float Row = MarginSmall + LineSize;
 
-	const auto RowCheck = [&](CUIRect &View, int *pValue, const char *pText) {
-		View.HSplitTop(MarginSmall, nullptr, &View);
-		CUIRect Line;
-		View.HSplitTop(LineSize, &Line, &View);
-		DoButton_CheckBoxAutoVMarginAndSet(pValue, pText, pValue, &Line, LineSize);
-	};
 	const auto RowSlider = [&](CUIRect &View, int *pValue, const char *pText, int Min, int Max, const char *pSuffix) {
 		View.HSplitTop(MarginSmall, nullptr, &View);
 		CUIRect Line;

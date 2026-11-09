@@ -1575,8 +1575,6 @@ void CMenus::RenderSettingsBestClientLightVisuals(CUIRect MainView)
 
 	const bool NewUiExpanded = g_Config.m_BclMenuUiStyle != 0;
 	const bool TabOptionExpanded = NewUiExpanded && g_Config.m_BclMenuUiNewTabOption != 0;
-	const float ColorPickerLineSize = 25.0f;
-	const float ColorPickerSpacing = 5.0f;
 	const float NewUiHeaderHeight = LineSize + MarginSmall + LineSize;
 	const float NewUiExpandedTargetHeight = 5.0f * (MarginSmall + LineSize) + (TabOptionExpanded ? (MarginSmall + LineSize) : 0.0f);
 	const float NewUiExpandedHeight = BC_MODULE_REVEAL(NewUiExpanded, NewUiExpandedTargetHeight, Client()->RenderFrameTime());

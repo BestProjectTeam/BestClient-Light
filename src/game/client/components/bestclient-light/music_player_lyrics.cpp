@@ -87,7 +87,7 @@ public:
 	std::vector<CMusicPlayerLyrics::SLine> m_vLines;
 
 	CMusicPlayerLyricsParseJob(std::shared_ptr<IHttpRequest> pRequest, std::string Key) :
-		m_pRequest(std::move(pRequest)), m_Key(std::move(Key))
+		m_Key(std::move(Key)), m_pRequest(std::move(pRequest))
 	{
 		Abortable(true);
 	}
@@ -111,14 +111,7 @@ public:
 		std::vector<CMusicPlayerLyrics::SLine> vLines;
 		if(pRoot != nullptr && pRoot != &json_value_none && pRoot->type == json_object)
 		{
-			const json_value *pSyncedValue = json_object_get(pRoot, "syncedLyrics");
-			const char *pSynced = "";
-			if(pSyncedValue != nullptr && pSyncedValue != &json_value_none && pSyncedValue->type == json_string)
-			{
-				const char *pString = json_string_get(pSyncedValue);
-				if(pString != nullptr)
-					pSynced = pString;
-			}
+			const char *pSynced = JsonStringOrEmpty(json_object_get(pRoot, "syncedLyrics"));
 			if(CMusicPlayerLyrics::ParseSyncedLyrics(pSynced, vLines))
 				ParsedState = CMusicPlayerLyrics::EDisplayState::Ready;
 		}
