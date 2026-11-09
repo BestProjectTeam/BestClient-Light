@@ -1454,6 +1454,7 @@ set(EXPECTED_DATA
   audio/wp_switch-03.wv
   autoexec_server.cfg
   background_noise.png
+  bestclient-light/ActayWide-Bold.otf
   bestclient-light/bc_dev_icon.png
   bestclient-light/bc_fake_icon.png
   bestclient-light/bc_icon.png
@@ -2629,6 +2630,7 @@ set_src(ENGINE_SHARED GLOB_RECURSE src/engine/shared
   # tidy-alphabetical-end
 )
 set_src(ENGINE_EXTERNAL GLOB src/engine/external
+  # tidy-alphabetical-start
   mumble.cpp
   mumble.h
   regex.cpp
@@ -2637,6 +2639,7 @@ set_src(ENGINE_EXTERNAL GLOB src/engine/external
   spt.h
   tinyexpr.cpp
   tinyexpr.h
+  # tidy-alphabetical-end
 )
 
 # ChaiScript for tclient
@@ -2866,78 +2869,40 @@ if(CLIENT)
     animstate.cpp
     animstate.h
     assets.cpp
+    bc_menu_badges.h
+    bc_ui_animations.h
     component.cpp
     component.h
     components/background.cpp
     components/background.h
-    components/bestclient-light/bestclient-light.cpp
-    components/bestclient-light/bestclient-light.h
-    components/bestclient-light/config_presets.cpp
-    components/bestclient-light/config_presets.h
-    components/bestclient-light/profile_assets.cpp
-    components/bestclient-light/profile_assets.h
+    components/bestclient-light/activity_hud.cpp
+    components/bestclient-light/activity_hud.h
     components/bestclient-light/admin_panel.cpp
     components/bestclient-light/admin_panel.h
+    components/bestclient-light/ancient_input.cpp
+    components/bestclient-light/ancient_input.h
     components/bestclient-light/aspect_ratio.cpp
     components/bestclient-light/aspect_ratio.h
-    components/bestclient-light/fast_actions.cpp
-    components/bestclient-light/fast_actions.h
-    components/bestclient-light/optimizer.cpp
-    components/bestclient-light/optimizer.h
-    components/bestclient-light/process_priority.cpp
-    components/bestclient-light/process_priority.h
-    components/bestclient-light/discord_rpc.cpp
-    components/bestclient-light/discord_rpc.h
-    components/bestclient-light/media_decoder.cpp
-    components/bestclient-light/media_decoder.h
+    components/bestclient-light/automargin.cpp
+    components/bestclient-light/automargin.h
+    components/bestclient-light/azure_input.cpp
+    components/bestclient-light/azure_input.h
+    components/bestclient-light/bestclient-light.cpp
+    components/bestclient-light/bestclient-light.h
     components/bestclient-light/better_preview.cpp
     components/bestclient-light/better_preview.h
-    components/bestclient-light/scroll_bar.cpp
-    components/bestclient-light/scroll_bar.h
-    components/bestclient-light/chat_message_actions.cpp
-    components/bestclient-light/chat_message_actions.h
-    components/bestclient-light/chat_scroll.cpp
-    components/bestclient-light/chat_scroll.h
-    components/bestclient-light/console_scroll.cpp
-    components/bestclient-light/console_scroll.h
-    components/bestclient-light/menu_media_background.cpp
-    components/bestclient-light/menu_media_background.h
-
-    components/bestclient-light/menus_bestclient-light.cpp
-    components/bestclient-light/keybind_map.cpp
-    components/bestclient-light/keybind_map.h
-    components/bestclient-light/keybind_map_ui.h
-    components/bestclient-light/motion_blur.h
-    components/bestclient-light/motion_blur_opengl.h
-    components/bestclient-light/motion_blur_opengl.inl
-    components/bestclient-light/motion_blur_vulkan.inl
-    components/bestclient-light/motion_blur_vulkan_members.inl
-    components/bestclient-light/motion_blur_vulkan_state.inl
     components/bestclient-light/browser_utils.cpp
     components/bestclient-light/browser_utils.h
-    components/bestclient-light/twitch_chat.cpp
-    components/bestclient-light/twitch_chat.h
-    components/bestclient-light/translate.cpp
-    components/bestclient-light/translate.h
-    components/bestclient-light/chat_qol.cpp
-    components/bestclient-light/chat_qol.h
     components/bestclient-light/camera_extras.cpp
     components/bestclient-light/camera_extras.h
-    components/bestclient-light/hud_extras.cpp
-    components/bestclient-light/hud_extras.h
-    components/bestclient-light/corner_indicator.cpp
-    components/bestclient-light/corner_indicator.h
-    components/bestclient-light/cursor_trail.cpp
-    components/bestclient-light/cursor_trail.h
-    components/bestclient-light/menus_fx.cpp
-    components/bestclient-light/fx/components.h
-    components/bestclient-light/fx/own_tee.h
-    components/bestclient-light/fx/fgf_glow.cpp
-    components/bestclient-light/fx/fgf_glow.h
-    components/bestclient-light/fx/fgf_weather.cpp
-    components/bestclient-light/fx/fgf_weather.h
-    components/bestclient-light/show_points.cpp
-    components/bestclient-light/show_points.h
+    components/bestclient-light/chat_bubbles.cpp
+    components/bestclient-light/chat_bubbles.h
+    components/bestclient-light/chat_message_actions.cpp
+    components/bestclient-light/chat_message_actions.h
+    components/bestclient-light/chat_qol.cpp
+    components/bestclient-light/chat_qol.h
+    components/bestclient-light/chat_scroll.cpp
+    components/bestclient-light/chat_scroll.h
     components/bestclient-light/clientindicator/browser_cache.cpp
     components/bestclient-light/clientindicator/browser_cache.h
     components/bestclient-light/clientindicator/client_indicator.cpp
@@ -2946,66 +2911,102 @@ if(CLIENT)
     components/bestclient-light/clientindicator/presence_cache.cpp
     components/bestclient-light/clientindicator/presence_cache.h
     components/bestclient-light/clientindicator/protocol.h
-    components/bestclient-light/spec_pause_radio.cpp
-    components/bestclient-light/spec_pause_radio.h
-    components/bestclient-light/chat_bubbles.cpp
-    components/bestclient-light/chat_bubbles.h
-    components/bestclient-light/ui_animations.cpp
-    components/bestclient-light/ui_animations.h
-    components/bestclient-light/ui_theme/style.h
-    components/bestclient-light/ui_theme/settings_nav.cpp
-    components/bestclient-light/ui_theme/settings_nav.h
-    components/bestclient-light/settings_search.cpp
-    components/bestclient-light/settings_search.h
-    components/bestclient-light/ui_theme/widgets.cpp
-    components/bestclient-light/ui_theme/widgets.h
-    components/bestclient-light/gif_bubbles.cpp
-    components/bestclient-light/gif_bubbles.h
+    components/bestclient-light/clientindicator/version_label.h
+    components/bestclient-light/cloud_input.cpp
+    components/bestclient-light/cloud_input.h
+    components/bestclient-light/config_presets.cpp
+    components/bestclient-light/config_presets.h
+    components/bestclient-light/console_scroll.cpp
+    components/bestclient-light/console_scroll.h
+    components/bestclient-light/corner_indicator.cpp
+    components/bestclient-light/corner_indicator.h
+    components/bestclient-light/cursor_trail.cpp
+    components/bestclient-light/cursor_trail.h
+    components/bestclient-light/discord_rpc.cpp
+    components/bestclient-light/discord_rpc.h
+    components/bestclient-light/edgehelper.cpp
+    components/bestclient-light/edgehelper.h
     components/bestclient-light/ego_legit_finished_maps.cpp
     components/bestclient-light/ego_legit_finished_maps.h
     components/bestclient-light/ego_tiles_prediction.cpp
     components/bestclient-light/ego_tiles_prediction.h
-    components/bestclient-light/edgehelper.cpp
-    components/bestclient-light/edgehelper.h
+    components/bestclient-light/fast_actions.cpp
+    components/bestclient-light/fast_actions.h
     components/bestclient-light/fast_practice.cpp
     components/bestclient-light/fast_practice.h
     components/bestclient-light/finish_prediction.cpp
     components/bestclient-light/finish_prediction.h
     components/bestclient-light/freeze_marker.cpp
     components/bestclient-light/freeze_marker.h
-    components/bestclient-light/keystrokes.cpp
-    components/bestclient-light/keystrokes.h
-    components/bestclient-light/activity_hud.cpp
-    components/bestclient-light/activity_hud.h
-    components/bestclient-light/minimap.cpp
-    components/bestclient-light/minimap.h
+    components/bestclient-light/fx/components.h
+    components/bestclient-light/fx/fgf_glow.cpp
+    components/bestclient-light/fx/fgf_glow.h
+    components/bestclient-light/fx/fgf_weather.cpp
+    components/bestclient-light/fx/fgf_weather.h
+    components/bestclient-light/fx/own_tee.h
+    components/bestclient-light/gif_bubbles.cpp
+    components/bestclient-light/gif_bubbles.h
     components/bestclient-light/hud_editor.cpp
     components/bestclient-light/hud_editor.h
-    components/bestclient-light/touch_controls_editor.cpp
-    components/bestclient-light/touch_controls_editor.h
+    components/bestclient-light/hud_extras.cpp
+    components/bestclient-light/hud_extras.h
+    components/bestclient-light/inputs.cpp
+    components/bestclient-light/inputs.h
+    components/bestclient-light/keybind_map.cpp
+    components/bestclient-light/keybind_map.h
+    components/bestclient-light/keybind_map_ui.h
+    components/bestclient-light/keystrokes.cpp
+    components/bestclient-light/keystrokes.h
+    components/bestclient-light/light_input.cpp
+    components/bestclient-light/light_input.h
+    components/bestclient-light/media_decoder.cpp
+    components/bestclient-light/media_decoder.h
+    components/bestclient-light/menu_media_background.cpp
+    components/bestclient-light/menu_media_background.h
+    components/bestclient-light/menus_bestclient-light.cpp
+    components/bestclient-light/menus_fx.cpp
+    components/bestclient-light/minimap.cpp
+    components/bestclient-light/minimap.h
+    components/bestclient-light/motion_blur.h
+    components/bestclient-light/motion_blur_opengl.h
     components/bestclient-light/music_player.cpp
     components/bestclient-light/music_player.h
     components/bestclient-light/music_player_lyrics.cpp
     components/bestclient-light/music_player_lyrics.h
+    components/bestclient-light/optimizer.cpp
+    components/bestclient-light/optimizer.h
+    components/bestclient-light/process_priority.cpp
+    components/bestclient-light/process_priority.h
+    components/bestclient-light/profile_assets.cpp
+    components/bestclient-light/profile_assets.h
     components/bestclient-light/quick_binds.cpp
     components/bestclient-light/quick_binds.h
     components/bestclient-light/rollback_demo.cpp
     components/bestclient-light/rollback_demo.h
+    components/bestclient-light/scroll_bar.cpp
+    components/bestclient-light/scroll_bar.h
+    components/bestclient-light/settings_search.cpp
+    components/bestclient-light/settings_search.h
+    components/bestclient-light/show_points.cpp
+    components/bestclient-light/show_points.h
     components/bestclient-light/snap_tap.cpp
     components/bestclient-light/snap_tap.h
-    components/bestclient-light/inputs.cpp # bestclient-light
-    components/bestclient-light/inputs.h
-    components/bestclient-light/cloud_input.cpp
-    components/bestclient-light/cloud_input.h
-    components/bestclient-light/light_input.cpp
-    components/bestclient-light/light_input.h
-    components/bestclient-light/azure_input.cpp
-    components/bestclient-light/azure_input.h
-    components/bestclient-light/ancient_input.cpp
-    components/bestclient-light/ancient_input.h
-    components/bestclient-light/automargin.cpp
-    components/bestclient-light/automargin.h # bestclient-light
+    components/bestclient-light/spec_pause_radio.cpp
+    components/bestclient-light/spec_pause_radio.h
     components/bestclient-light/subsystem_runtime.h
+    components/bestclient-light/touch_controls_editor.cpp
+    components/bestclient-light/touch_controls_editor.h
+    components/bestclient-light/translate.cpp
+    components/bestclient-light/translate.h
+    components/bestclient-light/twitch_chat.cpp
+    components/bestclient-light/twitch_chat.h
+    components/bestclient-light/ui_animations.cpp
+    components/bestclient-light/ui_animations.h
+    components/bestclient-light/ui_theme/settings_nav.cpp
+    components/bestclient-light/ui_theme/settings_nav.h
+    components/bestclient-light/ui_theme/style.h
+    components/bestclient-light/ui_theme/widgets.cpp
+    components/bestclient-light/ui_theme/widgets.h
     components/bestclient-light/updater.cpp
     components/bestclient-light/updater.h
     components/bestclient-light/version.h
@@ -3021,7 +3022,6 @@ if(CLIENT)
     components/bestclient-light/visualizer/source_pulse.cpp
     components/bestclient-light/visualizer/source_wasapi.cpp
     components/bestclient-light/visualizer/types.h
-    bc_ui_animations.h
     components/binds.cpp
     components/binds.h
     components/broadcast.cpp
